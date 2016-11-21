@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_MATERIAL" (
+  IN in_material_id bigint,
+  IN in_catalog_id bigint,
+  IN in_description nvarchar (255),
+  IN in_popup nvarchar (255),
+  IN in_code nvarchar(255),
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE material
+	SET material.catalog_id = in_catalog_id,
+		material.description = in_description,
+		material.popup = in_popup,
+		material.code = in_code,
+		material.modified_date_tz = CURRENT_TIMESTAMP,
+		material.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."MATERIAL" material
+	WHERE material.material_id = in_material_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

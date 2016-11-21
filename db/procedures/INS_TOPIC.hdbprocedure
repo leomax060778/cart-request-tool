@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_TOPIC" (
+IN in_description nvarchar(255),
+IN in_created_user_id bigint,
+OUT out_result bigint 
+) 
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."TOPIC"(
+	    description, 
+	    created_user_id, 
+	    created_date_tz
+    )
+      VALUES(
+	      in_description, 
+	      in_created_user_id,
+	      CURRENT_TIMESTAMP
+      );
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."TOPIC";
+END;

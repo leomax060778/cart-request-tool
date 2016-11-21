@@ -1,0 +1,19 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_TRAINING" (
+ IN in_user_id bigint,
+ IN in_created_user_id bigint,
+ IN in_training_type_id bigint,
+ IN in_parent_type_id bigint,
+ IN in_link nvarchar (2048),
+ IN in_name nvarchar (2048),
+ IN in_training_order integer,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."TRAINING"(user_id, training_type_id, parent_id, link, name, training_order, created_user_id) 
+  VALUES(in_user_id, in_training_type_id, in_parent_type_id, in_link, in_name, in_training_order, in_created_user_id);
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."USER";
+END;

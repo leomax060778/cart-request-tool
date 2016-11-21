@@ -1,0 +1,30 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_REQUEST_STATUS" (
+  IN in_vendor_request_id bigint,
+  IN in_status_id bigint,
+  IN in_modified_user_id bigint,
+  IN in_previous_status_id bigint,
+  IN in_user_id_status bigint,
+  IN in_receiver_user_id bigint,
+  IN in_receiver_yvc_request nvarchar(255),
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE vrequest
+    SET vrequest.status_id = in_status_id,
+      vrequest.modified_user_id = in_modified_user_id,
+      vrequest.user_id_status = in_user_id_status,
+      vrequest.previous_status_id = in_previous_status_id,
+      vrequest.receiver_user_id = in_receiver_user_id,
+      vrequest.receiver_yvc_request = in_receiver_yvc_request,
+      vrequest.receiver_modified_date_tz = CURRENT_TIMESTAMP,
+      vrequest.update_status_tz = CURRENT_TIMESTAMP,
+      vrequest.modified_date_tz = CURRENT_TIMESTAMP
+    FROM "CART_REQUEST_TOOL"."VENDOR_REQUEST" vrequest
+    WHERE vrequest.vendor_request_id = in_vendor_request_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

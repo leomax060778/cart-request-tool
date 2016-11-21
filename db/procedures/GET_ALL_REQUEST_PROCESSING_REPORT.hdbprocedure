@@ -1,0 +1,33 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_PROCESSING_REPORT" (
+	OUT out_result TABLE (cart_request_id nvarchar(32), 
+  						REQUEST_ID bigint, 
+  						VENDOR_NAME nvarchar(255), 
+  						STATUS_NAME nvarchar(255), 
+  						REQUESTER nvarchar(255), 
+  						stage_passes nvarchar(32)
+ 						) 
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CART_REQUEST_ID,
+			   CR.REQUEST_ID AS REQUEST_ID,
+               VAI.VENDOR_NAME,
+               ST.NAME AS STATUS_NAME,
+               (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+               STG.NAME AS stage_passes
+             FROM "REQUEST" CR
+             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
+             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
+             				ON (CR.VENDOR_ID = VAI.VENDOR_ID
+     							AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ 
+       									and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ) 
+       							OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
+     							)
+     		 INNER JOIN "REQUEST_STATUS" ST ON ST.STATUS_ID = CR.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+     		 INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+     		 INNER JOIN "STAGE" STG ON STG.stage_id = CR.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
+             WHERE CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
+END;

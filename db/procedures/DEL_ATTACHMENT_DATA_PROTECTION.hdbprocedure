@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_ATTACHMENT_DATA_PROTECTION" (
+	IN in_attachment_data_protection_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE ATTACHMENT_DATA_PROTECTION
+  SET ATTACHMENT_DATA_PROTECTION.deleted = 1,
+   ATTACHMENT_DATA_PROTECTION.enabled = 0,
+   ATTACHMENT_DATA_PROTECTION.modified_user_id = in_modified_user_id,
+   ATTACHMENT_DATA_PROTECTION.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."ATTACHMENT_DATA_PROTECTION" ATTACHMENT_DATA_PROTECTION
+  WHERE ATTACHMENT_DATA_PROTECTION.attachment_data_protection_id = in_attachment_data_protection_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

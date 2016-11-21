@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" (
+	IN in_supporting_documentation_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE CVSD
+	SET CVSD.enabled = 0,
+		CVSD.deleted = 1,
+		CVSD.modified_user_id = in_modified_user_id,
+		CVSD.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" CVSD
+		WHERE CVSD.supporting_documentation_id = in_supporting_documentation_id;
+	
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

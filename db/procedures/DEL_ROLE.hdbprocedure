@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_ROLE" (
+	IN in_role_id BIGINT,
+	IN in_user_id BIGINT,
+	OUT out_result INTEGER
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ 
+	DELETE FROM "CART_REQUEST_TOOL"."ROLE" role
+	WHERE role.role_id = in_role_id;
+	
+	SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+	
+END;

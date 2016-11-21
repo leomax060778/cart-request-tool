@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_TRAINING" (
+ IN in_training_id bigint,
+ IN in_modified_user_id bigint,
+ OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE training
+  SET training.deleted = 1,
+  	training.enabled = 0,
+   	training.modified_user_id = in_modified_user_id,
+   	training.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "TRAINING" training
+  WHERE training.training_id = in_training_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TEAM_BY_ID" (
+  IN in_team_id bigint,
+  OUT out_result TABLE ( team_id bigint, iso nvarchar(32), name nvarchar(255), team_year integer, opt_team_id bigint)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT "TEAM".TEAM_ID, "TEAM".ISO, "TEAM".NAME, "TEAM".TEAM_YEAR, "TEAM".OPT_TEAM_ID
+              FROM "CART_REQUEST_TOOL"."TEAM" 
+				WHERE "TEAM".TEAM_ID = in_team_id
+				AND ENABLED = 1
+				AND DELETED = 0;
+END;

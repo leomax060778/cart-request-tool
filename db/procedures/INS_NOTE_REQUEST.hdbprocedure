@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NOTE_REQUEST" (
+ IN in_request_id bigint,
+ IN in_user_id bigint,
+ IN in_note_text nvarchar(1000),
+ IN in_note_type_id bigint,
+ IN in_created_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."NOTE_REQUEST"(request_id, user_id, note_text, note_type_id, created_user_id) 
+  VALUES(in_request_id, in_user_id, in_note_text, in_note_type_id, in_created_user_id);
+  
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."NOTE_REQUEST";
+END;

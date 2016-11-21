@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_NOTE_TYPE" (
+ IN in_note_type_id bigint,
+ IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE "NOTE_TYPE"
+  SET "NOTE_TYPE".deleted = 1,
+   "NOTE_TYPE".enabled = 0,
+   "NOTE_TYPE".modified_user_id = in_modified_user_id,
+   "NOTE_TYPE".modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."NOTE_TYPE" NOTE_TYPE
+  WHERE note_type_id = in_note_type_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

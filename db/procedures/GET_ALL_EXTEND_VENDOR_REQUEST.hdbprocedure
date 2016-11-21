@@ -1,0 +1,62 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_EXTEND_VENDOR_REQUEST" (
+ OUT out_result TABLE(extend_vendor_request_id bigint, 
+ 						user_id bigint, 
+						entity_id bigint, 
+						commodity_id bigint, 
+						vendor_legal_name nvarchar(511),
+						vendor_informal_name nvarchar(511), 
+						vendor_contact_name nvarchar(255), 
+						vendor_contact_email nvarchar(255), 
+						vendor_type_id integer, 
+						status_id bigint, 
+						previous_status_id bigint, 
+						user_id_status bigint, 
+						update_status_tz nvarchar(15), 
+						service_supplier nvarchar(1000), 
+						purchase_amount decimal(19,2), 
+						expected_amount decimal(19,2),
+						purchase_currency_id integer, 
+						expected_currency_id integer, 
+						additional_information nvarchar(1000), 
+						receiver_user_id bigint, 
+						vendor_account nvarchar(255), 
+						receiver_date_submitted_tz nvarchar(15), 
+						receiver_date_completed_tz nvarchar(15), 
+						receiver_yvc_request nvarchar(255),
+						vendor_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT EVR.EXTEND_VENDOR_REQUEST_ID,
+	 EVR.USER_ID,
+	 EVR.ENTITY_ID, 
+	 EVR.COMMODITY_ID, 
+	 V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
+	 V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME, 
+	 V.CONTACT_NAME AS VENDOR_CONTACT_NAME, 
+	 V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL, 
+	 EVR.VENDOR_TYPE_ID,
+	 EVR.STATUS_ID, 
+     EVR.PREVIOUS_STATUS_ID,
+     EVR.USER_ID_STATUS, 
+     TO_NVARCHAR(EVR.UPDATE_STATUS_TZ,'YYYY-MM-DD') AS UPDATE_STATUS_TZ, 
+     EVR.SERVICE_SUPPLIER, 
+     EVR.PURCHASE_AMOUNT, 
+     EVR.EXPECTED_AMOUNT,
+	 EVR.PURCHASE_CURRENCY_ID, 
+	 EVR.EXPECTED_CURRENCY_ID, 
+	 EVR.ADDITIONAL_INFORMATION, 
+	 EVR.RECEIVER_USER_ID, 
+	 V.ACCOUNT AS VENDOR_ACCOUNT, 
+	 TO_NVARCHAR(EVR.CREATED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_SUBMITTED_TZ, 
+	 TO_NVARCHAR(EVR.RECEIVER_DATE_COMPLETED_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_COMPLETED_TZ, 
+	 EVR.RECEIVER_YVC_REQUEST,
+	 EVR.VENDOR_ID
+   FROM "EXTEND_VENDOR_REQUEST" EVR
+   INNER JOIN "VENDOR" V ON V.VENDOR_ID = EVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	WHERE EVR.ENABLED = 1 
+	AND EVR.DELETED = 0;
+END;

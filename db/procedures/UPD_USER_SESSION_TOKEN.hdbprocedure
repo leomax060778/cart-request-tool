@@ -1,0 +1,25 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_USER_SESSION_TOKEN" (
+	IN in_token nvarchar(255),
+	IN in_token_duration integer,
+	IN in_modified_user_id bigint,
+	OUT out_result integer
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ 
+    UPDATE user_token
+    SET user_token.token_valid_until_date_tz = ADD_SECONDS(CURRENT_TIMESTAMP, in_token_duration),
+    user_token.modified_date_tz = CURRENT_TIMESTAMP,
+    user_token.created_user_id = in_modified_user_id
+    FROM "USER_SESSION_TOKEN" user_token
+    WHERE user_token.token = in_token;
+
+    SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+
+END;

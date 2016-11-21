@@ -1,0 +1,14 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_LOCATION_OF_WORK" (
+  IN in_location_name nvarchar(255),
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."LOCATION_OF_WORK"(location_name, created_user_id)
+      VALUES(in_location_name, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."LOCATION_OF_WORK";
+END;

@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_VENDOR_BY_ID" (
+	IN in_vendor_type_id bigint,
+	IN in_vendor_id bigint,
+	OUT out_result TABLE (attachment_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT ATTACHMENT_ID FROM "ATTACHMENT_VENDOR"
+	 WHERE in_vendor_type_id = "ATTACHMENT_VENDOR".VENDOR_TYPE_ID
+	  AND in_vendor_id = "ATTACHMENT_VENDOR".VENDOR_ID
+	  AND DELETED = 0
+	  AND ENABLED = 1;
+END;

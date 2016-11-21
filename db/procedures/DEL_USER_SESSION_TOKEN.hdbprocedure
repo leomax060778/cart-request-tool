@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_USER_SESSION_TOKEN" (
+	IN in_user_id BIGINT,
+	OUT out_result INTEGER
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	DELETE
+	 FROM "CART_REQUEST_TOOL"."USER_SESSION_TOKEN" user_session_token
+		WHERE user_session_token.user_id = in_user_id;
+		
+		SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+END;

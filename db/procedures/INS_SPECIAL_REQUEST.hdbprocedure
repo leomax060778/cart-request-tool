@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_SPECIAL_REQUEST" (
+  IN in_request_id bigint,
+  IN in_material_description nvarchar(500),
+  IN in_material_code nvarchar(255),
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."SPECIAL_REQUEST"(request_id ,material_description, material_code, created_user_id)
+      VALUES(in_request_id, in_material_description, in_material_code, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST";
+END;

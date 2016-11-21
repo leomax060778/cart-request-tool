@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_VENDOR_ENTITY_BY_VENDOR_ID_ENTITY_ID" (
+  IN in_vendor_id bigint,
+  IN in_entity_id bigint,
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+  UPDATE VENDOR_ENTITY
+  SET VENDOR_ENTITY.deleted = 1,
+      VENDOR_ENTITY.enabled = 0,
+      VENDOR_ENTITY.modified_user_id = in_modified_user_id,
+      VENDOR_ENTITY.modified_date_tz = CURRENT_TIMESTAMP
+  FROM "CART_REQUEST_TOOL"."VENDOR_ENTITY" VENDOR_ENTITY
+   WHERE VENDOR_ENTITY.vendor_id = in_vendor_id
+   AND VENDOR_ENTITY.entity_id = in_entity_id;
+
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

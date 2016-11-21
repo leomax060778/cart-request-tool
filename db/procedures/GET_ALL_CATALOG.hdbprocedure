@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CATALOG" (
+	OUT out_result TABLE (catalog_id bigint, name nvarchar(255), pop_up nvarchar(512), catalog_type_id bigint, type_name nvarchar(255), catalog_parent_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "CATALOG".catalog_id, "CATALOG".name, "CATALOG".pop_up, "CATALOG".catalog_type_id, "CATALOG_TYPE".name AS type_name, "CATALOG".catalog_parent_id
+					FROM "CATALOG" 
+					INNER JOIN "CATALOG_TYPE" ON "CATALOG_TYPE".catalog_type_id = "CATALOG".catalog_type_id
+						WHERE "CATALOG".catalog_parent_id = 0
+						AND "CATALOG".enabled = 1 
+						AND "CATALOG".deleted = 0;
+END;

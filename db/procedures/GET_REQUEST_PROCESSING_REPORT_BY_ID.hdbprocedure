@@ -1,0 +1,51 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROCESSING_REPORT_BY_ID" (
+	IN in_request_id bigint,
+	OUT out_result TABLE (crt_request_id nvarchar(32),
+							request_id bigint,
+							request_date nvarchar(32),
+							team nvarchar(255),
+							requester nvarchar(255),
+							entity nvarchar(255),
+							vendor_name nvarchar(255),
+							vendor_account nvarchar(255),
+							contact_name nvarchar(255),
+							contact_email nvarchar(255),
+							phone nvarchar(255),
+							status_id bigint,
+							status_name nvarchar(255)
+						 )
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
+                    CR.REQUEST_ID AS REQUEST_ID,
+                    to_nvarchar(CR.created_date_tz, 'YYYY-MM-DD') AS request_date,
+                    TM.iso as team,
+                    (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    ET.entity_name AS entity,
+               		VAI.VENDOR_NAME,
+                    V.account AS vendor_account,
+	                V.contact_name,
+    	            V.contact_email,
+        	        V.phone,
+        	        CR.status_id,
+        	        ST.name as STATUS_NAME
+             FROM "REQUEST" CR
+               INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
+               LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+                 ON (CR.VENDOR_ID = VAI.VENDOR_ID
+                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
+                 )
+               INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+               INNER JOIN "TEAM" TM ON TM.team_id = CR.team_id AND TM.ENABLED = 1 AND TM.DELETED = 0
+               INNER JOIN "VENDOR" V ON CR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+               INNER JOIN "ENTITY" ET ON CR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
+               INNER JOIN "REQUEST_STATUS" ST ON CR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+               WHERE CR.REQUEST_ID = in_request_id AND CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
+
+END;

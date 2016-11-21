@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_TEMPLATE" (
+	IN in_user_id bigint,
+	IN in_template_type_id bigint,
+	IN in_template_parent_id bigint,
+	IN in_name nvarchar(2048),
+	IN in_link nvarchar(2048),
+	IN in_template_order integer,
+	IN in_created_user_id bigint,
+	IN in_description nvarchar(1000),
+	IN in_section_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."TEMPLATE" (user_id, template_type_id, template_parent_id, name, link, template_order, created_user_id, description, section_id)
+   VALUES( in_user_id, in_template_type_id, in_template_parent_id, in_name, in_link, in_template_order, in_created_user_id, in_description, in_section_id);
+   
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."TEMPLATE";
+END;

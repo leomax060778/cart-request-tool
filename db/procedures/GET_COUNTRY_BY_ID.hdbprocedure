@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_COUNTRY_BY_ID" (
+	IN in_country_id BIGINT,
+	OUT out_result TABLE (country_id bigint, country_name_es nvarchar(255),
+	country_name_en nvarchar(255),
+	country_name_fr nvarchar(255),
+	iso1 nvarchar(255),
+	iso2 nvarchar(255),
+	country_code INTEGER)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = 
+	SELECT country_id, country_name_es,country_name_en, country_name_fr,
+	iso1, iso2, country_code
+	FROM "COUNTRY"
+	WHERE country.country_id = in_country_id AND enabled = 1 AND deleted = 0;
+END;

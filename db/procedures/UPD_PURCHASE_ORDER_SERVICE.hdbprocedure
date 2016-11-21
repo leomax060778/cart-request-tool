@@ -1,0 +1,27 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_PURCHASE_ORDER_SERVICE" (
+	IN in_shopping_cart nvarchar (255),
+	IN in_cart_date timestamp,
+	IN in_purchase_order_number nvarchar (127),
+	IN in_approval_date nvarchar(32),
+	IN in_request_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE POS
+	SET POS.shopping_cart = in_shopping_cart,
+		POS.cart_date = in_cart_date,
+		POS.purchase_order_number = in_purchase_order_number,
+		POS.approval_date = TO_DATE(in_approval_date, 'YYYY-MM-DD'),
+		POS.modified_user_id = in_modified_user_id
+	FROM "PURCHASE_ORDER_SERVICE" POS
+		WHERE POS.request_id = in_request_id
+			AND POS.ENABLED = 1
+			AND POS.DELETED = 0;
+			
+   SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

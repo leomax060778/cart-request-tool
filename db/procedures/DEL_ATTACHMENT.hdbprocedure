@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_ATTACHMENT" (
+	IN in_attachment_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE attachment
+  SET attachment.deleted = 1,
+   attachment.enabled = 0,
+   attachment.modified_user_id = in_modified_user_id,
+   attachment.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."ATTACHMENT" attachment
+  WHERE attachment.attachment_id = in_attachment_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

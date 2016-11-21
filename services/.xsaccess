@@ -1,0 +1,55 @@
+{
+
+	"anonymous_connection": "xscartrequesttool.services::anonuserservice",
+
+     "exposed" : true,  
+                  
+     "authentication" :  null,
+     
+	 "authorization" : null,
+
+     "cache_control" : "must-revalidate", 
+
+     "cors" :                      
+            {
+               "enabled": true,  
+               "allowHeaders": [
+               		"Access-Control-Allow-Origin",
+					"Access-Control-Allow-Method",
+					"Access-Control-Allow-Headers", 
+					"Origin", 
+           			"Accept",
+           			"Depth",
+           			"User-Agent",
+           			"X-File-Size",
+           			"X-Requested-With",
+           			"If-Modified-Since",
+           			"X-File-Name",
+           			"Cache-Control",
+            		"Authorization",
+            		"Content-Type",
+            		"X-CSRF-Token"
+        		],
+				"exposeHeaders": [
+					"Access-Control-Allow-Origin",
+					"Access-Control-Allow-Method",
+					"Access-Control-Allow-Headers",
+					"Content-Disposition",
+					"Content-Type",
+					"Content-Transfer-Encoding",
+					"Content-Encoding",
+					"authorization",
+					"x-csrf-token"
+				],
+				"allowMethods": ["GET","POST","PUT", "DELETE"], 
+				
+				"maxAge": "7200"  
+            }, 
+                     
+     "enable_etags" : false,
+
+     "force_ssl" : false,
+     
+     "prevent_xsrf" : false
+}
+

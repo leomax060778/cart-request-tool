@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ENTITY" (
+  IN in_entity_name NVARCHAR(255),
+  IN in_sales_org nvarchar(255),
+  IN in_cost_center nvarchar(255),
+  IN in_entity_position integer,
+  IN in_non_sap_help_message nvarchar(1000),
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."ENTITY"(entity_name, sales_org, cost_center, entity_position, non_sap_help_message, created_user_id)
+      VALUES(in_entity_name, in_sales_org, in_cost_center, in_entity_position, in_non_sap_help_message, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."ENTITY";
+END;

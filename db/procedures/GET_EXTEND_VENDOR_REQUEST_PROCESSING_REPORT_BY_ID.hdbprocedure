@@ -1,0 +1,62 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID" (
+	IN in_extend_vendor_request_id bigint,
+	OUT out_result TABLE (CRT_EXTEND_VENDOR_REQUEST_ID nvarchar(255),
+							EXTEND_VENDOR_REQUEST_ID bigint,
+							request_date nvarchar(255),
+							requester nvarchar(255),
+							entity nvarchar(255),
+							vendor_name nvarchar(255),
+							informal_name nvarchar(511),
+							contact_name nvarchar(511),
+							contact_email nvarchar(255),
+							service_supplier nvarchar(1000),
+							purchase_amount decimal(19,2),
+							currency nvarchar(255),
+							expected_amount decimal(19,2),
+							status_id bigint,
+							status_name nvarchar(255),
+							date_submitted nvarchar(32),
+							date_completed nvarchar(32),
+							receiver_yvc_request nvarchar(255),
+							account nvarchar(255)
+							)
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+out_result = SELECT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS CRT_EXTEND_VENDOR_REQUEST_ID,
+						EVR.EXTEND_VENDOR_REQUEST_ID,
+                    	to_nvarchar(EVR.created_date_tz, 'YYYY-MM-DD') AS request_date,
+                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	ET.entity_name AS entity,
+                    	VAI.VENDOR_NAME,
+                    	V.INFORMAL_NAME,
+                    	V.CONTACT_NAME,
+                    	V.CONTACT_EMAIL,
+                    	EVR.SERVICE_SUPPLIER,
+                    	EVR.purchase_amount,
+                    	CUR.abbreviation as currency,
+                    	EVR.expected_amount,
+                    	EVR.status_id,
+                    	ST.name AS status_name,
+                    	TO_NVARCHAR(EVR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
+                    	TO_NVARCHAR(EVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
+                    	EVR.RECEIVER_YVC_REQUEST,
+                    	V.ACCOUNT
+                    FROM "EXTEND_VENDOR_REQUEST" EVR
+	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = EVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+	                    INNER JOIN "USER" US ON US.USER_ID = EVR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	                    LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+				                 ON (EVR.VENDOR_ID = VAI.VENDOR_ID
+				                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= EVR.CREATED_DATE_TZ
+				                          and VAI.MODIFIED_DATE_TZ >= EVR.CREATED_DATE_TZ)
+				                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= EVR.CREATED_DATE_TZ))
+				                 )
+						INNER JOIN "ENTITY" ET ON EVR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
+						INNER JOIN "CURRENCY" CUR ON EVR.PURCHASE_CURRENCY_ID = CUR.CURRENCY_ID AND CUR.ENABLED = 1 AND CUR.DELETED = 0
+						INNER JOIN "VENDOR" V ON EVR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+						INNER JOIN "EXTEND_VENDOR_REQUEST_STATUS" ST ON EVR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+                    WHERE EVR.EXTEND_VENDOR_REQUEST_ID = in_extend_vendor_request_id AND EVR.ENABLED = 1 AND EVR.DELETED = 0;
+END;

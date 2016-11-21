@@ -1,0 +1,35 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_SERVICE_BY_REQUEST_ID" (
+ IN in_request_id bigint,
+ OUT out_result TABLE ( request_service_id bigint, 
+ 						request_id bigint,
+ 						currency_id bigint,
+ 						currency_abbreviation nvarchar(255),
+ 						purchase_order_to_uplift nvarchar(255),
+ 						line_to_uplift nvarchar(255), 
+ 						purchase_order_amount decimal(19,2), 
+ 						sap_buyer_name varchar(511), 
+ 						cart_amount decimal(19,2),
+ 						total_budget decimal(19,2)
+ 						) 
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT RQS.REQUEST_SERVICE_ID, 
+						   RQS.REQUEST_ID,
+						   RQS.CURRENCY_ID,
+						   CU.ABBREVIATION AS currency_abbreviation,
+						   RQS.PURCHASE_ORDER_TO_UPLIFT, 
+						   RQS.LINE_TO_UPLIFT, 
+						   RQS.PURCHASE_ORDER_AMOUNT,
+						   RQS.SAP_BUYER_NAME, 
+						   RQS.CART_AMOUNT, 
+						   RQS.TOTAL_BUDGET 
+ 				 FROM "REQUEST_SERVICE" RQS
+ 				 	INNER JOIN "CURRENCY" CU ON RQS.CURRENCY_ID = CU.CURRENCY_ID
+	    			WHERE in_request_id = RQS.REQUEST_ID
+						AND RQS.enabled = 1
+						AND RQS.deleted = 0;
+END;

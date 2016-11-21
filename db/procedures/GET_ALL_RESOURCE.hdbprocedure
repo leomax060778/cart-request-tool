@@ -1,0 +1,19 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_RESOURCE" (
+	OUT out_result TABLE(RESOURCE_ID bigint, 
+						 NAME nvarchar(255),
+						 OBJECT_NAME nvarchar(255))
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+   out_result = SELECT RESOURCE_ID, NAME, OBJECT_NAME
+ 		FROM "RESOURCE" 
+ 		WHERE ENABLED = 1 AND
+ 		DELETED = 0
+ 		ORDER BY NAME;
+END;

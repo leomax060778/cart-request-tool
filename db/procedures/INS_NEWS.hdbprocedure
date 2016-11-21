@@ -1,0 +1,41 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NEWS" (
+IN in_title nvarchar(255), 
+IN in_description nvarchar(2000), 
+IN in_author_id bigint, 
+IN in_image_id bigint,
+IN in_urgent tinyint,
+IN in_created_user_id bigint,
+IN in_status_id bigint,
+IN in_budget_year_id bigint,
+IN in_published_date timestamp,
+OUT out_result bigint 
+) 
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO 
+    "CART_REQUEST_TOOL"."NEWS"(
+	    title, 
+	    description, 
+	    author_id, 
+	    image_id, 
+	    urgent, 
+	    created_user_id,
+	    status_id,
+	    budget_year_id,
+	    published_date
+    ) VALUES(
+	      in_title, 
+	      in_description, 
+	      in_author_id, 
+	      in_image_id, 
+	      in_urgent, 
+	      in_created_user_id,
+	      in_status_id,
+	      in_budget_year_id,
+	      in_published_date
+      );
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."NEWS";
+END;

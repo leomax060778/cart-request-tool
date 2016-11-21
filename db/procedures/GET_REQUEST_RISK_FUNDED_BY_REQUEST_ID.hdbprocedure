@@ -1,0 +1,29 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_RISK_FUNDED_BY_REQUEST_ID" ( 
+	IN in_request_id bigint,
+	OUT out_result TABLE (
+		request_risk_funded_id bigint, 
+		request_id bigint, 
+		amount decimal(19,2), 
+		currency_id bigint, 
+		currency_abbreviation nvarchar(255), 
+		amount_keur decimal(19,2)
+		)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT 
+						"REQUEST_RISK_FUNDED".REQUEST_RISK_FUNDED_ID, 
+						"REQUEST_RISK_FUNDED".REQUEST_ID, 
+						"REQUEST_RISK_FUNDED".AMOUNT, 
+						"REQUEST_RISK_FUNDED".CURRENCY_ID, 
+						"CURRENCY".ABBREVIATION AS currency_abbreviation, 
+						"REQUEST_RISK_FUNDED".AMOUNT_KEUR
+		FROM "REQUEST_RISK_FUNDED"
+		INNER JOIN "CURRENCY" ON "CURRENCY".CURRENCY_ID = "REQUEST_RISK_FUNDED".CURRENCY_ID
+		 WHERE "REQUEST_RISK_FUNDED".REQUEST_ID = in_request_id
+		 AND "REQUEST_RISK_FUNDED".deleted = 0
+		 AND "REQUEST_RISK_FUNDED".enabled = 1;
+END;

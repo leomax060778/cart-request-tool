@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE_SECTION" (
+	OUT out_result TABLE (section_id bigint, name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT section_id, name
+		FROM "TEMPLATE_SECTION"
+		WHERE ENABLED = 1 AND DELETED = 0;
+END;

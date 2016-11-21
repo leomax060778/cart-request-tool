@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_SELECTION" (
+	IN in_change_vendor_request_id bigint,
+	OUT out_result TABLE (name nvarchar(255), supporting_documentation_id bigint, selection tinyint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CVSD.name, CVS.supporting_documentation_id, CVS.selection
+					FROM "CHANGE_VENDOR_SELECTION" CVS
+					INNER JOIN "CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" CVSD 
+						ON CVS.supporting_documentation_id = CVSD.supporting_documentation_id
+							AND CVSD.enabled = 1
+							AND CVSD.deleted = 0
+					WHERE CVS.change_vendor_request_id = in_change_vendor_request_id
+						AND CVS.enabled = 1
+						AND CVS.deleted = 0;
+						
+END;

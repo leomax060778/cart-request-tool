@@ -1,0 +1,30 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ATTACHMENT_STORE" (
+ IN in_original_name nvarchar (255),
+ IN in_file_content blob,
+ IN in_attachment_size bigint,
+ IN in_attachment_type nvarchar (255),
+ IN in_created_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+   INSERT INTO "CART_REQUEST_TOOL"."ATTACHMENT_STORE" (
+	   	original_name, 
+	   	file_content,
+	   	file_size,
+	   	file_type,
+	   	created_user_id
+   	)
+    VALUES(
+		in_original_name, 
+		in_file_content, 
+		in_attachment_size, 
+		in_attachment_type,
+		in_created_user_id
+	);
+   
+   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."ATTACHMENT_STORE";
+END;

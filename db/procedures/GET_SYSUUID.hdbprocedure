@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SYSUUID" (
+OUT out_result TABLE (SYS_UNIQUE_NUMBER varchar(255)) ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ out_result = SELECT CAST(SYSUUID AS VARCHAR) AS "SYS_UNIQUE_NUMBER" FROM DUMMY;
+ 
+END;

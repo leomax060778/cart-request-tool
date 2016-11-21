@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_DATA_PROTECTION_ANSWER" (
+	IN in_question_id integer,
+	IN in_request_id bigint,
+	OUT out_result TABLE (request_id bigint, option_id integer, is_selected tinyint )
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT REQUEST_ID, OPTION_ID, IS_SELECTED FROM "REQUEST_DATA_PROTECTION_ANSWER"
+	 WHERE in_request_id = "REQUEST_DATA_PROTECTION_ANSWER".REQUEST_ID
+	 AND in_question_id = "REQUEST_DATA_PROTECTION_ANSWER".QUESTION_ID
+	  AND DELETED = 0
+	  AND ENABLED = 1;
+END;

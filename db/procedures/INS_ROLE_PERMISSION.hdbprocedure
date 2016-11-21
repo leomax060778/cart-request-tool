@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ROLE_PERMISSION" ( 
+	IN in_role_id bigint,
+	IN in_resource_id bigint,
+	IN in_permission_id bigint,
+	IN in_enabled tinyint,
+	IN in_created_user_id bigint,
+	OUT out_role_permission_id bigint
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL" AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ 
+ 	INSERT INTO "CART_REQUEST_TOOL"."ROLE_PERMISSION"(role_id, resource_id, permission_id, enabled, created_user_id) 
+ 	VALUES(in_role_id, in_resource_id, in_permission_id, in_enabled, in_created_user_id);
+
+	SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_role_permission_id FROM "CART_REQUEST_TOOL"."ROLE_PERMISSION";
+
+END;

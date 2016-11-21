@@ -1,0 +1,24 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_STATUS" (
+  IN in_status_id bigint,
+  OUT out_result TABLE (crt_inquiry_id nvarchar(255), 
+  						inquiry_id bigint,
+  						REQUESTER nvarchar(255), 
+  						status_name nvarchar(255)
+  						)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT CT.ISO || TO_NVARCHAR(INQ.inquiry_id) AS crt_inquiry_id,
+  						INQ.inquiry_id AS inquiry_id,
+  						(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+  						ST.name AS status_name
+              FROM "INQUIRY" INQ
+	              INNER JOIN "USER" US ON US.USER_ID = INQ.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	              INNER JOIN "INQUIRY_STATUS" ST ON INQ.status_id = ST.status_id AND ST.enabled = 1 AND ST.deleted = 0
+	              INNER JOIN "CRT_TYPE" CT ON INQ.crt_type_id = CT.crt_type_id AND CT.enabled = 1 AND CT.deleted = 0  
+              WHERE INQ.STATUS_ID = in_status_id AND INQ.ENABLED = 1 AND INQ.DELETED = 0
+              ORDER BY INQ.inquiry_id DESC;
+END;

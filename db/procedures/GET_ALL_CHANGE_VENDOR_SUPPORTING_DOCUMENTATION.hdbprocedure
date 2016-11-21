@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" (
+	OUT out_result TABLE (supporting_documentation_id bigint, name nvarchar(255), description nvarchar(1000))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CVSD.supporting_documentation_id, CVSD.name, CVSD.description
+					FROM "CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" CVSD
+						WHERE CVSD.ENABLED = 1 AND CVSD.DELETED = 0;
+END;

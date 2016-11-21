@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_VENDOR" (
+  IN in_vendor_id bigint,
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+  UPDATE vendor
+  SET vendor.deleted = 1,
+      vendor.enabled = 0,
+      vendor.modified_user_id = in_modified_user_id,
+      vendor.modified_date_tz = CURRENT_TIMESTAMP
+  FROM "CART_REQUEST_TOOL"."VENDOR" vendor
+   WHERE vendor_id = in_vendor_id;
+
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

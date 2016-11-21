@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TEMPLATE_BY_ID" (
+	IN in_template_id bigint,
+	OUT out_result TABLE ( template_id bigint, user_id bigint, template_type_id bigint, template_parent_id bigint, name nvarchar(2048), link nvarchar(2048), template_order integer, deleted_template_name nvarchar(255), description nvarchar(1000), section_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "TEMPLATE".TEMPLATE_ID, "TEMPLATE".USER_ID, "TEMPLATE".TEMPLATE_TYPE_ID, "TEMPLATE".TEMPLATE_PARENT_ID, "TEMPLATE".NAME, "TEMPLATE".LINK, "TEMPLATE".TEMPLATE_ORDER, "TEMPLATE".DELETED_TEMPLATE_NAME, "TEMPLATE".DESCRIPTION, "TEMPLATE".SECTION_ID
+	FROM "TEMPLATE"
+		WHERE in_template_id = "TEMPLATE".TEMPLATE_ID
+		AND deleted = 0
+		AND enabled = 1;
+END;

@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_LOCATION_OF_WORK_BY_ID" (
+	IN in_location_id bigint,
+	OUT out_result TABLE (location_of_work_id bigint, location_name nvarchar(255))
+ ) 	
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "LOCATION_OF_WORK".location_of_work_id, "LOCATION_OF_WORK".location_name
+					FROM "LOCATION_OF_WORK"
+						WHERE "LOCATION_OF_WORK".location_of_work_id = in_location_id
+						AND "LOCATION_OF_WORK".enabled = 1 
+						AND "LOCATION_OF_WORK".deleted = 0;
+END;

@@ -1,0 +1,32 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_COST_OBJECT_BY_ID" (
+ IN in_request_cost_object_id bigint,
+ 
+ OUT out_result TABLE (
+  	request_cost_object_id bigint, 
+ 	request_id bigint, 
+	entity_id bigint, 
+	cost_object_type_id bigint,
+ 	cost_object_name nvarchar(255),
+ 	cost_object_description nvarchar(255),
+ 	cost_value nvarchar(255)
+)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT 	
+	"REQUEST_COST_OBJECT".REQUEST_COST_OBJECT_ID, 
+	"REQUEST_COST_OBJECT".REQUEST_ID, 
+	"REQUEST_COST_OBJECT".ENTITY_ID, 
+	"REQUEST_COST_OBJECT".COST_OBJECT_TYPE_ID, 
+	"COST_OBJECT_TYPE".NAME AS cost_object_name,
+	"COST_OBJECT_TYPE".DESCRIPTION AS cost_object_description,
+	"REQUEST_COST_OBJECT".COST_VALUE 
+	 FROM "REQUEST_COST_OBJECT"
+	 INNER JOIN "COST_OBJECT_TYPE" ON "REQUEST_COST_OBJECT".COST_OBJECT_TYPE_ID = "COST_OBJECT_TYPE".COST_OBJECT_TYPE_ID
+	    WHERE in_request_cost_object_id = "REQUEST_COST_OBJECT".REQUEST_COST_OBJECT_ID
+	    AND "REQUEST_COST_OBJECT".deleted = 0
+		AND "REQUEST_COST_OBJECT".enabled = 1;
+END;

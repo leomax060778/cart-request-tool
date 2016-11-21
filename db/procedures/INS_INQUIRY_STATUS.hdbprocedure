@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_INQUIRY_STATUS" (
+	IN in_name nvarchar(255),
+	IN in_administrable tinyint,
+	IN in_created_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	INSERT INTO "INQUIRY_STATUS" (name, administrable, created_user_id)
+    VALUES(in_name, in_administrable, in_created_user_id);
+   
+   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."INQUIRY_STATUS";
+END;

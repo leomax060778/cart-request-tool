@@ -1,0 +1,21 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDOR_REQUEST_BY_STATUS" (
+  IN in_status_id bigint,
+  OUT out_result TABLE (extend_vendor_request_id bigint,
+                        vendor_id bigint,
+                        user_id bigint,
+                        status_id bigint)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+out_result = SELECT EVR.EXTEND_VENDOR_REQUEST_ID,
+               EVR.VENDOR_ID,
+               EVR.USER_ID,
+               EVR.STATUS_ID
+             FROM "EXTEND_VENDOR_REQUEST" EVR
+             WHERE in_status_id = EVR.STATUS_ID
+                   AND EVR.ENABLED = 1
+                   AND EVR.DELETED = 0;
+END;

@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_DATA_PROTECTION_OPTION" (
+	IN in_option_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE opt
+  SET opt.deleted = 1,
+   opt.enabled = 0,
+   opt.modified_user_id = in_modified_user_id,
+   opt.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."DATA_PROTECTION_OPTION" opt
+  WHERE opt.option_id = in_option_id;
+ 
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

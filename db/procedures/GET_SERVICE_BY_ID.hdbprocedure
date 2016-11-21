@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SERVICE_BY_ID" (
+	IN in_service_id bigint,
+  	OUT out_result TABLE (service_id bigint,
+                      start_date nvarchar(32),
+                      end_date nvarchar(32),
+                      description nvarchar (255),
+                      amount decimal (19,2),
+                      currency_id bigint,
+                      budget decimal (19,2),
+                      item integer
+                    )
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT service_id, TO_NVARCHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_NVARCHAR(end_date, 'YYYY-MM-DD') AS end_date, description, amount, currency_id, budget, item
+            FROM "SERVICE"
+            WHERE SERVICE_ID = in_service_id
+            AND ENABLED = 1 AND DELETED = 0;
+END;

@@ -1,0 +1,38 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_PROCESSING_REPORT_BY_ID" (
+	IN in_vendor_inquiry_id bigint,
+	OUT out_result TABLE (CRT_VENDOR_INQUIRY_ID nvarchar(255),
+							VENDOR_INQUIRY_ID bigint,
+							inquiry_date nvarchar(255),
+							requester nvarchar(255),
+							vendor_name nvarchar(255),
+							inquiry_text nvarchar(1000),
+							status_id bigint,
+							status_name nvarchar(255)
+							)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+out_result = SELECT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS CRT_VENDOR_INQUIRY_ID,
+						VI.VENDOR_INQUIRY_ID,
+                    	to_nvarchar(VI.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
+                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	VAI.VENDOR_NAME,
+                    	VIM.message_content as inquiry_text,
+                    	VI.status_id,
+                    	ST.name AS status_name
+                    FROM "VENDOR_INQUIRY" VI
+	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VI.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+	                    INNER JOIN "USER" US ON US.USER_ID = VI.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	                    LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+				                 ON (VI.VENDOR_ID = VAI.VENDOR_ID
+				                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VI.CREATED_DATE_TZ
+				                          and VAI.MODIFIED_DATE_TZ >= VI.CREATED_DATE_TZ)
+				                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VI.CREATED_DATE_TZ))
+				                 )
+				         INNER JOIN "VENDOR_INQUIRY_MESSAGE" VIM ON VIM.VENDOR_INQUIRY_ID = in_vendor_inquiry_id AND VIM.ENABLED = 1 AND VIM.DELETED = 0
+				         INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.STATUS_ID = VI.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+                    WHERE VI.VENDOR_INQUIRY_ID = in_vendor_inquiry_id AND VI.ENABLED = 1 AND VI.DELETED = 0;
+END;

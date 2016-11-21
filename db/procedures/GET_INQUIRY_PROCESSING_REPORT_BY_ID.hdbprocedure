@@ -1,0 +1,32 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_PROCESSING_REPORT_BY_ID" (
+	IN in_inquiry_id bigint,
+	OUT out_result TABLE (crt_inquiry_id nvarchar(32),
+							inquiry_id bigint,
+							inquiry_date nvarchar(255),
+							requester nvarchar(255),
+							topic_description nvarchar(255),
+							inquiry_text nvarchar(1000),
+							status_id bigint,
+							status_name nvarchar(255)
+						  )
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CT.ISO || TO_NVARCHAR(INQ.INQUIRY_ID) AS CRT_INQUIRY_ID,
+						INQ.INQUIRY_ID,
+                    	to_nvarchar(INQ.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
+                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	TP.DESCRIPTION AS topic_description,
+                    	INQ.inquiry_text,
+                    	INQ.STATUS_ID,
+                    	ST.name AS STATUS_NAME
+                    FROM "INQUIRY" INQ
+	                    INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = INQ.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
+	                    INNER JOIN "USER" US ON US.USER_ID = INQ.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	                    INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id AND TP.enabled = 1 AND TP.deleted = 0
+	                    INNER JOIN "INQUIRY_STATUS" ST ON INQ.status_id = ST.status_id AND ST.enabled = 1 AND ST.deleted = 0
+                    WHERE INQ.INQUIRY_ID = in_inquiry_id AND INQ.ENABLED = 1 AND INQ.DELETED = 0;
+END;

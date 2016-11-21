@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_MATERIAL_BY_ID" (
+  IN in_material_id bigint,
+  OUT out_result TABLE (material_id bigint, catalog_id bigint, description nvarchar(255), pop_up nvarchar(255), code nvarchar(255))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT material_id, catalog_id, description, popup as pop_up, code
+              FROM "CART_REQUEST_TOOL"."MATERIAL"
+               WHERE "MATERIAL".MATERIAL_ID = in_material_id 
+                     AND ENABLED = 1 
+                     AND DELETED = 0;
+END;

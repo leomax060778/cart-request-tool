@@ -1,0 +1,36 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_MESSAGE_BY_INQUIRY_ID" (
+  IN in_inquiry_id bigint,
+  OUT out_result TABLE (user_id bigint, 
+  						inquiry_id bigint, 
+  						message_content nvarchar (1000), 
+  						return_name nvarchar(255), 
+  						role_name nvarchar(127), 
+  						user_name nvarchar(255), 
+  						first_name nvarchar(255), 
+  						last_name nvarchar(255),
+  						created_date nvarchar(32)
+  						)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT IM.user_id, 
+  						IM.inquiry_id, 
+  						IM.message_content, 
+  						RT.NAME AS RETURN_NAME, 
+  						ROLE.NAME AS ROLE_NAME,
+  						US.user_name, 
+  						US.first_name, 
+  						US.last_name,
+  						TO_NVARCHAR(IM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date
+                      FROM "INQUIRY_MESSAGE" IM
+                      LEFT JOIN "RETURN_TYPE" RT ON IM.return_type_id = RT.return_type_id AND RT.enabled = 1 AND RT.deleted = 0
+                      INNER JOIN "USER" US ON IM.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+					  INNER JOIN "USER_ROLE" USR ON IM.CREATED_USER_ID = USR.USER_ID 
+					  INNER JOIN "ROLE" ROLE ON IM.CREATED_USER_ID = USR.USER_ID AND ROLE.ROLE_ID = USR.ROLE_ID AND ROLE.ENABLED = 1 AND ROLE.DELETED = 0
+				 		WHERE IM.INQUIRY_ID = in_inquiry_id 
+                            AND IM.ENABLED = 1 
+                            AND IM.DELETED = 0;
+END;

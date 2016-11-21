@@ -1,0 +1,29 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_EXTEND_VENDOR_REQUEST" ( 
+	IN in_user_id bigint,
+	IN in_entity_id bigint,
+	IN in_commodity_id bigint,
+	IN in_service_supplier nvarchar(1000), 
+	IN in_vendor_type_id integer, 
+	IN in_purchase_amount decimal(19,2),
+	IN in_expected_amount decimal(19,2),
+	IN in_purchase_currency_id integer,
+	IN in_expected_currency_id integer,
+	IN in_additional_information nvarchar(1000),
+	IN in_created_user_id bigint,
+	IN in_vendor_id bigint,
+	OUT out_result bigint
+	)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST"(user_id, entity_id, commodity_id,
+  service_supplier, vendor_type_id, purchase_amount, expected_amount, purchase_currency_id, expected_currency_id,
+  additional_information, created_user_id, vendor_id) 
+	
+  VALUES(in_user_id, in_entity_id, in_commodity_id,	in_service_supplier, in_vendor_type_id, in_purchase_amount,
+   in_expected_amount, in_purchase_currency_id, in_expected_currency_id, in_additional_information, in_created_user_id, in_vendor_id);
+	
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST";
+END;

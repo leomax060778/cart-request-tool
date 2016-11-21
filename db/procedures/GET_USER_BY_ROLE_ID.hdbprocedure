@@ -1,0 +1,19 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_ROLE_ID" (
+	in_role_id NVARCHAR(255),
+	OUT USER_ROLE TABLE(USER_ID bigint, USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255), EMAIL nvarchar(255), PHONE nvarchar(255), ROLE_ID bigint, ROLE_NAME nvarchar(255), IN_USER_ID bigint)
+)
+ 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+  USER_ROLE = SELECT u.USER_ID, u.USER_NAME, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, u.PHONE, userRole.ROLE_ID as ROLE_ID, role.NAME as ROLE_NAME, u.USER_ID as IN_USER_ID
+ 		FROM "USER_ROLE" userRole 
+ 		JOIN "USER" u ON userRole.USER_ID = u.USER_ID
+ 		JOIN "ROLE" role ON role.ROLE_ID = userRole.ROLE_ID
+ 		WHERE userRole.ROLE_ID = in_role_id;
+END;

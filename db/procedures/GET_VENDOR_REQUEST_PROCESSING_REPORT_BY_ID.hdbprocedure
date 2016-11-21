@@ -1,0 +1,92 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID" (
+	IN in_vendor_request_id bigint,
+	OUT out_result TABLE (CRT_VENDOR_REQUEST_ID nvarchar(255),
+							VENDOR_REQUEST_ID bigint,
+							vendor_id bigint,
+							request_date nvarchar(255),
+							requester nvarchar(255),
+							entity nvarchar(255),
+							country_en nvarchar(255),
+							country_es nvarchar(255),
+							country_fr nvarchar(255),
+							name nvarchar(255),
+							informal_name nvarchar(511),
+							contact_name nvarchar(511),
+							address_1 nvarchar(255),
+							address_2 nvarchar(255),
+							city nvarchar(255),
+							state nvarchar(255),
+							zip nvarchar(255),
+							contact_phone nvarchar(255),
+							contact_email nvarchar(255),
+							commodity nvarchar(255),
+							NOT_USED_SAP_SUPPLIER nvarchar(1000),
+							service_supplier nvarchar(1000),
+							purchase_amount decimal(19,2),
+							currency nvarchar(255),
+							expected_amount decimal(19,2),
+							accept_american_express nvarchar(32),
+							cost_center_owner nvarchar(255),
+							status_id bigint,
+							status_name nvarchar(255),
+							date_submitted nvarchar(32),
+							date_completed nvarchar(32),
+							receiver_yvc_request nvarchar(255),
+							vendor_account nvarchar(255)
+							)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT VT.ISO || TO_NVARCHAR(VR.VENDOR_REQUEST_ID) AS CRT_VENDOR_REQUEST_ID,
+						VR.VENDOR_REQUEST_ID,
+						VR.VENDOR_ID,
+                    	to_nvarchar(VR.created_date_tz, 'YYYY-MM-DD') AS request_date,
+                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	ET.entity_name AS entity,
+                    	COU.country_name_en AS country_en,
+                    	COU.country_name_es AS country_es,
+                    	COU.country_name_fr AS country_fr,
+                    	VAI.VENDOR_NAME AS NAME,
+                    	V.INFORMAL_NAME,
+                    	V.CONTACT_NAME,
+                    	V.ADDRESS_1,
+                    	V.ADDRESS_2,
+                    	V.CITY,
+                    	V.STATE,
+                    	V.ZIP,
+                    	V.CONTACT_PHONE,
+                    	V.CONTACT_EMAIL,
+                    	COM.description AS commodity,
+                    	VR.NOT_USED_SAP_SUPPLIER,
+                    	VR.SERVICE_SUPPLIER,
+                    	VR.purchase_amount,
+                    	CUR.abbreviation as currency,
+                    	VR.expected_amount,
+                    	VR.accept_american_express,
+                    	VR.cost_center_owner,
+                    	VR.status_id,
+                    	ST.name AS status_name,
+                    	TO_NVARCHAR(VR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
+                    	TO_NVARCHAR(VR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
+                    	VR.RECEIVER_YVC_REQUEST,
+                    	V.ACCOUNT AS VENDOR_ACCOUNT
+                    FROM "VENDOR_REQUEST" VR
+	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+	                    INNER JOIN "USER" US ON US.USER_ID = VR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	                    LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+				                 ON (VR.VENDOR_ID = VAI.VENDOR_ID
+				                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VR.RECEIVER_DATE_COMPLETED_TZ
+				                          and VAI.MODIFIED_DATE_TZ >= VR.CREATED_DATE_TZ)
+				                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VR.RECEIVER_DATE_COMPLETED_TZ))
+				                 )
+						INNER JOIN "ENTITY" ET ON VR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
+						INNER JOIN "CURRENCY" CUR ON VR.PURCHASE_CURRENCY_ID = CUR.CURRENCY_ID AND CUR.ENABLED = 1 AND CUR.DELETED = 0
+						INNER JOIN "COMMODITY" COM ON VR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0
+						INNER JOIN "COUNTRY" COU ON VR.COUNTRY_ID = COU.COUNTRY_ID AND COU.ENABLED = 1 AND COU.DELETED = 0
+						INNER JOIN "VENDOR" V ON VR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+						INNER JOIN "VENDOR_REQUEST_STATUS" ST ON VR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+                    WHERE VR.VENDOR_REQUEST_ID = in_vendor_request_id AND VR.ENABLED = 1 AND VR.DELETED = 0;
+END;

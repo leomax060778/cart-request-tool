@@ -1,0 +1,43 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_BY_STATUS_YEAR" (
+IN in_status_id bigint,
+IN in_budget_year_id bigint,
+OUT out_result TABLE(news_id bigint, 
+						title nvarchar(255), 
+						description nvarchar(2000), 
+						author_id bigint, 
+						published_date nvarchar(15), 
+						image_id bigint, 
+						status_id bigint,
+						status_name nvarchar(255),
+						previous_status_id bigint,
+						user_id_status bigint,
+						author_name nvarchar(255),
+						update_status_tz nvarchar(15)
+					 )
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+ out_result = SELECT "NEWS".NEWS_ID, 
+ 						"NEWS".TITLE, 
+ 						"NEWS".DESCRIPTION, 
+ 						"NEWS".AUTHOR_ID, 
+ 						TO_NVARCHAR("NEWS".PUBLISHED_DATE, 'YYYY-MM-DD') AS PUBLISHED_DATE,
+ 						"NEWS".IMAGE_ID, 
+ 						"NEWS".STATUS_ID,
+ 						NEWS_STATUS.NAME as STATUS_NAME,
+					 	"NEWS".PREVIOUS_STATUS_ID, 
+					 	"NEWS".USER_ID_STATUS,
+					 	author.USER_NAME as author_name,
+					 	TO_NVARCHAR("NEWS".UPDATE_STATUS_TZ, 'YYYY-MM-DD') AS UPDATE_STATUS_TZ
+  			  FROM "NEWS"
+  			  INNER JOIN "NEWS_STATUS" NEWS_STATUS ON NEWS_STATUS.NEWS_STATUS_ID = "NEWS".STATUS_ID
+  			  INNER JOIN "USER" author ON author.USER_ID = "NEWS".AUTHOR_ID
+   			  WHERE 
+   			  	"NEWS".BUDGET_YEAR_ID = in_budget_year_id
+				AND "NEWS".STATUS_ID = in_status_id
+				AND "NEWS".ENABLED = 1 
+   			  	AND "NEWS".DELETED = 0;
+END;

@@ -1,0 +1,23 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_CHANGE_VENDOR_SELECTION" (
+	IN in_change_vendor_request_id bigint,
+ 	IN in_supporting_documentation_id integer,
+ 	IN in_selection tinyint,
+ 	IN in_modified_user_id bigint,
+ 	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE CVS
+	SET CVS.SELECTION = in_selection,
+		CVS.modified_user_id = in_modified_user_id,
+        CVS.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "CHANGE_VENDOR_SELECTION" CVS
+	WHERE CVS.change_vendor_request_id = in_change_vendor_request_id
+		AND CVS.supporting_documentation_id = in_supporting_documentation_id
+		AND CVS.deleted = 0
+		AND CVS.enabled = 1;
+		SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

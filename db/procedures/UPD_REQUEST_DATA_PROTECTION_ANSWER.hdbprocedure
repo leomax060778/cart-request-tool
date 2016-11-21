@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST_DATA_PROTECTION_ANSWER" (
+ IN in_request_id bigint,
+ IN in_question_id integer,
+ IN in_option_id integer,
+ IN in_is_selected tinyint,
+ IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE REQUEST_DATA_PROTECTION_ANSWER
+	SET	REQUEST_DATA_PROTECTION_ANSWER.is_selected = in_is_selected,
+			REQUEST_DATA_PROTECTION_ANSWER.modified_user_id = in_modified_user_id,
+        	REQUEST_DATA_PROTECTION_ANSWER.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "REQUEST_DATA_PROTECTION_ANSWER"	REQUEST_DATA_PROTECTION_ANSWER
+	WHERE REQUEST_DATA_PROTECTION_ANSWER.request_id = in_request_id
+		AND REQUEST_DATA_PROTECTION_ANSWER.question_id = in_question_id
+        AND REQUEST_DATA_PROTECTION_ANSWER.option_id = in_option_id
+		AND REQUEST_DATA_PROTECTION_ANSWER.deleted = 0
+		AND REQUEST_DATA_PROTECTION_ANSWER.enabled = 1;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

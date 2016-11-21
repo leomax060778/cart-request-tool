@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_CRT_TYPE" (
+	IN in_crt_type_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE crt
+	SET crt.enabled = 0,
+		crt.deleted = 1,
+		crt.modified_date_tz = CURRENT_TIMESTAMP,
+		crt.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."CRT_TYPE" crt
+	WHERE crt.crt_type_id = in_crt_type_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

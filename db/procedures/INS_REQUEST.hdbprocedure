@@ -1,0 +1,33 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST" (
+ IN in_user_id bigint,
+ IN in_team_id bigint,
+ IN in_entity_id bigint,
+ IN in_vendor_id bigint,
+ IN in_non_sap_vendor_id bigint,
+ IN in_stage_id bigint,
+ IN in_status_id bigint,
+ IN in_goods_recipient_username nvarchar(127),
+ IN in_infrastructure_of_work_id bigint,
+ IN in_location_of_work_id bigint,
+ IN in_data_protection_enabled tinyint,
+ IN in_material_id bigint,
+ IN in_crt_type_id integer,
+ IN in_budget_year_id bigint,
+ IN in_created_user_id bigint,
+
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."REQUEST"(user_id, team_id, entity_id, vendor_id, non_sap_vendor_id, stage_id, status_id, goods_recipient_username,
+   infrastructure_of_work_id, data_protection_enabled, location_of_work_id, material_id, crt_type_id, budget_year_id, created_user_id) 
+  VALUES(in_user_id, in_team_id, in_entity_id, in_vendor_id, in_non_sap_vendor_id, in_stage_id, in_status_id, in_goods_recipient_username,
+   in_infrastructure_of_work_id, in_data_protection_enabled, in_location_of_work_id, in_material_id, in_crt_type_id, in_budget_year_id, in_created_user_id);
+ 
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST";
+END;
+
+

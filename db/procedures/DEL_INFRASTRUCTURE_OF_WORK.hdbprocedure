@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_INFRASTRUCTURE_OF_WORK" (
+	IN in_infrastructure_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE infrastructure_of_work
+  SET infrastructure_of_work.deleted = 1,
+   infrastructure_of_work.enabled = 0,
+   infrastructure_of_work.modified_user_id = in_modified_user_id,
+   infrastructure_of_work.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."INFRASTRUCTURE_OF_WORK" infrastructure_of_work
+  WHERE infrastructure_of_work.infrastructure_of_work_id = in_infrastructure_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

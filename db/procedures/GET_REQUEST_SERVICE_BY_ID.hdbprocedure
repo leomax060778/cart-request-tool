@@ -1,0 +1,19 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_SERVICE_BY_ID" (
+ IN in_request_service_id bigint,
+ OUT out_result TABLE ( request_service_id bigint, request_id bigint, currency_id bigint, purchase_order_to_uplift nvarchar(255),
+ line_to_uplift nvarchar(255), purchase_order_amount decimal(19,2), sap_buyer_name varchar(511), cart_amount decimal(19,2),
+ total_budget decimal(19,2)) 
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "REQUEST_SERVICE".REQUEST_SERVICE_ID, "REQUEST_SERVICE".REQUEST_ID, "REQUEST_SERVICE".CURRENCY_ID, "REQUEST_SERVICE".PURCHASE_ORDER_TO_UPLIFT, 
+						"REQUEST_SERVICE".LINE_TO_UPLIFT, "REQUEST_SERVICE".PURCHASE_ORDER_AMOUNT, "REQUEST_SERVICE".SAP_BUYER_NAME, "REQUEST_SERVICE".CART_AMOUNT, "REQUEST_SERVICE".TOTAL_BUDGET 
+ 	 FROM "REQUEST_SERVICE" 
+	    WHERE in_request_service_id = "REQUEST_SERVICE".REQUEST_SERVICE_ID
+		AND enabled = 1
+		AND deleted = 0;
+
+END;

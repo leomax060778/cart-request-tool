@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_TEMPLATE" (
+ IN in_template_id BIGINT,
+ IN in_modified_user_id BIGINT,
+ OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE TEMPLATE
+  SET TEMPLATE.deleted = 1,
+   TEMPLATE.enabled = 0,
+   TEMPLATE.modified_user_id = in_modified_user_id,
+   TEMPLATE.modified_date_tz = CURRENT_TIMESTAMP
+  FROM "CART_REQUEST_TOOL"."TEMPLATE" TEMPLATE
+  WHERE template_id = in_template_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

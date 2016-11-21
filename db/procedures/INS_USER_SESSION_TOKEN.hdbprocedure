@@ -1,0 +1,17 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_USER_SESSION_TOKEN" (
+	IN in_user_id bigint,
+	IN in_token nvarchar(255),
+	IN in_token_duration integer,
+	IN in_created_user_id bigint,
+	OUT out_user_session_token_id bigint
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+INSERT INTO "CART_REQUEST_TOOL"."USER_SESSION_TOKEN"(user_id, token, token_created_date_tz, token_valid_until_date_tz, token_duration, created_user_id) 
+		VALUES(in_user_id, in_token, CURRENT_TIMESTAMP, ADD_SECONDS(CURRENT_TIMESTAMP, in_token_duration), in_token_duration, in_created_user_id);
+	
+		SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_user_session_token_id FROM "CART_REQUEST_TOOL"."USER_SESSION_TOKEN";
+END;

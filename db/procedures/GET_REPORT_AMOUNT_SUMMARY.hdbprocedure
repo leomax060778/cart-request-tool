@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT_AMOUNT_SUMMARY" (
+	OUT out_result TABLE (carts_submitted bigint,
+							carts_approved bigint,
+							carts_cancelled bigint,
+							carts_returned_to_requester bigint,
+							carts_in_process bigint
+	)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = select count (case when rq.enabled = 1 and rq.deleted = 0 THEN 1 ELSE NULL END) as carts_submitted,
+		count (case when rq.status_id = 6 and rq.enabled = 1 and rq.deleted = 0 THEN 1 ELSE NULL END) as carts_approved,
+		count (case when rq.status_id = 5 and rq.enabled = 1 and rq.deleted = 0 THEN 1 ELSE NULL END) as carts_cancelled,
+		count (case when rq.status_id = 7 and rq.enabled = 1 and rq.deleted = 0 THEN 1 ELSE NULL END) as carts_returned_to_requester,
+		count (case when rq.status_id = 3 and rq.enabled = 1 and rq.deleted = 0 THEN 1 ELSE NULL END) as carts_in_process
+		FROM "REQUEST" RQ;
+END;

@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_NOTE_TYPE" (
+  OUT out_result TABLE (note_type_id bigint, note_type_name nvarchar(255), NOTE_TYPE_DESCRIPTION nvarchar(1000))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT NOTE_TYPE_ID, NOTE_TYPE_NAME, NOTE_TYPE_DESCRIPTION
+              FROM "CART_REQUEST_TOOL"."NOTE_TYPE"
+               WHERE ENABLED = 1 
+                AND DELETED = 0;
+END;

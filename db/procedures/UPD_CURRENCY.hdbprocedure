@@ -1,0 +1,28 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_CURRENCY" (
+	IN in_currency_id bigint,
+	IN in_country nvarchar(255), 
+	IN in_name nvarchar(255),
+	IN in_abbreviation nvarchar(255),
+	IN in_conversion_rate decimal(19,10),
+	IN in_currency_year integer,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN 
+	UPDATE currency
+	SET 	currency.country = in_country,
+			currency.name = in_name,
+			currency.abbreviation = in_abbreviation,
+			currency.conversion_rate = in_conversion_rate,
+			currency.currency_year = in_currency_year,
+			currency.modified_date_tz = CURRENT_TIMESTAMP,
+			currency.modified_user_id = in_modified_user_id
+	FROM "CURRENCY" currency
+	WHERE currency.currency_id = in_currency_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_CATALOG" (
+	IN in_catalog_id bigint,
+	IN in_name nvarchar(255),
+	IN in_catalog_type_id bigint,
+	IN in_catalog_parent_id bigint,
+	IN in_pop_up nvarchar(512),
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE catalog
+	SET catalog.name = in_name,
+		catalog.catalog_type_id = in_catalog_type_id,
+		catalog.catalog_parent_id = in_catalog_parent_id,
+		catalog.pop_up = in_pop_up,
+		catalog.modified_date_tz = CURRENT_TIMESTAMP,
+		catalog.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."CATALOG" catalog
+	WHERE catalog.catalog_id = in_catalog_id;
+			
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

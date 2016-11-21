@@ -1,0 +1,27 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_PURCHASE_ORDER_SERVICE_BY_ID" (
+  IN in_request_id bigint,
+  OUT out_result TABLE (request_id bigint, 
+  						shopping_cart nvarchar (255), 
+  						cart_date nvarchar(32), 
+  						purchase_order_number nvarchar (127),
+  						approval_date nvarchar(32), 
+  						user_id bigint
+  						)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT POS.request_id, 
+  						POS.shopping_cart, 
+  						TO_NVARCHAR(POS.cart_date, 'YYYY-MM-DD') AS cart_date, 
+  						POS.purchase_order_number,
+  						TO_NVARCHAR(POS.approval_date, 'YYYY-MM-DD') AS approval_date,
+  						POS.user_id
+                    FROM "PURCHASE_ORDER_SERVICE" POS
+                    INNER JOIN "SERVICE" SER ON POS.REQUEST_ID = SER.REQUEST_ID AND SER.ENABLED = 1 AND SER.DELETED = 0
+                       WHERE POS.REQUEST_ID = in_request_id
+                           AND POS.ENABLED = 1 
+                           AND POS.DELETED = 0;
+END;

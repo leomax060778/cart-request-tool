@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SPECIAL_REQUEST" (
+  IN in_special_request_id bigint,
+  IN in_material_description nvarchar(500),
+  IN in_material_code nvarchar(255),
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE special_request
+	SET special_request.material_description = in_material_description,
+		special_request.material_code = in_material_code,
+		special_request.modified_date_tz = CURRENT_TIMESTAMP,
+		special_request.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST" special_request
+	WHERE special_request.special_request_id = in_special_request_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

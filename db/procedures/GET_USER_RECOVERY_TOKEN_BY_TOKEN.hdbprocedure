@@ -1,0 +1,17 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_RECOVERY_TOKEN_BY_TOKEN" (
+	in_token NVARCHAR(255),
+	OUT out_result TABLE(USER_ID bigint,PASSWORD nvarchar(255), TOKEN nvarchar(255), TOKEN_VALID_UNTIL_DATE_TZ timestamp)
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+   	out_result = SELECT user_id, password, token, token_valid_until_date_tz
+ 		FROM "USER_RECOVERY_TOKEN" 
+ 		WHERE token = CAST(in_token AS NVARCHAR) AND
+ 		deleted = 0 AND enabled = 1;
+END;

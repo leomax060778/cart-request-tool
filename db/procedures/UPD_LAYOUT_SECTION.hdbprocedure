@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_LAYOUT_SECTION" (
+	IN in_layout_section_id bigint,
+	IN in_block_type nvarchar(255),
+ 	IN in_block_content nvarchar(1000),
+	IN in_modified_user_id bigint,
+  	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE LS
+	SET LS.block_type = in_block_type,
+	LS.block_content = in_block_content,
+	LS.modified_date_tz = CURRENT_TIMESTAMP,
+	LS.modified_user_id = in_modified_user_id
+	FROM "LAYOUT_SECTION" LS
+	WHERE LS.layout_section_id = in_layout_section_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

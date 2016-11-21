@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ATTACHMENT_INQUIRY" (
+ IN in_inquiry_id BIGINT,
+ IN in_attachment_id BIGINT,
+ IN in_created_user_id BIGINT,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."ATTACHMENT_INQUIRY"(inquiry_id, attachment_id, created_user_id) 
+  VALUES(in_inquiry_id, in_attachment_id, in_created_user_id);
+  SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

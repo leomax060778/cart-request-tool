@@ -1,0 +1,97 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT" (
+OUT out_result TABLE (request_id nvarchar(15),
+                        request_date nvarchar(15),
+                        requester nvarchar(255),
+                        team nvarchar(32),
+                        goods_recipient_username nvarchar(127),
+                        vendor_name nvarchar(255),
+                        vendor_account nvarchar(255),
+                        description_purchase_order nvarchar(255),
+                        product_catalog nvarchar(255),
+                        product_category nvarchar(255),
+                        material_description nvarchar(255),
+                        material_code nvarchar(255),
+                        sap_entity nvarchar(255),
+                        cost_object nvarchar(255),
+                        start_date nvarchar(15),
+                        end_date nvarchar(15),
+                        amount_line decimal(19,2),
+                        currency nvarchar(255),
+                        budget decimal(19,2),
+                        cart_number nvarchar(255),
+                        cart_date nvarchar(15),
+                        purchase_order_number nvarchar(127),
+                        item integer,
+                        line_number nvarchar(127),
+                        purchase_date nvarchar(15),
+                        status nvarchar(255),
+                        stage_passes nvarchar(127),
+                        days_outstanding nvarchar(127),
+                        purchase_turn_around_time nvarchar(127),
+                        --days_outstanding_business_days nvarchar(127),
+                        --purchase_turn_around_time_business_days nvarchar(127),
+                        message_info nvarchar(255),
+                        last_message nvarchar(1000)
+                    )
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+    out_result = SELECT (CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID)) AS REQUEST_ID,
+                    TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS REQUEST_DATE,
+                    (US.FIRST_NAME || ' ' || US.LAST_NAME || ' (' || US.USER_NAME || ')') AS REQUESTER,
+                    TM.ISO AS TEAM,
+                    RQ.GOODS_RECIPIENT_USERNAME,
+                    VAI.VENDOR_NAME,
+                    V.ACCOUNT AS VENDOR_ACCOUNT,
+                    SV.DESCRIPTION AS DESCRIPTION_PURCHASE_ORDER,
+                    CAT.NAME AS PRODUCT_CATALOG,
+                    CPC.NAME AS PRODUCT_CATEGORY,
+                    MT.DESCRIPTION AS MATERIAL_DESCRIPTION,
+                    MT.CODE AS MATERIAL_CODE,
+                    EN.ENTITY_NAME AS SAP_ENTITY,
+                    RCO.COST_VALUE AS COST_OBJECT,
+                    TO_NVARCHAR(SV.START_DATE, 'YYYY-MM-DD') AS START_DATE,
+                    TO_NVARCHAR(SV.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+                    SV.AMOUNT AS AMOUNT_LINE,
+                    CUR.ABBREVIATION AS CURRENCY,
+                    SV.BUDGET,
+                    POS.SHOPPING_CART AS CART_NUMBER,
+                    TO_NVARCHAR(POS.CART_DATE, 'YYYY-MM-DD') AS CART_DATE,
+                    POS.PURCHASE_ORDER_NUMBER,
+                    SV.ITEM,
+                    POS.LINE_NUMBER,
+                    TO_NVARCHAR(POS.APPROVAL_DATE, 'YYYY-MM-DD') AS PURCHASE_DATE,
+                    ST.NAME AS STATUS,
+                    SG.NAME AS STAGE_PASSES,
+                    DAYS_BETWEEN(SV.START_DATE, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
+                    DAYS_BETWEEN(SV.START_DATE, RQ.UPDATE_STATUS_TZ) AS PURCHASE_TURN_AROUND_TIME,
+
+                    --WORKDAYS_BETWEEN('01', SV.START_DATE, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING_BUSINESS_DAYS,
+                    --WORKDAYS_BETWEEN('01', SV.START_DATE, RQ.UPDATE_STATUS_TZ) AS PURCHASE_TURN_AROUND_TIME_BUSINESS_DAYS,
+
+                    ('Written by: ' || MUS.FIRST_NAME || ' ' || MUS.LAST_NAME || ' (' || MUS.USER_NAME || ') on ' || TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh-mm') || ' / ' || RT.NAME) AS MESSAGE_INFO,
+                    RM.MESSAGE_CONTENT AS LAST_MESSAGE
+             FROM "REQUEST" RQ
+               LEFT JOIN "CRT_TYPE" CT ON RQ.CRT_TYPE_ID = CT.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
+               LEFT JOIN "REQUEST_MESSAGE" RM ON RQ.REQUEST_ID = RM.REQUEST_ID AND RM.ENABLED = 1 AND RM.DELETED = 0
+               LEFT JOIN "RETURN_TYPE" RT ON RQ.REQUEST_ID = RM.REQUEST_ID AND RM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID AND RT.ENABLED = 1 AND RT.DELETED = 0
+               LEFT JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+               LEFT JOIN "USER" MUS ON MUS.USER_ID = RM.CREATED_USER_ID AND MUS.ENABLED = 1 AND MUS.DELETED = 0
+               LEFT JOIN "TEAM" TM ON RQ.TEAM_ID = TM.TEAM_ID AND TM.ENABLED = 1 AND TM.DELETED = 0
+               LEFT JOIN "VENDOR" V ON RQ.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+               LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON RQ.VENDOR_ID = VAI.VENDOR_ID AND VAI.ENABLED = 1 AND VAI.DELETED = 0
+               LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID AND MT.ENABLED = 1 AND MT.DELETED = 0
+               LEFT JOIN "SERVICE" SV ON RQ.REQUEST_ID = SV.REQUEST_ID AND SV.ENABLED = 1 AND SV.DELETED = 0
+               LEFT JOIN "CATALOG" CPC ON RQ.MATERIAL_ID = MT.MATERIAL_ID AND CPC.CATALOG_ID = MT.MATERIAL_ID AND CPC.CATALOG_TYPE_ID = 2 AND CPC.ENABLED = 1 AND CPC.DELETED = 0
+               LEFT JOIN "CATALOG" CAT ON RQ.MATERIAL_ID = MT.MATERIAL_ID AND CAT.CATALOG_ID = CPC.CATALOG_PARENT_ID AND CAT.CATALOG_TYPE_ID = 1 AND CAT.ENABLED = 1 AND CAT.DELETED = 0
+               LEFT JOIN "ENTITY" EN ON RQ.ENTITY_ID = EN.ENTITY_ID AND EN.ENABLED = 1 AND EN.DELETED = 0
+               LEFT JOIN "PURCHASE_ORDER_SERVICE" POS ON RQ.REQUEST_ID = POS.REQUEST_ID AND POS.ENABLED = 1 AND POS.DELETED = 0
+               LEFT JOIN "REQUEST_COST_OBJECT" RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID AND RCO.ENABLED = 1 AND RCO.DELETED = 0
+               LEFT JOIN "CURRENCY" CUR ON RQ.CURRENCY_ID = CUR.CURRENCY_ID AND CUR.ENABLED = 1 AND CUR.DELETED = 0
+               LEFT JOIN "STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+               LEFT JOIN "STAGE" SG ON RQ.STAGE_ID = SG.STAGE_ID AND SG.ENABLED = 1 AND SG.DELETED = 0
+             WHERE RQ.ENABLED = 1 AND RQ.DELETED = 0;
+END;

@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CHANGE_VENDOR_SELECTION" (
+	IN in_change_vendor_request_id bigint,
+ 	IN in_supporting_documentation_id integer,
+ 	IN in_selection tinyint,
+ 	IN in_created_user_id bigint,
+ 	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	INSERT INTO "CART_REQUEST_TOOL"."CHANGE_VENDOR_SELECTION"(change_vendor_request_id, supporting_documentation_id, selection, created_user_id) 
+  		VALUES(in_change_vendor_request_id, in_supporting_documentation_id, in_selection, in_created_user_id);
+  	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

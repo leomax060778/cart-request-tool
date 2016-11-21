@@ -1,0 +1,43 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
+	IN in_request_id bigint,
+	IN in_user_id bigint,
+	IN in_team_id bigint,
+	IN in_entity_id bigint,
+	
+	IN in_vendor_id bigint,
+	IN in_stage_id bigint,
+	IN in_status_id bigint,
+	
+	IN in_goods_recipient_username nvarchar(127),
+	IN in_data_protection_enabled tinyint,
+	IN in_infrastructure_of_work_id bigint,
+	IN in_location_of_work_id bigint,
+
+	IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE REQUEST
+	SET REQUEST.user_id = in_user_id,
+			REQUEST.team_id = in_team_id,
+			REQUEST.entity_id = in_entity_id,
+		
+			REQUEST.vendor_id = in_vendor_id,
+			REQUEST.stage_id = in_stage_id,
+			REQUEST.status_id = in_status_id,
+			REQUEST.goods_recipient_username = in_goods_recipient_username,	
+			REQUEST.data_protection_enabled = in_data_protection_enabled,
+			REQUEST.infrastructure_of_work_id = in_infrastructure_of_work_id,
+			REQUEST.location_of_work_id = in_location_of_work_id,
+
+			REQUEST.modified_date_tz = CURRENT_TIMESTAMP,
+			REQUEST.modified_user_id = in_modified_user_id
+	FROM "REQUEST" REQUEST
+	WHERE REQUEST.request_id = in_request_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

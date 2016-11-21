@@ -1,0 +1,11 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEAM_FOR_FILTERS" (
+  OUT out_result TABLE ( team_id bigint, name nvarchar(255))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT "TEAM".TEAM_ID, "TEAM".NAME
+              FROM "CART_REQUEST_TOOL"."TEAM";
+END;

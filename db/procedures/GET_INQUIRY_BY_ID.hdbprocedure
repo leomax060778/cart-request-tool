@@ -1,0 +1,34 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_ID" (
+  IN in_inquiry_id bigint,
+  OUT out_result TABLE (inquiry_id bigint,
+  						user_name nvarchar(255),
+  						first_name nvarchar(255), 
+  						last_name nvarchar(255), 
+  						topic_id bigint, 
+  						topic_description nvarchar(255),
+  						inquiry_text nvarchar (1000)
+  						)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT INQ.inquiry_id,
+  						US.user_name, 
+  						US.first_name, 
+  						US.last_name, 
+  						INQ.topic_id, 
+  						TP.description as topic_description,
+  						INQ.inquiry_text
+              FROM "INQUIRY" INQ
+              INNER JOIN "USER" US ON INQ.user_id = US.user_id 
+              						AND US.enabled = 1 
+              						AND US.deleted = 0
+              INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id 
+              						AND TP.enabled = 1 
+              						AND TP.deleted = 0 
+               WHERE INQ.INQUIRY_ID = in_inquiry_id 
+                     AND INQ.ENABLED = 1 
+                     AND INQ.DELETED = 0;
+END;

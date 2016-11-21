@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CURRENCY_BY_ID" (
+	IN in_currency_id bigint,
+	OUT out_result TABLE (currency_id bigint, country nvarchar(255), name nvarchar(255), abbreviation nvarchar(255), conversion_rate decimal(19,2), currency_year integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "CURRENCY".currency_id, "CURRENCY".country, "CURRENCY".name, "CURRENCY".abbreviation, "CURRENCY".conversion_rate, "CURRENCY".currency_year
+					FROM "CURRENCY"
+						WHERE "CURRENCY".currency_id = in_currency_id
+						AND enabled = 1 
+						AND deleted = 0;
+END;
+

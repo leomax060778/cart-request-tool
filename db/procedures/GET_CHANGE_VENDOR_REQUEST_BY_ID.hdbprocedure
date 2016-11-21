@@ -1,0 +1,54 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_BY_ID" (	
+	IN in_change_vendor_request_id bigint,
+	OUT out_result TABLE (CHANGE_VENDOR_REQUEST_id bigint, 
+							user_name nvarchar(255),
+							first_name nvarchar(255),
+							last_name nvarchar(255),
+							entity_id bigint, 
+							commodity_id bigint, 
+							vendor_name nvarchar(511),
+							vendor_contact_name nvarchar(255), 
+							vendor_contact_email nvarchar(255),
+							VENDOR_TYPE_ID bigint,
+							vendor_account nvarchar(255), 
+							receiver_date_submitted_tz nvarchar(15), 
+							receiver_date_completed_tz nvarchar(15), 
+							receiver_yvc_request nvarchar(255), 
+							receiver_modified_date_tz nvarchar(15), 
+							vendor_id bigint
+						)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID,
+						US.USER_NAME,
+						US.FIRST_NAME,
+						US.LAST_NAME,
+						CVR.ENTITY_ID, 
+						CVR.COMMODITY_ID,
+						VAI.VENDOR_NAME,
+						V.CONTACT_NAME AS VENDOR_CONTACT_NAME,
+						V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL,
+						CVR.VENDOR_TYPE_ID,
+						V.ACCOUNT AS VENDOR_ACCOUNT, 
+						TO_NVARCHAR(CVR.CREATED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_SUBMITTED_TZ, 
+						TO_NVARCHAR(CVR.RECEIVER_DATE_COMPLETED_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_COMPLETED_TZ, 
+						CVR.RECEIVER_YVC_REQUEST, 
+						TO_NVARCHAR(CVR.RECEIVER_MODIFIED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_MODIFIED_DATE_TZ, 
+						CVR.vendor_id
+	FROM "CHANGE_VENDOR_REQUEST" CVR
+	INNER JOIN "VENDOR" V ON V.VENDOR_ID = CVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
+						ON (CVR.VENDOR_ID = VAI.VENDOR_ID
+     							AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ 
+       									and VAI.MODIFIED_DATE_TZ >= CVR.CREATED_DATE_TZ) 
+       							OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ))
+     						)
+	INNER JOIN "USER" US ON US.user_id = CVR.user_id AND US.ENABLED = 1 AND US.DELETED = 0
+		WHERE in_change_vendor_request_id = CVR.CHANGE_VENDOR_REQUEST_ID
+		AND CVR.deleted = 0
+		AND CVR.enabled = 1;
+END;

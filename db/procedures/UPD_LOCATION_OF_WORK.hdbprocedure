@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_LOCATION_OF_WORK" (
+  IN in_location_id bigint,
+  IN in_location_name nvarchar(255),
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    UPDATE location_of_work
+	SET location_of_work.location_name = in_location_name,
+		location_of_work.modified_date_tz = CURRENT_TIMESTAMP,
+		location_of_work.modified_user_id = in_modified_user_id
+		FROM "CART_REQUEST_TOOL"."LOCATION_OF_WORK" location_of_work
+		WHERE location_of_work.location_of_work_id = in_location_id;
+			
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

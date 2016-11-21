@@ -1,0 +1,21 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_BY_STATUS" (
+  IN in_status_id bigint,
+  OUT out_result TABLE (vendor_request_id bigint,
+                        vendor_id bigint,
+                        user_id bigint,
+                        status_id bigint)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+out_result = SELECT VR.VENDOR_REQUEST_ID,
+               VR.VENDOR_ID,
+               VR.USER_ID,
+               VR.STATUS_ID
+             FROM "VENDOR_REQUEST" VR
+             WHERE in_status_id = VR.STATUS_ID
+                   AND VR.ENABLED = 1
+                   AND VR.DELETED = 0;
+END;

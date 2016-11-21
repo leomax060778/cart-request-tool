@@ -1,0 +1,25 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_STORE_BY_ID" (
+	IN in_attachment_id bigint,
+	OUT out_result TABLE ( 
+	attachment_store_id bigint, 
+	original_name nvarchar(255), 
+	file_content blob, 
+	file_size nvarchar(255), 
+	file_type nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT
+	"ATTACHMENT_STORE".attachment_store_id,
+	"ATTACHMENT_STORE".original_name, 
+   	"ATTACHMENT_STORE".file_content,
+   	"ATTACHMENT_STORE".file_size,
+   	"ATTACHMENT_STORE".file_type
+	FROM "ATTACHMENT_STORE"
+		WHERE in_attachment_id = "ATTACHMENT_STORE".ATTACHMENT_STORE_ID
+		AND deleted = 0
+		AND enabled = 1;
+	END;

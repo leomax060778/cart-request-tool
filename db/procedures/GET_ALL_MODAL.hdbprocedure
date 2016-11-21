@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_MODAL" (
+	OUT out_result TABLE (modal_id bigint, description nvarchar(255), content nvarchar(1000), link nvarchar(511))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+out_result = SELECT modal_id, description, content, link
+					FROM "MODAL"
+						WHERE enabled = 1 AND deleted = 0;
+END;

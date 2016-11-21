@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_BY_ENTITY_ID" (
+IN in_entity_id bigint,
+OUT out_result TABLE (vendor_id bigint, account nvarchar (255), name nvarchar (255), contact_name nvarchar (255), contact_email nvarchar (255), contact_phone nvarchar (255), address_1 nvarchar (255), address_2 nvarchar (255), city nvarchar (255), state nvarchar (255), zip nvarchar (255), phone nvarchar (255), fax nvarchar (255), legal_name nvarchar (255), informal_name nvarchar (255))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+out_result = SELECT 
+"VENDOR_ENTITY".vendor_id, "VENDOR".account, VAI.vendor_name as name, "VENDOR".contact_name, "VENDOR".contact_email, "VENDOR".contact_phone, "VENDOR".address_1, "VENDOR".address_2, "VENDOR".city, "VENDOR".state, "VENDOR".zip, "VENDOR".phone, "VENDOR".fax, "VENDOR".legal_name, "VENDOR".informal_name
+         FROM "VENDOR_ENTITY"
+         INNER JOIN "VENDOR" ON "VENDOR_ENTITY".vendor_id = "VENDOR".vendor_id
+         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VENDOR_ENTITY.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
+         WHERE "VENDOR_ENTITY".entity_id = in_entity_id
+         AND "VENDOR_ENTITY".ENABLED = 1 AND "VENDOR_ENTITY".DELETED = 0;
+END;
+

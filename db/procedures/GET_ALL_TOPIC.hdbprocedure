@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TOPIC" (
+	OUT out_result TABLE (topic_id bigint, description nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = 
+	SELECT topic_id, description
+	FROM "TOPIC"
+	WHERE enabled = 1 AND deleted = 0;
+END;

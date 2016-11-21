@@ -1,0 +1,17 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_INQUIRY_MESSAGE" (
+  IN in_user_id bigint,
+  IN in_inquiry_id bigint,
+  IN in_message_content nvarchar (1000),
+  IN in_return_type_id integer,
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."INQUIRY_MESSAGE"(user_id, inquiry_id, message_content, return_type_id, created_user_id)
+     VALUES(in_user_id, in_inquiry_id, in_message_content, in_return_type_id, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."INQUIRY_MESSAGE";
+END;

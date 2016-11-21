@@ -1,0 +1,25 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_IMAGE" (
+	IN in_image_id bigint,
+	IN in_image_url nvarchar(500),
+	IN in_name nvarchar(255),
+	IN in_description nvarchar(500),
+	IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE IMG
+	SET 	IMG.image_url = in_image_url,
+			IMG.name = in_name,
+			IMG.description = in_description,
+			IMG.modified_date_tz = CURRENT_TIMESTAMP,
+			IMG.modified_user_id = in_modified_user_id
+	FROM "IMAGE" IMG
+	WHERE IMG.image_id = in_image_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;
+

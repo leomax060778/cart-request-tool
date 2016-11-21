@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_CATALOG_TYPE" (
+ IN in_catalog_type_id BIGINT,
+ IN in_modified_user_id BIGINT,
+ OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE CATALOG_TYPE
+  SET CATALOG_TYPE.deleted = 1,
+   CATALOG_TYPE.enabled = 0,
+   CATALOG_TYPE.modified_user_id = in_modified_user_id,
+   CATALOG_TYPE.modified_date_tz = CURRENT_TIMESTAMP
+  FROM "CART_REQUEST_TOOL"."CATALOG_TYPE" CATALOG_TYPE
+  WHERE catalog_type_id = in_catalog_type_id;
+  
+  SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

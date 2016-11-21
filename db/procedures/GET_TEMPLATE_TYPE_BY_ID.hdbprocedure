@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TEMPLATE_TYPE_BY_ID" (
+	IN in_template_type_id bigint,
+	OUT out_result TABLE ( template_type_id bigint, name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "TEMPLATE_TYPE".TEMPLATE_TYPE_ID, "TEMPLATE_TYPE".NAME
+	FROM "TEMPLATE_TYPE"
+		WHERE in_template_type_id = "TEMPLATE_TYPE".TEMPLATE_TYPE_ID
+		AND deleted = 0
+		AND enabled = 1;
+END;

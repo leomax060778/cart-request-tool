@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NOTE_TYPE" (
+	IN in_note_type_id bigint,
+	IN in_note_type_name nvarchar(255),
+	IN in_note_type_description nvarchar(255),
+	IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+ 	UPDATE NOTE_TYPE
+	SET NOTE_TYPE.note_type_name = in_note_type_name,
+			NOTE_TYPE.note_type_description = in_note_type_description,
+			NOTE_TYPE.modified_date_tz = CURRENT_TIMESTAMP,
+			NOTE_TYPE.modified_user_id = in_modified_user_id
+	FROM "NOTE_TYPE" NOTE_TYPE
+	WHERE NOTE_TYPE.note_type_id = in_note_type_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_STATUS_CHANGE_VENDOR_REQUEST" (
+	IN in_status_id bigint,
+	IN in_name nvarchar(255),
+	IN in_administrable tinyint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE CVRST
+		SET CVRST.name = in_name,
+			CVRST.administrable = in_administrable,
+			CVRST.modified_user_id = in_modified_user_id,
+			CVRST.modified_date_tz = CURRENT_TIMESTAMP
+		FROM "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST_STATUS" CVRST
+		WHERE CVRST.status_id = in_status_id;
+	
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

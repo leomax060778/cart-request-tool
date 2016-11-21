@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NEWS_STATUS" (
+IN in_name nvarchar(255), 
+IN in_description nvarchar(500), 
+IN in_created_user_id bigint,
+OUT out_result bigint 
+) 
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."NEWS_STATUS"(name, description, created_user_id)
+      VALUES(in_name, in_description, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."NEWS_STATUS";
+END;

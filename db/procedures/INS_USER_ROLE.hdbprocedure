@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_USER_ROLE" (
+	IN in_user_id bigint,
+	IN in_role_id bigint,
+	IN in_created_user_id bigint,
+	OUT out_user_role_id bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL" AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ 
+	INSERT INTO "CART_REQUEST_TOOL"."USER_ROLE"(user_id, role_id, created_user_id) 
+	VALUES(in_user_id, in_role_id, in_created_user_id);
+	
+	SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_user_role_id FROM "CART_REQUEST_TOOL"."USER_ROLE";
+ 
+END;

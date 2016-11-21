@@ -1,0 +1,86 @@
+$.import("xscartrequesttool.services.commonLib", "mapper");
+var mapper = $.xscartrequesttool.services.commonLib.mapper;
+var httpUtil = mapper.getHttp();
+var ErrorLib = mapper.getErrors();
+var request = mapper.getRequest();
+
+var GET_ALL_REQUEST = "GET_ALL_REQUEST";
+var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
+var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
+
+/** *************************************** */
+function processRequest() {
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+}
+
+function handleGet(parameters) {
+	var req = {};
+	if (parameters.length > 0) {
+		if (parameters[0].name === GET_ALL_REQUEST) {
+			req = request.getAllRequest();
+
+		} else if (parameters[0].name === GET_REQUEST_BY_ID) {
+			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
+                throw ErrorLib.getErrors().BadRequest(
+                    "",
+                    "requestService/handleGet",
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                );
+            } else {
+            	req = request.getRequestById(parameters[0].value);
+            }
+		} else if (parameters[0].name === GET_REQUEST_BY_FILTERS) {
+			var filtersArray = ["GOODS_RECIPIENT","TEAM_ID","REQUEST_DATE_FROM",
+			                    "REQUEST_DATE_TO","USER_ID","VENDOR_ID",
+			                    "STATUS_ID"];
+			var filters = getFilters(parameters,filtersArray);
+			req = request.getRequestByFilters(filters);
+		} else {
+			throw ErrorLib
+					.getErrors()
+					.BadRequest(
+							"",
+							"requestServices/handleGet",
+							"invalid parameter name (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID or GET_REQUEST_BY_FILTERS)"
+									+ parameters[0].name);
+		}
+	} else {
+        throw ErrorLib.getErrors().BadRequest(
+                "",
+                "requestService/handleGet",
+                "invalid parameter (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID or GET_REQUEST_BY_FILTERS)"
+            );
+        }
+	return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+}
+
+function handlePost() {
+	return httpUtil.notImplementedMethod();
+}
+
+function handlePut() {
+	return httpUtil.notImplementedMethod();
+}
+
+function handleDelete(reqBody, user_id) {
+	var rdo =  request.deleteRequest(reqBody.REQUEST_ID, user_id);
+	return httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
+}
+
+function getFilters(params,filtersArray){
+	var filters = {};
+	Object.keys(params).forEach(function(key) {
+		var value = params[key];
+		if(filtersArray.indexOf(value.name) > -1){
+			filters[value.name] = value.value;
+		}
+	});
+//	(params).forEach(function(param){
+//		if(filtersArray.indexOf(param.name) > -1){
+//			filters[param.name] = param.value;
+//		}
+//	});
+	return filters;
+}
+
+processRequest();

@@ -1,0 +1,17 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_IMAGE_BY_ID" (
+IN in_image_id bigint,
+OUT out_result TABLE(image_id bigint, image_url nvarchar(500), name nvarchar(255), description nvarchar(500))
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+ out_result = SELECT "IMAGE".IMAGE_ID, "IMAGE".IMAGE_URL, "IMAGE".NAME, "IMAGE".DESCRIPTION
+  			  FROM "IMAGE"
+   			  WHERE "IMAGE".IMAGE_ID = in_image_id 
+				AND "IMAGE".ENABLED = 1 
+   			  	AND "IMAGE".DELETED = 0;
+END;
+
+

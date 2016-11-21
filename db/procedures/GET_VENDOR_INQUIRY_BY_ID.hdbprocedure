@@ -1,0 +1,28 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_BY_ID" (
+	IN in_vendor_inquiry_id bigint,
+	OUT out_result TABLE (vendor_inquiry_id bigint,
+								created_date_tz nvarchar(15),
+								vendor_legal_name nvarchar (511),
+								name nvarchar(255),
+								vendor_id bigint,
+								vendor_type_id bigint
+							)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT VI.VENDOR_INQUIRY_ID,
+						TO_NVARCHAR(VI.CREATED_DATE_TZ,'YYYY-MM-DD') AS CREATED_DATE_TZ,
+						V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
+						ST.NAME,
+						VI.VENDOR_ID,
+						VI.VENDOR_TYPE_ID
+	FROM "VENDOR_INQUIRY" VI
+	 INNER JOIN "VENDOR" V ON V.VENDOR_ID = VI.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	 INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.status_id = VI.status_id AND ST.ENABLED = 1 AND ST.DELETED = 0
+	  WHERE in_vendor_inquiry_id = VI.VENDOR_INQUIRY_ID
+	   AND VI.ENABLED = 1
+	   AND VI.DELETED = 0;
+END;

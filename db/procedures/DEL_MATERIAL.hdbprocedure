@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_MATERIAL" (
+	IN in_material_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE material
+  SET material.deleted = 1,
+   material.enabled = 0,
+   material.modified_user_id = in_modified_user_id,
+   material.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."MATERIAL" material
+  WHERE material.material_id = in_material_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

@@ -1,0 +1,37 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_MESSAGE_BY_VENDOR_REQUEST_ID" (
+	IN in_vendor_request_id bigint,
+	OUT out_result TABLE (vendor_request_message_id bigint, 
+							message_content nvarchar(1000), 
+							return_name nvarchar(255), 
+							issue_name nvarchar(255), 
+							role_name nvarchar(255), 
+							user_name nvarchar(255), 
+							first_name nvarchar(255), 
+							last_name nvarchar(255),
+  							created_date nvarchar(32)
+						 )
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT VRM.VENDOR_REQUEST_MESSAGE_ID,
+						VRM.MESSAGE_CONTENT, 
+						RT.NAME AS RETURN_NAME, 
+						IT.NAME AS ISSUE_NAME, 
+						ROLE.NAME AS ROLE_NAME,
+						US.USER_NAME,
+						US.FIRST_NAME,
+						US.LAST_NAME,
+  						TO_NVARCHAR(VRM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date
+				FROM "VENDOR_REQUEST_MESSAGE" VRM
+				LEFT JOIN "RETURN_TYPE" RT ON VRM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID AND RT.ENABLED = 1 AND RT.DELETED = 0
+				LEFT JOIN "ISSUE_TYPE" IT ON VRM.ISSUE_TYPE_ID = IT.ISSUE_TYPE_ID AND IT.ENABLED = 1 AND IT.DELETED = 0
+				INNER JOIN "USER" US ON VRM.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+				INNER JOIN "USER_ROLE" USR ON VRM.CREATED_USER_ID = USR.USER_ID 
+				INNER JOIN "ROLE" ROLE ON VRM.CREATED_USER_ID = USR.USER_ID AND ROLE.ROLE_ID = USR.ROLE_ID AND ROLE.ENABLED = 1 AND ROLE.DELETED = 0
+				 WHERE VRM.VENDOR_REQUEST_ID = in_vendor_request_id
+		 			AND VRM.DELETED = 0
+		 			AND VRM.ENABLED = 1;
+END;

@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ATTACHMENT_REQUEST" (
+ IN in_request_id nvarchar(255),
+ IN in_attachment_id bigint,
+ IN in_created_user_id bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."ATTACHMENT_REQUEST"(request_id, attachment_id, created_user_id) 
+  VALUES(in_request_id, in_attachment_id, in_created_user_id);
+END;

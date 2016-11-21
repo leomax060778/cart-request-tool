@@ -1,0 +1,25 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR" (
+  IN in_contact_name nvarchar (255),
+  IN in_contact_email nvarchar (255),
+  IN in_contact_phone nvarchar (255),
+  IN in_address_1 nvarchar (255),
+  IN in_address_2 nvarchar (255),
+  IN in_city nvarchar (255),
+  IN in_state nvarchar (255),
+  IN in_zip nvarchar (255),
+  IN in_phone nvarchar (255),
+  IN in_fax nvarchar (255),
+  IN in_legal_name nvarchar (255),
+  IN in_informal_name nvarchar (255),
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."VENDOR"(contact_name, contact_email, contact_phone, address_1, address_2, city, state, zip, phone, fax, legal_name, informal_name, created_user_id)
+    VALUES(in_contact_name, in_contact_email, in_contact_phone, in_address_1, in_address_2, in_city, in_state, in_zip, in_phone, in_fax, in_legal_name, in_informal_name, in_created_user_id);
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR";
+END;

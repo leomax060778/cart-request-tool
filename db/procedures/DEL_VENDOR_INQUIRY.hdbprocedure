@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_VENDOR_INQUIRY" (
+ IN in_modified_user_id bigint,
+ IN in_vendor_inquiry_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE vinq
+  SET vinq.deleted = 1,
+   vinq.enabled = 0,
+   vinq.modified_user_id = in_modified_user_id,
+   vinq.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "VENDOR_INQUIRY" vinq
+  WHERE vinq.vendor_inquiry_id = in_vendor_inquiry_id;
+ 
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

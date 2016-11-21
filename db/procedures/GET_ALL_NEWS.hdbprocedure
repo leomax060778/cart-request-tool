@@ -1,0 +1,35 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_NEWS" (
+OUT out_result TABLE( news_id bigint, 
+						title nvarchar(255), 
+						description nvarchar(2000), 
+						author_id bigint, 
+						author_name nvarchar(255), 
+						published_date nvarchar(50), 
+						status_id bigint, 
+						status_name nvarchar(255),
+						update_status_tz nvarchar(15),
+						urgent tinyint
+					)
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+ out_result = SELECT "NEWS".NEWS_ID, 
+ 						"NEWS".TITLE, 
+ 						"NEWS".DESCRIPTION, 
+ 						"NEWS".AUTHOR_ID, 
+ 						author.USER_NAME AS author_name, 
+ 						To_Char("NEWS".PUBLISHED_DATE,'YYYY-MM-DD') AS PUBLISHED_DATE, 
+ 						"NEWS".STATUS_ID, 
+					 	news_st.NAME AS status_name, 
+					 	TO_NVARCHAR("NEWS".UPDATE_STATUS_TZ, 'YYYY-MM-DD') AS UPDATE_STATUS_TZ,
+					 	"NEWS".URGENT
+  			  FROM "NEWS"
+  			  INNER JOIN "NEWS_STATUS" news_st ON news_st.NEWS_STATUS_ID = "NEWS".STATUS_ID
+  			  INNER JOIN "USER" author ON author.USER_ID = "NEWS".AUTHOR_ID
+  			  INNER JOIN "BUDGET_YEAR" budget_year ON BUDGET_YEAR.BUDGET_YEAR_ID = "NEWS".BUDGET_YEAR_ID
+   			  WHERE "NEWS".ENABLED = 1  
+   			  	AND "NEWS".DELETED = 0;
+END;

@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_PURCHASE_ORDER_SERVICE" (
+  IN in_shopping_cart nvarchar (255),
+  IN in_cart_date nvarchar(32),
+  IN in_purchase_order_number nvarchar (127),
+  IN in_approval_date nvarchar(32),
+  IN in_user_id bigint,
+  IN in_request_id bigint,
+  IN in_created_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "PURCHASE_ORDER_SERVICE"(shopping_cart, cart_date, purchase_order_number, approval_date, user_id, request_id, created_user_id)
+    VALUES(in_shopping_cart, TO_DATE(in_cart_date, 'YYYY-MM-DD'), in_purchase_order_number, TO_DATE(in_approval_date, 'YYYY-MM-DD'), in_user_id, in_request_id, in_created_user_id);
+    
+   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."PURCHASE_ORDER_SERVICE";
+END;

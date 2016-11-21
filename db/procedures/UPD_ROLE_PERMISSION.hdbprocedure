@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_ROLE_PERMISSION" ( 
+	IN in_role_id bigint,
+	IN in_resource_id bigint,
+	IN in_permission_id bigint,
+	IN in_enabled tinyint,	
+	IN in_user_id bigint,
+	OUT out_result INTEGER
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+		UPDATE ROLE_PERMISSION rp
+        SET	rp.enabled = in_enabled,        
+            rp.modified_date_tz = CURRENT_TIMESTAMP,
+            rp.modified_user_id = in_user_id
+        WHERE rp.role_id = in_role_id AND
+        rp.resource_id = in_resource_id AND
+        rp.permission_id = in_permission_id;
+        
+        SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+END;

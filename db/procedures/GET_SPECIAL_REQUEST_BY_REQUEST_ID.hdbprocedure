@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SPECIAL_REQUEST_BY_REQUEST_ID" (
+  IN in_request_id bigint,
+  OUT out_result TABLE (special_request_id bigint, material_description nvarchar(500), material_code nvarchar(255))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT special_request_id, material_description, material_code
+              FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST"
+               WHERE REQUEST_ID = in_request_id
+               AND ENABLED = 1 
+               AND DELETED = 0;
+END;

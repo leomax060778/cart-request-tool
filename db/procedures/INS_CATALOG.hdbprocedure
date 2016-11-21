@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CATALOG" (
+	IN in_name nvarchar(255),
+	IN in_catalog_type_id bigint,
+	IN in_catalog_parent_id bigint,
+	IN in_pop_up nvarchar(512),
+	IN in_created_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS 
+BEGIN
+	INSERT INTO "CATALOG"(name, catalog_type_id, catalog_parent_id, pop_up, created_user_id)
+		VALUES (in_name, in_catalog_type_id, in_catalog_parent_id, in_pop_up, in_created_user_id);
+		
+	SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."CATALOG";
+END;

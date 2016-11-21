@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_STATUS_BY_ID" (
+  IN in_news_status_id bigint,
+  OUT out_result TABLE (news_status_id bigint, name nvarchar(255), description nvarchar(500))
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT "NEWS_STATUS".news_status_id, "NEWS_STATUS".name, "NEWS_STATUS".description
+              FROM "CART_REQUEST_TOOL"."NEWS_STATUS"
+               WHERE "NEWS_STATUS".NEWS_STATUS_ID = in_news_status_id
+               		AND "NEWS_STATUS".ENABLED = 1 
+                    AND "NEWS_STATUS".DELETED = 0;
+END;

@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_REQUEST_SERVICE" (
+ IN in_request_service_id bigint,
+ IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE request_service
+  SET request_service.deleted = 1,
+   request_service.enabled = 0,
+   request_service.modified_user_id = in_modified_user_id,
+   request_service.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."REQUEST_SERVICE" request_service
+  WHERE request_service.request_service_id = in_request_service_id;
+  
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

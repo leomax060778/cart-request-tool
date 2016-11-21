@@ -1,0 +1,23 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_DATA_PROTECTION_BY_ID" (
+	IN in_attachment_data_protection_id bigint,
+	OUT out_result TABLE (
+	attachment_data_protection_id bigint, 
+	description nvarchar(255), 
+	attachment_name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = 
+	SELECT 
+	"ATTACHMENT_DATA_PROTECTION".attachment_data_protection_id, 
+	"ATTACHMENT_DATA_PROTECTION".description, 
+	"ATTACHMENT".saved_name AS attachment_name
+	FROM "ATTACHMENT_DATA_PROTECTION" 
+	LEFT JOIN "ATTACHMENT" ON "ATTACHMENT_DATA_PROTECTION".attachment_id = "ATTACHMENT".attachment_id 
+	WHERE "ATTACHMENT_DATA_PROTECTION".attachment_data_protection_id = in_attachment_data_protection_id 
+	AND "ATTACHMENT_DATA_PROTECTION".enabled = 1 
+	AND "ATTACHMENT_DATA_PROTECTION".deleted = 0;
+END;

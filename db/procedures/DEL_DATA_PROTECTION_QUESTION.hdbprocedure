@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_DATA_PROTECTION_QUESTION" (
+	IN in_question_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE question
+  SET question.deleted = 1,
+   question.enabled = 0,
+   question.modified_user_id = in_modified_user_id,
+   question.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."DATA_PROTECTION_QUESTION" question
+  WHERE question.question_id = in_question_id;
+ 
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

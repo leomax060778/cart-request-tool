@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_STATUS" (
+  IN in_status_id bigint,
+  OUT out_result TABLE (vendor_id bigint,
+  						vendor_request_id bigint,
+  						legal_name nvarchar(511),
+                        status_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+out_result = SELECT VR.VENDOR_ID,
+				VR.VENDOR_REQUEST_ID,
+               	V.LEGAL_NAME,
+               	VR.STATUS_ID
+             FROM "VENDOR_REQUEST" VR
+             INNER JOIN "VENDOR" V ON VR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+             WHERE VR.STATUS_ID = in_status_id
+                   AND VR.ENABLED = 1
+                   AND VR.DELETED = 0;
+END;

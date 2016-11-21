@@ -1,0 +1,27 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_BY_REQUEST_ID" (
+	IN in_request_id bigint,
+	OUT out_result TABLE ( 
+		attachment_id bigint, 
+		user_id bigint, 
+		original_name nvarchar(255), 
+		saved_name nvarchar(255), 
+		attachment_size integer
+	)) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = 
+	SELECT 
+		"ATTACHMENT".ATTACHMENT_ID, 
+		"ATTACHMENT".USER_ID, 
+		"ATTACHMENT".ORIGINAL_NAME, 
+		"ATTACHMENT".SAVED_NAME, 
+		"ATTACHMENT".ATTACHMENT_SIZE
+	FROM "ATTACHMENT_REQUEST"
+		INNER JOIN "ATTACHMENT" AS ATTACHMENT ON "ATTACHMENT_REQUEST".attachment_id = ATTACHMENT.attachment_id
+		WHERE in_request_id = "ATTACHMENT_REQUEST".REQUEST_ID
+		AND "ATTACHMENT".deleted = 0
+		AND "ATTACHMENT".enabled = 1;
+	END;

@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_INQUIRY" (
+	IN in_inquiry_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE INQ
+	SET INQ.enabled = 0,
+		INQ.deleted = 1,
+		INQ.modified_user_id = in_modified_user_id,
+		INQ.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "INQUIRY" INQ
+		WHERE INQ.inquiry_id = in_inquiry_id;
+		
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

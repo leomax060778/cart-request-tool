@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_COST_OBJECT" (
+ OUT out_result TABLE (request_cost_object_id bigint, request_id bigint, entity_id bigint, wbs_id nvarchar(255), cost_center nvarchar(255), io nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "REQUEST_COST_OBJECT".REQUEST_COST_OBJECT_ID, "REQUEST_COST_OBJECT".REQUEST_ID, "REQUEST_COST_OBJECT".ENTITY_ID, "REQUEST_COST_OBJECT".WBS_ID, "REQUEST_COST_OBJECT".COST_CENTER, "REQUEST_COST_OBJECT".IO
+	 FROM "REQUEST_COST_OBJECT" 
+	    WHERE deleted = 0
+		AND enabled = 1;
+END;

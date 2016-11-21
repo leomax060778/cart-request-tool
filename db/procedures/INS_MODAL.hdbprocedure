@@ -1,0 +1,17 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_MODAL" (
+	IN in_description nvarchar(255),
+	IN in_content nvarchar(1000),
+	IN in_link nvarchar(511),
+	IN in_created_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	INSERT INTO "CART_REQUEST_TOOL"."MODAL"(description, content, link, created_user_id) 
+  VALUES(in_description, in_content, in_link, in_created_user_id);
+  
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."MODAL";
+END;

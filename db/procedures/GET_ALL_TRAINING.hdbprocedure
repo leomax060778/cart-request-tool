@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING" (
+ OUT out_result TABLE (training_type_id bigint, parent_id bigint, link nvarchar (2048), name nvarchar (2048),  training_order integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+ out_result = SELECT training_type_id, parent_id, link, name, training_order
+ 			FROM "TRAINING" 
+ 			 WHERE ENABLED = 1
+ 			  AND DELETED = 0;
+END;

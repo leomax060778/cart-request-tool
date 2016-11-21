@@ -1,0 +1,36 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_EXTEND_VENDOR_REQUEST" (
+	IN in_extend_vendor_request_id bigint,
+	IN in_user_id bigint,
+	IN in_entity_id bigint,
+	IN in_commodity_id bigint,
+	IN in_service_supplier nvarchar(1000),
+	IN in_purchase_amount decimal(19,2),
+	IN in_expected_amount decimal(19,2),
+	IN in_purchase_currency_id integer,
+	IN in_expected_currency_id integer,
+	IN in_additional_information nvarchar(1000),
+	IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE EVR
+	SET EVR.user_id = in_user_id,
+		EVR.entity_id = in_entity_id,
+		EVR.commodity_id = in_commodity_id,
+		EVR.service_supplier = in_service_supplier,
+		EVR.purchase_amount = in_purchase_amount,
+		EVR.expected_amount = in_expected_amount,
+		EVR.purchase_currency_id = in_purchase_currency_id,
+		EVR.expected_currency_id = in_expected_currency_id,
+		EVR.additional_information = in_additional_information,
+		EVR.modified_date_tz = CURRENT_TIMESTAMP,
+		EVR.modified_user_id = in_modified_user_id
+        FROM "EXTEND_VENDOR_REQUEST" EVR
+        WHERE EVR.extend_vendor_request_id = in_extend_vendor_request_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

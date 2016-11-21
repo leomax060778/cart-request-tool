@@ -1,0 +1,27 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_TRAINING" (
+ IN in_training_id bigint,
+ IN in_modified_user_id bigint,
+ IN in_training_type_id bigint,
+ IN in_parent_id bigint,
+ IN in_link nvarchar (2048),
+ IN in_name nvarchar (2048),
+ IN in_training_order integer,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE "TRAINING"
+	SET "TRAINING".training_type_id = in_training_type_id,
+  			"TRAINING".parent_id = in_parent_id,
+  			"TRAINING".link = in_link,
+  			"TRAINING".name = in_name,
+  			"TRAINING".training_order = in_training_order,
+        	"TRAINING".modified_date_tz = CURRENT_TIMESTAMP,
+        	"TRAINING".modified_user_id = in_modified_user_id
+	WHERE "TRAINING".training_id = in_training_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

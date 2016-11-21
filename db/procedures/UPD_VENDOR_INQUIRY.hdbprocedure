@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_INQUIRY" (
+	IN in_vendor_inquiry_id bigint,
+	IN in_vendor_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE VI
+	SET VI.VENDOR_ID = in_vendor_id,
+		VI.MODIFIED_USER_ID = in_modified_user_id,
+		VI.MODIFIED_DATE_TZ = CURRENT_TIMESTAMP
+	FROM "VENDOR_INQUIRY" VI
+	WHERE VI.VENDOR_INQUIRY_ID = in_vendor_inquiry_id;
+	
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

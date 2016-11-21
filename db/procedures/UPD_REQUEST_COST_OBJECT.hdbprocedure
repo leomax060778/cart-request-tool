@@ -1,0 +1,28 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST_COST_OBJECT" (
+	IN in_request_cost_object_id bigint,
+	IN in_request_id bigint,
+	IN in_entity_id bigint,
+	IN in_wbs_id nvarchar(255),
+	IN in_cost_center nvarchar(255),
+	IN in_io nvarchar(255),
+	IN in_modified_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE REQUEST_COST_OBJECT
+	SET REQUEST_COST_OBJECT.request_id = in_request_id,
+			REQUEST_COST_OBJECT.entity_id = in_entity_id,
+			REQUEST_COST_OBJECT.wbs_id = in_wbs_id,
+			REQUEST_COST_OBJECT.cost_center = in_cost_center,
+			REQUEST_COST_OBJECT.io = in_io,
+			REQUEST_COST_OBJECT.modified_date_tz = CURRENT_TIMESTAMP,
+			REQUEST_COST_OBJECT.modified_user_id = in_modified_user_id
+	FROM "REQUEST_COST_OBJECT" REQUEST_COST_OBJECT
+	WHERE REQUEST_COST_OBJECT.request_cost_object_id = in_request_cost_object_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

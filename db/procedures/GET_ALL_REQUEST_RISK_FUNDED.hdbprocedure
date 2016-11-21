@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_RISK_FUNDED" (
+	OUT out_result TABLE (request_risk_funded_id bigint, request_id bigint, risk_funded nvarchar(1000), amount decimal(19,2), currency_id bigint, amount_currency_convertion_rate decimal(19,10), amount_keur decimal(19,2))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT REQUEST_RISK_FUNDED_ID, REQUEST_ID, RISK_FUNDED, AMOUNT, CURRENCY_ID, AMOUNT_CURRENCY_CONVERTION_RATE, AMOUNT_KEUR
+		FROM "REQUEST_RISK_FUNDED"
+		 WHERE deleted = 0
+		 AND enabled = 1;
+END;

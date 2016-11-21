@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_ENTITY" (
+	IN in_entity_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE entity
+  SET entity.deleted = 1,
+   entity.enabled = 0,
+   entity.modified_user_id = in_modified_user_id,
+   entity.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."ENTITY" entity
+  WHERE entity.entity_id = in_entity_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

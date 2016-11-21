@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CURRENCY" (
+	OUT out_result TABLE (currency_id bigint, country nvarchar(255), name nvarchar(255), abbreviation nvarchar(255), conversion_rate decimal(19,2), currency_year integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT currency_id, country, name, abbreviation, conversion_rate, currency_year
+					FROM "CURRENCY"
+						WHERE enabled = 1 AND deleted = 0;
+END;

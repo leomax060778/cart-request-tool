@@ -1,0 +1,25 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_ROLE" (
+	IN in_role_id bigint,
+	IN in_name nvarchar(255),
+	IN in_user_id bigint,
+	OUT out_response_id bigint
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ 
+        UPDATE role
+        SET role.name = in_name,
+            role.modified_date_tz = CURRENT_TIMESTAMP,
+            role.modified_user_id = in_user_id
+        FROM "ROLE" role
+        WHERE role.role_id = in_role_id;
+        
+        out_response_id := in_role_id;
+
+END;

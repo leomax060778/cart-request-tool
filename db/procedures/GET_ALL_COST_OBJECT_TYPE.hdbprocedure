@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_COST_OBJECT_TYPE" (
+ OUT out_result TABLE (cost_object_type_id bigint, name nvarchar(255), description nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "COST_OBJECT_TYPE".COST_OBJECT_TYPE_ID, "COST_OBJECT_TYPE".NAME, "COST_OBJECT_TYPE".DESCRIPTION
+	 FROM "COST_OBJECT_TYPE" 
+	    WHERE deleted = 0
+		AND enabled = 1;
+END;

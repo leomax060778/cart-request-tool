@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_ADDITIONAL_INFORMATION" (
+	IN in_name nvarchar(255),
+	IN in_vendor_id bigint,
+	IN in_created_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	INSERT INTO "VENDOR_ADDITIONAL_INFORMATION"
+		(vendor_name, vendor_id, created_user_id)
+		VALUES 
+		(in_name, in_vendor_id, in_created_user_id);
+		
+	SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR_ADDITIONAL_INFORMATION";
+END;

@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_INQUIRY_STATUS" (
+  IN in_inquiry_id bigint,
+  IN in_status_id bigint,
+  IN in_previous_status_id bigint,
+  IN in_user_id_status bigint,
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE inquiry
+	SET inquiry.status_id = in_status_id,
+		inquiry.previous_status_id = in_previous_status_id,
+		inquiry.user_id_status = in_user_id_status,
+        inquiry.modified_user_id = in_modified_user_id,
+        inquiry.update_status = CURRENT_TIMESTAMP,
+        inquiry.completed_date_tz = CURRENT_TIMESTAMP,
+        inquiry.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "CART_REQUEST_TOOL"."INQUIRY" inquiry
+	WHERE inquiry.inquiry_id = in_inquiry_id;
+            
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

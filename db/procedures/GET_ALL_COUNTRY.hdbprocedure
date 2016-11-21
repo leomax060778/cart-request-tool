@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_COUNTRY" (
+	OUT out_result TABLE (country_id bigint, country_name_es nvarchar(255), country_name_en nvarchar(255), country_name_fr nvarchar(255), iso1 nvarchar(255), iso2 nvarchar(255), country_code integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT country_id, country_name_es, country_name_en, country_name_fr, iso1, iso2, country_code
+				FROM "COUNTRY"
+					WHERE enabled = 1 AND deleted = 0;
+END;

@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_STATUS_BY_ID" (
+	IN in_status_id bigint,
+	OUT out_result TABLE (status_id bigint, name nvarchar(255), administrable tinyint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT status_id, name, administrable
+		FROM "REQUEST_STATUS"
+		WHERE status_id = in_status_id AND ENABLED = 1 AND DELETED = 0;
+END;
