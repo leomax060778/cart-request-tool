@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getProcessingReportMessage();
+var status = mapper.getVendorRequestInquiryStatus();
 var vendorRequest = mapper.getVendorRequest();
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -104,20 +105,42 @@ function handleDelete() {
  * @param {string} reqBody.MESSAGE_CONTENT - message content
  * @param {string} reqBody.RETURN_TYPE_ID - id of the return type
  * @param {string} reqBody.ISSUE_TYPE_ID - id of the issue type
+ * @param {string} reqBody.PREVIOUS_STATUS_ID - id of the previous status
  * @param userId
  * @returns {string} id - Id of the new vendor request inquiry message
  */
 function handlePost(reqBody, userId) {
     var req;
     if (reqBody.VENDOR_INQUIRY_ID){
+    	if (reqBody.RETURN_TYPE_ID === 2){
+    		reqBody.STATUS_ID = 2;
+    		status.updateVendorInquiryStatusManual(reqBody, userId)
+    	}
         req = request.insertVendorInquiryMessage(reqBody, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
+    	if (reqBody.RETURN_TYPE_ID === 2){
+    		reqBody.STATUS_ID = 4;
+    		status.updateVendorRequestStatusManual(reqBody, userId)
+    	}
         req = request.insertVendorRequestMessage(reqBody, userId);
         vendorRequest.sendMessageMail(reqBody, userId);
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
+    	if (reqBody.RETURN_TYPE_ID === 2){
+    		reqBody.STATUS_ID = 4;
+    		status.updateChangeVendorRequestStatusManual(reqBody, userId)
+    	}
         req = request.insertChangeVendorRequestMessage(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
+    	if (reqBody.RETURN_TYPE_ID === 2){
+    		reqBody.STATUS_ID = 4;
+    		status.updateExtendVendorRequestStatusManual(reqBody, userId)
+    	}
         req = request.insertExtendVendorRequestMessage(reqBody, userId);
+    } else {
+    	throw ErrorLib.getErrors().CustomError("", 
+    			"processingReport/handlePost", 
+    			"The object reqBody is invalid. Should be included one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID or EXTEND_VENDOR_REQUEST_ID"
+    			);
     }
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }

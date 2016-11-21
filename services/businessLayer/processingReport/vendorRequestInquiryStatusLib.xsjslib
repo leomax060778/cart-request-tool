@@ -142,6 +142,58 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
     }
 }
 
+//Update vendor inquiry status manual
+function updateVendorInquiryStatusManual(objVendorInquiry, userId) {
+    if (validateUpdateVendorInquiryStatus(objVendorInquiry, userId)) {
+    	if(!inquiry.existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)){
+    		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorInquiryStatus", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
+    	}
+        return dataStatus.updateVendorInquiryStatusManual(objVendorInquiry, userId);
+    }
+}
+
+//Update change vendor request status manual
+function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
+    if (validateUpdateChangeVendorRequest(objChangeVendorRequest, userId)) {
+    	if(!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)){
+    		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateChangeVendorRequestStatus", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
+    	}
+    	if(objChangeVendorRequest.STATUS_ID === 5){
+    		return dataStatus.updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, userId);
+    	} else {
+    		return dataStatus.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
+    	}
+    }
+}
+
+//Update extend vendor request status manual
+function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
+    if (validateUpdateExtendVendorRequest(objExtendVendorRequest, userId)) {
+    	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
+    		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
+    	}
+    	if(objExtendVendorRequest.STATUS_ID === 5){
+    		return dataStatus.updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, userId);
+    	} else {
+    		return dataStatus.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
+    	}
+    }
+}
+
+//Update vendor request status manual
+function updateVendorRequestStatus(objVendorRequest, userId) {
+    if (validateUpdateVendorRequestStatus(objVendorRequest, userId)){
+    	if(!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)){
+    		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequestStatus", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
+    	}
+    	if(objVendorRequest.STATUS_ID === 5){
+    		return dataStatus.updateVendorRequestStatusCompletedManual(objVendorRequest, userId);
+    	} else {
+    		return dataStatus.updateVendorRequestStatusManual(objVendorRequest, userId);
+    	}
+    }
+}
+
 //Validate update vendor inquiry status
 function validateUpdateVendorInquiryStatus(objVendorInquiry, userId) {
     if (!userId) {
