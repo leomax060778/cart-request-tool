@@ -206,6 +206,10 @@ function validateType(key, value) {
 	return valid;
 }
 
+function getTeamsByBudgetYearIdAndUserId(budgetYearId,userId){
+	return data.getTeamsByBudgeYearIdAndUserId(budgetYearId, userId);
+}
+
 function existTeam(team_id, userId) {
 	return getManualTeamById(team_id, userId).length > 0;
 }

@@ -1,14 +1,20 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataStatus = mapper.getDataVendorRequestInquiryStatus();
+var dataExtendVendor = mapper.getDataExtendVendorRequest();
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
 var change = mapper.getChangeVendorRequest();
 var changeVendorMail = mapper.getChangeVendorMail();
+var extendVendorMail = mapper.getExtendVendorMail();
+var vendorInquiryMail = mapper.getVendorInquiryMail();
+var vendorRequestMail = mapper.getVendorMail();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5};
 
 //Get vendor request inquiry by status
 function getVendorRequestInquiryByStatus(statusId) {
@@ -74,6 +80,13 @@ function getExtendVendorRequestById(extendId) {
     return dataStatus.getExtendVendorRequestById(extendId);
 }
 
+function getManualExtendVendorRequestById(extendId) {
+    if (!extendId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter extendId is not found", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", extendId);
+    }
+    return dataExtendVendor.getExtendVendorRequestByIdManual(extendId);
+}
+
 //Get vendor request by status
 function getVendorRequestByStatus(statusId) {
     if (!statusId) {
@@ -106,7 +119,7 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
     	if(!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateChangeVendorRequestStatus", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objChangeVendorRequest.STATUS_ID === 5){
+    	if(objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateChangeVendorRequestStatusCompleted(objChangeVendorRequest, userId);
     	} else {
     		return dataStatus.updateChangeVendorRequestStatus(objChangeVendorRequest, userId);
@@ -120,7 +133,7 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
     	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objExtendVendorRequest.STATUS_ID === 5){
+    	if(objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId);
     	} else {
     		return dataStatus.updateExtendVendorRequestStatus(objExtendVendorRequest, userId);
@@ -134,7 +147,7 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
     	if(!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequestStatus", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objVendorRequest.STATUS_ID === 5){
+    	if(objVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
     	} else {
     		return dataStatus.updateVendorRequestStatus(objVendorRequest, userId);
@@ -158,7 +171,7 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
     	if(!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateChangeVendorRequestStatus", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objChangeVendorRequest.STATUS_ID === 5){
+    	if(objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, userId);
     	} else {
     		return dataStatus.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
@@ -167,12 +180,12 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
 }
 
 //Update extend vendor request status manual
-function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
+function updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId) {
     if (validateUpdateExtendVendorRequest(objExtendVendorRequest, userId)) {
     	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objExtendVendorRequest.STATUS_ID === 5){
+    	if(objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, userId);
     	} else {
     		return dataStatus.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
@@ -181,12 +194,12 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
 }
 
 //Update vendor request status manual
-function updateVendorRequestStatus(objVendorRequest, userId) {
+function updateVendorRequestStatusManual(objVendorRequest, userId) {
     if (validateUpdateVendorRequestStatus(objVendorRequest, userId)){
     	if(!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequestStatus", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objVendorRequest.STATUS_ID === 5){
+    	if(objVendorRequest.STATUS_ID === statusMap.APPROVED){
     		return dataStatus.updateVendorRequestStatusCompletedManual(objVendorRequest, userId);
     	} else {
     		return dataStatus.updateVendorRequestStatusManual(objVendorRequest, userId);
@@ -249,7 +262,7 @@ function validateUpdateChangeVendorRequest(objChangeVendorRequest, userId) {
 		'CHANGE_VENDOR_REQUEST_ID',
 		'STATUS_ID',
 		'PREVIOUS_STATUS_ID'];
-    if(objChangeVendorRequest.STATUS_ID === 3 || objChangeVendorRequest.STATUS_ID === 5){
+    if(objChangeVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
     	keys.push('RECEIVER_YVC_REQUEST');
     }
 
@@ -297,7 +310,7 @@ function validateUpdateExtendVendorRequest(objExtendVendorRequest, userId) {
         'STATUS_ID',
 		'PREVIOUS_STATUS_ID'];
     
-    if(objExtendVendorRequest.STATUS_ID === 3 || objExtendVendorRequest.STATUS_ID === 5){
+    if(objExtendVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
     	keys.push('RECEIVER_YVC_REQUEST');
     }
 
@@ -344,7 +357,7 @@ function validateUpdateVendorRequestStatus(objVendorRequest, userId) {
                 'STATUS_ID',
         		'PREVIOUS_STATUS_ID'];
     
-    if(objVendorRequest.STATUS_ID === 3 || objVendorRequest.STATUS_ID === 5){
+    if(objVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objVendorRequest.STATUS_ID === statusMap.APPROVED){
     	keys.push('RECEIVER_YVC_REQUEST');
     }
 
@@ -422,22 +435,105 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
-				mailObj = changeVendorMail.parseInProcess(changeVendorRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = changeVendorMail.parseInProcess(changeVendorRequestMailObj,getUrlBase(),"Colleague");
 				break;
 			case '4':
-				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj,getUrlBase(),"Colleague");
 				break;
 			case '5':
-				mailObj = changeVendorMail.parseApproved(changeVendorRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = changeVendorMail.parseApproved(changeVendorRequestMailObj,getUrlBase(),"Colleague");
 				break;
 			case '6':
-				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj,getUrlBase(),"Colleague");
 				break;
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 		mail.sendMail(emailObj,true,null);
 	}
+}
+
+function sendExtendVendorMailByStatus(objRequest,extendVendorData, userId){
+	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)){
+		var extendVendorRequestMailObj = {};
+		var mailObj = {};
+		extendVendorRequestMailObj.EXTEND_VENDOR_REQUEST_ID = objRequest.EXTEND_VENDOR_REQUEST_ID;
+		extendVendorRequestMailObj.RECEIVER_YVC_REQUEST = objRequest.RECEIVER_YVC_REQUEST;
+		extendVendorRequestMailObj.VENDOR_ID = extendVendorData.VENDOR_ID;
+		var statusId = objRequest.STATUS_ID;
+		switch (statusId) {
+			case '3':
+				mailObj = extendVendorMail.parseInProcess(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '4':
+				mailObj = extendVendorMail.parseReturnToRequest(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '5':
+				mailObj = extendVendorMail.parseApproved(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '6':
+				mailObj = extendVendorMail.parseCancelled(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+		}
+		
+		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+		mail.sendMail(emailObj,true,null);
+	}
+}
+
+function sendVendorInquiryMailByStatus(objRequest, userId){
+	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 1 && Number(objRequest.STATUS_ID) < 5)){
+		var vendorInquiryMailObj = {};
+		var mailObj = {};
+		vendorInquiryMailObj.VENDOR_INQUIRY_ID = objRequest.VENDOR_INQUIRY_ID;
+		var statusId = objRequest.STATUS_ID;
+		switch (statusId) {
+			case '2':
+				mailObj = vendorInquiryMail.parseReturnToRequest(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				break;
+			case '3':
+				mailObj = vendorInquiryMail.parseCompleted(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				break;
+			case '4':
+				mailObj = vendorInquiryMail.parseCancelled(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				break;
+		}
+		
+		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+		mail.sendMail(emailObj,true,null);
+	}
+}
+
+function sendVendorRequestMailByStatus(objRequest, userId){
+	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)){
+		var vendorRequestMailObj = {};
+		var mailObj = {};
+		vendorRequestMailObj.VENDOR_REQUEST_ID = objRequest.VENDOR_REQUEST_ID;
+		vendorRequestMailObj.RECEIVER_YVC_REQUEST = objRequest.RECEIVER_YVC_REQUEST;
+		vendorRequestMailObj.VENDOR_ID = objRequest.VENDOR_ID;
+		var statusId = objRequest.STATUS_ID;
+		switch (statusId) {
+			case '3':
+				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '4':
+				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '5':
+				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+			case '6':
+				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj,getUrlBase(),"Colleague");
+				break;
+		}
+		
+		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+		mail.sendMail(emailObj,true,null);
+	}
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(mailObj){

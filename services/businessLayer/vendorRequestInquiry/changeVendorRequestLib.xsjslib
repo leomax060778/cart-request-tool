@@ -169,7 +169,7 @@ function validateType(key, value) {
 function sendSubmitMail(changeVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseSubmit(vendorMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = changeVendorMail.parseSubmit(vendorMailObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -177,7 +177,7 @@ function sendSubmitMail(changeVendorRequestId, userId){
 function sendResubmitMail(changeVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -185,9 +185,13 @@ function sendResubmitMail(changeVendorRequestId, userId){
 function sendMessageMail(changeVendorRequest, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-	var mailObj = changeVendorMail.parseFYI(vendorMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = changeVendorMail.parseFYI(vendorMailObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(changeVendorRequest){

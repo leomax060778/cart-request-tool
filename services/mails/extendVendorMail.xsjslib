@@ -50,7 +50,7 @@ function parseApproved(extendVendorObj, path, userName){
 	var mailObj = {};
 	mailObj.body = '<b>Dear '+userName+',</b><br /><br />Your <b>EV</b> is now <b>Approved.'+
 	'</b><br /><br /><b>Vendor ID # '+extendVendorObj.VENDOR_ID+'</b> has been issued on '+
-	'<b>#FECHA_ALTA#</b><br /><br />The message is FYI Only, requiring no response.: '+
+	'<b>'+getDateNow()+'</b><br /><br />The message is FYI Only, requiring no response.: '+
 	'<br /><br />Log in to CRT using Google Chrome, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
 	'<a href="'+path+'"/vendorRequestInquiry>VENDOR INQUIRY</a><br /><br />';

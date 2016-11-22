@@ -10,7 +10,7 @@ var requestService = mapper.getRequest();
 
 var GET_ALL_REQUEST = "GET_ALL_REQUEST";
 var GET_REQUEST_PROCESSING_REPORT_BY_ID = "GET_REQUEST_PROCESSING_REPORT_BY_ID";
-
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -56,18 +56,27 @@ function handleGet(parameters) {
 
 function handlePut(reqBody, userId) {
 	if(reqBody.REQUEST_ID){
-		if(!reqBody.SERVICE){
-			throw ErrorLib.getErrors().BadRequest(
+		if(Number(reqBody.STATUS_ID === statusMap.IN_PROCESS)){
+			if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
+				purchase.updatePurchaseOrderManual(reqBody, userId);
+			} else {
+				purchase.insertPurchaseOrderManual(reqBody, userId);
+			}
+		}
+		if(Number(reqBody.STATUS_ID === statusMap.APPROVED)){
+			if(!reqBody.SERVICE){
+				throw ErrorLib.getErrors().BadRequest(
 	                "",
 	                "cartRequestService/handlePut",
 	                "SERVICE is not found"
-	                );
-		}
-		service.updateService(reqBody, userId);
-		if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
-			purchase.updatePurchaseOrderManual(reqBody, userId);
-		} else {
-			purchase.insertPurchaseOrderManual(reqBody, userId);
+	            );
+			}
+			service.updateService(reqBody, userId);
+			if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
+				purchase.updatePurchaseOrderManual(reqBody, userId);
+			} else {
+				purchase.insertPurchaseOrderManual(reqBody, userId);
+			}
 		}
 	} else {
 		throw ErrorLib.getErrors().BadRequest(

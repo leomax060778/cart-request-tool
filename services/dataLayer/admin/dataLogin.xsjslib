@@ -3,7 +3,7 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var db = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
-var config = mapper.getDataConfig();
+var config = mapper.getDataConfig(); 
 /** ********************************************** */
 
 var spGetToken = "GET_USER_SESSION_TOKEN_BY_TOKEN";
@@ -22,7 +22,7 @@ var spUPDUserSessionToken = "UPD_USER_SESSION_TOKEN";
 
 function getToken(token) {
 	if (token != "") {
-		var rdo = db.executeProcedureManual(spGetToken, {
+		var rdo = db.executeProcedure(spGetToken, {
 			'in_token' : token
 		});
 		return db.extractArray(rdo.out_result);

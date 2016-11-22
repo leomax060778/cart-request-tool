@@ -34,12 +34,7 @@ function getAllVendorForFilters() {
 	return data.getAllVendorForFilters();
 }
 
-function getAllVendorByEntity(entityId, userId) {
-	if (!userId){
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter userId is not found",
-				"VendorService/handleGet/getAllVendorByEntity", userId);
-	}
+function getAllVendorByEntity(entityId) {
 	if (!entityId){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter entityId is not found",
@@ -267,9 +262,7 @@ function validateInsertVendor(objVendor, user_id) {
 	var BreakException = {};
 	var keys = [ 'CONTACT_NAME', 'CONTACT_EMAIL',
 			'ADDRESS_1', 'ADDRESS_2', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME' ];
-	
-	var optionalKeys = ['CONTACT_PHONE', 'VENDOR_ENTITIES', 'INFORMAL_NAME', 'VENDOR_ACCOUNT'];
+			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'VENDOR_ENTITIES', 'INFORMAL_NAME', 'VENDOR_ACCOUNT' ];
 
 	if (!objVendor)
 		throw ErrorLib.getErrors().CustomError("",
@@ -278,17 +271,12 @@ function validateInsertVendor(objVendor, user_id) {
 
 	try {
 		keys.forEach(function(key) {
-			if (objVendor[key] === null || objVendor[key] === undefined) {
-				errors[key] = null;
-				throw BreakException;
-			} else {
 				// validate attribute type
 				isValid = validateType(key, objVendor[key])
 				if (!isValid) {
 					errors[key] = objVendor[key];
 					throw BreakException;
 				}
-			}
 		});
 		isValid = true;
 	} catch (e) {
@@ -359,9 +347,7 @@ function validateUpdateVendor(objVendor, user_id) {
 	var keys = [ 'VENDOR_ID', 
 			'CONTACT_NAME', 'CONTACT_EMAIL',
 			'ADDRESS_1', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME' ];
-	
-	var optionalKeys = ['CONTACT_PHONE', 'ADDRESS_2', 'INFORMAL_NAME', 'VENDOR_ENTITIES'];
+			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'ADDRESS_2', 'INFORMAL_NAME', 'VENDOR_ENTITIES'];
 
 	if (!objVendor)
 		throw ErrorLib.getErrors().CustomError("",
@@ -370,16 +356,11 @@ function validateUpdateVendor(objVendor, user_id) {
 
 	try {
 		keys.forEach(function(key) {
-			if (objVendor[key] === null || objVendor[key] === undefined) {
-				errors[key] = null;
-				throw BreakException;
-			} else {
 				// validate attribute type
 				isValid = validateType(key, objVendor[key]);
 				if (!isValid) {
 					errors[key] = objVendor[key];
 					throw BreakException;
-				}
 			}
 		});
 		isValid = true;
@@ -391,17 +372,6 @@ function validateUpdateVendor(objVendor, user_id) {
 			throw ErrorLib.getErrors().CustomError("",
 					"VendorService/handlePut/updateVendor",
 					JSON.stringify(errors));
-	}
-	
-	if (optionalKeys.CONTACT_PHONE || optionalKeys.ADDRESS_2 || optionalKeys.INFORMAL_NAME || optionalKeys.VENDOR_ENTITIES) {
-		optionalKeys.forEach(function(key) {
-				// validate attribute type
-				isValid = validateType(key, objVendor[key]);
-				if (!isValid) {
-					errors[key] = objVendor[key];
-					throw BreakException;
-			}
-		});
 	}
 	
 	return isValid;
@@ -459,43 +429,43 @@ function validateType(key, value) {
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'CONTACT_NAME':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'CONTACT_EMAIL':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'CONTACT_PHONE':
 		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'ADDRESS_1':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'ADDRESS_2':
 		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'CITY':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'STATE':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'ZIP':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'PHONE':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'FAX':
-		valid = value.length > 0 && value.length <= 255;
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'LEGAL_NAME':
-		valid = value.length > 0 && value.length <= 511;
+		valid = (!value) || (value.length > 0 && value.length <= 511);
 		break;
 	case 'INFORMAL_NAME':
 		valid = (!value) || (value.length > 0 && value.length <= 511);
 		break;
 	case 'VENDOR_ENTITIES':
-		valid = (!value) || (Array.isArray(value) && value.length > 0);
+		valid = Array.isArray(value) && value.length > 0;
 		break;
 	case 'VENDOR_ACCOUNT':
 		valid = (!value) || (value.length > 0 && value.length <= 255);

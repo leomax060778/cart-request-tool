@@ -310,10 +310,6 @@ function validateUser(user) {
 		throw ErrorLib.getErrors().CustomError("",
 				"userServices/handlePost/insertUser", "The EMAIL is not found");
 
-	if (!user.PHONE)
-		throw ErrorLib.getErrors().CustomError("",
-				"userServices/handlePost/insertUser", "The PHONE is not found");
-
 	if (!util.validateLength(user.USER_NAME, 255, 1, "User Name")
 			|| !util.validateIsString(user.USER_NAME))
 		throw ErrorLib.getErrors().CustomError("",
@@ -335,10 +331,12 @@ function validateUser(user) {
 	if (!util.validateIsEmail(user.EMAIL))
 		throw ErrorLib.getErrors().CustomError("",
 				"userServices/handlePost/insertUser", "The EMAIL is invalid");
-
-	if (!util.validateLength(user.PHONE, 255, 1, "Phone"))
-		throw ErrorLib.getErrors().CustomError("",
-				"userServices/handlePost/insertUser", "The PHONE is invalid");
+	
+	if(user.PHONE){
+		if (!util.validateLength(user.PHONE, 255, 1, "Phone"))
+			throw ErrorLib.getErrors().CustomError("",
+					"userServices/handlePost/insertUser", "The PHONE is invalid");
+	}
 
 	return true;
 }

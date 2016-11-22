@@ -10,6 +10,16 @@ var INS_TEAM = 'INS_TEAM';
 var UPD_TEAM = 'UPD_TEAM';
 var DEL_TEAM = 'DEL_TEAM';
 var GET_ALL_TEAM_FOR_FILTERS = "GET_ALL_TEAM_FOR_FILTERS";
+var GET_TEAMS_BY_USER_ID_BUDGET_YEAR_ID = "GET_TEAMS_BY_USER_ID_BUDGET_YEAR_ID";
+
+function getTeamsByBudgeYearIdAndUserId(budgetYearId, userId){
+	var param = {};
+	param.out_result = '?';
+	param.in_user_id = userId;
+	param.in_budget_year_id = budgetYearId;
+	var result = db.executeProcedure(GET_TEAMS_BY_USER_ID_BUDGET_YEAR_ID, param);
+	return db.extractArray(result.out_result);
+}
 
 function getAllTeam(){
 	var param = {};

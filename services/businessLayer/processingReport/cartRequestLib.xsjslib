@@ -7,6 +7,9 @@ var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var stageMap = {'STAGE_B': 2, 'STAGE_C': 3, 'STAGE_D': 4, 'STAGE_E': 5, 'STAGE_F': 6};
+
 //Get request by status
 function getAllCartRequest() {
     return data.getAllRequest();
@@ -25,7 +28,44 @@ function getRequestDataProtection(requestId) {
 //Update cart request status
 function updateRequestStatus(objRequest, userId) {
     if (validateUpdateRequestStatus(objRequest, userId)) {
+    	if(Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED){
+    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.CHECKED){
+    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS){
+    		objRequest.STAGE_ID = stageMap.STAGE_D;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER){
+    		objRequest.STAGE_ID = stageMap.STAGE_B;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.APPROVED){
+    		objRequest.STAGE_ID = stageMap.STAGE_E;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.CANCELLED){
+    		objRequest.STAGE_ID = stageMap.STAGE_F;
+    	} else {
+    		throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
+    	}
     	return data.updateRequestStatus(objRequest, userId);
+    }
+}
+
+//Update cart request status manual
+function updateRequestStatusManual(objRequest, userId) {
+    if (validateUpdateRequestStatus(objRequest, userId)) {
+    	if(Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED){
+    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.CHECKED){
+    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS){
+    		objRequest.STAGE_ID = stageMap.STAGE_D;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER){
+    		objRequest.STAGE_ID = stageMap.STAGE_B;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.APPROVED){
+    		objRequest.STAGE_ID = stageMap.STAGE_E;
+    	} else if(Number(objRequest.STATUS_ID) === statusMap.CANCELLED){
+    		objRequest.STAGE_ID = stageMap.STAGE_F;
+    	} else {
+    		throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
+    	}
+    	return data.updateRequestStatusManual(objRequest, userId);
     }
 }
 
@@ -96,19 +136,19 @@ function sendMailByStatus(objRequest, mailData, userId){
 		cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
-			case '3':
+			case 3:
 				cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
-				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
-			case '4':
-				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+			case 4:
+				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
-			case '5':
+			case 5:
 				cartRequestMailObj.SERVICES = mailData;
-				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
-			case '6':
-				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+			case 6:
+				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
 		}
 		
@@ -119,6 +159,10 @@ function sendMailByStatus(objRequest, mailData, userId){
 
 function getRequestMailDataByRequestId(objRequest, userId){
 	return data.getRequestMailDataByRequestId(objRequest, userId);
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(inquiryMailObj){

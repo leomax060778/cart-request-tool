@@ -4,6 +4,8 @@ var purchase = mapper.getDataPurchaseOrderService();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+
 //Get purchase order service by request id
 function getPurchaseOrderById(requestId) {
   return purchase.getPurchaseOrderById(requestId);
@@ -54,9 +56,9 @@ function validatePurchaseOrderService(objPurchase, userId) {
   var isValid = false;
   var errors = {};
   var BreakException = {};
-  var keys = [ 'REQUEST_ID', 'SHOPPING_CART', 'CART_DATE', 'PURCHASE_ORDER_NUMBER'];
-  if (objPurchase.STATUS_ID === 4){
-	  keys.push("APPROVAL_DATE");
+  var keys = [ 'REQUEST_ID', 'SHOPPING_CART', 'CART_DATE'];
+  if (Number(objPurchase.STATUS_ID) === statusMap.APPROVED){
+	  keys.push("APPROVAL_DATE", "PURCHASE_ORDER_NUMBER");
   }
   
   if (!objPurchase) {

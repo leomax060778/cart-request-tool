@@ -40,12 +40,24 @@ function updateRequestStatus(objRequest, userId) {
      parameters.in_status_id = objRequest.STATUS_ID;
      parameters.in_modified_user_id = userId;//objRequest.IN_MODIFIED_USER_ID;
      parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
+     parameters.in_stage_id = objRequest.STAGE_ID;
      parameters.out_result = '?';
      return db.executeScalar(UPD_REQUEST_STATUS, parameters, 'out_result');
 }
 
-function getRequestMailDataByRequestId(objRequest, userId){
-	var params = {}
+function updateRequestStatusManual(objRequest, userId) {
+    var parameters = {};
+    parameters.in_request_id = objRequest.REQUEST_ID;
+    parameters.in_status_id = objRequest.STATUS_ID;
+    parameters.in_modified_user_id = userId;//objRequest.IN_MODIFIED_USER_ID;
+    parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
+    parameters.in_stage_id = objRequest.STAGE_ID;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_REQUEST_STATUS, parameters, 'out_result');
+}
+
+function getRequestMailDataByRequestId(objRequest){
+	var params = {};
 	params.in_request_id = objRequest.REQUEST_ID;
 	params.out_result = '?';
 	var result = db.executeProcedureManual(GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID, params);

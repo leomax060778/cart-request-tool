@@ -22,9 +22,7 @@ function getManualNoteTypeById(in_note_type_id, user_id){
 	return dataNoteType.getManualNoteTypeById(in_note_type_id); 
 }
 
-function getAllNoteType(user_id){
-	if(!user_id)	
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","noteTypeService/handleGet/getAllNoteType",user_id);	
+function getAllNoteType(){
 	return dataNoteType.getAllNoteType(); 
 }
 

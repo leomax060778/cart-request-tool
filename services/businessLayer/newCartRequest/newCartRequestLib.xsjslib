@@ -4,6 +4,7 @@ var data = mapper.getDataNewCartRequest();
 var dataRService = mapper.getDataNewCartRequestService();
 var dataService = mapper.getDataService();
 var dataSpecialRequest = mapper.getDataSpecialRequest();
+var dataCurrency = mapper.getDataCurrency();
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
 var dataRCostObject = mapper.getDataRequestCostObject();
@@ -39,11 +40,16 @@ function insertService(reqBody, user_id){
 	}	
 }
 
-function insertServices(services, requestId, userId){
+//Return the total amount to be used in Request Service
+function insertServices(services, requestId, conversion_rate, userId){
+	var amount = 0;
 	(services).forEach(function(itemService){
 		itemService.REQUEST_ID = requestId;
+		amount += Number(itemService.AMOUNT);
+		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
 		insertService(itemService, userId);
 	});
+	return amount;
 }
 
 
@@ -108,32 +114,41 @@ function insertManualNonSapVendor(objVendor, user_id){
 }
 
 function insertRequest(reqBody, user_id){
+	reqBody.USER_ID = user_id;
 	try{
+
 		if(reqBody.NON_SAP_VENDOR !== null){
 			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = nonsap;
 		} else{
 			reqBody.NON_SAP_VENDOR_ID = null;
 		}
-
 		var request;
 		if(validateInsertRequest(reqBody, user_id)){
 			request = data.insertRequest(reqBody, user_id);
 		}
+		
 		if(request){
 			reqBody.COST_OBJECT.REQUEST_ID = request;
 			if(reqBody.REQUEST_SERVICE !== undefined){
+				var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
+				var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
+				var cart_amount = insertServices(reqBody.SERVICES, request, conversion_rate, user_id);
+				reqBody.CART_AMOUNT = cart_amount;
+				reqBody.TOTAL_BUDGET = cart_amount * conversion_rate;
 				insertRequestService(reqBody.REQUEST_SERVICE, request ,user_id);
 			}
-			insertServices(reqBody.SERVICES, request, user_id);
+		
 			if(reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0){
 				insertSpecialRequest(reqBody.SPECIAL_REQUEST, request ,user_id);
 			}
 			insertCostObject(reqBody.COST_OBJECT, user_id);
 			if(Object.keys(reqBody.RISK_FUNDED).length > 0){
+				var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+				var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 				reqBody.RISK_FUNDED.REQUEST_ID = request;
 				reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-				reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT_KEUR);
+				reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
 				insertRiskFunded(reqBody.RISK_FUNDED, user_id);
 			}
 			(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
@@ -739,9 +754,13 @@ function validateServiceType(key, value) {
 function sendSubmitMail(newCartRequestId, userId){
 	var newCartRequestObj = {};
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
-	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(vendorRequestObj){

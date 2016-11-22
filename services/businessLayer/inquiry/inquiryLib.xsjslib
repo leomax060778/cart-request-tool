@@ -157,7 +157,7 @@ function validateType(key, value) {
 function sendSubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseSubmit(inquiryMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = inquiryMail.parseSubmit(inquiryMailObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -165,9 +165,13 @@ function sendSubmitMail(inquiryId, userId){
 function sendResubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj,getUrlBase(),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(inquiryMailObj){

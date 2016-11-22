@@ -40,10 +40,9 @@ function handleErrorResponse(value) {
 		$.response.contentType = "application/json";
 		$.response.status = error.code;
 		$.response.setBody(JSON.stringify(error));
-	} else {
-		handleErrorResponse(ErrorLib.getErrors().InternalServerError("", "",
-				value + "")); // value + "" is a workaround!!!
-	}
+	}else{
+		handleErrorResponse(ErrorLib.getErrors().InternalServerError("","",value+""));	//value + "" is a workaround!!!
+	}	
 }
 
 // throw a Not Implemented Error
@@ -52,38 +51,72 @@ function notImplementedMethod() {
 			"httpLib/processRequest", "");
 }
 
-// This function choose method, between Get, Put, Post or Delete. Catch all
-// error throwed across the entired app and validate the user per XS call.
 function processRequest(getMethod, postMethod, putMethod, deleteMethod) {
+	processRequest2(getMethod, postMethod, putMethod, deleteMethod, false, "", true);
+}
+
+//TODO: the following function should be the default one once all services are updated with the new contract
+//This function choose method, between Get, Put, Post or Delete. Catch all error throwed across the entired app and validate the user per XS call.
+function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvalidate, ResourceID, WithOutPermission) {
 	try {
-
-		/** ********here - Validate User() -----** */
-		var userSessionID = 1;
-		userSessionID = validateUser(getHeaderByName("x-csrf-token"));
-		if(!userSessionID)
-			 throw ErrorLib.getErrors().Unauthorized(getHeaderByName("x-csrf-token"));
 		
-		 /** *********************************************** */
-		var reqBody = $.request.body ? JSON.parse($.request.body.asString())
-				: undefined;
-
-		switch ($.request.method) {
-		case $.net.http.GET:
-			return getMethod(getUrlParameters(), userSessionID);
-			break;
-		case $.net.http.PUT:
-			return putMethod(reqBody, userSessionID);
-			break;
-		case $.net.http.POST:
-			return postMethod(reqBody, userSessionID);
-			break;
-		case $.net.http.DEL:
-			return deleteMethod(reqBody, userSessionID);
-			break;
-		default:
-			return notImplementedMethod();
-			break;
-		}
+		/**********here  - Validate User() -----***/
+		var userSessionID = null;
+		
+		if(!Notvalidate){
+			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
+	
+			if(!userSessionID)
+				throw ErrorLib.getErrors().Unauthorized(getHeaderByName("x-csrf-token"));		
+			
+		}		
+		/**************************************************/
+		
+		var reqBody = $.request.body ? JSON.parse($.request.body.asString()) : undefined;
+		
+		
+		    switch ($.request.method) {
+		        case $.net.http.GET:{
+		        	//Check Read Permission
+		        	if(!WithOutPermission){
+			        	permissions.isAuthorized(userSessionID,
+	        			config.getPermissionIdByName(config.ReadPermission()),
+	        			ResourceID);	
+		        	}
+		        	getMethod(getUrlParameters(),userSessionID);
+		            break;
+		        }		        	
+		        case $.net.http.PUT:{
+		        	if(!WithOutPermission){
+		        	permissions.isAuthorized(userSessionID,
+       		    	config.getPermissionIdByName(config.EditPermission()),
+         			ResourceID);
+		        	}
+		        	putMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+	            case $.net.http.POST:{
+	            	if(!WithOutPermission){
+		        	permissions.isAuthorized(userSessionID,
+        			config.getPermissionIdByName(config.CreatePermission()),
+        			ResourceID);
+	            	}
+	            	postMethod(reqBody,userSessionID);
+		            break;
+	            }	            	
+		        case $.net.http.DEL:{
+		        	if(!WithOutPermission){
+		        	permissions.isAuthorized(userSessionID,
+        			config.getPermissionIdByName(config.DeletePermission()),
+        			ResourceID);
+		        	}
+		        	deleteMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+		        default:
+		        	notImplementedMethod();
+			    	break;
+		    }	    
 
 	} catch (e) {
 		handleErrorResponse(e);

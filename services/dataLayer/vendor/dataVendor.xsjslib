@@ -52,6 +52,7 @@ function getVendorByStatus(statusId) {
 
 function insertVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
+	param.in_account = objVendor.ACCOUNT || null;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
 
@@ -61,6 +62,7 @@ function insertVendor(objVendor, user_id) {
 function updateVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
 	param.in_vendor_id = objVendor.VENDOR_ID;
+	param.in_account = objVendor.ACCOUNT || null;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
 
@@ -94,6 +96,7 @@ function getManualVendorById(vendor_id) {
 
 function insertManualVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
+	param.in_account = objVendor.ACCOUNT || null;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
 
@@ -103,6 +106,7 @@ function insertManualVendor(objVendor, user_id) {
 function updateManualVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
 	param.in_vendor_id = objVendor.VENDOR_ID;
+	param.in_account = objVendor.ACCOUNT || null;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
 
@@ -162,17 +166,17 @@ function getVendorAdditionalInformationParams(objVendor) {
 //MAPPER
 function getParams(objVendor) {
 	var params = {};
-	params.in_contact_name = objVendor.CONTACT_NAME;
-	params.in_contact_email = objVendor.CONTACT_EMAIL;
+	params.in_contact_name = objVendor.CONTACT_NAME || null;
+	params.in_contact_email = objVendor.CONTACT_EMAIL || null;
 	params.in_contact_phone = objVendor.CONTACT_PHONE || null;
-	params.in_address_1 = objVendor.ADDRESS_1;
+	params.in_address_1 = objVendor.ADDRESS_1 || null;
 	params.in_address_2 = objVendor.ADDRESS_2 || null;
-	params.in_city = objVendor.CITY;
-	params.in_state = objVendor.STATE;
-	params.in_zip = objVendor.ZIP;
-	params.in_phone = objVendor.PHONE;
-	params.in_fax = objVendor.FAX;
-	params.in_legal_name = objVendor.LEGAL_NAME;
+	params.in_city = objVendor.CITY || null;
+	params.in_state = objVendor.STATE || null;
+	params.in_zip = objVendor.ZIP || null;
+	params.in_phone = objVendor.PHONE || null;
+	params.in_fax = objVendor.FAX || null;
+	params.in_legal_name = objVendor.LEGAL_NAME || null;
 	params.in_informal_name = objVendor.INFORMAL_NAME || null;
 	return params;
 }

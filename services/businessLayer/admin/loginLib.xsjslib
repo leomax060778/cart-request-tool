@@ -170,10 +170,10 @@ function deleteUserToken(userId){
 
 function notifyInsertByEmail(TO,username,token){
 	var appUrl = config.getAppUrl();
-	var body = ' <p> Dear Colleague </p>  <p>Here is your username and token for your Marketing Planning Tool password recovery</p>  <p>Username: <span>'+username+'</span></p>  <p>Token: <span>'+token+'</span></p>  <p>To accept your new Password for Marketing Planning Tool, visit the homepage ('+appUrl+') and enter your token in the login area.</p>';
+	var body = ' <p> Dear Colleague </p>  <p>Here is your username and token for your Cart Request Tool password recovery</p>  <p>Username: <span>'+username+'</span></p>  <p>Token: <span>'+token+'</span></p>  <p>To accept your new Password for Cart Request Tool, visit the homepage ('+appUrl+') and enter your token in the login area.</p>';
 	var mailObject = mail.getJson([ {
 		"address" : TO
-	} ], "Marketing Planning Tool - Password recovery", body);
+	} ], "Cart Request Tool - Password recovery", body);
 	
 	mail.sendMail(mailObject,true);
 }

@@ -36,11 +36,11 @@ function insertPurchaseOrderManual(objPurchase, userId) {
      var parameters = {};
      parameters.in_shopping_cart = objPurchase.SHOPPING_CART;
      parameters.in_cart_date = objPurchase.CART_DATE;
-     parameters.in_purchase_order_number = objPurchase.PURCHASE_ORDER_NUMBER;
+     parameters.in_purchase_order_number = objPurchase.PURCHASE_ORDER_NUMBER || null;
      parameters.in_approval_date = objPurchase.APPROVAL_DATE || null;
      parameters.in_request_id = objPurchase.REQUEST_ID;
      parameters.in_user_id = userId;//objPurchase.USER_ID;
-     parameters.in_created_user_id = userId;//objPurchase.IN_MODIFIED_USER_ID;
+     parameters.in_created_user_id = userId;//objPurchase.MODIFIED_USER_ID;
      parameters.out_result = '?';
      return db.executeScalarManual(INS_PURCHASE_ORDER_SERVICE, parameters, 'out_result');
 }
@@ -49,10 +49,10 @@ function updatePurchaseOrderManual(objPurchase, userId) {
 	var parameters = {};
     parameters.in_shopping_cart = objPurchase.SHOPPING_CART;
     parameters.in_cart_date = objPurchase.CART_DATE;
-    parameters.in_purchase_order_number = objPurchase.PURCHASE_ORDER_NUMBER;
+    parameters.in_purchase_order_number = objPurchase.PURCHASE_ORDER_NUMBER || null;
     parameters.in_approval_date = objPurchase.APPROVAL_DATE || null;
     parameters.in_request_id = objPurchase.REQUEST_ID;
-    parameters.in_modified_user_id = userId;//objPurchase.IN_MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;//objPurchase.MODIFIED_USER_ID;
     parameters.out_result = '?';
     return db.executeScalarManual(UPD_PURCHASE_ORDER_SERVICE, parameters, 'out_result');
 }
@@ -60,7 +60,7 @@ function updatePurchaseOrderManual(objPurchase, userId) {
 function deletePurchaseOrderManual(objPurchase, userId) {
 	var parameters = {};
     parameters.in_purchase_order_service_id = objPurchase.PURCHASE_ORDER_SERVICE_ID;
-    parameters.in_modified_user_id = userId;//objPurchase.IN_MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;//objPurchase.MODIFIED_USER_ID;
     parameters.out_result = '?';
     return db.executeScalarManual(DEL_PURCHASE_ORDER_SERVICE, parameters, 'out_result');
 }

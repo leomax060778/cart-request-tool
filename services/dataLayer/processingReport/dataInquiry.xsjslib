@@ -8,7 +8,6 @@ var GET_INQUIRY_BY_STATUS = "GET_INQUIRY_BY_STATUS";
 var GET_INQUIRY_BY_STATUS_ADMINISTRABLE = "GET_INQUIRY_BY_STATUS_ADMINISTRABLE";
 var GET_INQUIRY_PROCESSING_REPORT_BY_ID = "GET_INQUIRY_PROCESSING_REPORT_BY_ID";
 var UPD_INQUIRY_STATUS = "UPD_INQUIRY_STATUS";
-var UPD_INQUIRY_STATUS_COMPLETED = "UPD_INQUIRY_STATUS_COMPLETED";
 
 //Get inquiry by status
 function getInquiryByStatus(statusId) {
@@ -48,12 +47,14 @@ function updateInquiryStatus(objInquiry, userId) {
   return db.executeScalar(UPD_INQUIRY_STATUS, parameters, 'out_result');
 }
 
-//Update inquiry status completed
-function updateInquiryStatusCompleted(objInquiry, userId) {
+//Update inquiry status manual
+function updateInquiryStatusManual(objInquiry, userId) {
   var parameters = {};
   parameters.in_inquiry_id = objInquiry.INQUIRY_ID;
   parameters.in_status_id = objInquiry.STATUS_ID;
+  parameters.in_previous_status_id = objInquiry.PREVIOUS_STATUS_ID;
+  parameters.in_user_id_status = userId;//objInquiry.PREVIOUS_STATUS_ID;
   parameters.in_modified_user_id = userId; //objInquiry.IN_MODIFIED_USER_ID;
   parameters.out_result = '?';
-  return db.executeScalar(UPD_INQUIRY_STATUS_COMPLETED, parameters, 'out_result');
+  return db.executeScalarManual(UPD_INQUIRY_STATUS, parameters, 'out_result');
 }

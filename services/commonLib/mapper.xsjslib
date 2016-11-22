@@ -365,6 +365,11 @@ function getService(){
     return $.xscartrequesttool.services.businessLayer.processingReport.serviceLib;
 }
 
+function getUserTeam(){
+    $.import("xscartrequesttool.services.businessLayer.admin","userTeamLib");
+    return $.xscartrequesttool.services.businessLayer.admin.userTeamLib;
+}
+
 /************Data Layer Mapper*****************/
 
 function getdbHelper(){
@@ -794,6 +799,11 @@ function getDataPurchaseOrderService() {
 function getDataInquiryStatus() {
     $.import("xscartrequesttool.services.dataLayer.processingReport","dataInquiry");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataInquiry;
+}
+
+function getDataUserTeam() {
+    $.import("xscartrequesttool.services.dataLayer.admin","dataUserTeam");
+    return $.xscartrequesttool.services.dataLayer.admin.dataUserTeam;
 }
 
 /********************

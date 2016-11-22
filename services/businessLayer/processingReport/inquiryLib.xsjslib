@@ -42,6 +42,17 @@ function updateInquiryStatus(objInquiry, userId) {
     }
 }
 
+//Update inquiry status manual
+function updateInquiryStatusManual(objInquiry, userId) {
+    if (validateUpdateInquiryStatus(objInquiry, userId)) {
+    	if(!inquiry.existInquiry(objInquiry.INQUIRY_ID)){
+    		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/updateInquiryManual", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
+    	} else {
+    		return inquiryStatus.updateInquiryStatusManual(objInquiry, userId);
+    	}
+    }
+}
+
 //Validate update inquiry status
 function validateUpdateInquiryStatus(objInquiry, userId) {
     if (!userId) {
@@ -108,18 +119,22 @@ function sendMailByStatus(inquiryId, statusId, userId){
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj,getUrlBase(),"Colleague");
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+		mailObj = inquiryMail.parseCompleted(inquiryMailObj,getUrlBase(),"Colleague");
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj,"http://localhost:63342/crt/webapp/index.html","admin");
+		mailObj = inquiryMail.parseCancelled(inquiryMailObj,getUrlBase(),"Colleague");
 		break;
 	}
 	
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
+}
+
+function getUrlBase(){
+	return "http://localhost:63342/crt/webapp/index.html";
 }
 
 function getEmailList(inquiryMailObj){

@@ -17,11 +17,11 @@ function parseCancelled(vendorObj,path, userName){
 	mailObj.body =  'Dear '
 	+ userName +
 	',<br /><br />Your <b>NV'
-	+ vendorObj.REQUEST_ID +
+	+ vendorObj.VENDOR_REQUEST_ID +
 	'</b> has been <b>Cancelled.</b><br /><br />The reason for cancellation has been recorded in the Message History as FYI Only, requiring no response.<br />'+
 	'<br />Log in to CRT using Google Chrome, then copy and paste the following link if you would like to access this specific request: '+
 	'<a href="'+path+'#/processingReport">New Vendor</a><br /><br />';
-	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor - has been Cancelled - '+getDateNow()+'';
+	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - New Vendor - has been Cancelled - '+getDateNow()+'';
 	return mailObj;
 }
 
@@ -39,22 +39,22 @@ function parseResubmitted(vendorObj, path , userName){
 function parseApproved(vendorObj, path, userName){
 	var mailObj = {};
 	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>NV</b> is now <b>Approved.</b><br /><br />'+
-	'<b>Vendor ID # '+vendorObj.VENDOR_ID+'</b> has been issued on <b>'+vendorObj.UPDATED_STATUS_TZ+'</b><br /><br />The message '+
+	'<b>Vendor ID # '+vendorObj.VENDOR_ID+'</b> has been issued on <b>'+getDateNow()+'</b><br /><br />The message '+
 	'is FYI Only, requiring no response.<br /><br />Log in to CRT using Google Chrome, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
 	'<a href="'+path+'#/processingReport">New Vendor</a><br /><br />';
-	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor Approved - '+getDateNow()+'';
+	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - New Vendor Approved - '+getDateNow()+'';
 	return mailObj;
 }
 
 function parseInProcess(vendorObj, path, userName){
 	var mailObj = {};
 	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>NV</b> is now <b>In Process.</b><br /><br />'+
-	'<b>YVC Request #: '+vendorObj.YVC_REQUEST+'</b> has been submitted.<br /><br />The message is FYI Only, '+
+	'<b>YVC Request #: '+vendorObj.RECEIVER_YVC_REQUEST+'</b> has been submitted.<br /><br />The message is FYI Only, '+
 	'requiring no response.<br /><br /> Log in to CRT using Google Chrome, then copy and paste the '+
 	'following link if you would like to access this specific request: '+
 	'<a href="'+path+'#/processingReport">New Vendor</a><br /><br />';
-	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor is In Process - '+getDateNow()+'';
+	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - New Vendor is In Process - '+getDateNow()+'';
 	return mailObj;
 }
 
@@ -74,11 +74,11 @@ function parseReturnToRequest(vendorObj, path, userName){
 	var mailObj = {};
 	mailObj.body =  'Dear '+userName+',<br /><br />Your <b>New Vendor</b> has been returned to you with '+
 	'an <b>Action and/or Response that is required</b> in order to process your request.<br />'+
-	'<br /><br />A message has been added to the Message History for your request <b>NV'+vendorObj.REQUEST_ID+'</b>'+
+	'<br /><br />A message has been added to the Message History for your request <b>NV'+vendorObj.VENDOR_REQUEST_ID+'</b>'+
 	' in the <b>Cart Request Tool.</b><br /><br />Log in to CRT using Google Chrome, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
 	'<a href="'+path+'#/processingReport">New Vendor</a><br /><br />';
-	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - Action/Response Required Message - '+getDateNow()+'';
+	mailObj.subject = 'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - Action/Response Required Message - '+getDateNow()+'';
 	return mailObj;
 }
 

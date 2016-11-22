@@ -9,6 +9,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURE LIST NAME
 var GET_ALL_CURRENCY = "GET_ALL_CURRENCY";
 var GET_CURRENCY_BY_ID = 'GET_CURRENCY_BY_ID';
+var GET_CURRENCY_CONVERSION_RATE = "GET_CURRENCY_CONVERSION_RATE";
 var INS_CURRENCY = 'INS_CURRENCY';
 var UPD_CURRENCY = 'UPD_CURRENCY';
 var DEL_CURRENCY = 'DEL_CURRENCY';
@@ -37,6 +38,16 @@ function getManualCurrencyById(currency_id){
 	param.out_result = '?';
 	
 	var result = db.executeProcedureManual(GET_CURRENCY_BY_ID, param);
+	return db.extractArray(result.out_result);
+}
+
+function getManualCurrencyConversionRate(currency_id){
+	
+	var param = {};
+	param.in_currency_id = currency_id;
+	param.out_result = '?';
+	
+	var result = db.executeProcedureManual(GET_CURRENCY_CONVERSION_RATE, param);
 	return db.extractArray(result.out_result);
 }
 
