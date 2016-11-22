@@ -1,13 +1,24 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEAM" (
-  OUT out_result TABLE ( team_id bigint, iso nvarchar(32), name nvarchar(255), team_year integer, opt_team_id bigint)
+  OUT out_result TABLE ( 
+  	team_id bigint, 
+	iso nvarchar(32), 
+	name nvarchar(255), 
+	team_year integer)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT "TEAM".TEAM_ID, "TEAM".ISO, "TEAM".NAME, "TEAM".TEAM_YEAR, "TEAM".OPT_TEAM_ID
-              FROM "CART_REQUEST_TOOL"."TEAM" 
-				WHERE ENABLED = 1 
-				AND DELETED = 0;
+  out_result = 
+  	SELECT 
+  		"HL3".HL3_ID as team_id, 
+	  	"HL3".ACRONYM as iso, 
+	  	"HL3".HL3_DESCRIPTION as name, 
+	  	"BUDGET_YEAR".BUDGET_YEAR as team_year
+	FROM "CART_REQUEST_TOOL"."HL3"
+	INNER JOIN "HL2" AS HL2 ON HL2.HL2_ID = HL3.HL2_ID 
+	INNER JOIN "BUDGET_YEAR" AS BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR_ID = HL2.BUDGET_YEAR_ID
+	WHERE "HL3".ENABLED = 1 
+	AND "HL3".DELETED = 0;
 END;

@@ -12,6 +12,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR" (
   IN in_fax nvarchar (255),
   IN in_legal_name nvarchar (255),
   IN in_informal_name nvarchar (255),
+  IN in_account nvarchar(255),
   IN in_modified_user_id bigint,
   OUT out_result bigint
 )
@@ -34,6 +35,7 @@ BEGIN
 	vendor.fax = in_fax,
 	vendor.legal_name = in_legal_name,
  	vendor.informal_name = in_informal_name,
+ 	vendor.account = in_account,
 	vendor.modified_date_tz = CURRENT_TIMESTAMP,
 	vendor.modified_user_id = in_modified_user_id
 	FROM "VENDOR" vendor

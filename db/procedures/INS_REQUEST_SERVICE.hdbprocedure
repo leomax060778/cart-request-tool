@@ -15,8 +15,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST_SERV
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."REQUEST_SERVICE"(request_id, currency_id, purchase_order_to_uplift, purchase_order_amount, sap_buyer_name, cart_amount, total_budget, created_user_id) 
-  VALUES(in_request_id, in_currency_id, in_purchase_order_to_uplift, in_purchase_order_amount, in_sap_buyer_name, in_cart_amount, in_total_budget, in_user_id);
+  INSERT INTO "CART_REQUEST_TOOL"."REQUEST_SERVICE"(request_id, currency_id, purchase_order_to_uplift, line_to_uplift, purchase_order_amount, sap_buyer_name, cart_amount, total_budget, created_user_id) 
+  VALUES(in_request_id, in_currency_id, in_purchase_order_to_uplift, in_line_to_uplift, in_purchase_order_amount, in_sap_buyer_name, in_cart_amount, in_total_budget, in_user_id);
  
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST_SERVICE";
 END;

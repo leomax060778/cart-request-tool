@@ -2,7 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CURRENCY" (
 IN in_country nvarchar(255), 
 IN in_name nvarchar(255),
 IN in_abbreviation nvarchar(255),
-IN in_convertion_rate decimal(19,10),
+IN in_conversion_rate decimal(19,10),
 IN in_currency_year integer,
 IN in_created_user_id bigint,
 OUT out_result bigint 
@@ -12,7 +12,7 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-    INSERT INTO "CART_REQUEST_TOOL"."CURRENCY"(country, name, abbreviation, convertion_rate, currency_year, created_user_id)
-      VALUES(in_country, in_name, in_abbreviation, in_convertion_rate, in_currency_year, in_created_user_id);
+    INSERT INTO "CART_REQUEST_TOOL"."CURRENCY"(country, name, abbreviation, conversion_rate, currency_year, created_user_id)
+      VALUES(in_country, in_name, in_abbreviation, in_conversion_rate, in_currency_year, in_created_user_id);
     SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."CURRENCY";
 END;

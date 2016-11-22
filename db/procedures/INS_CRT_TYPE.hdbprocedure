@@ -1,5 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CRT_TYPE" (
 	IN in_name nvarchar(255),
+	IN in_iso nvarchar(2),
 	IN in_created_user_id bigint,
 	OUT out_result bigint
  ) 
@@ -8,8 +9,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CRT_TYPE" (
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	INSERT INTO "CART_REQUEST_TOOL"."CRT_TYPE"(name, created_user_id) 
-  VALUES(in_name, in_created_user_id);
+	INSERT INTO "CART_REQUEST_TOOL"."CRT_TYPE"(name, iso, created_user_id) 
+  VALUES(in_name, in_iso, in_created_user_id);
   
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."CRT_TYPE";
 END;

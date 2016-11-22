@@ -21,7 +21,7 @@ function handleGet(parameters, user_id) {
             
         	} 
         else if (parameters[0].name === GET_ALL_NOTE_TYPE) {
-            rdo = note_type.getAllNoteType(user_id);
+            rdo = note_type.getAllNoteType();
           
         	}
         }

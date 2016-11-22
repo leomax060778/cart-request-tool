@@ -1,20 +1,29 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CART_REQUEST_BY_ID" (
   IN in_request_id bigint,
-  OUT out_result TABLE (cart_request_id bigint,
-                          created_date_tz timestamp,
-                          team_id bigint,
-                          user_id bigint,
-                          entity_id bigint,
-                          request_id bigint
-                          )
+  OUT out_result TABLE (
+  	cart_request_id bigint,
+	created_date_tz timestamp,
+    team_id bigint,
+    user_id bigint,
+    entity_id bigint,
+    request_id bigint
+  )
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT request_id as cart_request_id, created_date_tz, team_id , user_id , entity_id , request_id
-                  FROM "REQUEST" WHERE request_id = in_request_id
-                  					AND ENABLED = 1
-                  					AND DELETED = 0;
+  out_result = 
+  	SELECT 
+		request_id as cart_request_id, 
+		created_date_tz, 
+		hl3_id as team_id, 
+		user_id , 
+		entity_id , 
+		request_id
+	FROM "REQUEST" 
+	WHERE request_id = in_request_id
+		AND ENABLED = 1
+	  	AND DELETED = 0;
 END;

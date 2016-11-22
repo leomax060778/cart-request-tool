@@ -40,7 +40,7 @@ function handleGet(parameters, user_id) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-            	rdo = vendor.getAllVendorByEntity(parameters[0].value, user_id);
+            	rdo = vendor.getAllVendorByEntity(parameters[0].value);
             }
 		} else if (parameters[0].name === GET_ALL_VENDOR) {
 			rdo = vendor.getAllVendor();

@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CURRENCY_CONVERSION_RATE" ( 
+	IN in_currency_id bigint,
+	OUT out_result TABLE (conversion_rate decimal(19,2))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "CURRENCY".conversion_rate
+					FROM "CURRENCY"
+						WHERE "CURRENCY".currency_id = in_currency_id
+						AND enabled = 1 
+						AND deleted = 0;
+END;

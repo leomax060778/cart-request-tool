@@ -11,7 +11,7 @@ BEGIN
               FROM "MATERIAL"
               INNER JOIN "CATALOG" ON "MATERIAL".catalog_id = "CATALOG".catalog_id 
                WHERE "MATERIAL".CATALOG_ID = in_catalog_id 
-                     AND ENABLED = 1 
-                     AND DELETED = 0;
+                     AND "MATERIAL".ENABLED = 1 
+                     AND "MATERIAL".DELETED = 0;
 END;
 

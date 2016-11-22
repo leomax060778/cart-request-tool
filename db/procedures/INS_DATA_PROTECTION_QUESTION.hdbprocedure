@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_DATA_PROTECTION_QUESTION" (
  IN in_content nvarchar (512),
  IN in_description nvarchar (1000),
+ IN in_crt_type_id bigint,
  IN in_created_user_id bigint,
  OUT out_result bigint
  ) 
@@ -9,8 +10,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_DATA_PROTECT
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-   INSERT INTO "CART_REQUEST_TOOL"."DATA_PROTECTION_QUESTION" (content, description, created_user_id)
-    VALUES(in_content, in_description, in_created_user_id);
+   INSERT INTO "CART_REQUEST_TOOL"."DATA_PROTECTION_QUESTION" (content, description, crt_type_id, created_user_id)
+    VALUES(in_content, in_description, in_crt_type_id, in_created_user_id);
    
    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."DATA_PROTECTION_QUESTION";
 END;

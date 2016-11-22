@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getProcessingReportMessage();
+var status = mapper.getInquiryStatus();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE";
@@ -63,10 +64,15 @@ function handleDelete() {
  * @param {string} reqBody.INQUIRY_ID - id of the inquiry
  * @param {string} reqBody.MESSAGE_CONTENT - the content of the message
  * @param {string} reqBody.RETURN_TYPE_ID - id of the user type
+ * @param {string} reqBody.PREVIOUS_STATUS_ID - id of the previous status
  * @param userId
  * @returns {string} id - Id of the new inquiry message
  */
 function handlePost(reqBody, userId) {
+	if (Number(reqBody.RETURN_TYPE_ID) === 3){
+		reqBody.STATUS_ID = 4;
+		status.updateInquiryStatusManual(reqBody, userId);
+	}
     var req = request.insertInquiryMessage(reqBody, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }

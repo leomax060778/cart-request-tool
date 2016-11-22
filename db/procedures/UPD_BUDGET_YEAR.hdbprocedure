@@ -1,4 +1,4 @@
-PROCEDURE "CART_REQUEST_TOOL"."xsplanningtool.db.procedures::UPD_BUDGET_YEAR" (
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_BUDGET_YEAR" (
 	IN start_date TIMESTAMP,
 	IN end_date TIMESTAMP,
 	IN default_year TINYINT,

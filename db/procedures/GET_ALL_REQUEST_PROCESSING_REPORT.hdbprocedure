@@ -9,7 +9,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
-	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	DEFAULT SCHEMA "CART_REQUEST_TOOL" 
 	READS SQL DATA AS
 BEGIN
 	out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CART_REQUEST_ID,
@@ -17,7 +17,7 @@ BEGIN
                VAI.VENDOR_NAME,
                ST.NAME AS STATUS_NAME,
                (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
-               STG.NAME AS stage_passes
+               (STG.NAME || ' / #' || CR.PASS) AS stage_passes
              FROM "REQUEST" CR
              INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
              LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 

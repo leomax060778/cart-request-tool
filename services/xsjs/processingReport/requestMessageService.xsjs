@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getProcessingReportMessage();
+var status = mapper.getCartRequest();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_REQUEST_MESSAGE = "GET_REQUEST_MESSAGE";
@@ -65,10 +66,15 @@ function handleDelete() {
  * @param {string} reqBody.RETURN_TYPE_ID - id of the return type
  * @param {string} reqBody.ISSUE_TYPE_ID - id of the issue type
  * @param {string} reqBody.OTHER_ISSUE_TYPE - description of other issue type
+ * @param {string} reqBody.PREVIOUS_STATUS_ID - id of the previous status
  * @param userId
  * @returns {string} id - Id of the new request message
  */
 function handlePost(reqBody, userId) {
+	if (Number(reqBody.RETURN_TYPE_ID) === 3){
+		reqBody.STATUS_ID = 4;
+		status.updateRequestStatusManual(reqBody, userId);
+	}
     var req = request.insertRequestMessage(reqBody, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }

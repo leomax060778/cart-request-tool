@@ -23,7 +23,7 @@ BEGIN
 out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                     CR.REQUEST_ID AS REQUEST_ID,
                     to_nvarchar(CR.created_date_tz, 'YYYY-MM-DD') AS request_date,
-                    TM.iso as team,
+                    HL3.ACRONYM as team,
                     (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
                     ET.entity_name AS entity,
                		VAI.VENDOR_NAME,
@@ -42,7 +42,7 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                          OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
                  )
                INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-               INNER JOIN "TEAM" TM ON TM.team_id = CR.team_id AND TM.ENABLED = 1 AND TM.DELETED = 0
+               INNER JOIN "HL3" HL3 ON HL3.HL3_ID = CR.HL3_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
                INNER JOIN "VENDOR" V ON CR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
                INNER JOIN "ENTITY" ET ON CR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
                INNER JOIN "REQUEST_STATUS" ST ON CR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
