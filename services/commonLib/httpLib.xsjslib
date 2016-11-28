@@ -4,6 +4,8 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var login = mapper.getLogin();
+var permissions = mapper.getDataPermission();
+var config = mapper.getDataConfig();
 /** *************************************** */
 
 // constants
@@ -79,9 +81,11 @@ function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvali
 		        case $.net.http.GET:{
 		        	//Check Read Permission
 		        	if(!WithOutPermission){
-			        	permissions.isAuthorized(userSessionID,
-	        			config.getPermissionIdByName(config.ReadPermission()),
-	        			ResourceID);	
+			        	permissions.isAuthorized(
+		        			userSessionID,
+		        			config.getPermissionIdByName(config.ReadPermission()),
+		        			ResourceID
+	        			);	
 		        	}
 		        	getMethod(getUrlParameters(),userSessionID);
 		            break;

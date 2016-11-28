@@ -40,7 +40,7 @@ function handleGet(parameters, user_id) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-            	rdo = vendor.getAllVendorByEntity(parameters[0].value);
+            	rdo = vendor.getAllVendorByEntity(parameters[0].value, user_id);
             }
 		} else if (parameters[0].name === GET_ALL_VENDOR) {
 			rdo = vendor.getAllVendor();
@@ -61,8 +61,8 @@ function handleGet(parameters, user_id) {
 		throw ErrorLib.getErrors().BadRequest(
 				"",
 				"vendorService/handleGet",
-				"invalid parameter name (can be: GET_VENDOR_BY_ID, GET_ALL_VENDOR, GET_VENDOR_BY_ENTITY_ID, GET_ALL_VENDOR_FOR_FILTERS or GET_VENDOR_BY_STATUS)"
-						+ parameters[0].name);
+				"invalid parameter (can be: GET_VENDOR_BY_ID, GET_ALL_VENDOR, GET_VENDOR_BY_ENTITY_ID, GET_ALL_VENDOR_FOR_FILTERS or GET_VENDOR_BY_STATUS)"
+				);
 	}
 	return http.handleResponse(rdo, http.OK, http.AppJson);
 }

@@ -5,13 +5,22 @@ var ErrorLib = mapper.getErrors();
 
 function updateService(objService, userId){
 	if(validateUpdateService(objService, userId)){
-		objService.SERVICE.forEach(function(key){
-			if(!existService(key.SERVICE_ID)){
-				throw ErrorLib.getErrors().CustomError("", "newCartRequestService/handlePut/updateService", "The object Service " + key.SERVICE_ID + " does not exist"); 
-			} 
-				dataService.updateService(key, userId);
-		});}
-		return objService.length;
+		var service = dataService.getServiceByRequestId(objService.REQUEST_ID);
+		if(service.length === objService.SERVICE.length){
+			objService.SERVICE.forEach(function(key){
+				if(!existService(key.SERVICE_ID)){
+					throw ErrorLib.getErrors().CustomError("", "newCartRequestService/handlePut/updateService", "The object Service " + key.SERVICE_ID + " does not exist"); 
+				} 
+					dataService.updateService(key, userId);
+			});
+		} else {
+			throw ErrorLib.getErrors().CustomError("", 
+													"updateService", 
+													"Invalid array length. objService.SERVICE should have " + service.length + " elements and it has " + objService.SERVICE.length
+												  );
+		}
+	}
+	return objService.length;
 }
 
 //Check if the request exists

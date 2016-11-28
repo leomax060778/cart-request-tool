@@ -21,17 +21,17 @@ function handleGet(parameters) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "inquiryServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = inquiry.getInquiryByStatus(parameters[0].value);
             }
         } else if (parameters[0].name === GET_INQUIRY_BY_STATUS_ADMINISTRABLE) {
-        	if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
+        	if (isNaN(parameters[0].value || parameters[0].value < 0)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "inquiryServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be 1 or 0)"
                 );
             } else {
             	res = inquiry.getInquiryByStatusAdministrable(parameters[0].value);
@@ -41,7 +41,7 @@ function handleGet(parameters) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "inquiryServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = inquiry.getInquiryById(parameters[0].value);

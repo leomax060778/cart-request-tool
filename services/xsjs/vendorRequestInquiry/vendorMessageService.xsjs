@@ -27,8 +27,8 @@ function processRequest() {
  * @param {string} [parameters.GET_CHANGE_VENDOR_REQUEST_MESSAGE] - get by change vendor request id
  * @returns {VendorRequestMessage | VendorInquiryMessage | ChangeVendorRequestMessage | ExtendVendorRequestMessage} VendorRequestInquiry - All messages for vendor request, vendor inquiry, change vendor request or extend vendor request
  */
-function handleGet(parameters) {
-    var rdo = {};
+function handleGet(parameters, userId) {
+    var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_VENDOR_INQUIRY_MESSAGE) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -38,7 +38,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getVendorInquiryMessage(parameters[0].value);
+                res = request.getVendorInquiryMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -48,7 +48,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getVendorRequestMessage(parameters[0].value);
+                res = request.getVendorRequestMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_EXTEND_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -58,7 +58,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getExtendVendorRequestMessage(parameters[0].value);
+                res = request.getExtendVendorRequestMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -68,7 +68,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getChangeVendorRequestMessage(parameters[0].value);
+                res = request.getChangeVendorRequestMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(
@@ -84,7 +84,7 @@ function handleGet(parameters) {
             "invalid parameter (can be: GET_VENDOR_INQUIRY_MESSAGE, GET_VENDOR_REQUEST_MESSAGE, GET_EXTEND_VENDOR_REQUEST_MESSAGE or GET_CHANGE_VENDOR_REQUEST_MESSAGE)"
         );
     }
-    return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method
@@ -122,6 +122,12 @@ function handlePost(reqBody, userId) {
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
         res = request.insertExtendVendorRequestMessage(reqBody, userId);
         extendVendorRequest.sendMessageMail(reqBody, userId);
+    } else {
+    	throw ErrorLib.getErrors().BadRequest(
+                "",
+                "vendorMessageService/handlePost",
+                "invalid Body. Should have one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID"
+            );
     }
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }

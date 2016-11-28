@@ -8,7 +8,7 @@ var attachments = mapper.getAttachment();
 var GET_ATTACHMENT_BY_ID = "GET_ATTACHMENT_BY_ID";
 
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest2(handleGet, handlePost, handlePut, handleDelete,true,"",true);
 }
 
 function handleGet(parameters, user_id) {
@@ -16,6 +16,11 @@ function handleGet(parameters, user_id) {
 	if (parameters.length > 0) {
 		if (parameters[0].name === GET_ATTACHMENT_BY_ID) {
 			rdo = attachments.getAttachmentById(parameters[0].value);
+			if(rdo && rdo[0]){
+				rdo = rdo[0];
+			} else {
+				rdo = {};
+			}
 		}
 	} else {
 		throw ErrorLib.getErrors().BadRequest(
@@ -29,7 +34,7 @@ function handleGet(parameters, user_id) {
 }
 
 function handlePost(objAttachment, user_id) {
-	var res = attachments.insertAttachment(objAttachment, user_id);
+	var res = attachments.insertAttachment(objAttachment, 1);
 	return http.handleResponse(res, http.OK, http.AppJson);
 }
 

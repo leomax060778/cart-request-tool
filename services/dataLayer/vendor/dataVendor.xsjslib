@@ -53,6 +53,7 @@ function getVendorByStatus(statusId) {
 function insertVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
 	param.in_account = objVendor.ACCOUNT || null;
+	param.in_status_id = objVendor.STATUS_ID || 1;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
 
@@ -97,6 +98,7 @@ function getManualVendorById(vendor_id) {
 function insertManualVendor(objVendor, user_id) {
 	var param = getParams(objVendor);
 	param.in_account = objVendor.ACCOUNT || null;
+	param.in_status_id = objVendor.STATUS_ID || 1;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
 

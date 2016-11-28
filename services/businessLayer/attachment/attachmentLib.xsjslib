@@ -32,17 +32,18 @@ function getAttachmentById(attachmentId) {
 
 // Insert attachment
 function insertAttachment(objAttachment, userId) {
-	try {
-		if (validateInsertAttachment(objAttachment, userId)) {
+	if (validateInsertAttachment(objAttachment, userId)) {
+		
+		try {
 			var result = dataAttachment.insertAttachment(objAttachment, userId);
 			dbHelper.commit();
 			return result;
+		} catch (e) {
+			dbHelper.rollback();
+			throw ErrorLib.getErrors().CustomError("", e.toString(), "insertAttachment");
+		} finally {
+			dbHelper.closeConnection();
 		}
-	} catch (e) {
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(), "insertAttachment");
-	} finally {
-		dbHelper.closeConnection();
 	}
 
 }

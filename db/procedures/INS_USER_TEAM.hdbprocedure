@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_USER_TEAM" (
+	IN in_user_id bigint,
+	IN in_team_id bigint,
+	IN in_created_user_id bigint
+) 
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+    INSERT INTO "CART_REQUEST_TOOL"."HL3_USER"(user_id,hl3_id, created_user_id)
+      VALUES(in_user_id, in_team_id, in_created_user_id);
+END;

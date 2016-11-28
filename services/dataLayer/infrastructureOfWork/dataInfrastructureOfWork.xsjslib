@@ -60,7 +60,7 @@ function updateInfrastructure(objInfrastructure, user_id){
 
 function deleteInfrastructure(infrastructure_id, user_id){
 	var param = {};
-	param.in_infrastructure_of_work_id = infrastructure_id;
+	param.in_infrastructure_id = infrastructure_id;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
 	

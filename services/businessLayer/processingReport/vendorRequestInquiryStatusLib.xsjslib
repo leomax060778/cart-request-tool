@@ -6,6 +6,7 @@ var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
 var change = mapper.getChangeVendorRequest();
+var vendor = mapper.getVendor();
 var changeVendorMail = mapper.getChangeVendorMail();
 var extendVendorMail = mapper.getExtendVendorMail();
 var vendorInquiryMail = mapper.getVendorInquiryMail();
@@ -14,7 +15,7 @@ var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
-var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5};
+var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5, 'CANCELLED': 6};
 
 //Get vendor request inquiry by status
 function getVendorRequestInquiryByStatus(statusId) {
@@ -147,7 +148,17 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
     	if(!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequestStatus", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objVendorRequest.STATUS_ID) === statusMap.APPROVED){
+    		if(!vendor.existVendor(objVendorRequest.VENDOR_ID)){
+        		throw ErrorLib.getErrors().CustomError("",
+    					"vendorService/handlePut/updateVendorAccount",
+    					"The vendor with the id \'" + objVendorRequest.VENDOR_ID + "\' does not exist");
+        	}
+    		vendor.updateVendorAccountManual(objVendorRequest, userId);
+    		vendor.insertVendorAdditionalInformation(objVendorRequest, userId);
+    		return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
+    	} else if (Number(objVendorRequest.STATUS_ID) === statusMap.CANCELLED){
+    		vendor.deleteManualVendor(objVendorRequest, userId);
     		return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
     	} else {
     		return dataStatus.updateVendorRequestStatus(objVendorRequest, userId);

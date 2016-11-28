@@ -136,17 +136,21 @@ function sendMailByStatus(objRequest, mailData, userId){
 		cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
+			case '3':
 			case 3:
 				cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
 				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
+			case '4':
 			case 4:
 				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
+			case '5':
 			case 5:
 				cartRequestMailObj.SERVICES = mailData;
 				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;
+			case '6':
 			case 6:
 				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,getUrlBase(),"Colleague");
 				break;

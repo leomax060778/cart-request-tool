@@ -25,7 +25,7 @@ function processRequest() {
  * @param {string} [parameters.GET_CHANGE_VENDOR_REQUEST_MESSAGE] - get by change vendor request id
  * @returns {VendorRequestMessage | VendorInquiryMessage | ChangeVendorRequestMessage | ExtendVendorRequestMessage} VendorRequestInquiry - All messages for vendor request, vendor inquiry, change vendor request or extend vendor request
  */
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_VENDOR_INQUIRY_MESSAGE) {
@@ -36,7 +36,7 @@ function handleGet(parameters) {
                     "invalid parameter value " + parameters[0].name + " (must be a valid vendor inquiry id)"
                 );
             } else {
-                res = request.getVendorInquiryMessage(parameters[0].value);
+                res = request.getVendorInquiryMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0) {
@@ -46,7 +46,7 @@ function handleGet(parameters) {
                     "invalid parameter value " + parameters[0].name + " (must be a valid vendor request id)"
                 );
             } else {
-                res = request.getVendorRequestMessage(parameters[0].value);
+                res = request.getVendorRequestMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_EXTEND_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0) {
@@ -56,7 +56,7 @@ function handleGet(parameters) {
                     "invalid parameter value " + parameters[0].name + " (must be a valid extend vendor request id)"
                 );
             } else {
-                res = request.getExtendVendorRequestMessage(parameters[0].value);
+                res = request.getExtendVendorRequestMessage(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0) {
@@ -66,7 +66,7 @@ function handleGet(parameters) {
                     "invalid parameter value " + parameters[0].name + " (must be a valid change vendor request id)"
                 );
             } else {
-                res = request.getChangeVendorRequestMessage(parameters[0].value);
+                res = request.getChangeVendorRequestMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(

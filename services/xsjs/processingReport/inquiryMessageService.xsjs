@@ -18,7 +18,7 @@ function processRequest() {
  * @param {string} [parameters.GET_INQUIRY_MESSAGE] - get by inquiry id
  * @returns {InquiryMessage} InquiryMessage
  */
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var rdo = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_INQUIRY_MESSAGE) {
@@ -29,7 +29,7 @@ function handleGet(parameters) {
                     "invalid parameter value " + parameters[0].name + " (must be a valid inquiry id)"
                 );
             } else {
-                rdo = request.getInquiryMessage(parameters[0].value);
+                rdo = request.getInquiryMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(
@@ -69,10 +69,6 @@ function handleDelete() {
  * @returns {string} id - Id of the new inquiry message
  */
 function handlePost(reqBody, userId) {
-	if (Number(reqBody.RETURN_TYPE_ID) === 3){
-		reqBody.STATUS_ID = 4;
-		status.updateInquiryStatusManual(reqBody, userId);
-	}
     var req = request.insertInquiryMessage(reqBody, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }

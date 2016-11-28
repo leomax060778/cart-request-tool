@@ -58,8 +58,9 @@ function handlePost() {
 	return httpUtil.notImplementedMethod();
 }
 
-function handlePut() {
-	return httpUtil.notImplementedMethod();
+function handlePut(reqBody, user_id) {
+	var rdo =  request.updateRequest(reqBody, user_id);
+	return httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 }
 
 function handleDelete(reqBody, user_id) {

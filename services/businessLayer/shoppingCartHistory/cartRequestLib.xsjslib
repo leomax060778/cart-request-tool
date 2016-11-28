@@ -12,7 +12,10 @@ var dataNewCartRequest = mapper.getDataNewCartRequest();
 var dataAttachment = mapper.getDataAttachment();
 var dataNoteRequest = mapper.getDataShoppingNoteRequest();
 var dataRequestDataProtection = mapper.getDataRequestDataProtection();
+var status = mapper.getCartRequest();
 var ErrorLib = mapper.getErrors();
+
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 
 /*----- REQUEST SERVICE -----*/
 
@@ -210,6 +213,260 @@ function getRequestById(request_id, userId) {
 
 	return req;
 }
+
+//----------------------- UPDATE NEW CART REQUEST -----------------------//
+
+
+//NOTES
+function updateNotes(original_notes, notes, userId){
+	var original_notes_local = original_notes;
+    var updateOriginalNotes = notes;
+    var insertOriginalNotes = [];
+    var deleteOriginalNotes = [];
+    original_notes_local.forEach(function (o_note) {
+        var result = true;
+        var o_note_id = o_note.NOTE_REQUEST_ID;
+        if (typeof o_note_id === 'string') {
+            o_note_id = Number(o_note_id);
+        }
+        updateOriginalNotes.forEach(function (updateNote) {
+            if (o_note_id === updateNote) {
+                result = false;
+            }
+        });
+        if (result) {
+            deleteOriginalNotes.push(o_note_id);
+        }
+    });
+    updateOriginalNotes.forEach(function (newNote) {
+        var result = true;
+        original_notes_local.forEach(function (note) {
+            var o_note_id = note.NOTE_REQUEST_ID;
+            if (typeof o_note_id === 'string') {
+                o_note_id = Number(o_note_id);
+            }
+            if (newNote === o_note_id) {
+                result = false;
+            }
+        });
+        if (result) {
+            insertOriginalNotes.push(newNote);
+        }
+    });
+
+    insertOriginalNotes.forEach(function (insertNote) {
+        insertManualNoteRequest(insertNote, userId);
+    });
+    deleteOriginalNotes.forEach(function (deleteNote) {
+        deleteManualNoteRequest(deleteNote, userId);
+    });
+}
+
+//SERVICES
+function insertService(reqBody, user_id){
+	if(validateInsertService(reqBody, user_id)){
+		return dataService.insertService(reqBody, user_id);
+	}	
+}
+
+//Return the total amount to be used in Request Service
+function insertServices(services, requestId, conversion_rate, userId){
+	var amount = 0;
+	(services).forEach(function(itemService){
+		itemService.REQUEST_ID = requestId;
+		amount += Number(itemService.AMOUNT);
+		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+		insertService(itemService, userId);
+	});
+	return amount;
+}
+
+//Return the total amount to be used in Request Service
+function insertEditServices(services, conversion_rate, userId){
+	(services).forEach(function(itemService){
+		insertService(itemService, userId);
+	});
+
+}
+
+function updateService(reqBody, user_id){
+	if(validateInsertService(reqBody, user_id)){
+		return dataService.updateService(reqBody, user_id);
+	}	
+}
+
+//Return the total amount to be used in Request Service
+function updateServices(original_services, services, conversion_rate, userId){
+	var amount = 0;
+
+	var original_services_local = original_services;
+    var originalServicesToUpdate = services;
+    var updateOriginalServices = [];
+    var insertOriginalServices = [];
+    var deleteOriginalServices = [];
+    
+    //DELETE
+    original_services_local.forEach(function (o_service) {
+        var result = true;
+        var o_service_id = o_service.SERVICE_ID;
+        if (typeof o_service_id === 'string') {
+            o_service_id = Number(o_service_id);
+        }
+        originalServicesToUpdate.forEach(function (updateService) {
+            if (o_service_id === updateService) {
+                result = false;
+            }
+        });
+        if (result) {
+            deleteOriginalServices.push(o_service_id);
+        }
+    });
+    
+    //INSERT
+    originalServicesToUpdate.forEach(function (newService) {
+        var result = true;
+        original_services_local.forEach(function (service) {
+            var o_service_id = service.SERVICE_ID;
+            if (typeof o_service_id === 'string') {
+                o_service_id = Number(o_service_id);
+            }
+            if (newService === o_service_id) {
+                result = false;
+            }
+        });
+        if (result) {
+            insertOriginalServices.push(newService);
+        }
+    });
+    
+    //UPDATE
+    originalServicesToUpdate.forEach(function (newService) {
+        var result = true;
+        original_services_local.forEach(function (service) {
+            var o_service_id = service.SERVICE_ID;
+            if (typeof o_service_id === 'string') {
+                o_service_id = Number(o_service_id);
+            }
+            if (newService === o_service_id) {
+                result = true;
+            }
+        });
+        if (result) {
+            updateOriginalServices.push(newService);
+        }
+    });
+    
+    //ACTIONS
+    insertEditServices(insertOriginalServices, conversion_rate, userId);
+    
+    updateServices(updateOriginalServices, conversion_rate, userId);
+    
+    deleteServicesManual(deleteOriginalServices, userId);
+    
+    //Obtain total amount to be used in REQUEST_SERVICE
+	(services).forEach(function(itemService){
+		amount += Number(itemService.AMOUNT);
+		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+	});
+	
+	return amount;
+}
+
+
+//REQUEST
+function updateRequest(reqBody, user_id){
+	var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
+	try{
+		if(Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED){
+			reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
+			status.updateRequestStatusManual(reqBody, user_id);
+		}
+			//REQUEST UPDATE
+			dataRequest.updateRequest(reqBody, user_id);
+			
+			//NON-SAP VENDOR UPDATE
+			if(original_request.NON_SAP_VENDOR_ID == null && reqBody.NON_SAP_VENDOR !== null){
+				var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
+				reqBody.NON_SAP_VENDOR_ID = nonsap;
+			} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
+				updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
+			} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR == null){
+				deleteManualNonSapVendor(original_request.NON_SAP_VENDOR_ID, user_id);
+				reqBody.NON_SAP_VENDOR_ID = null;
+			}
+			
+			//COST OBJECT UPDATE
+			if(reqBody.COST_OBJECT !== null){
+				updateCostObject(reqBody.COST_OBJECT, user_id);
+			}
+			
+			//RISK_FUNDED UPDATE
+			if(Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
+				
+				var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+				var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+				reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
+				reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
+				updateRiskFunded(reqBody.RISK_FUNDED, user_id);
+			
+			} else if(Object.keys(original_request.RISK_FUNDED).length == 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
+				
+				var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+				var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+				reqBody.RISK_FUNDED.REQUEST_ID = original_request.REQUEST_ID;
+				reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
+				reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
+				
+				insertRiskFunded(reqBody.RISK_FUNDED, user_id);
+			
+			} else if(Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length == 0){
+				
+				deleteRiskFunded(reqBody.RISK_FUNDED, user_id);
+			
+			}
+			 
+			//REQUEST SERVICE & SERVICES UPDATES
+			if(reqBody.REQUEST_SERVICE !== undefined){
+				var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
+				var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
+				var cart_amount = updateServices(original_request.SERVICES, reqBody.SERVICES, conversion_rate, user_id);
+				reqBody.CART_AMOUNT = cart_amount;
+				reqBody.TOTAL_BUDGET = cart_amount * conversion_rate;
+				updateRequestService(reqBody.REQUEST_SERVICE, request ,user_id);
+			}
+			
+			//SPECIAL REQUEST UPDATE
+			if((original_request.SPECIAL_REQUEST.length > 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0)){
+				updateSpecialRequest(reqBody.SPECIAL_REQUEST, request ,user_id);
+			} else if((original_request.SPECIAL_REQUEST.length == 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0)){
+				insertSpecialRequest(reqBody.SPECIAL_REQUEST, request ,user_id);
+			} else if((original_request.SPECIAL_REQUEST.length > 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length == 0)){
+				deleteSpecialRequest(reqBody.SPECIAL_REQUEST, request ,user_id);
+			}
+			
+			//NOTES UPDATE
+			if(reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0){
+				updateNotes(original_request.NOTES, reqBody.NOTES, user_id);
+			} else if(original_request.NOTES.length > 0){
+				deleteNotes(original_request.NOTES, reqBody.NOTES, user_id);
+			}
+			
+			//DATA PROTECTION ANSWERS UPDATE
+			(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
+					updateDataProtectionAnswer(item, user_id);
+			});
+		dbHelper.commit();
+	}
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(),"updateRequest");
+	}
+	finally{
+		dbHelper.closeConnection();
+	}
+	return request;
+}
+
 
 function deleteRequest(request_id, user_id) {
 	if (!request_id) {

@@ -56,6 +56,8 @@ function handleGet(parameters) {
 
 function handlePut(reqBody, userId) {
 	if(reqBody.REQUEST_ID){
+		reqBody.REQUEST_ID = Number(reqBody.REQUEST_ID);
+		reqBody.STATUS_ID = Number(reqBody.STATUS_ID);
 		if(Number(reqBody.STATUS_ID === statusMap.IN_PROCESS)){
 			if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
 				purchase.updatePurchaseOrderManual(reqBody, userId);

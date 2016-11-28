@@ -1,23 +1,27 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SERVICE_BY_REQUEST_ID" (
 	IN in_request_id bigint,
-  	OUT out_result TABLE (service_id bigint,
-                      start_date nvarchar(32),
-                      end_date nvarchar(32),
-                      description nvarchar (255),
-                      amount decimal (19,2),
-                      currency_id bigint,
-                      currency_abbreviation nvarchar (255),
-                      budget decimal (19,2),
-                      item integer,
-                      line_number nvarchar(255)
-                    )
+  	OUT out_result TABLE (
+  						request_id bigint,
+  						service_id bigint,
+                      	start_date nvarchar(32),
+                      	end_date nvarchar(32),
+                      	description nvarchar (255),
+                      	amount decimal (19,2),
+                      	currency_id bigint,
+                      	currency_abbreviation nvarchar (255),
+                      	budget decimal (19,2),
+                      	item integer,
+                     	line_number nvarchar(255)
+                    	)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT SER.service_id, 
+  out_result = SELECT 
+  				SER.request_id,
+  				SER.service_id, 
   				TO_NVARCHAR(SER.start_date, 'YYYY-MM-DD') AS start_date, 
   				TO_NVARCHAR(SER.end_date, 'YYYY-MM-DD') AS end_date, 
   				SER.description, 

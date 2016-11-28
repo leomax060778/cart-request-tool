@@ -38,6 +38,13 @@ function getAllChangeSupporting(){
 	return db.extractArray(result.out_result);
 }
 
+//Get all change vendor supporting documentation manual
+function getAllChangeSupportingManual(){
+	var parameters = {};
+	var result = db.executeProcedureManual(GET_ALL_CHANGE_VENDOR_SUPPORTING_DOCUMENTATION, parameters);
+	return db.extractArray(result.out_result);
+}
+
 //Get change vendor supporting documentation by id
 function getChangeVendorSupportingById(changeSupportingId){
 	var parameters = {'in_supporting_documentation_id': changeSupportingId};

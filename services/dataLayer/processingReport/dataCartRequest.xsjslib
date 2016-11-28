@@ -38,7 +38,7 @@ function updateRequestStatus(objRequest, userId) {
      var parameters = {};
      parameters.in_request_id = objRequest.REQUEST_ID;
      parameters.in_status_id = objRequest.STATUS_ID;
-     parameters.in_modified_user_id = userId;//objRequest.IN_MODIFIED_USER_ID;
+     parameters.in_modified_user_id = userId;
      parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
      parameters.in_stage_id = objRequest.STAGE_ID;
      parameters.out_result = '?';
@@ -49,7 +49,7 @@ function updateRequestStatusManual(objRequest, userId) {
     var parameters = {};
     parameters.in_request_id = objRequest.REQUEST_ID;
     parameters.in_status_id = objRequest.STATUS_ID;
-    parameters.in_modified_user_id = userId;//objRequest.IN_MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
     parameters.in_stage_id = objRequest.STAGE_ID;
     parameters.out_result = '?';

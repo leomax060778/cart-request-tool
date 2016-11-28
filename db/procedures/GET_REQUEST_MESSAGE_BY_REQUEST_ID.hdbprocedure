@@ -10,6 +10,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESS
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
+							message_read tinyint,
 							created_date nvarchar(32)
 						 )
  ) 
@@ -28,6 +29,7 @@ BEGIN
 						US.user_name, 
 						US.first_name, 
 						US.last_name,
+						RM.message_read,
 						TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh:mm') AS CREATED_DATE
 		FROM "REQUEST_MESSAGE" RM
                       LEFT JOIN "RETURN_TYPE" RT ON RM.return_type_id = RT.return_type_id AND RT.enabled = 1 AND RT.deleted = 0

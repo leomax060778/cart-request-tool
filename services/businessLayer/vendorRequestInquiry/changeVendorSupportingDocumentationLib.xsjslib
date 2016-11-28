@@ -17,6 +17,11 @@ function getAllChangeSupporting(){
 	return supDoc.getAllChangeSupporting();
 }
 
+//Get all change vendor supporting documentation manual
+function getAllChangeSupportingManual(){
+	return supDoc.getAllChangeSupportingManual();
+} 
+
 //Get change vendor supporting documentation by id
 function getChangeVendorSupportingById(changeSupportingId){
 	if (!changeSupportingId) {

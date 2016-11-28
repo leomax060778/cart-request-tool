@@ -1,6 +1,9 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataMessage = mapper.getDataProcessingReportMessage();
+var dataVendorReadMessage = mapper.getDataVendorMessage();
+var dataRequestReadMessage = mapper.getDataRequestMessage();
+var dataInquiryReadMessage = mapper.getDataInquiryMessage();
 var vendorRequest = mapper.getDataVendorRequest();
 var change = mapper.getDataChangeVendorRequest();
 var extend = mapper.getDataExtendVendorRequest();
@@ -10,8 +13,16 @@ var getRequest = mapper.getDataRequest();
 var returnType = mapper.getReturnType();
 var issueType = mapper.getDataIssueType();
 var ErrorLib = mapper.getErrors();
+var statusRequest = mapper.getCartRequest();
+var statusVendor = mapper.getVendorRequestInquiryStatus();
+var statusInquiry = mapper.getInquiryStatus();
+var dbHelper = mapper.getdbHelper();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var issueTypeMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+var returnTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
 /** ***********INSERT*************** */
 //Insert new change vendor request message
@@ -26,6 +37,10 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	    if (!existIssueType(objChangeVendorRequest.ISSUE_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The issue type with the id " + objChangeVendorRequest.ISSUE_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objChangeVendorRequest.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objChangeVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
+		}
 	    return dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
     }
 }
@@ -42,6 +57,10 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	    if (!existIssueType(objExtendVendorRequest.ISSUE_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The issue type with the id " + objExtendVendorRequest.ISSUE_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objExtendVendorRequest.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objExtendVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
+		}
         return dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
     }
 }
@@ -58,6 +77,10 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 	    if (!existIssueType(objVendorRequest.ISSUE_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorRequest.ISSUE_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objVendorRequest.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
+		}
         return dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
     }
 }
@@ -74,6 +97,10 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 	    if (!existIssueType(objVendorInquiry.ISSUE_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorInquiry.ISSUE_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objVendorInquiry.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objVendorInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
+		}
         return dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
     }
 }
@@ -87,6 +114,10 @@ function insertInquiryMessage(objInquiry, userId) {
 	    if (!returnType.existReturnType(objInquiry.RETURN_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The return type with the id " + objInquiry.RETURN_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objInquiry.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
+		}
         return dataMessage.insertInquiryMessage(objInquiry, userId);
     }
 }
@@ -103,6 +134,10 @@ function insertRequestMessage(objRequest, userId) {
 	    if (!existIssueType(objRequest.ISSUE_TYPE_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The issue type with the id " + objRequest.ISSUE_TYPE_ID + " does not exist");
 	    }
+	    if (Number(objRequest.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	objRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+			statusRequest.updateRequestStatusManual(objRequest, userId);
+		}
         return dataMessage.insertRequestMessage(objRequest, userId);
     }
 }
@@ -110,51 +145,183 @@ function insertRequestMessage(objRequest, userId) {
 
 /** ***********GET*************** */
 //Get inquiry message
-function getInquiryMessage(inquiryId) {
+function getInquiryMessage(inquiryId, userId) {
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getMessage", inquiryId);
     }
-    return dataMessage.getInquiryMessage(inquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getMessage", userId);
+    }
+    var result = [];
+    var objInquiry = {};
+    try{
+	    result = dataMessage.getInquiryMessageManual(inquiryId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objInquiry.MESSAGE_READ = 1;
+		    	dataInquiryReadMessage.updateInquiryMessageReadManual(objInquiry, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Get messages for vendor request
-function getVendorRequestMessage(vendorRequestId) {
+function getVendorRequestMessage(vendorRequestId, userId) {
     if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorRequestMessage", vendorRequestId);
     }
-    return dataMessage.getVendorRequestMessage(vendorRequestId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorRequestMessage", userId);
+    }
+    var result = [];
+    var objVendorRequest = {};
+    try{
+	    result = dataMessage.getVendorRequestMessageManual(vendorRequestId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objVendorRequest.MESSAGE_READ = 1;
+		    	dataVendorReadMessage.updateVendorRequestMessageReadManual(objVendorRequest, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handleGet/getVendorRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
-//Get messages of change vendor inquiry
-function getChangeVendorRequestMessage(changeVendorInquiryId) {
-    if (!changeVendorInquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorInquiryId is not found", "vendorRequestInquiryMessageService/handleGet/getChangeVendorRequestMessage", changeVendorInquiryId);
+//Get messages of change vendor request
+function getChangeVendorRequestMessage(changeVendorRequestId, userId) {
+    if (!changeVendorRequestId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryMessageService/handleGet/getChangeVendorRequestMessage", changeVendorRequestId);
     }
-    return dataMessage.getChangeVendorRequestMessage(changeVendorInquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getChangeVendorRequestMessage", userId);
+    }
+    var result = [];
+    var objChangeVendorRequest = {};
+    try{
+	    result = dataMessage.getChangeVendorRequestMessageManual(changeVendorRequestId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objChangeVendorRequest.MESSAGE_READ = 1;
+		    	dataVendorReadMessage.updateChangeVendorRequestMessageReadManual(objChangeVendorRequest, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handleGet/getChangeVendorRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Get messages of extend vendor inquiry
-function getExtendVendorRequestMessage(extendVendorInquiryId) {
-    if (!extendVendorInquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorInquiryId is not found", "vendorRequestInquiryMessageService/handleGet/getExtendVendorRequestMessage", extendVendorInquiryId);
+function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
+    if (!extendVendorRequestId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "vendorRequestInquiryMessageService/handleGet/getExtendVendorRequestMessage", extendVendorRequestId);
     }
-    return dataMessage.getExtendVendorRequestMessage(extendVendorInquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getExtendVendorRequestMessage", userId);
+    }
+    var result = [];
+    var objExtendVendorRequest = {};
+    try{
+	    result = dataMessage.getExtendVendorRequestMessageManual(extendVendorRequestId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objExtendVendorRequest.MESSAGE_READ = 1;
+		    	dataVendorReadMessage.updateExtendVendorRequestMessageReadManual(objExtendVendorRequest, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handleGet/getExtendVendorRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Get messages of request
-function getRequestMessage(requestId) {
+function getRequestMessage(requestId, userId) {
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handleGet/getRequestMessage", requestId);
     }
-    return dataMessage.getRequestMessage(requestId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getVendorRequestMessage", userId);
+    }
+    var result = [];
+    var objRequest = {};
+    try{
+	    result = dataMessage.getRequestMessageManual(requestId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objRequest.MESSAGE_READ = 1;
+		    	dataRequestReadMessage.updateRequestMessageReadManual(objRequest, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "requestService/handleGet/getRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Get messages of vendor inquiry
-function getVendorInquiryMessage(vendorInquiryId) {
+function getVendorInquiryMessage(vendorInquiryId, userId) {
     if (!vendorInquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorInquiryMessage", vendorInquiryId);
     }
-    return dataMessage.getVendorInquiryMessage(vendorInquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorInquiryMessage", userId);
+    }
+    var result = [];
+    var objVendorInquiry = {};
+    try{
+	    result = dataMessage.getVendorInquiryMessageManual(vendorInquiryId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objVendorInquiry.MESSAGE_READ = 1;
+		    	dataVendorReadMessage.updateVendorInquiryMessageReadManual(objVendorInquiry, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handleGet/getVendorInquiryMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 /** ***********END GET*************** */
 
@@ -253,7 +420,7 @@ function validateInsertRequestMessage(objRequest, userId) {
         'RETURN_TYPE_ID',
         'ISSUE_TYPE_ID'
     ];
-    if (objRequest.ISSUE_TYPE_ID === 5) {
+    if (objRequest.ISSUE_TYPE_ID === issueTypeMap.OTHERS) {
     	keys.push('OTHER_ISSUE_TYPE');
     }
     if (!objRequest) {

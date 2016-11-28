@@ -31,7 +31,7 @@ function processRequest() {
  * @param {string} parameters.GET_REQUEST_MESSAGE - get by request id
  * @returns {RequestMessage} RequestMessage
  */
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var rdo = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_REQUEST_MESSAGE) {
@@ -42,7 +42,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getRequestMessage(parameters[0].value);
+                rdo = request.getRequestMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(

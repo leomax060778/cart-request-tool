@@ -17,7 +17,7 @@ function processRequest() {
  * @param {string} parameters.GET_INQUIRY_MESSAGE - get messages of the inquiry by id
  * @returns {InquiryMessage} InquiryMessage - Array with the messages
  */
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var rdo = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_INQUIRY_MESSAGE) {
@@ -28,7 +28,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = inquiry.getInquiryMessage(parameters[0].value);
+                rdo = inquiry.getInquiryMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(

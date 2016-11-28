@@ -1,6 +1,7 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var changeSelection = mapper.getDataChangeVendorSelection();
+var supDoc = mapper.getDataChangeVendorSupportingDocumentation();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
@@ -18,11 +19,20 @@ function insertChangeSelection(objChangeSelection, userId){
 
 //Insert new change vendor selection
 function insertChangeSelectionManual(objChangeSelection, userId){
+	var changeArray = [];
 	if (validateChangeSelection(objChangeSelection, userId)) {
-    	var changeArray = objChangeSelection.CHECKBOX;
-    	changeArray.forEach(function(elem){
-    			changeSelection.insertChangeSelectionManual(elem, objChangeSelection.CHANGE_VENDOR_REQUEST_ID, userId);
-    			});
+		var change = supDoc.getAllChangeSupportingManual();
+		if(change.length === objChangeSelection.CHECKBOX.length){
+	    	changeArray = objChangeSelection.CHECKBOX;
+	    	changeArray.forEach(function(elem){
+	    			changeSelection.insertChangeSelectionManual(elem, objChangeSelection.CHANGE_VENDOR_REQUEST_ID, userId);
+	    			});
+		} else {
+			throw ErrorLib.getErrors().CustomError("", 
+					"insertChangeVendorSelectionManual", 
+					"Invalid array length. objChangeSelection.CHECKBOX should have " + change.length + " elements and it has " + objChangeSelection.CHECKBOX.length
+				  );
+		}
     	return changeArray.length;
     }
 }

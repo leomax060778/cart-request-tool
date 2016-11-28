@@ -44,6 +44,15 @@ function updateNonSapVendor(objVendor, user_id) {
 	return db.executeScalar(UPD_NON_SAP_VENDOR, param, 'out_result');
 }
 
+function updateManualNonSapVendor(objVendor, user_id) {
+	var param = getParams(objVendor);
+	param.in_non_sap_vendor_id = objVendor.NON_SAP_VENDOR_VENDOR_ID;
+	param.in_modified_user_id = user_id;
+	param.out_result = '?';
+
+	return db.executeScalar(UPD_NON_SAP_VENDOR, param, 'out_result');
+}
+
 function deleteNonSapVendor(vendor_id, user_id) {
 	var param = {};
 	param.in_non_sap_vendor_id = vendor_id;

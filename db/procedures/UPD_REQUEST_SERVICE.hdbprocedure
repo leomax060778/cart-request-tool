@@ -1,0 +1,33 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST_SERVICE" (
+	IN in_request_service_id bigint,
+	IN in_currency_id bigint,
+	IN in_purchase_order_to_uplift nvarchar(255),
+	IN in_line_to_uplift nvarchar(255),
+	IN in_purchase_order_amount decimal(19,2),
+	IN in_sap_buyer_name nvarchar(511),
+	IN in_cart_amount decimal(19,2),
+	IN in_total_budget decimal(19,2),
+	IN in_modified_user_id bigint,
+  	OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE request_service
+	SET request_service.currency_id = in_currency_id,
+		request_service.purchase_order_to_uplift = in_purchase_order_to_uplift,
+		request_service.line_to_uplift = in_line_to_uplift,
+		request_service.purchase_order_amount = in_purchase_order_amount,
+		request_service.sap_buyer_name = in_sap_buyer_name,
+		request_service.cart_amount = in_cart_amount,
+		request_service.total_budget = in_total_budget,
+		request_service.modified_date_tz = CURRENT_TIMESTAMP,
+		request_service.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."REQUEST_SERVICE" request_service
+	WHERE request_service.request_service_id = in_request_service_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;
+

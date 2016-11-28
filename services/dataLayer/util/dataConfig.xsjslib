@@ -14,8 +14,7 @@ function getResourceIdByName(name) {
 		"IN_RESOURCE_NAME" : name
 	});
 	var partialRdo = db.extractArray(rdo.OUT_RESULT);
-
-	if (partialRdo) {
+	if (partialRdo && partialRdo.length > 0) {
 		return partialRdo[0].RESOURCE_ID;
 	}
 	return null;
@@ -35,7 +34,7 @@ function settings() {
 	return "settings"
 }
 function administration() {
-	return "administration"
+	return "administration";
 }
 function dereport() {
 	return "dereport"

@@ -1,0 +1,23 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_USER_TEAM" (
+	IN in_team_id bigint,
+	IN in_user_id bigint,
+ 	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  UPDATE HL3_USER
+  SET HL3_USER.deleted = 1,
+   HL3_USER.enabled = 0,
+   HL3_USER.modified_user_id = in_modified_user_id,
+   HL3_USER.modified_date_tz = CURRENT_TIMESTAMP
+   FROM "CART_REQUEST_TOOL"."HL3_USER" HL3_USER
+  WHERE 
+  	HL3_USER.hl3_id = in_team_id and 
+  	HL3_USER.user_id = in_user_id;
+  
+ SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

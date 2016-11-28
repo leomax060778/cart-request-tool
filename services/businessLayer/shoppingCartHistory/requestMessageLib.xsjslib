@@ -2,25 +2,55 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var message = mapper.getDataRequestMessage();
 var request = mapper.getDataRequest();
+var status = mapper.getCartRequest();
 var ErrorLib = mapper.getErrors();
+var dbHelper = mapper.getdbHelper();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
-    if (!existRequest(objRequest.REQUEST_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
-    }
-    if (validateInsertRequestMessage(objRequest, userId)) {
+	if (validateInsertRequestMessage(objRequest, userId)) {
+		if (!existRequest(objRequest.REQUEST_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
+	    }
+		if(Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
+			objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
+			status.updateRequestStatusManual(objRequest, userId);
+		}
         return message.insertRequestMessage(objRequest, userId);
     }
 }
 
 //Get messages of request
-function getRequestMessage(requestId) {
+function getRequestMessage(requestId, userId) {
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handleGet/getRequestMessage", requestId);
     }
-    return message.getRequestMessage(requestId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handleGet/getRequestMessage", userId);
+    }
+    var result = [];
+    var objRequest = {};
+    try{
+	    result = message.getRequestMessageManual(requestId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objRequest.MESSAGE_READ = 1;
+		    	message.updateRequestMessageReadManual(objRequest, userId);
+		    }
+	    });
+    }
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "requestService/handleGet/getRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Check if the request exists
@@ -37,7 +67,8 @@ function validateInsertRequestMessage(objRequest, userId) {
     var errors = {};
     var BreakException = {};
     var keys = ['REQUEST_ID',
-        'MESSAGE_CONTENT'
+        'MESSAGE_CONTENT',
+        'PREVIOUS_STATUS_ID'
     ];
     if (!objRequest) {
         throw ErrorLib.getErrors().CustomError("", "requestService/handlePost/insertRequestMessage", "The object Request Message is not found");
@@ -74,6 +105,9 @@ function validateType(key, value) {
     var valid = true;
     switch (key) {
         case 'REQUEST_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'PREVIOUS_STATUS_ID':
             valid = !isNaN(value) && value > 0;
             break;
         case 'MESSAGE_CONTENT':

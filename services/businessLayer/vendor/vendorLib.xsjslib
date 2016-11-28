@@ -24,9 +24,6 @@ function getAllVendor() {
 	finally{
 		dbHelper.closeConnection();
 	}
-	
-
-	
 	return ven;
 }
 
@@ -38,7 +35,7 @@ function getAllVendorByEntity(entityId) {
 	if (!entityId){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter entityId is not found",
-				"VendorService/handleGet/getAllVendorByEntity", entityId);
+				"vendorService/handleGet/getAllVendorByEntity", entityId);
 	}
 	return dataVE.getAllVendorByEntityId(entityId);
 }
@@ -47,28 +44,36 @@ function getVendorByStatus(statusId){
 	if (!statusId){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter statusId is not found",
-				"VendorService/handleGet/getVendorByStatus", statusId);
+				"vendorService/handleGet/getVendorByStatus", statusId);
 	}
-	return dataVE.getVendorBySatus(entityId);
+	return data.getVendorByStatus(statusId);
 }
 
 function insertManualVendor(objVendor, userId) {
+	var result = {};
 	if(validateInsertVendor(objVendor, userId)){
-		return data.insertManualVendor(objVendor, userId);
+		result = data.insertManualVendor(objVendor, userId); 
+		if (objVendor.ENTITY_ID) {
+			dataVE.insertManualVendorEntity(result, objVendor.ENTITY_ID, userId);	
+		}
+		return result;
 	}
 }
 
 function insertVendor(objVendor, user_id) {
 	objVendor.CREATED_USER_ID = user_id;
 	var result = {};
-	if (validateInsertVendor(objVendor, user_id)) {
 		try{
-			var result_id = data.insertManualVendor(objVendor, user_id);
-			objVendor.VENDOR_ID = result_id;
-			data.insertManualVendorAdditionalInformation(objVendor, user_id);
-			(objVendor.VENDOR_ENTITIES).forEach(function(entity){
-				dataVE.insertManualVendorEntity(result_id, entity, user_id);				
-			});
+			result = insertManualVendor(objVendor, user_id);
+			objVendor.VENDOR_ID = result;
+			insertVendorAdditionalInformation(objVendor, user_id);
+			if(objVendor.VENDOR_ENTITIES){
+				(objVendor.VENDOR_ENTITIES).forEach(function(entity){
+					dataVE.insertManualVendorEntity(result, entity, user_id);				
+				});
+			} else {
+				throw ErrorLib.getErrors().CustomError("", "vendorService/handlePost/inserVendor", "Vendor Entity not found");
+			}
 			dbHelper.commit();
 		}
 		catch(e){
@@ -78,8 +83,8 @@ function insertVendor(objVendor, user_id) {
 		finally{
 			dbHelper.closeConnection();
 		}
-	}
-	return result_id;
+	
+	return result;
 }
 
 function completeVendor(item){ 
@@ -88,9 +93,9 @@ function completeVendor(item){
 
 function getVendorById(vendor_id, user_id) {
 	validateVendorParameters(vendor_id, user_id);
+	var ven = {};
 	try{
 		var vendor_result = data.getManualVendorById(vendor_id);
-		var ven = {};
 		if (vendor_result.length > 0) {
 			ven = JSON.parse(JSON.stringify(vendor_result[0]));
 			completeVendor(ven);
@@ -120,12 +125,12 @@ function validateVendorParameters(vendor_id, user_id){
 	if (!vendor_id){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"VendorService/handleGet/getVendorById", "The Parameter vendor_id is not found");
+				"vendorService/handleGet/getVendorById", "The Parameter vendor_id is not found");
 	}
 }
-
-function inserVendorAditionalInformation(objVendor, userId){
-	if(validateInsertAditionalInformation(objVendor, userId)){
+		
+function insertVendorAdditionalInformation(objVendor, userId){
+	if(validateInsertAdditionalInformation(objVendor, userId)){
 		return data.insertManualVendorAdditionalInformation(objVendor, userId);
 	}
 }
@@ -137,7 +142,7 @@ function updateVendor(objVendor, user_id) {
 		if (!(vendors.length > 0)) {
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePut/updateVendor",
-					"The object vendor doesn't exist", objVendor);
+					"The object vendor does not exist", objVendor);
 		}
 		try{
 			updateVendorEntity(objVendor, user_id);
@@ -165,7 +170,7 @@ function updateManualVendor(objVendor, user_id) {
 		if (!(vendors.length > 0)) {
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePut/updateManualVendor",
-					"The object vendor doesn't exist", objVendor);
+					"The object vendor does not exist", objVendor);
 		}
 		if (objVendor.VENDOR_ENTITIES){
 			try{
@@ -190,7 +195,7 @@ function updateVendorAccountManual(objVendor, userId){
 	if(validateUpdateVendorAccount(objVendor, userId)){
 		if(!existVendor(objVendor.VENDOR_ID)){
 			throw ErrorLib.getErrors().CustomError("",
-					"VendorService/handlePut/updateVendorAccount",
+					"vendorService/handlePut/updateVendorAccount",
 					"The vendor with the id \'" + objVendor.VENDOR_ID + "\' does not exist");
 		}
 		return data.updateVendorAccountManual(objVendor, userId);
@@ -244,35 +249,52 @@ function deleteVendor(objVendor, user_id) {
 	validateVendorParameters(objVendor.VENDOR_ID, user_id);
 	if (!existVendor(objVendor.VENDOR_ID, user_id)) {
 		throw ErrorLib.getErrors().CustomError("",
-				"VendorService/handlePut/insertVendor",
-				"The object vendor doesn't exist", objVendor);
+				"vendorService/handlePut/insertVendor",
+				"The object vendor does not exist", objVendor);
 	}
 	return data.deleteVendor(objVendor.VENDOR_ID, user_id);
 }
 
+function deleteManualVendor(objVendor, user_id) {
+	validateVendorParameters(objVendor.VENDOR_ID, user_id);
+	if (!existVendor(objVendor.VENDOR_ID, user_id)) {
+		throw ErrorLib.getErrors().CustomError("",
+				"vendorService/handlePut/insertVendor",
+				"The object vendor does not exist", objVendor);
+	}
+	return data.deleteManualVendor(objVendor.VENDOR_ID, user_id);
+}
+
 function validateInsertVendor(objVendor, user_id) {
 
-	if (!user_id)
+	if (!user_id){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter user_id is not found",
-				"VendorService/handlePost/insertVendor", user_id);
-
+				"vendorService/handlePost/insertVendor", user_id);
+	}
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'CONTACT_NAME', 'CONTACT_EMAIL',
 			'ADDRESS_1', 'ADDRESS_2', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'VENDOR_ENTITIES', 'INFORMAL_NAME', 'VENDOR_ACCOUNT' ];
+			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'INFORMAL_NAME', 'VENDOR_ACCOUNT', 'STATUS_ID' ];
+	
+	if(objVendor.VENDOR_ENTITY){
+		keys.push('VENDOR_ENTITY');
+	}
+	if(objVendor.ENTITY_ID) {
+		keys.push('ENTITY_ID');
+	}
 
-	if (!objVendor)
+	if (!objVendor){
 		throw ErrorLib.getErrors().CustomError("",
-				"VendorService/handlePost/insertVendor",
+				"vendorService/handlePost/insertVendor",
 				"The object vendor is not found");
-
+	}
 	try {
 		keys.forEach(function(key) {
 				// validate attribute type
-				isValid = validateType(key, objVendor[key])
+				isValid = validateType(key, objVendor[key]);
 				if (!isValid) {
 					errors[key] = objVendor[key];
 					throw BreakException;
@@ -280,32 +302,35 @@ function validateInsertVendor(objVendor, user_id) {
 		});
 		isValid = true;
 	} catch (e) {
-		if (e !== BreakException)
+		if (e !== BreakException){
 			throw ErrorLib.getErrors().CustomError("",
-					"VendorService/handlePost/insertVendor", e.toString());
-		else
+					"vendorService/handlePost/insertVendor", e.toString());
+		} else {
 			throw ErrorLib.getErrors().CustomError("",
-					"VendorService/handlePost/insertVendor",
+					"vendorService/handlePost/insertVendor",
 					JSON.stringify(errors));
+		}
 	}
 	
 	return isValid;
 }
 
-function validateInsertAditionalInformation(objVendor, userId){
-	if (!userId)
+function validateInsertAdditionalInformation(objVendor, userId){
+	if (!userId) {
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter userId is not found",
 				"vendorService/handlePost/insertVendorAdditionalInformation", userId);
+	}
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'VENDOR_ID', 'NAME'];
 	
-	if (!objVendor)
+	if (!objVendor) {
 		throw ErrorLib.getErrors().CustomError("",
 				"vendorService/handlePost/insertVendorAdditionalInformation",
 				"The object vendor is not found");
+	}
 
 	try {
 		keys.forEach(function(key) {
@@ -323,37 +348,45 @@ function validateInsertAditionalInformation(objVendor, userId){
 		});
 		isValid = true;
 	} catch (e) {
-		if (e !== BreakException)
+		if (e !== BreakException){
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePost/insertVendorAdditionalInformation", e.toString());
-		else
+		} else {
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePost/insertVendorAdditionalInformation",
 					JSON.stringify(errors));
+		}
 	}
 	return isValid;
 }
 
 function validateUpdateVendor(objVendor, user_id) {
 
-	if (!user_id)
+	if (!user_id){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter user_id is not found",
-				"VendorService/handlePut/updateVendor", user_id);
-
+				"vendorService/handlePut/updateVendor", user_id);
+	}
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'VENDOR_ID', 
 			'CONTACT_NAME', 'CONTACT_EMAIL',
 			'ADDRESS_1', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'ADDRESS_2', 'INFORMAL_NAME', 'VENDOR_ENTITIES'];
+			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'ADDRESS_2', 'INFORMAL_NAME'];
+	
+	if(objVendor.VENDOR_ENTITY){
+		keys.push('VENDOR_ENTITY');
+	}
+	if(objVendor.ENTITY_ID) {
+		keys.push('ENTITY_ID');
+	}
 
-	if (!objVendor)
+	if (!objVendor){
 		throw ErrorLib.getErrors().CustomError("",
-				"VendorService/handlePut/updateVendor",
+				"vendorService/handlePut/updateVendor",
 				"The object vendor is not found");
-
+	}
 	try {
 		keys.forEach(function(key) {
 				// validate attribute type
@@ -365,34 +398,36 @@ function validateUpdateVendor(objVendor, user_id) {
 		});
 		isValid = true;
 	} catch (e) {
-		if (e !== BreakException)
+		if (e !== BreakException){
 			throw ErrorLib.getErrors().CustomError("",
-					"VendorService/handlePut/updateVendor", e.toString());
-		else
+					"vendorService/handlePut/updateVendor", e.toString());
+		} else {
 			throw ErrorLib.getErrors().CustomError("",
-					"VendorService/handlePut/updateVendor",
+					"vendorService/handlePut/updateVendor",
 					JSON.stringify(errors));
+		}
 	}
 	
 	return isValid;
 }
 
 function validateUpdateVendorAccount(objVendor, userId) {
-	if (!userId)
+	if (!userId) {
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter userId is not found",
 				"vendorService/handlePut/updateVendorAccount", userId);
-
+	}
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'VENDOR_ID', 
 			'VENDOR_ACCOUNT' ];
 	
-	if (!objVendor)
+	if (!objVendor) {
 		throw ErrorLib.getErrors().CustomError("",
-				"VendorService/handlePut/updateVendorAccount",
+				"vendorService/handlePut/updateVendorAccount",
 				"The object vendor is not found");
+	}
 
 	try {
 		keys.forEach(function(key) {
@@ -410,13 +445,14 @@ function validateUpdateVendorAccount(objVendor, userId) {
 		});
 		isValid = true;
 	} catch (e) {
-		if (e !== BreakException)
+		if (e !== BreakException){
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePut/updateVendorAccount", e.toString());
-		else
+		} else {
 			throw ErrorLib.getErrors().CustomError("",
 					"vendorService/handlePut/updateVendorAccount",
 					JSON.stringify(errors));
+		}
 	}
 	return isValid;
 }
@@ -470,8 +506,15 @@ function validateType(key, value) {
 	case 'VENDOR_ACCOUNT':
 		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
+	case 'ENTITY_ID':
+		valid = (!value) || (!isNaN(value) && value > 0);
+		break;
+	case 'STATUS_ID':
+		valid = (!value) || (!isNaN(value) && value > 0);
+		break;
 	case 'NAME':
 		valid = value.length > 0 && value.length <= 255;
+		break;
 	}
 	return valid;
 }

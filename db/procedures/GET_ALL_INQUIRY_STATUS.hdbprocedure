@@ -8,5 +8,5 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INQUIRY_
 BEGIN
 	out_result = SELECT IST.STATUS_ID, IST.NAME
 		FROM "INQUIRY_STATUS" IST
-		WHERE IST.status_id > 1 AND ENABLED = 1 AND DELETED = 0;
+		WHERE IST.status_id > 1 AND IST.name != 'Return to requester' AND ENABLED = 1 AND DELETED = 0;
 END;

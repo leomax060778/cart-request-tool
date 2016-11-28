@@ -8,7 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
-  							created_date_tz nvarchar(32)
+  							created_date nvarchar(32)
 						 )
  ) 
 	LANGUAGE SQLSCRIPT
@@ -24,7 +24,7 @@ BEGIN
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME,
-  						TO_NVARCHAR(VIM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date_tz
+  						TO_NVARCHAR(VIM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date
 				FROM "VENDOR_INQUIRY_MESSAGE" VIM
 				LEFT JOIN "RETURN_TYPE" RT ON VIM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID AND RT.ENABLED = 1 AND RT.DELETED = 0
 				LEFT JOIN "ISSUE_TYPE" IT ON VIM.ISSUE_TYPE_ID = IT.ISSUE_TYPE_ID AND IT.ENABLED = 1 AND IT.DELETED = 0

@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_ID" (
  IN in_request_id bigint,
  OUT out_result TABLE (request_id bigint, user_id bigint, user_name nvarchar(255), team_id bigint, team_name nvarchar(255), entity_id bigint, 
-						entity_name nvarchar(255), vendor_id bigint, vendor_name nvarchar(255),	vendor_account nvarchar(255), non_sap_name nvarchar(255), non_sap_contact_name nvarchar(255), non_sap_contact_email nvarchar(255), non_sap_contact_phone nvarchar(255),
+						entity_name nvarchar(255), vendor_id bigint, vendor_name nvarchar(255),	vendor_account nvarchar(255), non_sap_vendor_id bigint, non_sap_name nvarchar(255), non_sap_contact_name nvarchar(255), non_sap_contact_email nvarchar(255), non_sap_contact_phone nvarchar(255),
 						stage_id bigint, stage_name nvarchar(127), status_id bigint, status_name nvarchar(255), material_id bigint,
 						material_description nvarchar(255), material_parent_id bigint, material_code nvarchar(255), goods_recipient_username nvarchar(127),
 						data_protection_enabled tinyint, infrastructure_of_work_id bigint, infrastructure_name nvarchar(255), 
@@ -23,6 +23,7 @@ BEGIN
 	RQ.VENDOR_ID, 
 	VAI.VENDOR_NAME AS VENDOR_NAME,
 	V.ACCOUNT AS vendor_account,
+	NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
 	NSV.NAME AS non_sap_name,
 	NSV.CONTACT_NAME AS non_sap_contact_name,
 	NSV.CONTACT_EMAIL AS non_sap_contact_email,

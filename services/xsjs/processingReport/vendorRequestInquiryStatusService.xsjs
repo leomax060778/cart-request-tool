@@ -4,7 +4,6 @@ var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getVendorRequestInquiryStatus();
 var selection = mapper.getChangeVendorSelection();
-var vendor = mapper.getVendor();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_VENDOR_REQUEST_INQUIRY_BY_STATUS = "GET_VENDOR_REQUEST_INQUIRY_BY_STATUS";
@@ -191,20 +190,6 @@ function handlePut(reqBody, userId) {
         res = request.updateExtendVendorRequestStatus(reqBody, userId);
         request.sendExtendVendorMailByStatus(reqBody,extendsVendorData, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-    	if(Number(reqBody.STATUS_ID) === 5){
-    		if(!reqBody.VENDOR_ID){
-        		throw ErrorLib.getErrors().BadRequest("", "vendorRequestServices/handlePut", 
-            			"VENDOR_ID not found"
-                        );
-        	}
-        	if(!vendor.existVendor(reqBody.VENDOR_ID)){
-        		throw ErrorLib.getErrors().CustomError("",
-    					"vendorService/handlePut/updateVendorAccount",
-    					"The vendor with the id \'" + reqBody.VENDOR_ID + "\' does not exist");
-        	}
-    		vendor.updateVendorAccountManual(reqBody, userId);
-    		vendor.inserVendorAditionalInformation(reqBody, userId);
-    	}
         res = request.updateVendorRequestStatus(reqBody, userId);
         request.sendVendorRequestMailByStatus(reqBody, userId);
     } else {

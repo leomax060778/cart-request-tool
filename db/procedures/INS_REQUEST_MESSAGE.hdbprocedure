@@ -5,7 +5,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST_MESS
 	IN in_return_type_id integer,
 	IN in_issue_type_id integer,
 	IN in_other_issue_type nvarchar(255),
-	IN in_created_user_id bigint,
+	IN in_message_read TINYINT,
+	IN in_created_user_id bigint, 
 	OUT out_result bigint
  ) 
 	LANGUAGE SQLSCRIPT
@@ -14,9 +15,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST_MESS
 	AS
 BEGIN
 	INSERT INTO "REQUEST_MESSAGE"(user_id, request_id, message_content,
-									return_type_id, issue_type_id, other_issue_type, created_user_id) 
+									return_type_id, issue_type_id, other_issue_type, message_read, created_user_id) 
   VALUES(in_user_id, in_request_id, in_message_content, in_return_type_id, in_issue_type_id,
-  			in_other_issue_type, in_created_user_id);
+  			in_other_issue_type, in_message_read, in_created_user_id);
  
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST_MESSAGE";
 END;

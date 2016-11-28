@@ -3,28 +3,55 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var message = mapper.getDataInquiryMessage();
 var inquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
+var status = mapper.getInquiryStatus();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
+var dbHelper = mapper.getdbHelper();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var statusMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
 
 //Insert message
 function insertInquiryMessage(objInquiry, userId) {
-    if (!existInquiry(objInquiry.INQUIRY_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
-    } 
-    if (validateInsertInquiryMessage(objInquiry, userId)) {
-        var inquiryMessage = message.insertInquiryMessage(objInquiry, userId);
-        
-        return inquiryMessage;
+	if (validateInsertInquiryMessage(objInquiry, userId)) {
+	    if (!existInquiry(objInquiry.INQUIRY_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
+	    } 
+	    if(Number(objInquiry.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objInquiry.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
+	    	objInquiry.STATUS_ID = statusMap.TO_BE_CHECKED;
+	    	status.updateInquiryStatusManual(objInquiry, userId);
+	    }
+	    return message.insertInquiryMessage(objInquiry, userId);
     }
 }
 
 //Get message
-function getInquiryMessage(inquiryId) {
+function getInquiryMessage(inquiryId, userId) {
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getMessage", inquiryId);
     }
-    return message.getInquiryMessage(inquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
+    }
+    var result = [];
+    var objInquiry = {};
+    try {
+    	result = message.getInquiryMessageManual(inquiryId);
+	    result.forEach(function (elem) {
+		    if(elem.MESSAGE_READ === 0) {
+		    	objInquiry.MESSAGE_READ = 1;
+		    	message.updateInquiryMessageReadManual(objInquiry, userId);
+		    }
+	    });
+    } catch (e) {
+    	dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getInquiryMessage", e.toString());
+    }
+    finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Check if the inquiry exists
