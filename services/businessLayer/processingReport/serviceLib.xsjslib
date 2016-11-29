@@ -3,7 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataService = mapper.getDataService();
 var ErrorLib = mapper.getErrors();
 
-function updateService(objService, userId){
+function updateServiceLineNumber(objService, userId){
 	if(validateUpdateService(objService, userId)){
 		var service = dataService.getServiceByRequestId(objService.REQUEST_ID);
 		if(service.length === objService.SERVICE.length){
@@ -11,7 +11,7 @@ function updateService(objService, userId){
 				if(!existService(key.SERVICE_ID)){
 					throw ErrorLib.getErrors().CustomError("", "newCartRequestService/handlePut/updateService", "The object Service " + key.SERVICE_ID + " does not exist"); 
 				} 
-					dataService.updateService(key, userId);
+					dataService.updateServiceLineNumber(key, userId);
 			});
 		} else {
 			throw ErrorLib.getErrors().CustomError("", 

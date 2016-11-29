@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST" (
 	OUT out_result TABLE(REQUEST_ID BIGINT, 
-						 STATUS_NAME nvarchar(255), 
+						 STATUS_ID bigint,
+						 STATUS_NAME nvarchar(255),
 						 VENDOR_NAME nvarchar(255),
 						 CURRENCY_ABBREVIATION nvarchar(255), 
 						 REQUEST_SERVICE_CART_AMOUNT DECIMAL,
@@ -25,6 +26,7 @@ BEGIN
 				 		GROUP BY RM.REQUEST_ID;
 				 		
 	out_result = SELECT RQ.REQUEST_ID, 
+						 ST.STATUS_ID AS STATUS_ID, 
 						 ST.NAME AS STATUS_NAME, 
 						 VAI.VENDOR_NAME AS VENDOR_NAME, 
 						 CUR.ABBREVIATION AS CURRENCY_ABBREVIATION,

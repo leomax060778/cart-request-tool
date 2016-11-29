@@ -103,13 +103,21 @@ function updateManualNonSapVendor(objVendor, user_id) {
 }
 
 function deleteNonSapVendor(objVendor, user_id) {
-	validateNonSapVendorParameters(objVendor.NON_SAP_VENDOR_ID, user_id);
 	if (!existNonSapVendor(objVendor.NON_SAP_VENDOR_ID, user_id)) {
 		throw ErrorLib.getErrors().CustomError("",
 				"nonSapVendorService/handlePut/insertNonSapVendor",
 				"The object vendor doesn't exist", objVendor);
 	}
 	return data.deleteNonSapVendor(objVendor.NON_SAP_VENDOR_ID, user_id);
+}
+
+function deleteManualNonSapVendor(non_sap_vendor_id, user_id) {
+	if (!existNonSapVendor(non_sap_vendor_id, user_id)) {
+		throw ErrorLib.getErrors().CustomError("",
+				"nonSapVendorService/handlePut/insertNonSapVendor",
+				"The parameter non_sap_vendor_id doesn't exist", non_sap_vendor_id);
+	}
+	return data.deleteManualNonSapVendor(non_sap_vendor_id, user_id);
 }
 
 function validateInsertNonSapVendor(objVendor, user_id) {

@@ -73,7 +73,7 @@ function handlePut(reqBody, userId) {
 	                "SERVICE is not found"
 	            );
 			}
-			service.updateService(reqBody, userId);
+			service.updateServiceLineNumber(reqBody, userId);
 			if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
 				purchase.updatePurchaseOrderManual(reqBody, userId);
 			} else {

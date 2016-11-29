@@ -11,7 +11,8 @@ var DEL_SERVICE_BY_REQUEST_ID = "DEL_SERVICE_BY_REQUEST_ID";
 var GET_SERVICE_BY_REQUEST_ID = "GET_SERVICE_BY_REQUEST_ID";
 var GET_SERVICE_BY_ID = "GET_SERVICE_BY_ID";
 var UPD_SERVICE = "UPD_SERVICE";
-var DEL_SERVICE_BY_ID = "DEL_SERVICE_BY_ID";
+var DEL_SERVICE_BY_ID = "DEL_SERVICE";
+var UPD_SERVICE_LINE_NUMBER = "UPD_SERVICE_LINE_NUMBER";
 
 function insertService(objReq, user_id){
 	var parameters = {};
@@ -69,17 +70,27 @@ function getServiceById(serviceId){
 function updateService(objService, userId){
 	var parameters = {};
 	
-	parameters.in_service_id = objReq.SERVICE_ID;
-	parameters.in_request_id = objReq.REQUEST_ID;
-	parameters.in_start_date = objReq.START_DATE; 
-	parameters.in_end_date = objReq.END_DATE;
-	parameters.in_description = objReq.DESCRIPTION;
-	parameters.in_amount = objReq.AMOUNT;
-	parameters.in_currency_id = objReq.CURRENCY_ID;
-	parameters.in_budget = objReq.BUDGET;
-	parameters.in_item = objReq.ITEM;
+	parameters.in_service_id = objService.SERVICE_ID;
+	parameters.in_start_date = objService.START_DATE; 
+	parameters.in_end_date = objService.END_DATE;
+	parameters.in_description = objService.DESCRIPTION;
+	parameters.in_amount = objService.AMOUNT;
+	parameters.in_currency_id = objService.CURRENCY_ID;
+	parameters.in_budget = objService.BUDGET;
+	parameters.in_item = objService.ITEM;
 	parameters.in_modified_user_id = userId;
 	parameters.out_result = '?';
 	
 	return db.executeScalarManual(UPD_SERVICE, parameters, 'out_result');
+}
+
+function updateServiceLineNumber(objService, userId){
+	var parameters = {};
+	
+	parameters.in_service_id = objService.SERVICE_ID;
+	parameters.in_line_number = objService.LINE_NUMBER;
+	parameters.in_modified_user_id = userId;
+	parameters.out_result = '?';
+	
+	return db.executeScalarManual(UPD_SERVICE_LINE_NUMBER, parameters, 'out_result');
 }

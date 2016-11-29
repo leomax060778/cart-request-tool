@@ -10,6 +10,7 @@ var GET_ALL_REQUEST = "GET_ALL_REQUEST";
 var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
 var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
 var UPD_REQUEST_STATUS = "UPD_REQUEST_STATUS";
+var UPD_REQUEST = "UPD_REQUEST";
 var DEL_REQUEST = "DEL_REQUEST";
 var DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID = "DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID";
 var GET_ATTACHMENT_BY_REQUEST_ID = "GET_ATTACHMENT_BY_REQUEST_ID";
@@ -60,6 +61,40 @@ function getRequestByIdManual(requestId){
     } else {
  	   	return {};
     }
+}
+
+/*
+	IN in_request_id bigint,
+	IN in_user_id bigint,
+	IN in_team_id bigint,
+	IN in_entity_id bigint,
+	
+	IN in_vendor_id bigint,
+	IN in_stage_id bigint,
+	IN in_status_id bigint,
+	
+	IN in_goods_recipient_username nvarchar(127),
+	IN in_data_protection_enabled tinyint,
+	IN in_infrastructure_of_work_id bigint,
+	IN in_location_of_work_id bigint, 
+ */
+
+function updateRequestManual(objRequest, userId){
+    var parameters = {};
+    parameters.in_request_id = objRequest.REQUEST_ID;
+    parameters.in_user_id = objRequest.USER_ID;
+    parameters.in_team_id = objRequest.TEAM_ID;
+    parameters.in_entity_id = objRequest.ENTITY_ID;
+    parameters.in_vendor_id = objRequest.VENDOR_ID;
+    parameters.in_stage_id = 1; //objRequest.USER_ID;
+    parameters.in_goods_recipient_username = objRequest.GOODS_RECIPIENT_USERNAME;
+    parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;
+    parameters.in_infrastructure_of_work_id = objRequest.INFRASTRUCTURE_OF_WORK_ID;
+    parameters.in_location_of_work_id = objRequest.LOCATION_OF_WORK_ID;
+    
+    parameters.in_modified_user_id = userId;
+    parameters.out_result = '?';
+    return db.executeScalar(UPD_REQUEST, parameters, 'out_result');
 }
 
 function updateRequestStatus(objRequest, userId){

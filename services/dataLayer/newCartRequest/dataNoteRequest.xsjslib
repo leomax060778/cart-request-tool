@@ -7,7 +7,7 @@ var ErrorLib = mapper.getErrors();
 var INS_NOTE_REQUEST = "INS_NOTE_REQUEST";
 var UPD_NOTE_REQUEST = "UPD_NOTE_REQUEST";
 var INS_NOTE_TYPE = "INS_NOTE_TYPE";
-var DEL_NOTE_REQUEST_BY_ID = "DEL_NOTE_REQUEST_BY_ID";
+var DEL_NOTE_REQUEST_BY_ID = "DEL_NOTE_REQUEST";
 
 function insertNoteRequest(objNoteReq, userId) {
 

@@ -11,6 +11,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROC
 							contact_name nvarchar(255),
 							contact_email nvarchar(255),
 							phone nvarchar(255),
+							non_sap_vendor_contact_name nvarchar(255),
+							non_sap_vendor_contact_email nvarchar(255),
+							non_sap_vendor_contact_phone nvarchar(255),
 							status_id bigint,
 							status_name nvarchar(255)
 						 )
@@ -31,6 +34,9 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
 	                V.contact_name,
     	            V.contact_email,
         	        V.phone,
+        	        NV.contact_name AS non_sap_vendor_contact_name,
+    	            NV.contact_email AS non_sap_vendor_contact_email,
+        	        NV.contact_phone AS non_sap_vendor_contact_phone,
         	        CR.status_id,
         	        ST.name as STATUS_NAME
              FROM "REQUEST" CR
@@ -43,7 +49,8 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                  )
                INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
                INNER JOIN "HL3" HL3 ON HL3.HL3_ID = CR.HL3_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
-               INNER JOIN "VENDOR" V ON CR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+               LEFT JOIN "VENDOR" V ON CR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+               LEFT JOIN "NON_SAP_VENDOR" NV ON CR.NON_SAP_VENDOR_ID = NV.NON_SAP_VENDOR_ID AND NV.ENABLED = 1 AND NV.DELETED = 0
                INNER JOIN "ENTITY" ET ON CR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
                INNER JOIN "REQUEST_STATUS" ST ON CR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
                WHERE CR.REQUEST_ID = in_request_id AND CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
