@@ -17,8 +17,7 @@ BEGIN
 		inquiry.user_id_status = in_user_id_status,
         inquiry.modified_user_id = in_modified_user_id,
         inquiry.update_status = CURRENT_TIMESTAMP,
-        inquiry.completed_date_tz = CURRENT_TIMESTAMP,
-        inquiry.modified_date_tz = CURRENT_TIMESTAMP
+        inquiry.completed_date_tz = CURRENT_TIMESTAMP
 	FROM "CART_REQUEST_TOOL"."INQUIRY" inquiry
 	WHERE inquiry.inquiry_id = in_inquiry_id;
             

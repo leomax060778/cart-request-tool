@@ -21,8 +21,7 @@ BEGIN
       evrequest.receiver_user_id = in_receiver_user_id,
       evrequest.receiver_yvc_request = in_receiver_yvc_request,
       evrequest.receiver_modified_date_tz = CURRENT_TIMESTAMP,
-      evrequest.update_status_tz = CURRENT_TIMESTAMP,
-      evrequest.modified_date_tz = CURRENT_TIMESTAMP
+      evrequest.update_status_tz = CURRENT_TIMESTAMP
     FROM "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST" evrequest
     WHERE evrequest.extend_vendor_request_id = in_extend_vendor_request_id;
   

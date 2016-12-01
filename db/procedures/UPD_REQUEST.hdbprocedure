@@ -4,7 +4,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
 	IN in_team_id bigint,
 	IN in_entity_id bigint,
 	
+	IN in_material_id bigint,
 	IN in_vendor_id bigint,
+	IN in_non_sap_vendor_id bigint,
 	IN in_stage_id bigint,
 	
 	IN in_goods_recipient_username nvarchar(127),
@@ -24,8 +26,10 @@ BEGIN
 	SET REQUEST.user_id = in_user_id,
 			REQUEST.hl3_id = in_team_id,
 			REQUEST.entity_id = in_entity_id,
-		
+			
+			REQUEST.material_id = in_material_id,
 			REQUEST.vendor_id = in_vendor_id,
+			REQUEST.non_sap_vendor_id = in_non_sap_vendor_id,
 			REQUEST.stage_id = in_stage_id,
 			REQUEST.goods_recipient_username = in_goods_recipient_username,	
 			REQUEST.data_protection_enabled = in_data_protection_enabled,

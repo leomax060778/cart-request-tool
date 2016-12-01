@@ -16,8 +16,7 @@ BEGIN
         vinquiry.modified_user_id = in_modified_user_id,
         vinquiry.user_id_status = in_user_id_status,
         vinquiry.previous_status_id = in_previous_status_id,
-        vinquiry.update_status_tz = CURRENT_TIMESTAMP,
-        vinquiry.modified_date_tz = CURRENT_TIMESTAMP
+        vinquiry.update_status_tz = CURRENT_TIMESTAMP
 	FROM "CART_REQUEST_TOOL"."VENDOR_INQUIRY" vinquiry
 	WHERE vinquiry.vendor_inquiry_id = in_vendor_inquiry_id;
 

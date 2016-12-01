@@ -8,6 +8,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURE LIST NAME
 var INS_REQUEST_RISK_FUNDED = "INS_REQUEST_RISK_FUNDED";
 var UPD_REQUEST_RISK_FUNDED = "UPD_REQUEST_RISK_FUNDED";
+var DEL_REQUEST_RISK_FUNDED = "DEL_REQUEST_RISK_FUNDED";
 
 function insertRiskFunded(reqBody, user_id){
 	var parameters = {};
@@ -33,4 +34,14 @@ function updateManualRiskFunded(reqBody, user_id){
 	parameters.out_result = '?';
 	
 	return db.executeScalarManual(UPD_REQUEST_RISK_FUNDED, parameters, 'out_result');
+}
+
+function deleteManualRiskFunded(risk_funded_id, user_id){
+	var parameters = {};
+	
+	parameters.in_request_risk_funded_id = risk_funded_id;
+	parameters.in_modified_user_id = user_id;
+	parameters.out_result = '?';
+	
+	return db.executeScalarManual(DEL_REQUEST_RISK_FUNDED, parameters, 'out_result');
 }

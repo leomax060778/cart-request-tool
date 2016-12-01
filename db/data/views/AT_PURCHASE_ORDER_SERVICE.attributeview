@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_PURCHASE_ORDER_SERVICE" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="Attribute view to get purchase order service data"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="SHOPPING_CART" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="SHOPPING_CART"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE" columnName="SHOPPING_CART"/>
+    </attribute>
+    <attribute id="CART_DATE" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CART_DATE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE" columnName="CART_DATE"/>
+    </attribute>
+    <attribute id="PURCHASE_ORDER_NUMBER" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="PURCHASE_ORDER_NUMBER"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE" columnName="PURCHASE_ORDER_NUMBER"/>
+    </attribute>
+    <attribute id="APPROVAL_DATE" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="APPROVAL_DATE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE" columnName="APPROVAL_DATE"/>
+    </attribute>
+    <attribute id="REQUEST_ID" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="REQUEST_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE" columnName="REQUEST_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="PURCHASE_ORDER_SERVICE"/>
+        <columnFilter columnName="ENABLED">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="1"/>
+        </columnFilter>
+        <columnFilter columnName="DELETED">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="PURCHASE_ORDER_SERVICE" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

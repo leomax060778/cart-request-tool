@@ -43,9 +43,14 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
                LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
                  ON (CR.VENDOR_ID = VAI.VENDOR_ID
-                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
+                     AND(
+                     	((CR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= CR.MODIFIED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ))))
+                     	OR                     	
+                     	(CR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
                           and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))))
                  )
                INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
                INNER JOIN "HL3" HL3 ON HL3.HL3_ID = CR.HL3_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0

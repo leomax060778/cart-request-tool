@@ -23,17 +23,22 @@ BEGIN
                VAI.VENDOR_NAME,
                ST.NAME AS STATUS_NAME,
                (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
-               (STG.NAME || VAM.MESSAGE_READ) AS IS_ADMINISTRABLE,
+               STG.NAME AS STAGE,
                (STG.NAME || ' / #' || CR.PASS) AS stage_passes,
                VAM.MESSAGE_READ
              FROM "REQUEST" CR
 	             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
-	             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
-	             				ON (CR.VENDOR_ID = VAI.VENDOR_ID
-	     							AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ 
-	       									and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ) 
-	       							OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
-	     							)
+	             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+                 ON (CR.VENDOR_ID = VAI.VENDOR_ID
+                     AND(
+                     	((CR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= CR.MODIFIED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ))))
+                     	OR                     	
+                     	(CR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))))
+                 )
 	     		 INNER JOIN "REQUEST_STATUS" ST ON ST.STATUS_ID = CR.STATUS_ID AND ST.NAME != 'Cancelled' AND ST.ENABLED = 1 AND ST.DELETED = 0
 	     		 INNER JOIN "USER" US ON US.USER_ID = CR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 	     		 INNER JOIN "STAGE" STG ON STG.stage_id = CR.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
@@ -48,6 +53,6 @@ BEGIN
   						VRQ.stage_passes,
   						VRQ.message_read
   				 FROM :va_request VRQ
-  				 	WHERE VRQ.IS_ADMINISTRABLE != 'E0'
+  				 	WHERE VRQ.MESSAGE_READ > 0 OR (VRQ.MESSAGE_READ is null AND VRQ.STAGE != 'E') OR (VRQ.STAGE || VRQ.MESSAGE_READ) != 'E0'
   				 	;
 END;

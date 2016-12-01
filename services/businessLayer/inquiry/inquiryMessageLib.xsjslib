@@ -26,12 +26,20 @@ function insertInquiryMessage(objInquiry, userId) {
 }
 
 //Get message
-function getInquiryMessage(inquiryId, userId) {
+function getInquiryMessage(inquiryId) {
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getMessage", inquiryId);
     }
+    return message.getInquiryMessage(inquiryId);
+}
+
+//Message read
+function updateMessageRead(inquiryId, userId){
+	if (!inquiryId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handlePut/updateMessage", inquiryId);
+    }
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/updateInquiryMessage", userId);
     }
     var result = [];
     var objInquiry = {};
@@ -45,13 +53,12 @@ function getInquiryMessage(inquiryId, userId) {
 	    });
     } catch (e) {
     	dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getInquiryMessage", e.toString());
+		throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiryMessage", e.toString());
     }
     finally{
 		dbHelper.commit();
 		dbHelper.closeConnection();
 	}
-    return result;
 }
 
 //Check if the inquiry exists

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_REQUEST" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="Attribute view to get the cart request data"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="REQUEST_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="REQUEST_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="REQUEST_ID"/>
+    </attribute>
+    <attribute id="CREATED_USER_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CREATED_USER_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="CREATED_USER_ID"/>
+    </attribute>
+    <attribute id="GOODS_RECIPIENT_USERNAME" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="GOODS_RECIPIENT_USERNAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="GOODS_RECIPIENT_USERNAME"/>
+    </attribute>
+    <attribute id="PASS" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="PASS"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="PASS"/>
+    </attribute>
+    <attribute id="VENDOR_ID" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="VENDOR_ID"/>
+    </attribute>
+    <attribute id="STAGE_ID" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="STAGE_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="STAGE_ID"/>
+    </attribute>
+    <attribute id="STATUS_ID" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="STATUS_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="STATUS_ID"/>
+    </attribute>
+    <attribute id="UPDATE_STATUS_TZ" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="UPDATE_STATUS_TZ"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="UPDATE_STATUS_TZ"/>
+    </attribute>
+    <attribute id="MATERIAL_ID" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MATERIAL_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="MATERIAL_ID"/>
+    </attribute>
+    <attribute id="NON_SAP_VENDOR_ID" order="10" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NON_SAP_VENDOR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="NON_SAP_VENDOR_ID"/>
+    </attribute>
+    <attribute id="CRT_TYPE_ID" order="11" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CRT_TYPE_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="CRT_TYPE_ID"/>
+    </attribute>
+    <attribute id="HL3_ID" order="12" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="HL3_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="HL3_ID"/>
+    </attribute>
+    <attribute id="CREATED_DATE_TZ" order="13" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CREATED_DATE_TZ"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="CREATED_DATE_TZ"/>
+    </attribute>
+    <attribute id="ENTITY_ID" order="14" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ENTITY_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="ENTITY_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST"/>
+        <columnFilter columnName="ENABLED">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="1"/>
+        </columnFilter>
+        <columnFilter columnName="DELETED">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="REQUEST" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

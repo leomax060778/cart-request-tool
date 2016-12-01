@@ -21,8 +21,7 @@ BEGIN
       vrequest.receiver_user_id = in_receiver_user_id,
       vrequest.receiver_yvc_request = in_receiver_yvc_request,
       vrequest.receiver_modified_date_tz = CURRENT_TIMESTAMP,
-      vrequest.update_status_tz = CURRENT_TIMESTAMP,
-      vrequest.modified_date_tz = CURRENT_TIMESTAMP
+      vrequest.update_status_tz = CURRENT_TIMESTAMP
     FROM "CART_REQUEST_TOOL"."VENDOR_REQUEST" vrequest
     WHERE vrequest.vendor_request_id = in_vendor_request_id;
 

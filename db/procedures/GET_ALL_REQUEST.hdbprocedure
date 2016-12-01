@@ -41,14 +41,17 @@ BEGIN
                			 VAM.MESSAGE_READ
 				  FROM "REQUEST" RQ
 					  INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID
-					  LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON
-					  (RQ.VENDOR_ID = VAI.VENDOR_ID
-				  		AND((VAI.MODIFIED_DATE_TZ is not null 
-				  				and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ
-					  			and VAI.MODIFIED_DATE_TZ >= RQ.CREATED_DATE_TZ) 
-				  		 	OR (VAI.MODIFIED_DATE_TZ is null 
-				  		 		and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ))
-				  		)
+					  LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+		                 ON (RQ.VENDOR_ID = VAI.VENDOR_ID
+		                     AND(
+		                     	((RQ.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ
+		                          and VAI.MODIFIED_DATE_TZ >= RQ.MODIFIED_DATE_TZ)
+		                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ))))
+		                     	OR                     	
+		                     	(RQ.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ
+		                          and VAI.MODIFIED_DATE_TZ >= RQ.CREATED_DATE_TZ)
+		                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ))))
+		                 )
 					  INNER JOIN "REQUEST_SERVICE" RS ON RQ.REQUEST_ID = RS.REQUEST_ID
 					  INNER JOIN "CURRENCY" CUR ON RS.CURRENCY_ID = CUR.CURRENCY_ID
 					  LEFT JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID

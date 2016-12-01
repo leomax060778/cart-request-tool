@@ -24,12 +24,20 @@ function insertRequestMessage(objRequest, userId) {
 }
 
 //Get messages of request
-function getRequestMessage(requestId, userId) {
+function getRequestMessage(requestId) {
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handleGet/getRequestMessage", requestId);
     }
+    return message.getRequestMessage(requestId);
+}
+
+//Update message read
+function updateRequestMessage(requestId, userId) {
+    if (!requestId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handlePut/updateRequestMessage", requestId);
+    }
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handleGet/getRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
     }
     var result = [];
     var objRequest = {};
@@ -44,7 +52,7 @@ function getRequestMessage(requestId, userId) {
     }
 	catch(e){
 		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "requestService/handleGet/getRequestMessage", e.toString());
+		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
 	}
 	finally{
 		dbHelper.commit();
