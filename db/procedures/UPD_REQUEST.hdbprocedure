@@ -1,6 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
 	IN in_request_id bigint,
-	IN in_user_id bigint,
 	IN in_team_id bigint,
 	IN in_entity_id bigint,
 	
@@ -22,8 +21,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
 	AS
 BEGIN
 	UPDATE REQUEST
-	SET REQUEST.user_id = in_user_id,
-			REQUEST.hl3_id = in_team_id,
+	SET 	REQUEST.hl3_id = in_team_id,
 			REQUEST.entity_id = in_entity_id,
 			
 			REQUEST.material_id = in_material_id,

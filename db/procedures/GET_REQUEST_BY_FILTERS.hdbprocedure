@@ -61,7 +61,7 @@ BEGIN
 							AND (RQ.HL3_ID = in_team_id OR in_team_id IS NULL)
 							AND (To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') >= in_request_date_from OR in_request_date_from IS NULL)
 							AND (To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') <= in_request_date_to OR in_request_date_to IS NULL)
-							AND (RQ.USER_ID = in_user_id OR in_user_id IS NULL)
+							AND (RQ.CREATED_USER_ID = in_user_id OR in_user_id IS NULL)
 							AND (RQ.VENDOR_ID = in_vendor_id OR in_vendor_id IS NULL)
 							AND (RQ.STATUS_ID = in_status_id OR in_status_id IS NULL)
 							AND (RQ.ENABLED = 1)

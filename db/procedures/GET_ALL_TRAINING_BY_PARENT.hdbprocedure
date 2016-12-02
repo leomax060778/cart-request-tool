@@ -1,4 +1,5 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING" (
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING_BY_PARENT" (
+ IN in_parent_id bigint,
  OUT out_result TABLE (
 	 training_type_id bigint, 
 	 parent_id bigint, 
@@ -22,12 +23,13 @@ BEGIN
 			 TRAINING.name, 
 			 TRAINING.description,
 			 TRAINING.training_order,
-			 TRAINING_TYPE.name as training_type_name,
+			 (CASE WHEN (TRAINING.ATTACHMENT_ID is not null) THEN ATTACHMENT.ATTACHMENT_TYPE ELSE TRAINING_TYPE.name END) as training_type_name,
 			 TRAINING.TRAINING_ID,
 			 TRAINING.ATTACHMENT_ID
  			FROM "TRAINING" as TRAINING
  			INNER JOIN "TRAINING_TYPE" as TRAINING_TYPE ON TRAINING.training_type_id = TRAINING_TYPE.training_type_id
+ 			LEFT JOIN "ATTACHMENT" as ATTACHMENT ON TRAINING.ATTACHMENT_ID = ATTACHMENT.ATTACHMENT_ID
  			WHERE TRAINING.ENABLED = 1
  			AND TRAINING.DELETED = 0
- 			AND TRAINING.PARENT_ID = 0;
+ 			AND TRAINING.PARENT_ID = in_parent_id;
 END;

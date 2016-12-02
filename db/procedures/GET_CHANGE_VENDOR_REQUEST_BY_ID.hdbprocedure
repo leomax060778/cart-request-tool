@@ -23,7 +23,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID,
+	out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID, 
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME,
@@ -41,12 +41,17 @@ BEGIN
 						CVR.vendor_id
 	FROM "CHANGE_VENDOR_REQUEST" CVR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = CVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
-	INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
-						ON (CVR.VENDOR_ID = VAI.VENDOR_ID
-     							AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ 
-       									and VAI.MODIFIED_DATE_TZ >= CVR.CREATED_DATE_TZ) 
-       							OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ))
-     						)
+	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+		                 ON (CVR.VENDOR_ID = VAI.VENDOR_ID
+		                     AND(
+		                     	((CVR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.MODIFIED_DATE_TZ
+		                          and VAI.MODIFIED_DATE_TZ >= CVR.MODIFIED_DATE_TZ)
+		                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.MODIFIED_DATE_TZ))))
+		                     	OR                     	
+		                     	(CVR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ
+		                          and VAI.MODIFIED_DATE_TZ >= CVR.CREATED_DATE_TZ)
+		                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ))))
+		                 )
 	INNER JOIN "USER" US ON US.user_id = CVR.user_id AND US.ENABLED = 1 AND US.DELETED = 0
 		WHERE in_change_vendor_request_id = CVR.CHANGE_VENDOR_REQUEST_ID
 		AND CVR.deleted = 0

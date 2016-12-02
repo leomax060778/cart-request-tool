@@ -8,11 +8,12 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
 out_result = SELECT 
-"VENDOR_ENTITY".vendor_id, "VENDOR".account, VAI.vendor_name as name, "VENDOR".contact_name, "VENDOR".contact_email, "VENDOR".contact_phone, "VENDOR".address_1, "VENDOR".address_2, "VENDOR".city, "VENDOR".state, "VENDOR".zip, "VENDOR".phone, "VENDOR".fax, "VENDOR".legal_name, "VENDOR".informal_name
-         FROM "VENDOR_ENTITY"
-         INNER JOIN "VENDOR" ON "VENDOR_ENTITY".vendor_id = "VENDOR".vendor_id
-         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VENDOR_ENTITY.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
-         WHERE "VENDOR_ENTITY".entity_id = in_entity_id
-         AND "VENDOR_ENTITY".ENABLED = 1 AND "VENDOR_ENTITY".DELETED = 0;
+VE.vendor_id, V.account, VAI.vendor_name as name, V.contact_name, V.contact_email, V.contact_phone, V.address_1, V.address_2, V.city, V.state, V.zip, V.phone, V.fax, V.legal_name, V.informal_name
+         FROM "VENDOR_ENTITY" VE
+         INNER JOIN "VENDOR" V ON VE.vendor_id = V.vendor_id
+         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VE.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
+         INNER JOIN "VENDOR_STATUS" ST ON V.STATUS_ID = ST.STATUS_ID AND ST.NAME = 'Approved'
+         WHERE VE.entity_id = in_entity_id
+         AND VE.ENABLED = 1 AND VE.DELETED = 0;
 END;
 

@@ -3,6 +3,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ATTACHMENT" 
  IN in_original_name nvarchar (255),
  IN in_saved_name nvarchar (255),
  IN in_attachment_size bigint,
+ IN in_attachment_type nvarchar (255),
  IN in_created_user_id bigint,
  OUT out_result bigint
  ) 
@@ -11,8 +12,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_ATTACHMENT" 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-   INSERT INTO "CART_REQUEST_TOOL"."ATTACHMENT" (user_id, original_name, saved_name, created_user_id, attachment_size)
-    VALUES(in_user_id, in_original_name, in_saved_name, in_created_user_id, in_attachment_size);
+   INSERT INTO "CART_REQUEST_TOOL"."ATTACHMENT" (user_id, original_name, saved_name, created_user_id, attachment_size, attachment_type)
+    VALUES(in_user_id, in_original_name, in_saved_name, in_created_user_id, in_attachment_size, in_attachment_type);
    
    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."ATTACHMENT";
 END;

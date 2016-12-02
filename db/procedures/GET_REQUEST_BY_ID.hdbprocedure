@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_ID" (
  IN in_request_id bigint,
- OUT out_result TABLE (request_id bigint, user_id bigint, user_name nvarchar(255), team_id bigint, team_name nvarchar(255), entity_id bigint, 
+ OUT out_result TABLE (request_id bigint, requester_id bigint, requester nvarchar(255), team_id bigint, team_name nvarchar(255), entity_id bigint, 
 						entity_name nvarchar(255), vendor_id bigint, vendor_name nvarchar(255),	vendor_account nvarchar(255), non_sap_vendor_id bigint, non_sap_name nvarchar(255), non_sap_contact_name nvarchar(255), non_sap_contact_email nvarchar(255), non_sap_contact_phone nvarchar(255),
 						stage_id bigint, stage_name nvarchar(127), status_id bigint, status_name nvarchar(255), material_id bigint,
 						material_description nvarchar(255), material_parent_id bigint, material_code nvarchar(255), goods_recipient_username nvarchar(127),
@@ -14,8 +14,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
 BEGIN
 	out_result = SELECT 
 	RQ.REQUEST_ID, 
-	RQ.USER_ID, 
-	US.USER_NAME AS user_name, 
+	RQ.CREATED_USER_ID AS requester_id, 
+	US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS requester, 
 	RQ.HL3_ID as team_id, 
 	HL3.HL3_DESCRIPTION AS team_name, 
 	RQ.ENTITY_ID,
@@ -45,7 +45,7 @@ BEGIN
 	CTY.ISO AS iso, 
 	TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS request_date
 	 FROM "REQUEST" RQ
-	 	INNER JOIN "USER" US ON RQ.USER_ID = US.USER_ID
+	 	INNER JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
 	 	INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID
 	 	INNER JOIN "ENTITY" ET ON RQ.ENTITY_ID = ET.ENTITY_ID
 	 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON RQ.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0

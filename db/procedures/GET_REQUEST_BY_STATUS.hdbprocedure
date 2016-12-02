@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_STATUS" ( 
  IN in_status_id bigint,
-  OUT out_result TABLE (request_id bigint, user_id bigint, team_id bigint, entity_id bigint, vendor_id bigint, stage_id bigint,
+  OUT out_result TABLE (request_id bigint, created_user_id bigint, team_id bigint, entity_id bigint, vendor_id bigint, stage_id bigint,
  status_id bigint, goods_recipient_username nvarchar(127), data_protection_enabled tinyint, infrastructure_of_work_id bigint, location_of_work_id bigint) 
  ) 
 LANGUAGE SQLSCRIPT
@@ -10,7 +10,7 @@ LANGUAGE SQLSCRIPT
 BEGIN
 	out_result = SELECT 
 		"REQUEST".REQUEST_ID, 
-		"REQUEST".USER_ID, 
+		"REQUEST".CREATED_USER_ID, 
 		"REQUEST".HL3_ID as team_id, 
 		"REQUEST".ENTITY_ID, 
 		"REQUEST".VENDOR_ID,

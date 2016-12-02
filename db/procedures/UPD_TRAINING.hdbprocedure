@@ -5,6 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_TRAINING" (
  IN in_parent_id bigint,
  IN in_link nvarchar (2048),
  IN in_name nvarchar (2048),
+ IN in_description nvarchar (2048),
  IN in_training_order integer,
  OUT out_result bigint
  ) 
@@ -18,6 +19,7 @@ BEGIN
   			"TRAINING".parent_id = in_parent_id,
   			"TRAINING".link = in_link,
   			"TRAINING".name = in_name,
+  			"TRAINING".description = in_description,
   			"TRAINING".training_order = in_training_order,
         	"TRAINING".modified_date_tz = CURRENT_TIMESTAMP,
         	"TRAINING".modified_user_id = in_modified_user_id
