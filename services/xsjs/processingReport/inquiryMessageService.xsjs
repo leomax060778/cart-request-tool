@@ -48,9 +48,9 @@ function handleGet(parameters, userId) {
     return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
 }
 
-//Not Implemented Method
-function handlePut() {
-    return httpUtil.notImplementedMethod();
+function handlePut(reqBody, userId) {
+    var req = request.updateInquiryMessage(reqBody.INQUIRY_ID, userId);
+    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method

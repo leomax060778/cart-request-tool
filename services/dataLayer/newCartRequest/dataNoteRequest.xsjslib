@@ -13,7 +13,6 @@ function insertNoteRequest(objNoteReq, userId) {
 
         var parameters = {};
         parameters.in_request_id = objNoteReq.REQUEST_ID;
-        parameters.in_user_id = objNoteReq.USER_ID;
         parameters.in_note_text = objNoteReq.NOTE_TEXT;
         parameters.in_note_type_id = objNoteReq.NOTE_TYPE_ID;
         parameters.in_created_user_id = userId;//objAttachment.IN_CREATED_USER_ID;

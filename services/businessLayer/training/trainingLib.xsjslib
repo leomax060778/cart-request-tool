@@ -1,18 +1,31 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
-var dataTraining = mapper.getTraining();
+var dataTraining = mapper.getDataTraining();
+var dataTrainingType = mapper.getDataTrainingType();
+var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+function getAllTrainingByParent(parentId, userId){
+	if (!parentId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter parentId is not found", "trainingService/handleGet/getAllTrainingByParent", parentId);
+    }
+	return dataTraining.getAllTrainingByParent(parentId);
+}
 
 //Insert training
 function insertTraining(objTraining, userId) {
     if (validateInsertTraining(objTraining, userId)) {
-        if (existTraining(objTraining.IN_TRAINING_ID)) {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", "The object Training already exists");
+        if (!existTrainingType(objTraining.TRAINING_TYPE_ID)) {
+            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", "The object Training Type doesn't exist");
         } else {
             return dataTraining.insertTraining(objTraining, userId);
         }
     }
+}
+
+function existTrainingType(trainingTypeId){
+	return (dataTrainingType.getManualTrainingTypeById(trainingTypeId).length > 0);
 }
 
 //Get training by ID
@@ -37,10 +50,35 @@ function updateTraining(objTraining, userId) {
 
 //Delete training
 function deleteTraining(objTraining, userId) {
-    if (!objTraining.IN_TRAINING_ID) {
+    if (!objTraining.TRAINING_ID) {
         throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/deleteTraining", "The TRAINING_ID is not found");
     }
     return dataTraining.deleteTraining(objTraining, userId);
+}
+
+function deleteManualTraining(objTraining, userId) {
+    if (!objTraining.TRAINING_ID) {
+        throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/deleteTraining", "The TRAINING_ID is not found");
+    }
+    return dataTraining.deleteManualTraining(objTraining, userId);
+}
+
+function deleteSelectedTraining(objTraining, userId){
+	try{
+		if(objTraining.TRAINING_LIST && objTraining.TRAINING_LIST.length > 0){
+			(objTraining.TRAINING_LIST).forEach(function(training){
+				deleteManualTraining(training, userId);
+			});
+		}
+		dbHelper.commit();
+	} catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(),"deleteTraining");
+	}
+	finally{
+		dbHelper.closeConnection();
+	}
+	return {};
 }
 
 //Check if the request exists
@@ -56,11 +94,11 @@ function validateInsertTraining(objTraining, userId) {
     var errors = {};
     var BreakException = {};
     var keys = [
-        'IN_TRAINING_TYPE_ID',
-        'IN_PARENT_TYPE_ID',
-        'IN_LINK',
-        'IN_NAME',
-        'IN_TRAINING_ORDER'
+        'TRAINING_TYPE_ID',
+        'PARENT_ID',
+        'NAME',
+        'DESCRIPTION',
+        'TRAINING_ORDER'
     ];
 
     if (!objTraining) {
@@ -101,12 +139,13 @@ function validateUpdateTraining(objTraining, userId) {
     var errors = {};
     var BreakException = {};
     var keys = [
-        'IN_TRAINING_ID',
-        'IN_TRAINING_TYPE_ID',
-        'IN_PARENT_ID',
-        'IN_LINK',
-        'IN_NAME',
-        'IN_TRAINING_ORDER'];
+        'TRAINING_ID',
+        'TRAINING_TYPE_ID',
+        'PARENT_ID',
+        'LINK',
+        'NAME',
+        'DESCRIPTION',
+        'TRAINING_ORDER'];
 
     if (!objTraining) {
         throw ErrorLib.getErrors().CustomError("", "trainingService/handlePut/updateTraining", "The object Training is not found");    
@@ -142,25 +181,28 @@ function validateUpdateTraining(objTraining, userId) {
 function validateType(key, value) {
     var valid = true;
     switch (key) {
-        case 'IN_TRAINING_TYPE_ID':
+        case 'TRAINING_TYPE_ID':
             valid = !isNaN(value) && value > 0;
             break;
-        case 'IN_PARENT_TYPE_ID':
+        case 'PARENT_TYPE_ID':
             valid = !isNaN(value) && value > 0;
             break;
-        case 'IN_LINK':
-            valid = !isNaN(value) && value > 0;
+        case 'LINK':
+        	valid = (value.length >= 0 && value.length <= 1000) || (!value);
             break;
-        case 'IN_NAME':
+        case 'NAME':
             valid = (value.length >= 0 && value.length <= 1000) || (!value);
             break;
-        case 'IN_TRAINING_ORDER':
-            valid = value.length > 0 && value.length <= 1000;
+        case 'DESCRIPTION':
+            valid = (value.length >= 0 && value.length <= 1000) || (!value);
             break;
-        case 'IN_TRAINING_ID':
+        case 'TRAINING_ORDER':
             valid = !isNaN(value) && value > 0;
             break;
-        case 'IN_PARENT_ID':
+        case 'TRAINING_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'PARENT_ID':
             valid = (!isNaN(value) && value >= 0) || (!value);
             break;
     }

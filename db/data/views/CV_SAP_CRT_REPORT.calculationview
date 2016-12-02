@@ -12,6 +12,7 @@
         <viewAttribute datatype="NVARCHAR" id="REQUEST_ID" length="15"/>
         <viewAttribute datatype="NVARCHAR" id="REQUEST_DATE" length="15"/>
         <viewAttribute datatype="NVARCHAR" id="REQUESTER" length="255"/>
+        <viewAttribute datatype="BIGINT" id="CREATED_USER_ID"/>
         <viewAttribute datatype="NVARCHAR" id="TEAM" length="32"/>
         <viewAttribute datatype="NVARCHAR" id="GOODS_RECIPIENT_USERNAME" length="127"/>
         <viewAttribute datatype="NVARCHAR" id="VENDOR_NAME" length="255"/>
@@ -67,7 +68,8 @@
  						('Written by: ' || MUS.FIRST_NAME || ' ' || MUS.LAST_NAME || ' (' || MUS.USER_NAME || ') on ' || TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh-mm') || ' / ' || RT.NAME) AS MESSAGE_INFO
  					FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_REQUEST_MESSAGE&quot; RM
  						INNER JOIN :va_message_user MUS ON RM.CREATED_USER_ID = MUS.USER_ID
- 						LEFT JOIN :va_return_type RT ON RM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID;
+ 						LEFT JOIN :va_return_type RT ON RM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID
+ 						INNER JOIN :va_last_message LRM ON RM.CREATED_DATE_TZ = LRM.LAST_MESSAGE;
 
 	va_requester = SELECT US.USER_ID,
 						(US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME) AS REQUESTER
@@ -145,10 +147,9 @@
                     	 CPC.NAME AS PRODUCT_CATEGORY,
                     	 CAT.NAME AS PRODUCT_CATALOG
                    	FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_MATERIAL&quot; MT
-                   		INNER JOIN :va_request RQ ON RQ.MATERIAL_ID = MT.MATERIAL_ID
-                   		INNER JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; SC ON MT.CATALOG_ID = SC.CATALOG_ID 
-                   		INNER JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; CPC ON SC.CATALOG_PARENT_ID = CPC.CATALOG_ID AND CPC.CATALOG_TYPE_ID = 2
-                   		INNER JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; CAT ON CPC.CATALOG_PARENT_ID = CAT.CATALOG_ID AND CAT.CATALOG_TYPE_ID = 1;
+                   		LEFT JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; SC ON MT.CATALOG_ID = SC.CATALOG_ID 
+                   		LEFT JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; CPC ON SC.CATALOG_PARENT_ID = CPC.CATALOG_ID
+                   		LEFT JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_CATALOG&quot; CAT ON CPC.CATALOG_PARENT_ID = CAT.CATALOG_ID;
                    		
 					
 	va_special_request = SELECT SRQ.REQUEST_ID,
@@ -161,6 +162,7 @@
 	va_sub_out = SELECT (CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID)) AS REQUEST_ID,
 	                    TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS REQUEST_DATE,
 	                    US.REQUESTER,
+	                    US.USER_ID AS CREATED_USER_ID,
 	                    HL3.TEAM,
 	                    RQ.GOODS_RECIPIENT_USERNAME,
 	                    VAI.VENDOR_NAME,
@@ -188,14 +190,13 @@
 	                    POS.PURCHASE_DATE,
 	                    ST.STATUS,
 	                    (SG.STAGE_NAME || ' / #' || RQ.PASS) AS STAGE_PASSES,
-	                    DAYS_BETWEEN(SV.START_DATE, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
-	                    DAYS_BETWEEN(SV.START_DATE, RQ.UPDATE_STATUS_TZ) AS PURCHASE_TURN_AROUND_TIME,
+	                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
+	                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, RQ.UPDATE_STATUS_TZ) AS PURCHASE_TURN_AROUND_TIME,
 	                    RM.MESSAGE_INFO,
 	                    RM.MESSAGE_CONTENT AS LAST_MESSAGE
 					FROM :va_request RQ
 						INNER JOIN :va_crt_type CT ON RQ.CRT_TYPE_ID = CT.CRT_TYPE_ID
-		                LEFT JOIN :va_last_message LRM ON RQ.REQUEST_ID = LRM.REQUEST_ID
-		                LEFT JOIN :va_message RM ON RQ.REQUEST_ID = RM.REQUEST_ID AND RM.CREATED_DATE_TZ = LRM.LAST_MESSAGE
+		                LEFT JOIN :va_message RM ON RQ.REQUEST_ID = RM.REQUEST_ID
  		                INNER JOIN :va_requester US ON RQ.CREATED_USER_ID = US.USER_ID
 		                INNER JOIN :va_hl3 HL3 ON RQ.HL3_ID = HL3.HL3_ID
 		                LEFT JOIN :va_vendor V ON RQ.VENDOR_ID = V.VENDOR_ID
@@ -206,7 +207,7 @@
 		                INNER JOIN :va_service SV ON RQ.REQUEST_ID = SV.REQUEST_ID
 		                LEFT JOIN :va_material MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
 		                LEFT JOIN :va_special_request SRQ ON SRQ.REQUEST_ID = RQ.REQUEST_ID
-		                LEFT JOIN :va_request_cost_object RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID
+		                INNER JOIN :va_request_cost_object RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID
 		                INNER JOIN :va_request_service RS ON RS.REQUEST_ID = RQ.REQUEST_ID
 		                INNER JOIN :va_currency CUR ON CUR.CURRENCY_ID = RS.CURRENCY_ID
 		                INNER JOIN :va_status ST ON RQ.STATUS_ID = ST.STATUS_ID
@@ -216,6 +217,7 @@
  	 var_out = SELECT RQR.REQUEST_ID,
  	 				  RQR.REQUEST_DATE,
  	 				  RQR.REQUESTER,
+ 	 				  RQR.CREATED_USER_ID,
  	 				  RQR.TEAM,
  	 				  RQR.GOODS_RECIPIENT_USERNAME,
  	 				  RQR.VENDOR_NAME,
@@ -248,7 +250,7 @@
  	 				  RQR.MESSAGE_INFO,
  	 				  RQR.LAST_MESSAGE
  				FROM :va_sub_out RQR;
- 	 				  
+ 	 				 
 
 END /********* End Procedure Script ************/</definition>
     </calculationView>
@@ -268,115 +270,123 @@ END /********* End Procedure Script ************/</definition>
         <descriptions defaultDescription="REQUESTER"/>
         <keyMapping columnObjectName="Script_View" columnName="REQUESTER"/>
       </attribute>
-      <attribute id="TEAM" order="4">
+      <attribute id="TEAM" order="5">
         <descriptions defaultDescription="TEAM"/>
         <keyMapping columnObjectName="Script_View" columnName="TEAM"/>
       </attribute>
-      <attribute id="GOODS_RECIPIENT_USERNAME" order="5">
+      <attribute id="GOODS_RECIPIENT_USERNAME" order="6">
         <descriptions defaultDescription="GOODS_RECIPIENT_USERNAME"/>
         <keyMapping columnObjectName="Script_View" columnName="GOODS_RECIPIENT_USERNAME"/>
       </attribute>
-      <attribute id="VENDOR_NAME" order="6">
+      <attribute id="VENDOR_NAME" order="7">
         <descriptions defaultDescription="VENDOR_NAME"/>
         <keyMapping columnObjectName="Script_View" columnName="VENDOR_NAME"/>
       </attribute>
-      <attribute id="NON_SAP_VENDOR_NAME" order="7">
+      <attribute id="NON_SAP_VENDOR_NAME" order="8">
         <descriptions defaultDescription="NON_SAP_VENDOR_NAME"/>
         <keyMapping columnObjectName="Script_View" columnName="NON_SAP_VENDOR_NAME"/>
       </attribute>
-      <attribute id="VENDOR_ACCOUNT" order="8">
+      <attribute id="VENDOR_ACCOUNT" order="9">
         <descriptions defaultDescription="VENDOR_ACCOUNT"/>
         <keyMapping columnObjectName="Script_View" columnName="VENDOR_ACCOUNT"/>
       </attribute>
-      <attribute id="DESCRIPTION_PURCHASE_ORDER" order="9">
+      <attribute id="DESCRIPTION_PURCHASE_ORDER" order="10">
         <descriptions defaultDescription="DESCRIPTION_PURCHASE_ORDER"/>
         <keyMapping columnObjectName="Script_View" columnName="DESCRIPTION_PURCHASE_ORDER"/>
       </attribute>
-      <attribute id="PRODUCT_CATALOG" order="10">
+      <attribute id="PRODUCT_CATALOG" order="11">
         <descriptions defaultDescription="PRODUCT_CATALOG"/>
         <keyMapping columnObjectName="Script_View" columnName="PRODUCT_CATALOG"/>
       </attribute>
-      <attribute id="PRODUCT_CATEGORY" order="11">
+      <attribute id="PRODUCT_CATEGORY" order="12">
         <descriptions defaultDescription="PRODUCT_CATEGORY"/>
         <keyMapping columnObjectName="Script_View" columnName="PRODUCT_CATEGORY"/>
       </attribute>
-      <attribute id="MATERIAL_DESCRIPTION" order="12">
+      <attribute id="MATERIAL_DESCRIPTION" order="13">
         <descriptions defaultDescription="MATERIAL_DESCRIPTION"/>
         <keyMapping columnObjectName="Script_View" columnName="MATERIAL_DESCRIPTION"/>
       </attribute>
-      <attribute id="MATERIAL_CODE" order="13">
+      <attribute id="MATERIAL_CODE" order="14">
         <descriptions defaultDescription="MATERIAL_CODE"/>
         <keyMapping columnObjectName="Script_View" columnName="MATERIAL_CODE"/>
       </attribute>
-      <attribute id="SPECIAL_REQUEST_DESCRIPTION" order="14">
+      <attribute id="SPECIAL_REQUEST_DESCRIPTION" order="15">
         <descriptions defaultDescription="SPECIAL_REQUEST_DESCRIPTION"/>
         <keyMapping columnObjectName="Script_View" columnName="SPECIAL_REQUEST_DESCRIPTION"/>
       </attribute>
-      <attribute id="SPECIAL_REQUEST_CODE" order="15">
+      <attribute id="SPECIAL_REQUEST_CODE" order="16">
         <descriptions defaultDescription="SPECIAL_REQUEST_CODE"/>
         <keyMapping columnObjectName="Script_View" columnName="SPECIAL_REQUEST_CODE"/>
       </attribute>
-      <attribute id="SAP_ENTITY" order="16">
+      <attribute id="SAP_ENTITY" order="17">
         <descriptions defaultDescription="SAP_ENTITY"/>
         <keyMapping columnObjectName="Script_View" columnName="SAP_ENTITY"/>
       </attribute>
-      <attribute id="COST_OBJECT" order="17">
+      <attribute id="COST_OBJECT" order="18">
         <descriptions defaultDescription="COST_OBJECT"/>
         <keyMapping columnObjectName="Script_View" columnName="COST_OBJECT"/>
       </attribute>
-      <attribute id="START_DATE" order="18">
+      <attribute id="START_DATE" order="19">
         <descriptions defaultDescription="START_DATE"/>
         <keyMapping columnObjectName="Script_View" columnName="START_DATE"/>
       </attribute>
-      <attribute id="END_DATE" order="19">
+      <attribute id="END_DATE" order="20">
         <descriptions defaultDescription="END_DATE"/>
         <keyMapping columnObjectName="Script_View" columnName="END_DATE"/>
       </attribute>
-      <attribute id="CURRENCY" order="21">
+      <attribute id="AMOUNT_LINE" order="21">
+        <descriptions defaultDescription="AMOUNT_LINE"/>
+        <keyMapping columnObjectName="Script_View" columnName="AMOUNT_LINE"/>
+      </attribute>
+      <attribute id="CURRENCY" order="22">
         <descriptions defaultDescription="CURRENCY"/>
         <keyMapping columnObjectName="Script_View" columnName="CURRENCY"/>
       </attribute>
-      <attribute id="CART_NUMBER" order="23">
+      <attribute id="BUDGET" order="23">
+        <descriptions defaultDescription="BUDGET"/>
+        <keyMapping columnObjectName="Script_View" columnName="BUDGET"/>
+      </attribute>
+      <attribute id="CART_NUMBER" order="24">
         <descriptions defaultDescription="CART_NUMBER"/>
         <keyMapping columnObjectName="Script_View" columnName="CART_NUMBER"/>
       </attribute>
-      <attribute id="CART_DATE" order="24">
+      <attribute id="CART_DATE" order="25">
         <descriptions defaultDescription="CART_DATE"/>
         <keyMapping columnObjectName="Script_View" columnName="CART_DATE"/>
       </attribute>
-      <attribute id="PURCHASE_ORDER_NUMBER" order="25">
+      <attribute id="PURCHASE_ORDER_NUMBER" order="26">
         <descriptions defaultDescription="PURCHASE_ORDER_NUMBER"/>
         <keyMapping columnObjectName="Script_View" columnName="PURCHASE_ORDER_NUMBER"/>
       </attribute>
-      <attribute id="LINE_NUMBER" order="27">
+      <attribute id="LINE_NUMBER" order="28">
         <descriptions defaultDescription="LINE_NUMBER"/>
         <keyMapping columnObjectName="Script_View" columnName="LINE_NUMBER"/>
       </attribute>
-      <attribute id="PURCHASE_DATE" order="28">
+      <attribute id="PURCHASE_DATE" order="29">
         <descriptions defaultDescription="PURCHASE_DATE"/>
         <keyMapping columnObjectName="Script_View" columnName="PURCHASE_DATE"/>
       </attribute>
-      <attribute id="STATUS" order="29">
+      <attribute id="STATUS" order="30">
         <descriptions defaultDescription="STATUS"/>
         <keyMapping columnObjectName="Script_View" columnName="STATUS"/>
       </attribute>
-      <attribute id="STAGE_PASSES" order="30">
+      <attribute id="STAGE_PASSES" order="31">
         <descriptions defaultDescription="STAGE_PASSES"/>
         <keyMapping columnObjectName="Script_View" columnName="STAGE_PASSES"/>
       </attribute>
-      <attribute id="DAYS_OUTSTANDING" order="31">
+      <attribute id="DAYS_OUTSTANDING" order="32">
         <descriptions defaultDescription="DAYS_OUTSTANDING"/>
         <keyMapping columnObjectName="Script_View" columnName="DAYS_OUTSTANDING"/>
       </attribute>
-      <attribute id="PURCHASE_TURN_AROUND_TIME" order="32">
+      <attribute id="PURCHASE_TURN_AROUND_TIME" order="33">
         <descriptions defaultDescription="PURCHASE_TURN_AROUND_TIME"/>
         <keyMapping columnObjectName="Script_View" columnName="PURCHASE_TURN_AROUND_TIME"/>
       </attribute>
-      <attribute id="MESSAGE_INFO" order="33">
+      <attribute id="MESSAGE_INFO" order="34">
         <descriptions defaultDescription="MESSAGE_INFO"/>
         <keyMapping columnObjectName="Script_View" columnName="MESSAGE_INFO"/>
       </attribute>
-      <attribute id="LAST_MESSAGE" order="34">
+      <attribute id="LAST_MESSAGE" order="35">
         <descriptions defaultDescription="LAST_MESSAGE"/>
         <keyMapping columnObjectName="Script_View" columnName="LAST_MESSAGE"/>
       </attribute>
@@ -390,15 +400,11 @@ END /********* End Procedure Script ************/</definition>
       </layout>
     </privateDataFoundation>
     <baseMeasures>
-      <measure id="AMOUNT_LINE" order="20" aggregationType="sum" measureType="simple">
-        <descriptions defaultDescription="AMOUNT_LINE"/>
-        <measureMapping columnObjectName="Script_View" columnName="AMOUNT_LINE"/>
+      <measure id="CREATED_USER_ID" order="4" aggregationType="sum" measureType="simple">
+        <descriptions defaultDescription="CREATED_USER_ID"/>
+        <measureMapping columnObjectName="Script_View" columnName="CREATED_USER_ID"/>
       </measure>
-      <measure id="BUDGET" order="22" aggregationType="sum" measureType="simple">
-        <descriptions defaultDescription="BUDGET"/>
-        <measureMapping columnObjectName="Script_View" columnName="BUDGET"/>
-      </measure>
-      <measure id="ITEM" order="26" aggregationType="sum" measureType="simple">
+      <measure id="ITEM" order="27" aggregationType="count" measureType="simple">
         <descriptions defaultDescription="ITEM"/>
         <measureMapping columnObjectName="Script_View" columnName="ITEM"/>
       </measure>

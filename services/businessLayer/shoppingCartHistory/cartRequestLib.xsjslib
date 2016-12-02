@@ -234,7 +234,6 @@ function updateDataProtectionAnswer(item, user_id){
 
 //NOTE REQUEST
 function insertManualNoteRequest(objNoteReq, request_id, user_id){
-	objNoteReq.USER_ID = user_id;
 	objNoteReq.REQUEST_ID = request_id;
 	//if(validateInsertNoteRequest(objNoteReq, user_id)){
 		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
@@ -619,6 +618,11 @@ function updateRequest(reqBody, user_id){
 		if(reqBody.REQUEST_SERVICE !== undefined){
 			if((reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT) == ""){
 				reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT = null;
+				reqBody.REQUEST_SERVICE.PURCHASE_ORDER_TO_UPLIFT = null;
+				reqBody.REQUEST_SERVICE.LINE_TO_UPLIFT = null;
+			}
+			if((reqBody.REQUEST_SERVICE.SAP_BUYER_NAME) == ""){
+				reqBody.REQUEST_SERVICE.SAP_BUYER_NAME = null;
 			}
 			var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
 			var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);

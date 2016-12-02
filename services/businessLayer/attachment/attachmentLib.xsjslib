@@ -104,7 +104,7 @@ function validateUpdateAttachment(objAttachment, userId) {
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'ATTACHMENT_ID', 'ORIGINAL_NAME', 'SAVED_NAME',
-			'ATTACHMENT_SIZE' ];
+			'ATTACHMENT_SIZE' , 'ATTACHMENT_TYPE'];
 
 	if (!objAttachment) {
 		throw ErrorLib.getErrors().CustomError("",
@@ -151,7 +151,7 @@ function validateInsertAttachment(objAttachment, userId) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'ORIGINAL_NAME', 'SAVED_NAME', 'ATTACHMENT_SIZE' ];
+	var keys = [ 'ORIGINAL_NAME', 'SAVED_NAME', 'ATTACHMENT_SIZE' , 'ATTACHMENT_TYPE'];
 
 	if (!objAttachment) {
 		throw ErrorLib.getErrors().CustomError("",
@@ -197,6 +197,9 @@ function validateType(key, value) {
 		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'SAVED_NAME':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'ATTACHMENT_TYPE':
 		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'ATTACHMENT_SIZE':

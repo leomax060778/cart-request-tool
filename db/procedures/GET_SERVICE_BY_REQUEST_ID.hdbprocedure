@@ -34,6 +34,7 @@ BEGIN
             FROM "SERVICE" SER
             INNER JOIN "CURRENCY" CU ON SER.CURRENCY_ID = CU.CURRENCY_ID
             WHERE SER.REQUEST_ID = in_request_id
-            AND SER.ENABLED = 1 AND SER.DELETED = 0;
+            AND SER.ENABLED = 1 AND SER.DELETED = 0
+            ORDER BY SER.ITEM;
 END;
 

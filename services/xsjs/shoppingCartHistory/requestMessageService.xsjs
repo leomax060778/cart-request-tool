@@ -32,7 +32,7 @@ function processRequest() {
  * @returns {RequestMessage} RequestMessage
  */
 function handleGet(parameters, userId) {
-    var rdo = {};
+    var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_REQUEST_MESSAGE) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -42,7 +42,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = request.getRequestMessage(parameters[0].value, userId);
+                res = request.getRequestMessage(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(
@@ -58,12 +58,12 @@ function handleGet(parameters, userId) {
             "invalid parameter (must be: GET_REQUEST_MESSAGE)"
         );
     }
-    return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-//Not Implemented Method
-function handlePut() {
-    return httpUtil.notImplementedMethod();
+function handlePut(reqBody, userId) {
+	var res = request.updateRequestMessage(reqBody.REQUEST_ID, userId);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method

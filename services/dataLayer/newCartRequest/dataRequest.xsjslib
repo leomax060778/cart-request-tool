@@ -12,7 +12,6 @@ function insertRequest(objRequest, user_id){
 	
 	var parameters = {};
 	
-	parameters.in_user_id = objRequest.USER_ID;
 	parameters.in_team_id = objRequest.TEAM_ID; 
 	parameters.in_entity_id = objRequest.ENTITY_ID; 
 	parameters.in_vendor_id = objRequest.VENDOR_ID;

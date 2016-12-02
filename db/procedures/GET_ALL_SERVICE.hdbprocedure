@@ -28,5 +28,6 @@ BEGIN
   				SER.line_number
             FROM "SERVICE" SER
             INNER JOIN "CURRENCY" CU ON SER.CURRENCY_ID = CU.CURRENCY_ID
-            WHERE SER.ENABLED = 1 AND SER.DELETED = 0;
+            WHERE SER.ENABLED = 1 AND SER.DELETED = 0
+            ORDER BY SER.ITEM;
 END;

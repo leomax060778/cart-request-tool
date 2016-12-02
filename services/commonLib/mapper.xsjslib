@@ -370,6 +370,11 @@ function getUserTeam(){
     return $.xscartrequesttool.services.businessLayer.admin.userTeamLib;
 }
 
+function getReport(){
+    $.import("xscartrequesttool.services.businessLayer.report","reportLib");
+    return $.xscartrequesttool.services.businessLayer.report.reportLib;
+}
+
 /************Data Layer Mapper*****************/
 
 function getdbHelper(){
@@ -804,6 +809,11 @@ function getDataInquiryStatus() {
 function getDataUserTeam() {
     $.import("xscartrequesttool.services.dataLayer.admin","dataUserTeam");
     return $.xscartrequesttool.services.dataLayer.admin.dataUserTeam;
+}
+
+function getDataReport(){
+    $.import("xscartrequesttool.services.dataLayer.report","dataReport");
+    return $.xscartrequesttool.services.dataLayer.report.dataReport;
 }
 
 /********************

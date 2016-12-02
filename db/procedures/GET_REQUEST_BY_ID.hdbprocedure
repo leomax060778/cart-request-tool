@@ -5,7 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
 						stage_id bigint, stage_name nvarchar(127), status_id bigint, status_name nvarchar(255), material_id bigint,
 						material_description nvarchar(255), material_parent_id bigint, material_code nvarchar(255), goods_recipient_username nvarchar(127),
 						data_protection_enabled tinyint, infrastructure_of_work_id bigint, infrastructure_name nvarchar(255), 
-						location_of_work_id bigint, location_name nvarchar(255), iso nvarchar(2), created_date_tz timestamp) 
+						location_of_work_id bigint, location_name nvarchar(255), iso nvarchar(2), request_date nvarchar(255)) 
 						) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -43,7 +43,7 @@ BEGIN
 	RQ.LOCATION_OF_WORK_ID, 
 	LOW.LOCATION_NAME AS location_name, 
 	CTY.ISO AS iso, 
-	RQ.CREATED_DATE_TZ
+	TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS request_date
 	 FROM "REQUEST" RQ
 	 	INNER JOIN "USER" US ON RQ.USER_ID = US.USER_ID
 	 	INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID

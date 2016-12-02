@@ -85,9 +85,23 @@ function handleGet(parameters, userId) {
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-//Not Implemented Method
-function handlePut() {
-    return httpUtil.notImplementedMethod();
+function handlePut(reqBody, userId) {
+	var res = {};
+	if (reqBody.VENDOR_INQUIRY_ID){
+        res = request.updateVendorInquiryMessage(reqBody.VENDOR_INQUIRY_ID, userId);
+    } else if (reqBody.VENDOR_REQUEST_ID) {
+        res = request.updateVendorRequestMessage(reqBody.VENDOR_REQUEST_ID, userId);
+    } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
+        res = request.updateChangeVendorRequestMessage(reqBody.CHANGE_VENDOR_REQUEST_ID, userId);
+    } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
+        res = request.updateExtendVendorRequestMessage(reqBody.EXTEND_VENDOR_REQUEST_ID, userId);
+    } else {
+    	throw ErrorLib.getErrors().CustomError("", 
+    			"processingReport/handlePut", 
+    			"The object reqBody is invalid. Should be included one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID or EXTEND_VENDOR_REQUEST_ID"
+    			);
+    }
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method
@@ -116,33 +130,33 @@ function handlePost(reqBody, userId) {
     		reqBody.STATUS_ID = 2;
     		status.updateVendorInquiryStatusManual(reqBody, userId);
     	}
-        req = request.insertVendorInquiryMessage(reqBody, userId);
+        res = request.insertVendorInquiryMessage(reqBody, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
     	if (Number(reqBody.RETURN_TYPE_ID) === 3){
     		reqBody.STATUS_ID = 4;
     		status.updateVendorRequestStatusManual(reqBody, userId);
     	}
-        req = request.insertVendorRequestMessage(reqBody, userId);
+        res = request.insertVendorRequestMessage(reqBody, userId);
         vendorRequest.sendMessageMail(reqBody, userId);
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
     	if (Number(reqBody.RETURN_TYPE_ID) === 3){
     		reqBody.STATUS_ID = 4;
     		status.updateChangeVendorRequestStatusManual(reqBody, userId);
     	}
-        req = request.insertChangeVendorRequestMessage(reqBody, userId);
+        res = request.insertChangeVendorRequestMessage(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
     	if (Number(reqBody.RETURN_TYPE_ID) === 3){
     		reqBody.STATUS_ID = 4;
     		status.updateExtendVendorRequestStatusManual(reqBody, userId);
     	}
-        req = request.insertExtendVendorRequestMessage(reqBody, userId);
+        res = request.insertExtendVendorRequestMessage(reqBody, userId);
     } else {
     	throw ErrorLib.getErrors().CustomError("", 
     			"processingReport/handlePost", 
     			"The object reqBody is invalid. Should be included one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID or EXTEND_VENDOR_REQUEST_ID"
     			);
     }
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 processRequest();

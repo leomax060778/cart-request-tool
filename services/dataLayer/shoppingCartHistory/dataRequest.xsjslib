@@ -82,13 +82,11 @@ function getRequestByIdManual(requestId){
 function updateRequestManual(objRequest, userId){
     var parameters = {};
     parameters.in_request_id = objRequest.REQUEST_ID;
-    parameters.in_user_id = objRequest.USER_ID;
     parameters.in_team_id = objRequest.TEAM_ID;
     parameters.in_entity_id = objRequest.ENTITY_ID;
     parameters.in_material_id = objRequest.MATERIAL_ID;
     parameters.in_vendor_id = objRequest.VENDOR_ID;
     parameters.in_non_sap_vendor_id = objRequest.NON_SAP_VENDOR_ID;
-    parameters.in_stage_id = 1; //objRequest.STAGE_ID;
     parameters.in_goods_recipient_username = objRequest.GOODS_RECIPIENT_USERNAME;
     parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;
     parameters.in_infrastructure_of_work_id = objRequest.INFRASTRUCTURE_OF_WORK_ID;

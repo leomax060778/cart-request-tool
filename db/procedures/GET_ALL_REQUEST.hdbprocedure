@@ -12,7 +12,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST"
 						 FIRST_NAME nvarchar(255),
 						 BUDGET_YEAR bigint,
 						 REQUEST_CREATED_DATE nvarchar(50),
-  						 message_read integer
+  						 message_read integer,
+  						 EDITABLE boolean
 	 					)
 )
 	LANGUAGE SQLSCRIPT
@@ -38,7 +39,8 @@ BEGIN
 						 US.FIRST_NAME AS FIRST_NAME,
 						 BUD.BUDGET_YEAR AS BUDGET_YEAR,
 						 To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') AS REQUEST_CREATED_DATE,
-               			 VAM.MESSAGE_READ
+               			 VAM.MESSAGE_READ,
+               			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) THEN FALSE ELSE TRUE END) AS EDITABLE
 				  FROM "REQUEST" RQ
 					  INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID
 					  LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI

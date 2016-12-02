@@ -224,7 +224,7 @@ function updateInquiryMessage (inquiryId, userId){
 }
 
 //Vendor Request Message read
-function updateVendorRequestMessage (vendorRequestId, userId){
+function updateVendorRequestMessage(vendorRequestId, userId){
 	if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestService/handlePut/updateVendorRequestMessage", vendorRequestId);
     }
@@ -253,7 +253,7 @@ function updateVendorRequestMessage (vendorRequestId, userId){
 }
 
 //Change Vendor Request Message read
-function updateChangeVendorRequestMessage (changeVendorRequestId, userId){
+function updateChangeVendorRequestMessage(changeVendorRequestId, userId){
 	if (!changeVendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "changeVendorRequestService/handlePut/updateChangeVendorRequestMessage", changeVendorRequestId);
     }
@@ -340,7 +340,7 @@ function updateRequestMessage (requestId, userId){
 }
 
 //Vendor Inquiry Message read
-function updateRequestMessage (vendorInquiryId, userId){
+function updateVendorInquiryMessage(vendorInquiryId, userId){
 	if (!vendorInquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryMessageService/handlePut/updateVendorInquiryMessage", vendorInquiryId);
     }

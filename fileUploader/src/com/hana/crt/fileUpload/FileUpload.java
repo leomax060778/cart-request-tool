@@ -144,6 +144,7 @@ public class FileUpload extends HttpServlet {
 				attachment.setOriginalName(fileItem.getName());
 				attachment.setSavedName(newName);
 				attachment.setAttachmentSize(fileItem.getSize());
+				attachment.setType(fileItem.getContentType());
 				boolean isFormField = fileItem.isFormField();
 				if (!isFormField) {
 					File file = new File(uploadDiretory + newName);

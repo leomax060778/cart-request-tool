@@ -97,7 +97,6 @@ function insertAttachmentRequest(objAttachment, in_request_id, userId){
 
 function insertNoteRequest(objNoteReq, in_request_id, user_id){
 	objNoteReq.REQUEST_ID = in_request_id;
-	objNoteReq.USER_ID = user_id;
 	if(validateInsertNoteRequest(objNoteReq, user_id)){
 		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
 	}
@@ -114,7 +113,6 @@ function insertManualNonSapVendor(objVendor, user_id){
 }
 
 function insertRequest(reqBody, user_id){
-	reqBody.USER_ID = user_id;
 	try{
 
 		if(reqBody.NON_SAP_VENDOR !== null){
@@ -224,8 +222,7 @@ function validateInsertRequest(objRequest, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = ['USER_ID',
-	            'TEAM_ID',
+	var keys = ['TEAM_ID',
 	            'ENTITY_ID',
 	            'STAGE_ID',
 	            'GOODS_RECIPIENT_USERNAME',
@@ -470,7 +467,6 @@ function validateInsertNoteRequest(objReq, userId) {
     var BreakException = {};
     var keys = [
         'REQUEST_ID',
-        'USER_ID',
         'NOTE_TEXT',
         'NOTE_TYPE_ID'];
 

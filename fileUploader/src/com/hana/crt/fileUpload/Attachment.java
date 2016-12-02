@@ -4,6 +4,7 @@ public class Attachment {
 
 	private String originalName;
 	private String savedName;
+	private String type;
 	private Long attachmentSize;
 	private Long userId;
 
@@ -39,6 +40,14 @@ public class Attachment {
 		this.userId = userId;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getJson() {
 		StringBuffer json = new StringBuffer();
 		json.append("{");
@@ -52,7 +61,11 @@ public class Attachment {
 		}
 		if (this.attachmentSize != null) {
 			json.append("\"ATTACHMENT_SIZE\":");
-			json.append(this.attachmentSize);
+			json.append(this.attachmentSize + ",");
+		}
+		if (this.type != null) {
+			json.append("\"ATTACHMENT_TYPE\":");
+			json.append("\"" + this.type + "\"");
 		}
 		json.append("}");
 		return json.toString();

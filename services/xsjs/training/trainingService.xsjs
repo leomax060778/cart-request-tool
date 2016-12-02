@@ -6,6 +6,7 @@ var training = mapper.getTraining();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_ALL_TRAINING = "GET_ALL_TRAINING";
+var GET_ALL_TRAINING_BY_PARENT = "GET_ALL_TRAINING_BY_PARENT";
 var GET_TRAINING_BY_ID = "GET_TRAINING_BY_ID";
 
 function processRequest() {
@@ -15,7 +16,9 @@ function processRequest() {
 function handleGet(parameters) {
     var rdo = {};
     if (parameters.length > 0) {
-        if (parameters[0].name === GET_ALL_TRAINING) {
+    	if (parameters[0].name === GET_ALL_TRAINING_BY_PARENT) {
+            rdo = training.getAllTrainingByParent(parameters[0].value);
+        } else if (parameters[0].name === GET_ALL_TRAINING) {
             rdo = training.getAllTraining();
         } else if (parameters[0].name === GET_TRAINING_BY_ID) {
             rdo = training.getTrainingById(parameters[0].value);
@@ -36,7 +39,12 @@ function handlePut(reqBody, userId) {
 }
 
 function handleDelete(reqBody, userId) {
-    var req = training.deleteTraining(reqBody, userId);
+	var req = {};
+	if(reqBody.DELETE && reqBody.DELETE == 'SELECTED_TRAINING'){
+		req = training.deleteSelectedTraining(reqBody, userId);
+	} else {
+		req = training.deleteTraining(reqBody, userId);
+	}    
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

@@ -27,6 +27,13 @@ function getTrainingTypeById(trainingTypeId) {
     return db.extractArray(result.out_result);
 }
 
+function getManualTrainingTypeById(trainingTypeId) {
+    var parameters = {};
+    parameters.in_training_type_id = trainingTypeId;
+    var result = db.executeProcedureManual(GET_TRAINING_TYPE_BY_ID, parameters);
+    return db.extractArray(result.out_result);
+}
+
 function getAllTrainingType() {
     var parameters = {};
     var result = db.executeProcedure(GET_ALL_TRAINING_TYPE, parameters);

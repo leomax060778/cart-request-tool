@@ -19,6 +19,7 @@ function insertAttachment(objAttachment, userId) {
     parameters.in_original_name = objAttachment.ORIGINAL_NAME;
     parameters.in_saved_name = objAttachment.SAVED_NAME;
     parameters.in_attachment_size = objAttachment.ATTACHMENT_SIZE;
+    parameters.in_attachment_type = objAttachment.ATTACHMENT_TYPE;
     parameters.in_created_user_id = userId;//objAttachment.CREATED_USER_ID;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_ATTACHMENT, parameters, 'out_result');
