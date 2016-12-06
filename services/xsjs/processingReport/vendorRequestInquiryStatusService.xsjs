@@ -21,7 +21,7 @@ function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
     	//Get all vendor by status
@@ -33,7 +33,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-            	res = request.getVendorRequestInquiryByStatus(parameters[0].value);
+            	res = request.getVendorRequestInquiryByStatus(parameters[0].value, userId);
             }
         } 
         
@@ -46,7 +46,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be 1 or 0)"
                 );
             } else {
-            	res = request.getVendorRequestInquiryByStatusAdministrable(parameters[0].value);
+            	res = request.getVendorRequestInquiryByStatusAdministrable(parameters[0].value, userId);
             }
         }
 

@@ -16,11 +16,24 @@ function getInquiryByStatus(statusId) {
 }
 
 //Get inquiry by status administrable
-function getInquiryByStatusAdministrable(isAdministrable) {
+function getInquiryByStatusAdministrable(isAdministrable, userId) {
+	if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryByStatusAdministrable", userId);
+    }
 	if (!isAdministrable) {
       throw ErrorLib.getErrors().BadRequest("The Parameter isAdministrable is not found", "inquiryService/handleGet/getInquiryByStatusAdministrable", isAdministrable);
   }
-	return inquiryStatus.getInquiryByStatusAdministrable(isAdministrable);
+	var inquiry = [];
+	inquiry = inquiryStatus.getInquiryByStatusAdministrable(isAdministrable, userId);
+	inquiry = JSON.parse(JSON.stringify(inquiry));
+	inquiry.forEach(function(elem){
+    	if(elem.MESSAGE_READ > 0){
+    		elem.SHOW_MESSAGE_READ = 1;
+    	} else {
+    		elem.SHOW_MESSAGE_READ = 0;
+    	}
+    });
+	return inquiry;
 }
 
 //Get inquiry by id

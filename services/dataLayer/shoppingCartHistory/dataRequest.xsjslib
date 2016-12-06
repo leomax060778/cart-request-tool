@@ -16,8 +16,9 @@ var DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID = "DEL_REQUEST_DATA_PROTEC
 var GET_ATTACHMENT_BY_REQUEST_ID = "GET_ATTACHMENT_BY_REQUEST_ID";
 var DEL_ATTACHMENT_REQUEST = "DEL_ATTACHMENT_REQUEST";
 
-function getAllRequest(){
+function getAllRequest(userId){
     var param = {};
+    param.in_user_id = userId;
     param.out_result = '?';
     var result = db.executeProcedureManual(GET_ALL_REQUEST, param);
     return db.extractArray(result.out_result);

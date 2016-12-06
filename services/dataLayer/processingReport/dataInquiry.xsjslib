@@ -17,8 +17,10 @@ function getInquiryByStatus(statusId) {
 }
 
 //Get inquiry by status administrable
-function getInquiryByStatusAdministrable(isAdministrable) {
-  var parameters = {'in_administrable': isAdministrable};
+function getInquiryByStatusAdministrable(isAdministrable, userId) {
+  var parameters = {};
+  parameters.in_administrable = isAdministrable;
+  parameters.in_user_id = userId;
   var result = db.executeProcedure(GET_INQUIRY_BY_STATUS_ADMINISTRABLE, parameters);
   return db.extractArray(result.out_result);
 }

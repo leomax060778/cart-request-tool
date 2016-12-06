@@ -24,8 +24,8 @@ function insertInquiry(objInquiry, userId) {
 }
 
 //Get all inquiries
-function getAllInquiry() {
-    var parameters = {};
+function getAllInquiry(userId) {
+    var parameters = {'in_user_id': userId};
     var result = db.executeProcedure(GET_ALL_INQUIRY, parameters);
     return db.extractArray(result.out_result);
 }

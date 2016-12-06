@@ -26,11 +26,24 @@ function getVendorRequestInquiryByStatus(statusId) {
 }
 
 //Get vendor request inquiry by status administrable
-function getVendorRequestInquiryByStatusAdministrable(isAdministrable) {
+function getVendorRequestInquiryByStatusAdministrable(isAdministrable, userId) {
     if (!isAdministrable) {
         throw ErrorLib.getErrors().BadRequest("The Parameter value is not found", "vendorRequestInquiryService/handleGet/getVendorRequestInquiryByStatusAdministrable", isAdministrable);
     }
-    return dataStatus.getVendorRequestInquiryByStatusAdministrable(isAdministrable);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestInquiryByStatusAdministrable", userId);
+    }
+	var vendorRequestInquiry = [];
+	vendorRequestInquiry = dataStatus.getVendorRequestInquiryByStatusAdministrable(isAdministrable, userId);
+	vendorRequestInquiry = JSON.parse(JSON.stringify(vendorRequestInquiry));
+	vendorRequestInquiry.forEach(function(elem){
+    	if(elem.MESSAGE_READ > 0){
+    		elem.SHOW_MESSAGE_READ = 1;
+    	} else {
+    		elem.SHOW_MESSAGE_READ = 0;
+    	}
+    });
+	return vendorRequestInquiry;
 }
 
 //Get vendor inquiry by status

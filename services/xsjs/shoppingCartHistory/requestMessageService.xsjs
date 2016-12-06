@@ -39,7 +39,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "requestMessageService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
                 res = request.getRequestMessage(parameters[0].value, userId);
@@ -48,14 +48,14 @@ function handleGet(parameters, userId) {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "requestMessageService/handleGet",
-                "invalid parameter name " + parameters[0].name + " (must be: GET_REQUEST_MESSAGE)"
+                "invalid parameter name " + parameters[0].name + " (should be: GET_REQUEST_MESSAGE)"
             );
         }
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "requestMessageService/handleGet",
-            "invalid parameter (must be: GET_REQUEST_MESSAGE)"
+            "invalid parameter (should be: GET_REQUEST_MESSAGE)"
         );
     }
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);

@@ -80,19 +80,10 @@ function insertMaterial(reqBody, user_id){
 }
 
 function insertAttachmentRequest(objAttachment, in_request_id, userId){
-	var param = {};
-    if (businessAttachment.validateInsertAttachment(objAttachment, userId)) {
-    	
-    		var attachment_id = dataAttachment.insertAttachment(objAttachment, userId);
-    		if(attachment_id){
-    			param.REQUEST_ID = in_request_id;
-    			param.ATTACHMENT_ID = attachment_id;
-    			dataAttachmentR.insertAttachmentRequest(param, userId);  
-    		}
-    		else{
-    			 throw ErrorLib.getErrors().BadRequest("The Parameter attachment_id is not found or is incorrect", "requestService/handleGet/insertAttachmentRequest", attachment_id);
-    		} 	
-    }
+	objAttachment.REQUEST_ID = in_request_id;
+	if(validateInsertAttachmentRequest){
+		return dataAttachmentR.insertAttachmentRequest(objAttachment, userId);
+	}
 }
 
 function insertNoteRequest(objNoteReq, in_request_id, user_id){
@@ -152,9 +143,9 @@ function insertRequest(reqBody, user_id){
 			(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
 				insertDataProtectionAnswer(item, request, user_id);
 			});
-			//(reqBody.ATTACHMENTS).forEach(function(attachment){
-				//insertAttachmentRequest(attachment, request, user_id);
-			//});
+			(reqBody.ATTACHMENTS).forEach(function(attachment){
+				insertAttachmentRequest(attachment, request, user_id);
+			});
 			if(reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0){
 				(reqBody.NOTES).forEach(function(note_request){
 					insertNoteRequest(note_request, request, user_id);

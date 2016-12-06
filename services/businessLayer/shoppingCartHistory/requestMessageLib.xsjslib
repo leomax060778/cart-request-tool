@@ -24,11 +24,34 @@ function insertRequestMessage(objRequest, userId) {
 }
 
 //Get messages of request
-function getRequestMessage(requestId) {
+function getRequestMessage(requestId, userId) {
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handleGet/getRequestMessage", requestId);
     }
-    return message.getRequestMessage(requestId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
+    }
+    var result = [];
+    var objRequest = {};
+    try{
+	    result = message.getRequestMessageManual(requestId);
+	    result.forEach(function (elem) {
+	    	if(elem.CREATED_USER_ID !== userId){
+			    if(elem.MESSAGE_READ === 0) {
+			    	objRequest.MESSAGE_READ = 1;
+			    	message.updateRequestMessageReadManual(objRequest, userId);
+			    }
+	    	}
+	    });
+    } catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Update message read
@@ -44,13 +67,14 @@ function updateRequestMessage(requestId, userId) {
     try{
 	    result = message.getRequestMessageManual(requestId);
 	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objRequest.MESSAGE_READ = 1;
-		    	message.updateRequestMessageReadManual(objRequest, userId);
-		    }
+	    	if(elem.CREATED_USER_ID !== userId){
+			    if(elem.MESSAGE_READ === 0) {
+			    	objRequest.MESSAGE_READ = 1;
+			    	message.updateRequestMessageReadManual(objRequest, userId);
+			    }
+	    	}
 	    });
-    }
-	catch(e){
+    } catch(e){
 		dbHelper.rollback();
 		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
 	}
@@ -59,6 +83,7 @@ function updateRequestMessage(requestId, userId) {
 		dbHelper.closeConnection();
 	}
     return result;
+	
 }
 
 //Check if the request exists

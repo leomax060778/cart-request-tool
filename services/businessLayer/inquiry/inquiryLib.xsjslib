@@ -24,8 +24,21 @@ function getInquiryByIdManual(inquiryId) {
 }
 
 //Get all inquiries
-function getAllInquiry() {
-    return dataInquiry.getAllInquiry();
+function getAllInquiry(userId) {
+	if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getAllInquiry", userId);
+    }
+    var inquiry = [];
+	inquiry = dataInquiry.getAllInquiry(userId);
+	inquiry = JSON.parse(JSON.stringify(inquiry));
+	inquiry.forEach(function(elem){
+    	if(elem.MESSAGE_READ > 0){
+    		elem.SHOW_MESSAGE_READ = 1;
+    	} else {
+    		elem.SHOW_MESSAGE_READ = 0;
+    	}
+    });
+	return inquiry;
 }
 
 //Update inquiry

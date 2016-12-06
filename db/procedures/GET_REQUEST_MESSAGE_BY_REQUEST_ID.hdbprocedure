@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESSAGE_BY_REQUEST_ID" (
 	IN in_request_id bigint,
-	OUT out_result TABLE (user_id bigint, 
+	OUT out_result TABLE (
 							request_id bigint, 
 							message_content nvarchar(1000), 
 							return_name nvarchar(255), 
@@ -10,6 +10,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESS
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
+							created_user_id bigint,
 							message_read tinyint,
 							created_date nvarchar(32)
 						 )
@@ -19,8 +20,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESS
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT RM.user_id, 
-						RM.request_id, 
+	out_result = SELECT RM.request_id, 
 						RM.message_content, 
 						RT.NAME AS RETURN_NAME, 
 						IT.NAME AS ISSUE_NAME, 
@@ -29,6 +29,7 @@ BEGIN
 						US.user_name, 
 						US.first_name, 
 						US.last_name,
+						RM.created_user_id,
 						RM.message_read,
 						TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh:mm') AS CREATED_DATE
 		FROM "REQUEST_MESSAGE" RM

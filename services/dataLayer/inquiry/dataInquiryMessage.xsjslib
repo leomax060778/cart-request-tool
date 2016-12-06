@@ -7,7 +7,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURES LIST NAME
 var INS_INQUIRY_MESSAGE = "INS_INQUIRY_MESSAGE";
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE_BY_INQUIRY_ID";
-var UPD_REQUEST_MESSAGE_READ = "UPD_REQUEST_MESSAGE_READ";
+var UPD_INQUIRY_MESSAGE_READ = "UPD_INQUIRY_MESSAGE_READ";
 
 //Insert message in Inquiry
 function insertInquiryMessage(objInquiry, userId) {

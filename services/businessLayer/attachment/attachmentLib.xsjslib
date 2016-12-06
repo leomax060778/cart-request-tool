@@ -94,6 +94,42 @@ function deleteAttachment(objAttachment, userId) {
 	}
 }
 
+//Delete attachment
+function deleteManualAttachment(objAttachment, userId) {
+	if (!objAttachment.ATTACHMENT_ID) {
+		throw ErrorLib.getErrors().CustomError("",
+				"attachmentService/handleDelete/deleteAttachment",
+				"The ATTACHMENT_ID is not found");
+	}
+	
+		if (!existAttachment(objAttachment.ATTACHMENT_ID)) {
+			throw ErrorLib.getErrors().CustomError("",
+					"attachmentService/handleDelete/deleteAttachment",
+					"The object Attachment doesn't exist");
+		}
+		var result = dataAttachment.deleteAttachment(objAttachment, userId);
+		return result;
+	
+}
+
+//Delete Master attachment-Request
+function deleteManualAttachmentRequestConection(attachment_id, request_id, userId) {
+	if (!attachment_id) {
+		throw ErrorLib.getErrors().CustomError("",
+				"attachmentService/handleDelete/deleteAttachment",
+				"The ATTACHMENT_ID is not found");
+	}
+	if (!request_id) {
+		throw ErrorLib.getErrors().CustomError("",
+				"attachmentService/handleDelete/deleteAttachment",
+				"The REQUEST_ID is not found");
+	}
+	var result = dataAttachment.deleteManualAttachmentRequestConection(attachment_id, request_id, userId);
+	return result;
+	
+}
+
+
 function validateUpdateAttachment(objAttachment, userId) {
 	if (!userId) {
 		throw ErrorLib.getErrors().BadRequest(

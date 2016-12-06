@@ -13,7 +13,7 @@ function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_INQUIRY_BY_STATUS) {
@@ -34,7 +34,7 @@ function handleGet(parameters) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be 1 or 0)"
                 );
             } else {
-            	res = inquiry.getInquiryByStatusAdministrable(parameters[0].value);
+            	res = inquiry.getInquiryByStatusAdministrable(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_INQUIRY_PROCESSING_REPORT_BY_ID) {
         	if (parameters[0].value <= 0 || isNaN(parameters[0].value)){

@@ -8,8 +8,8 @@ var ErrorLib = mapper.getErrors();
 var GET_ALL_VENDOR_REQUEST_INQUIRY = "GET_ALL_VENDOR_REQUEST_INQUIRY";
 
 //Get all vendor request and vendor request inquiry
-function getAllVendorRequestInquiry() {
-    var parameters = {};
+function getAllVendorRequestInquiry(userId) {
+    var parameters = {'in_user_id': userId};
     var result = db.executeProcedure(GET_ALL_VENDOR_REQUEST_INQUIRY, parameters);
     return db.extractArray(result.out_result);
 }

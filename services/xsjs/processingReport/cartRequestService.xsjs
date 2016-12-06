@@ -16,11 +16,11 @@ function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_REQUEST) {
-            res = request.getAllCartRequest();
+            res = request.getAllCartRequest(userId);
         } else if (parameters[0].name === GET_REQUEST_PROCESSING_REPORT_BY_ID) {
           	if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(

@@ -26,11 +26,34 @@ function insertInquiryMessage(objInquiry, userId) {
 }
 
 //Get message
-function getInquiryMessage(inquiryId) {
+function getInquiryMessage(inquiryId, userId) {
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getMessage", inquiryId);
     }
-    return message.getInquiryMessage(inquiryId);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
+    }
+    var result = [];
+    var objInquiry = {};
+    try {
+    	result = message.getInquiryMessageManual(inquiryId);
+	    result.forEach(function (elem) {
+	    	if(elem.CREATED_USER_ID !== userId){
+			    if(elem.MESSAGE_READ === 0) {
+			    	objInquiry.MESSAGE_READ = 1;
+			    	message.updateInquiryMessageReadManual(objInquiry, userId);
+			    }
+	    	}
+	    });
+    } catch (e) {
+    	dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getInquiryMessage", e.toString());
+    }
+    finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+    return result;
 }
 
 //Message read

@@ -8,6 +8,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
+							created_user_id bigint,
+							message_read tinyint,
   							created_date nvarchar(32)
 						 )
  ) 
@@ -24,6 +26,8 @@ BEGIN
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME,
+						VRM.CREATED_USER_ID,
+						VRM.MESSAGE_READ,
   						TO_NVARCHAR(VRM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date
 				FROM "VENDOR_REQUEST_MESSAGE" VRM
 				LEFT JOIN "RETURN_TYPE" RT ON VRM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID AND RT.ENABLED = 1 AND RT.DELETED = 0

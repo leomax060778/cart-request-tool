@@ -76,5 +76,6 @@ BEGIN
  	 				  MESSAGE_INFO,
  	 				  RETURN_TYPE,
  	 				  LAST_MESSAGE
-             FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT";
+             FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT"
+             ORDER BY REQUEST_ID;
 END;

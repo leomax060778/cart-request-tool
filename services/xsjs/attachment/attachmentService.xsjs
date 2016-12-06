@@ -44,7 +44,7 @@ function handlePut(objAttachment, user_id) {
 }
 
 function handleDelete(objAttachment, user_id) {
-	//var rdo = attachments.deleteAttachment(objAttachment, user_id);
+	var rdo = attachments.deleteAttachment(objAttachment, user_id);
 	return http.handleResponse(objAttachment, http.OK, http.AppJson);
 }
 

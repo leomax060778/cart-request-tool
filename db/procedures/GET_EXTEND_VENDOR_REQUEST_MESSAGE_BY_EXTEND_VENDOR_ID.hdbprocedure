@@ -8,6 +8,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
+							message_read tinyint,
+							created_user_id bigint,
   							created_date nvarchar(32)
 						 )
  ) 
@@ -24,6 +26,8 @@ BEGIN
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME,
+						EVRM.MESSAGE_READ,
+						EVRM.CREATED_USER_ID,
   						TO_NVARCHAR(EVRM.created_date_tz, 'YYYY-MM-DD hh:mm') as created_date
 				FROM "EXTEND_VENDOR_REQUEST_MESSAGE" EVRM
 				LEFT JOIN "RETURN_TYPE" RT ON EVRM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID AND RT.ENABLED = 1 AND RT.DELETED = 0

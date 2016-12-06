@@ -34,9 +34,10 @@ function getVendorRequestInquiryByStatus(statusId) {
 }
 
 //Get vendor request and vendor inquiries by status administrable
-function getVendorRequestInquiryByStatusAdministrable(statusId) {
+function getVendorRequestInquiryByStatusAdministrable(isAdministrable, userId) {
     var parameters = {};
-    parameters.in_administrable = statusId;
+    parameters.in_administrable = isAdministrable;
+    parameters.in_user_id = userId;
     var result = db.executeProcedure(GET_VENDOR_REQUEST_INQUIRY_BY_STATUS_ADMINISTRABLE, parameters);
     return db.extractArray(result.out_result);
 }

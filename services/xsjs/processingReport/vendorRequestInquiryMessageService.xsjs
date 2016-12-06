@@ -26,7 +26,7 @@ function processRequest() {
  * @returns {VendorRequestMessage | VendorInquiryMessage | ChangeVendorRequestMessage | ExtendVendorRequestMessage} VendorRequestInquiry - All messages for vendor request, vendor inquiry, change vendor request or extend vendor request
  */
 function handleGet(parameters, userId) {
-    var res = {};
+    var res = [];
     if (parameters.length > 0) {
         if (parameters[0].name === GET_VENDOR_INQUIRY_MESSAGE) {
             if (parameters[0].value <= 0) {
@@ -124,7 +124,7 @@ function handleDelete() {
  * @returns {string} id - Id of the new vendor request inquiry message
  */
 function handlePost(reqBody, userId) {
-    var req;
+    var res;
     if (reqBody.VENDOR_INQUIRY_ID){
     	if (Number(reqBody.RETURN_TYPE_ID) === 3){
     		reqBody.STATUS_ID = 2;

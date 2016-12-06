@@ -11,6 +11,7 @@ var INS_ATTACHMENT = "INS_ATTACHMENT";
 var GET_ATTACHMENT = "GET_ATTACHMENT_BY_ID";
 var UPD_ATTACHMENT = "UPD_ATTACHMENT";
 var DEL_ATTACHMENT = "DEL_ATTACHMENT";
+var DEL_ATTACHMENT_REQUEST_CONECTION = "DEL_ATTACHMENT_REQUEST_CONECTION";
 
 //Insert Attachments
 function insertAttachment(objAttachment, userId) {
@@ -60,4 +61,14 @@ function deleteAttachment(objAttachment, userId) {
     parameters.out_result = '?';
 
     return db.executeScalarManual(DEL_ATTACHMENT, parameters, 'out_result');
+}
+
+function deleteManualAttachmentRequestConection(attachment_id, request_id, user_id){
+    var parameters = {};
+    parameters.in_attachment_id = attachment_id;
+    parameters.in_request_id = request_id;
+    parameters.in_modified_user_id = user_id;
+    parameters.out_result = '?';
+
+    return db.executeScalarManual(DEL_ATTACHMENT_REQUEST_CONECTION, parameters, 'out_result');
 }

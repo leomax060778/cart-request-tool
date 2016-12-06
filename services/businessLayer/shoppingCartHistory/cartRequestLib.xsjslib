@@ -4,6 +4,8 @@ var dbHelper = mapper.getdbHelper();
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
 var dataRequest = mapper.getDataRequest();
+var dataAttachmentR = mapper.getDataAttachmentRequest();
+var bussinesAttachment = mapper.getAttachment();
 var dataNoteReq = mapper.getDataNoteRequest();
 var dataCatalog = mapper.getDataCatalog();
 var dataCurrency = mapper.getDataCurrency();
@@ -153,14 +155,26 @@ function completeRequest(item, user_id) {
 
 /*----- REQUEST -----*/
 
-function getAllRequest() {
+function getAllRequest(userId) {
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestMessageService/handleGet/getRequestMessage", userId);
+    }
+    var request = [];
 	try {
-		var request = dataRequest.getAllRequest();
+		request = dataRequest.getAllRequest(userId);
+		request = JSON.parse(JSON.stringify(request));
+		request.forEach(function(elem){
+	    	if(elem.MESSAGE_READ > 0){
+	    		elem.SHOW_MESSAGE_READ = 1;
+	    	} else {
+	    		elem.SHOW_MESSAGE_READ = 0;
+	    	}
+	    });
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
 		throw ErrorLib.getErrors().CustomError("", e.toString(),
-				"getAllRequest");
+		 		"getAllRequest");
 	} finally {
 		dbHelper.closeConnection();
 	}
@@ -238,6 +252,81 @@ function insertManualNoteRequest(objNoteReq, request_id, user_id){
 	//if(validateInsertNoteRequest(objNoteReq, user_id)){
 		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
 	//}
+}
+
+//ATTACHMENT REQUEST
+function insertAttachmentRequest(attachment, in_request_id, userId){
+	attachment.REQUEST_ID = in_request_id;
+//	if(validateInsertAttachmentRequest){
+		return dataAttachmentR.insertAttachmentRequest(attachment, userId);
+//	}
+}
+
+function deleteAttachment(attachment, in_request_id, userId){
+	attachment.REQUEST_ID = in_request_id;
+//	if(validateInsertAttachmentRequest){
+		if(bussinesAttachment.deleteManualAttachment(attachment, userId)){
+			bussinesAttachment.deleteManualAttachmentRequestConection(attachment.ATTACHMENT_ID, in_request_id ,userId);
+		}
+//	}
+}
+
+function updateAttachments(original_attachments, newAttachments, request_id, user_id){
+
+	var original_attachments_local = original_attachments;
+    var originalAttachmentsToUpdate = newAttachments;
+
+    var insertOriginalAttachments = [];
+    var deleteOriginalAttachments = [];
+    
+    //DELETE
+    original_attachments_local.forEach(function (o_attachment) {
+        var result = true;
+        var o_attachment_id = o_attachment.ATTACHMENT_ID;
+        if (typeof o_attachment_id === 'string') {
+        	o_attachment_id = Number(o_attachment_id);
+        }
+        originalAttachmentsToUpdate.forEach(function (updateAttach) {
+        	updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
+            if (o_attachment_id === updateAttach.ATTACHMENT_ID) {
+                result = false;
+            }
+        });
+        if (result) {
+        	deleteOriginalAttachments.push(o_attachment);
+        }
+    });
+    
+    //INSERT
+    originalAttachmentsToUpdate.forEach(function (newAttach) {
+        var result = true;
+        newAttach.ATTACHMENT_ID = Number(newAttach.ATTACHMENT_ID);
+        original_attachments_local.forEach(function (attachment) {
+            var o_attachment_id = attachment.ATTACHMENT_ID;
+            if (typeof o_attachment_id === 'string') {
+            	o_attachment_id = Number(o_attachment_id);
+            }
+            if (newAttach.ATTACHMENT_ID === o_attachment_id) {
+                result = false;
+            }
+        });
+        if (result) {
+        	insertOriginalAttachments.push(newAttach);
+        }
+    });
+         
+    //ACTIONS
+    if(insertOriginalAttachments.length > 0){
+    	insertOriginalAttachments.forEach(function(attachment){
+    		insertAttachmentRequest(attachment, request_id, user_id);
+    	});
+    }
+    if(deleteOriginalAttachments.length > 0){
+    	deleteOriginalAttachments.forEach(function(attachment){
+    		deleteAttachment(attachment, request_id, user_id);
+    	});
+    }
+	
 }
 
 function deleteManualNoteRequest(note_request_id, user_id){
@@ -533,9 +622,11 @@ function updateServices(original_services, services, request_id, conversion_rate
 }
 
 
+
 //REQUEST
 function updateRequest(reqBody, user_id){
 	var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
+	var atachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
 	var request;
 	try{
 		//STATUS UPDATE
@@ -639,7 +730,12 @@ function updateRequest(reqBody, user_id){
 		(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
 			updateDataProtectionAnswer(item, user_id);
 		});
-
+		
+		//ATTACHMENTS UPDATE
+		if(atachmentList){
+			updateAttachments(atachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
+		}
+		
 		dbHelper.commit();
 	}
 	catch(e){
@@ -670,10 +766,8 @@ function deleteRequest(request_id, user_id) {
 		dataService.deleteServiceByRequestId(request_id, user_id);
 		dataSpecialRequest.deleteSpecialRequestByRequestId(request_id, user_id);
 		dataRService.deleteRequestServiceByRequestId(request_id, user_id);
-		dataRequest.deleteRequestDataProtectionAnswersByRequestId(request_id,
-				user_id);
-		var atachmentList = dataRequest.getAttachmentByRequestId(request_id,
-				user_id);
+		dataRequest.deleteRequestDataProtectionAnswersByRequestId(request_id, user_id);
+		var atachmentList = dataRequest.getAttachmentByRequestId(request_id, user_id);
 		atachmentList.forEach(function(attachmentRequest) {
 			dataAttachment.deleteAttachment(attachmentRequest, user_id);
 		});

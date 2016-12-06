@@ -11,8 +11,8 @@ var GET_REQUEST_DATA_PROTECTION = "GET_REQUEST_DATA_PROTECTION_ANSWER_BY_REQUEST
 var UPD_REQUEST_STATUS = "UPD_REQUEST_STATUS";
 var GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID = "GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID";
 
-function getAllRequest() {
-    var parameters = {};
+function getAllRequest(userId) {
+    var parameters = {'in_user_id': userId};
     var result = db.executeProcedure(GET_ALL_REQUEST_PROCESSING_REPORT, parameters);
     return db.extractArray(result.out_result);
 }

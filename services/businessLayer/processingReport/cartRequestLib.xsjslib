@@ -11,8 +11,21 @@ var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_R
 var stageMap = {'STAGE_B': 2, 'STAGE_C': 3, 'STAGE_D': 4, 'STAGE_E': 5, 'STAGE_F': 6};
 
 //Get request by status
-function getAllCartRequest() {
-    return data.getAllRequest();
+function getAllCartRequest(userId) {
+	if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handleGet/getAllRequest", userId);
+    }
+	var request = [];
+	request = data.getAllRequest(userId);
+	request = JSON.parse(JSON.stringify(request));
+	request.forEach(function(elem){
+    	if(elem.MESSAGE_READ > 0){
+    		elem.SHOW_MESSAGE_READ = 1;
+    	} else {
+    		elem.SHOW_MESSAGE_READ = 0;
+    	}
+    });
+	return request;
 }
 
 //Get request by id

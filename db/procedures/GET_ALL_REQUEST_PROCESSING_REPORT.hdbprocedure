@@ -1,11 +1,13 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_PROCESSING_REPORT" (
+	IN in_user_id bigint,
 	OUT out_result TABLE (cart_request_id nvarchar(32), 
   						REQUEST_ID bigint, 
   						VENDOR_NAME nvarchar(255), 
   						STATUS_NAME nvarchar(255), 
   						REQUESTER nvarchar(255),
   						stage_passes nvarchar(32),
-  						message_read integer
+  						message_read integer,
+  						created_user_id bigint
  						) 
  ) 
 	LANGUAGE SQLSCRIPT
@@ -15,7 +17,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_
 BEGIN
 	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ
 				 	FROM "REQUEST_MESSAGE" RM
-				 		WHERE RM.ENABLED = 1 AND RM.DELETED = 0
+				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.ENABLED = 1 AND RM.DELETED = 0
 				 		GROUP BY RM.REQUEST_ID;
 				 		
 	va_request = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CART_REQUEST_ID,
@@ -25,7 +27,8 @@ BEGIN
                (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
                STG.NAME AS STAGE,
                (STG.NAME || ' / #' || CR.PASS) AS stage_passes,
-               VAM.MESSAGE_READ
+               VAM.MESSAGE_READ,
+               CR.CREATED_USER_ID
              FROM "REQUEST" CR
 	             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
 	             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
@@ -43,7 +46,9 @@ BEGIN
 	     		 INNER JOIN "USER" US ON US.USER_ID = CR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 	     		 INNER JOIN "STAGE" STG ON STG.stage_id = CR.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
 	     		 LEFT JOIN :va_message VAM ON CR.REQUEST_ID = VAM.REQUEST_ID
-             WHERE CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
+             WHERE (in_user_id != 1 AND CR.CREATED_USER_ID = in_user_id AND CR.ENABLED = 1 AND CR.DELETED = 0) 
+              			OR (in_user_id = 1 AND CR.ENABLED = 1 AND CR.DELETED = 0)
+              			;
              
  	out_result = SELECT VRQ.cart_request_id, 
   						VRQ.REQUEST_ID, 
@@ -51,8 +56,11 @@ BEGIN
   						VRQ.STATUS_NAME, 
   						VRQ.REQUESTER,
   						VRQ.stage_passes,
-  						VRQ.message_read
+  						VRQ.message_read,
+  						VRQ.created_user_id
   				 FROM :va_request VRQ
-  				 	WHERE VRQ.MESSAGE_READ > 0 OR (VRQ.MESSAGE_READ is null AND VRQ.STAGE != 'E') OR (VRQ.STAGE || VRQ.MESSAGE_READ) != 'E0'
-  				 	;
+  				 	WHERE VRQ.MESSAGE_READ > 0 
+  				 		OR (VRQ.MESSAGE_READ is null AND VRQ.STAGE != 'E') 
+  				 		OR (VRQ.STAGE || VRQ.MESSAGE_READ) != 'E0'
+  				 	ORDER BY VRQ.REQUEST_ID DESC;
 END;

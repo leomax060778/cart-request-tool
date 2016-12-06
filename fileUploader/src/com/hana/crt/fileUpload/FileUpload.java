@@ -140,8 +140,10 @@ public class FileUpload extends HttpServlet {
 			while (it.hasNext()) {
 				Attachment attachment = new Attachment();
 				FileItem fileItem = it.next();
+				String fileName = fileItem.getName().substring(fileItem.getName().lastIndexOf('\\')+1, fileItem.getName().length());
+				fileName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length());
 				String newName = this.getNewName(uploadDiretory);
-				attachment.setOriginalName(fileItem.getName());
+				attachment.setOriginalName(fileName);
 				attachment.setSavedName(newName);
 				attachment.setAttachmentSize(fileItem.getSize());
 				attachment.setType(fileItem.getContentType());

@@ -30,11 +30,11 @@ function processRequest() {
  * @param {string} [parameters.GET_CHANGE_VENDOR_REQUEST_BY_ID] - get by id
  * @returns {VendorRequestInquiry | VendorRequest | VendorInquiry | ExtendVendorRequest | ChangeVendorRequest} VendorRequestInquiry
  */
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_VENDOR_REQUEST_INQUIRY) {
-            res = requestInquiry.getAllVendorRequestInquiry();
+            res = requestInquiry.getAllVendorRequestInquiry(userId);
         } else if (parameters[0].name === GET_VENDOR_INQUIRY_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
                 throw ErrorLib.getErrors().BadRequest(

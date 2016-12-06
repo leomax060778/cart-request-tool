@@ -1,11 +1,13 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INQUIRY" (
+  IN in_user_id bigint, 
   OUT out_result TABLE (crt_inquiry_id nvarchar(255),
   						inquiry_id bigint, 
   						created_date_tz nvarchar(15),
   						completed_date_tz nvarchar(15),
   						topic_description nvarchar(255),
   						status_name nvarchar(255),
-  						message_read integer
+  						message_read integer,
+  						created_user_id bigint
   						)
 )
 LANGUAGE SQLSCRIPT
@@ -15,7 +17,7 @@ READS SQL DATA AS
 BEGIN
   va_message = SELECT IM.INQUIRY_ID, sum(case when IM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ
 				 	FROM "INQUIRY_MESSAGE" IM
-				 		WHERE IM.ENABLED = 1 AND IM.DELETED = 0
+				 		WHERE IM.CREATED_USER_ID != in_user_id AND IM.ENABLED = 1 AND IM.DELETED = 0
 				 		GROUP BY IM.INQUIRY_ID;
 				 		
   out_result = SELECT CT.ISO || TO_NVARCHAR(INQ.inquiry_id) AS crt_inquiry_id,
@@ -24,12 +26,14 @@ BEGIN
   						TO_NVARCHAR(INQ.completed_date_tz,'YYYY-MM-DD') AS completed_date_tz,
   						TP.description AS topic_description,
   						ST.name AS status_name,
-  						VAM.MESSAGE_READ
+  						VAM.MESSAGE_READ,
+  						INQ.CREATED_USER_ID
               FROM "INQUIRY" INQ
 	              INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id AND TP.enabled = 1 AND TP.deleted = 0
 	              INNER JOIN "INQUIRY_STATUS" ST ON INQ.status_id = ST.status_id AND ST.enabled = 1 AND ST.deleted = 0
 	              INNER JOIN "CRT_TYPE" CT ON INQ.crt_type_id = CT.crt_type_id AND CT.enabled = 1 AND CT.deleted = 0  
 	              LEFT JOIN :va_message VAM ON INQ.INQUIRY_ID = VAM.INQUIRY_ID
-              WHERE INQ.ENABLED = 1 AND INQ.DELETED = 0
+              WHERE (in_user_id != 1 AND INQ.CREATED_USER_ID = in_user_id AND INQ.ENABLED = 1 AND INQ.DELETED = 0) 
+              		OR (in_user_id = 1 AND INQ.ENABLED = 1 AND INQ.DELETED = 0)
               ORDER BY INQ.inquiry_id DESC;
 END;

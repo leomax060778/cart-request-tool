@@ -13,11 +13,11 @@ function processRequest() {
 	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
 	var req = {};
 	if (parameters.length > 0) {
 		if (parameters[0].name === GET_ALL_REQUEST) {
-			req = request.getAllRequest();
+			req = request.getAllRequest(userId);
 
 		} else if (parameters[0].name === GET_REQUEST_BY_ID) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {

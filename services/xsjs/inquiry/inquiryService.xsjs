@@ -20,11 +20,11 @@ function processRequest() {
  * @returns {Inquiry|InquiryId} Inquiry - one or more Inquiry
  */
 
-function handleGet(parameters) {
+function handleGet(parameters, userId) {
     var rdo = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_INQUIRY) {
-            rdo = inquiry.getAllInquiry();
+            rdo = inquiry.getAllInquiry(userId);
         } else if (parameters[0].name === GET_INQUIRY_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
