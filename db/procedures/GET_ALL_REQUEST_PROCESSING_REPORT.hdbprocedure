@@ -1,14 +1,41 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_PROCESSING_REPORT" (
 	IN in_user_id bigint,
-	OUT out_result TABLE (cart_request_id nvarchar(32), 
-  						REQUEST_ID bigint, 
-  						VENDOR_NAME nvarchar(255), 
-  						STATUS_NAME nvarchar(255), 
-  						REQUESTER nvarchar(255),
-  						stage_passes nvarchar(32),
-  						message_read integer,
-  						created_user_id bigint
- 						) 
+	OUT out_result TABLE (
+						request_id bigint, 
+						requester nvarchar(255), 
+						team_id bigint, 
+						team_name nvarchar(255), 
+						entity_id bigint, 
+						entity_name nvarchar(255), 
+						vendor_id bigint, 
+						vendor_name nvarchar(255),	
+						vendor_account nvarchar(255), 
+						non_sap_vendor_id bigint, 
+						non_sap_name nvarchar(255), 
+						non_sap_contact_name nvarchar(255), 
+						non_sap_contact_email nvarchar(255), 
+						non_sap_contact_phone nvarchar(255),
+						stage_id bigint, 
+						stage nvarchar(127), 
+						status_id bigint, 
+						status_name nvarchar(255), 
+						material_id bigint,
+						material_description nvarchar(255), 
+						material_parent_id bigint, 
+						material_code nvarchar(255), 
+						goods_recipient_username nvarchar(127),
+						data_protection_enabled tinyint, 
+						infrastructure_of_work_id bigint, 
+						infrastructure_name nvarchar(255), 
+						location_of_work_id bigint, 
+						location_name nvarchar(255), 
+						iso nvarchar(2), 
+						request_date nvarchar(255),
+						message_read integer,
+						created_user_id bigint,
+						stage_passes nvarchar(32),												
+						cart_request_id nvarchar(32),
+						cost_object_value nvarchar (100)) 
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -20,56 +47,80 @@ BEGIN
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.ENABLED = 1 AND RM.DELETED = 0
 				 		GROUP BY RM.REQUEST_ID;
 				 		
-	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
-						FROM "USER_ROLE" USR
-							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID
-						WHERE USR.USER_ID = in_user_id;
-				 		
-	va_request = SELECT CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID) AS CART_REQUEST_ID,
-			   RQ.REQUEST_ID AS REQUEST_ID,
-               VAI.VENDOR_NAME,
-               ST.NAME AS STATUS_NAME,
-               (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
-               STG.NAME AS STAGE,
-               (STG.NAME || ' / #' || RQ.PASS) AS stage_passes,
-               VAM.MESSAGE_READ,
-               RQ.CREATED_USER_ID
-             FROM "REQUEST" RQ
-	             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = RQ.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
-	             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-                 ON (RQ.VENDOR_ID = VAI.VENDOR_ID
-                     AND(
-                     	((RQ.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= RQ.MODIFIED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ))))
-                     	OR                     	
-                     	(RQ.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= RQ.CREATED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ))))
-                 )
-	     		 INNER JOIN "REQUEST_STATUS" ST ON ST.STATUS_ID = RQ.STATUS_ID AND ST.NAME != 'Cancelled' AND ST.ENABLED = 1 AND ST.DELETED = 0
-	     		 INNER JOIN "USER" US ON US.USER_ID = RQ.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-	     		 INNER JOIN "STAGE" STG ON STG.stage_id = RQ.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
-	     		 LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
-	     		 INNER JOIN :va_user_role USR ON USR.ENABLED = 1 
-             WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
-		              		OR (in_user_id != 1 AND USR.ROLE_ID = 2 
-		              			AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
-		              			AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
-		              		OR (in_user_id != 1 AND USR.ROLE_ID > 2 AND (USR.HL3_ID is not null OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
-              			;
-             
- 	out_result = SELECT VRQ.cart_request_id, 
-  						VRQ.REQUEST_ID, 
-  						VRQ.VENDOR_NAME, 
-  						VRQ.STATUS_NAME, 
-  						VRQ.REQUESTER,
-  						VRQ.stage_passes,
-  						VRQ.message_read,
-  						VRQ.created_user_id
-  				 FROM :va_request VRQ
-  				 	WHERE VRQ.MESSAGE_READ > 0 
-  				 		OR (VRQ.MESSAGE_READ is null AND VRQ.STAGE != 'E') 
-  				 		OR (VRQ.STAGE || VRQ.MESSAGE_READ) != 'E0'
-  				 	ORDER BY VRQ.REQUEST_ID DESC;
+va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
+					FROM "USER_ROLE" USR
+						LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID
+					WHERE USR.USER_ID = in_user_id;
+						
+out_result = SELECT 
+	RQ.REQUEST_ID,
+	US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS requester, 
+	RQ.HL3_ID as team_id, 
+	HL3.HL3_DESCRIPTION AS team_name, 
+	RQ.ENTITY_ID,
+	ET.ENTITY_NAME AS entity_name, 
+	RQ.VENDOR_ID, 
+	VAI.VENDOR_NAME AS VENDOR_NAME,
+	V.ACCOUNT AS vendor_account,
+	NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
+	NSV.NAME AS non_sap_name,
+	NSV.CONTACT_NAME AS non_sap_contact_name,
+	NSV.CONTACT_EMAIL AS non_sap_contact_email,
+	NSV.CONTACT_PHONE AS non_sap_contact_phone,
+	RQ.STAGE_ID, 
+	STG.NAME AS stage, 
+	RQ.STATUS_ID, 
+	ST.NAME AS status_name, 
+	RQ.MATERIAL_ID, 
+	MT.DESCRIPTION AS material_description, 
+	MT.CATALOG_ID AS material_parent_id,
+	MT.CODE AS material_code, 
+	RQ.GOODS_RECIPIENT_USERNAME, 
+	RQ.DATA_PROTECTION_ENABLED, 
+	RQ.INFRASTRUCTURE_OF_WORK_ID, 
+	IOW.INFRASTRUCTURE_NAME AS infrastructure_name, 
+	RQ.LOCATION_OF_WORK_ID, 
+	LOW.LOCATION_NAME AS location_name, 
+	CTY.ISO AS iso, 
+	TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS request_date,	
+	VAM.MESSAGE_READ,
+	RQ.CREATED_USER_ID,
+	(STG.NAME || ' / #' || RQ.PASS) AS stage_passes,
+	CTY.ISO || TO_NVARCHAR(RQ.REQUEST_ID) AS CART_REQUEST_ID,
+	RCO.COST_VALUE as COST_OBJECT_VALUE
+	 FROM "REQUEST" RQ
+	 	INNER JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	 	INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID
+	 	INNER JOIN "ENTITY" ET ON RQ.ENTITY_ID = ET.ENTITY_ID
+	 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+		ON (RQ.VENDOR_ID = VAI.VENDOR_ID
+		 AND(
+			((RQ.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ
+			  and VAI.MODIFIED_DATE_TZ >= RQ.MODIFIED_DATE_TZ)
+			 OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ))))
+			OR                     	
+			(RQ.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ
+			  and VAI.MODIFIED_DATE_TZ >= RQ.CREATED_DATE_TZ)
+			 OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ))))
+		)
+	 	LEFT JOIN "VENDOR" V ON RQ.VENDOR_ID = V.VENDOR_ID
+	 	LEFT JOIN "NON_SAP_VENDOR" NSV ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
+	 	INNER JOIN "STAGE" STG ON RQ.STAGE_ID = STG.STAGE_ID AND STG.ENABLED = 1 AND STG.DELETED = 0
+	 	INNER JOIN "REQUEST_STATUS" AS ST ON RQ.STATUS_ID = ST.STATUS_ID AND ST.NAME != 'Cancelled' AND ST.ENABLED = 1 AND ST.DELETED = 0
+	 	LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
+	 	INNER JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
+	 	INNER JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
+	 	INNER JOIN "CRT_TYPE" CTY ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID AND CTY.ENABLED = 1 AND CTY.DELETED = 0
+	 	INNER JOIN "REQUEST_COST_OBJECT" RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID AND RCO.ENABLED = 1 AND RCO.DELETED = 0
+		LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
+		INNER JOIN :va_user_role USR ON USR.ENABLED = 1
+	WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		OR (in_user_id != 1 AND USR.ROLE_ID = 2 
+			AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
+			AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		OR (in_user_id != 1 AND USR.ROLE_ID > 2 AND (USR.HL3_ID is not null OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0) and (
+			VAM.MESSAGE_READ > 0 
+				OR (VAM.MESSAGE_READ is null AND STG.NAME != 'E') 
+				OR (STG.NAME || VAM.MESSAGE_READ) != 'E0')
+	ORDER BY RQ.REQUEST_ID DESC;
 END;

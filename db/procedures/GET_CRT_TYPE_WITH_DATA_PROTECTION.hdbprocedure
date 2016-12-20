@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CRT_TYPE_WITH_DATA_PROTECTION" (
+	OUT out_result TABLE (name nvarchar(255), crt_type_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT name, crt_type_id
+					FROM "CRT_TYPE"
+						WHERE "CRT_TYPE".data_protection = 1
+						 AND enabled = 1 AND deleted = 0;
+END;

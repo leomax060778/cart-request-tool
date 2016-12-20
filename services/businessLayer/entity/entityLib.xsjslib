@@ -8,6 +8,9 @@ function getEntity() {
 }
 
 function insertEntity(objEntity, user_id) {
+	if(objEntity.ENTITY_POSITION == null || objEntity.ENTITY_POSITION == ""){
+		objEntity.ENTITY_POSITION = 0;
+	}
 	if (validateInsertEntity(objEntity, user_id)) {
 		return data.insertEntity(objEntity, user_id);
 	}
@@ -26,6 +29,9 @@ function getEntityById(entity_id, user_id) {
 }
 
 function updateEntity(objEntity, user_id) {
+	if(objEntity.ENTITY_POSITION == null || objEntity.ENTITY_POSITION == ""){
+		objEntity.ENTITY_POSITION = 0;
+	}
 	if (validateUpdateEntity(objEntity, user_id)) {
 		if (!existEntity(objEntity.ENTITY_ID, user_id)) {
 			throw ErrorLib.getErrors().CustomError("",
