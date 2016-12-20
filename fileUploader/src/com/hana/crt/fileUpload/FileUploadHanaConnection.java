@@ -23,13 +23,6 @@ public class FileUploadHanaConnection {
 			connection.setUseCaches(false);
 			connection.setDoOutput(true);
 
-			// Send request
-//			OutputStream os = connection.getOutputStream();
-//			OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-//			osw.write(urlParams);
-//			osw.flush();
-//			osw.close();
-
 			// Get Response
 			InputStream is = connection.getInputStream();
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));

@@ -6,31 +6,28 @@ var ErrorLib = mapper.getErrors();
 var attachments = mapper.getAttachment();
 
 var GET_ATTACHMENT_BY_ID = "GET_ATTACHMENT_BY_ID";
+var GET_ATTACHMENTS_BY_ID = "GET_ATTACHMENTS_BY_ID";
 
 function processRequest() {
 	http.processRequest2(handleGet, handlePost, handlePut, handleDelete,true,"",true);
 }
 
 function handleGet(parameters, user_id) {
-	var rdo = {};
+	var res = {};
 	if (parameters.length > 0) {
-		if (parameters[0].name === GET_ATTACHMENT_BY_ID) {
-			rdo = attachments.getAttachmentById(parameters[0].value);
-			if(rdo && rdo[0]){
-				rdo = rdo[0];
-			} else {
-				rdo = {};
-			}
+		if (parameters[0].name === GET_ATTACHMENTS_BY_ID) {
+			res = attachments.getAttachmentsById(parameters[0].value);
+		} else if (parameters[0].name === GET_ATTACHMENT_BY_ID) {
+			res = attachments.getAttachmentById(parameters[0].value);
 		}
 	} else {
 		throw ErrorLib.getErrors().BadRequest(
 				"",
 				"attachmentService/handleGet",
-				"invalid parameter name (can be: GET_ATTACHMENT_BY_ID)"
-						+ parameters[0].name);
+				"invalid parameter name (can be: GET_ATTACHMENT_BY_ID)");
 	}
 
-	return http.handleResponse(rdo, http.OK, http.AppJson);
+	return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 function handlePost(objAttachment, user_id) {
@@ -44,7 +41,7 @@ function handlePut(objAttachment, user_id) {
 }
 
 function handleDelete(objAttachment, user_id) {
-	var rdo = attachments.deleteAttachment(objAttachment, user_id);
+	var res = attachments.deleteAttachment(objAttachment, user_id);
 	return http.handleResponse(objAttachment, http.OK, http.AppJson);
 }
 

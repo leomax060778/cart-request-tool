@@ -8,6 +8,7 @@ var template = mapper.getTemplate();
 var GET_ALL_TEMPLATE = "GET_ALL_TEMPLATE";
 var GET_TEMPLATE_BY_ID = "GET_TEMPLATE_BY_ID";
 var GET_TEMPLATE_BY_TYPE_ID = "GET_TEMPLATE_BY_TYPE_ID";
+var GET_ALL_TEMPLATE_BY_PARENT_SECTION = "GET_ALL_TEMPLATE_BY_PARENT_SECTION";
 
 function processRequest() {
 	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -22,6 +23,9 @@ function handleGet(parameters, userId) {
 			rdo = template.getTemplateById(parameters[0].value, userId);
 		} else if (parameters[0].name === GET_TEMPLATE_BY_TYPE_ID) {
 			rdo = template.getTemplateByTypeId(parameters[0].value, userId);
+		} else if (parameters[0].name === GET_ALL_TEMPLATE_BY_PARENT_SECTION) {
+			var objRequest = paramsToObj(parameters,["PARENT_ID","SECTION_ID"]);
+			rdo = template.getAllTemplateByParentAndSection(objRequest, userId);
 		} else {
 			throw ErrorLib
 					.getErrors()
@@ -41,13 +45,29 @@ function handlePut(reqBody, userId) {
 }
 
 function handleDelete(reqBody, userId) {
-	var req = template.deleteTemplate(reqBody, userId);
+	var req = {};
+	if(reqBody.DELETE && reqBody.DELETE == 'SELECTED_TEMPLATE'){
+		req = template.deleteSelectedTemplate(reqBody, userId);
+	} else {
+		req = template.deleteTemplate(reqBody, userId);
+	}
 	return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 
 function handlePost(reqBody, userId) {
 	var req = template.insertTemplate(reqBody, userId);
 	return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+}
+
+function paramsToObj(params,paramsArray){
+	var elements = {};
+	Object.keys(params).forEach(function(key) {
+		var value = params[key];
+		if(paramsArray.indexOf(value.name) > -1){
+			elements[value.name] = value.value;
+		}
+	});
+	return elements;
 }
 
 processRequest();

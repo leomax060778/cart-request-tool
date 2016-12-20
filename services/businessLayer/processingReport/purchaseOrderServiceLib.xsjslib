@@ -104,7 +104,7 @@ function validateType(key, value) {
     	  valid = (!value) || (value.length > 0 && value.length <= 32);
     	  break;
       case 'SHOPPING_CART':
-          valid = !isNaN(value) && value > 0;
+    	  valid = (!value) || (value.length > 0 && value.length <= 255);
           break;
       case 'PURCHASE_ORDER_NUMBER':
           valid = value.length > 0 && value.length <= 127;

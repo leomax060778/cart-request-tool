@@ -20,34 +20,43 @@ BEGIN
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.ENABLED = 1 AND RM.DELETED = 0
 				 		GROUP BY RM.REQUEST_ID;
 				 		
-	va_request = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CART_REQUEST_ID,
-			   CR.REQUEST_ID AS REQUEST_ID,
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID
+						WHERE USR.USER_ID = in_user_id;
+				 		
+	va_request = SELECT CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID) AS CART_REQUEST_ID,
+			   RQ.REQUEST_ID AS REQUEST_ID,
                VAI.VENDOR_NAME,
                ST.NAME AS STATUS_NAME,
                (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
                STG.NAME AS STAGE,
-               (STG.NAME || ' / #' || CR.PASS) AS stage_passes,
+               (STG.NAME || ' / #' || RQ.PASS) AS stage_passes,
                VAM.MESSAGE_READ,
-               CR.CREATED_USER_ID
-             FROM "REQUEST" CR
-	             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
+               RQ.CREATED_USER_ID
+             FROM "REQUEST" RQ
+	             INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = RQ.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
 	             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-                 ON (CR.VENDOR_ID = VAI.VENDOR_ID
+                 ON (RQ.VENDOR_ID = VAI.VENDOR_ID
                      AND(
-                     	((CR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= CR.MODIFIED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ))))
+                     	((RQ.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= RQ.MODIFIED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.MODIFIED_DATE_TZ))))
                      	OR                     	
-                     	(CR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))))
+                     	(RQ.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ
+                          and VAI.MODIFIED_DATE_TZ >= RQ.CREATED_DATE_TZ)
+                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= RQ.CREATED_DATE_TZ))))
                  )
-	     		 INNER JOIN "REQUEST_STATUS" ST ON ST.STATUS_ID = CR.STATUS_ID AND ST.NAME != 'Cancelled' AND ST.ENABLED = 1 AND ST.DELETED = 0
-	     		 INNER JOIN "USER" US ON US.USER_ID = CR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-	     		 INNER JOIN "STAGE" STG ON STG.stage_id = CR.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
-	     		 LEFT JOIN :va_message VAM ON CR.REQUEST_ID = VAM.REQUEST_ID
-             WHERE (in_user_id != 1 AND CR.CREATED_USER_ID = in_user_id AND CR.ENABLED = 1 AND CR.DELETED = 0) 
-              			OR (in_user_id = 1 AND CR.ENABLED = 1 AND CR.DELETED = 0)
+	     		 INNER JOIN "REQUEST_STATUS" ST ON ST.STATUS_ID = RQ.STATUS_ID AND ST.NAME != 'Cancelled' AND ST.ENABLED = 1 AND ST.DELETED = 0
+	     		 INNER JOIN "USER" US ON US.USER_ID = RQ.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	     		 INNER JOIN "STAGE" STG ON STG.stage_id = RQ.stage_id AND STG.ENABLED = 1 AND STG.DELETED = 0
+	     		 LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
+	     		 INNER JOIN :va_user_role USR ON USR.ENABLED = 1 
+             WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		              		OR (in_user_id != 1 AND USR.ROLE_ID = 2 
+		              			AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
+		              			AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		              		OR (in_user_id != 1 AND USR.ROLE_ID > 2 AND (USR.HL3_ID is not null OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
               			;
              
  	out_result = SELECT VRQ.cart_request_id, 

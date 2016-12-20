@@ -6,7 +6,8 @@ var ErrorLib = mapper.getErrors();
 
 //STORE PROCEDURE LIST NAME
 var GET_ALL_CRT_TYPE = "GET_ALL_CRT_TYPE";
-var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID";
+var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID"; 
+var GET_CRT_TYPE_WITH_DATA_PROTECTION = "GET_CRT_TYPE_WITH_DATA_PROTECTION"; 
 var DEL_CRT_TYPE = "DEL_CRT_TYPE";
 var INS_CRT_TYPE = "INS_CRT_TYPE";
 var UPD_CRT_TYPE = "UPD_CRT_TYPE";
@@ -29,6 +30,20 @@ function getCrtTypeById(crtTypeId) {
 function getCrtTypeByIdManual(crtTypeId) {
     var parameters = {'in_crt_type_id': crtTypeId};
     var result = db.executeProcedureManual(GET_CRT_TYPE_BY_ID, parameters);
+    return db.extractArray(result.out_result);
+}
+
+//Get crt type with Data Protection
+function getCrtTypeWithDataProtection() {
+    var parameters = {};
+    var result = db.executeProcedure(GET_CRT_TYPE_WITH_DATA_PROTECTION, parameters);
+    return db.extractArray(result.out_result);
+}
+
+//Get crt type with Data Protection manually
+function getCrtTypeWithDataProtectionManual() {
+    var parameters = {};
+    var result = db.executeProcedureManual(GET_CRT_TYPE_WITH_DATA_PROTECTION, parameters);
     return db.extractArray(result.out_result);
 }
 

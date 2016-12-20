@@ -2,18 +2,35 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dbHelper = mapper.getdbHelper();
 var dataNews = mapper.getDataNews();
-var dataImage = mapper.getDataImage();
 var ErrorLib = mapper.getErrors();
 
 function getAllNewsStatus() {
     return dataNews.getAllNewsStatus();
 }
 
+function getNewsUnread(userId){
+	var result = dataNews.getNewsUnread(userId);
+    var news = {};
+    if(result && result.length > 0){
+    	news = result[0];
+    	news = JSON.parse(JSON.stringify(news));
+    	news.CONTENT = ab2str(news.CONTENT);
+    }
+    return [news];
+}
+
 function getNewsById(newsId) {
     if (!newsId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
     }
-    return dataNews.getNewsById(newsId);
+    var result = dataNews.getNewsById(newsId);
+    var news = {};
+    if(result && result.length > 0){
+    	news = result[0];
+    	news = JSON.parse(JSON.stringify(news));
+    	news.CONTENT = ab2str(news.CONTENT);
+    }
+    return [news];
 }
 
 function getManualNewsById(newsId) {
@@ -63,21 +80,15 @@ function getNewsByStatusYear(statusId, year) {
     return dataNews.getNewsByStatusYear(objNews);
 }
 
-function insertImage(objImage, userId) {
-    if (validateInsertImage(objImage, userId)) {
-        return dataImage.insertImage(objImage, userId)
-    }
-
+function newsReaded(objNews, userId) {
+	if(!objNews.NEWS_ID){
+		throw ErrorLib.getErrors().BadRequest("The Parameter NEWS_ID is not found", "newsService/handlePost/newsReaded", "");
+	}
+    return dataNews.insertNewsRead(objNews, userId);
 }
 
 function insertNews(objNews, userId) {
     if (validateInsertNews(objNews, userId)) {
-    	if (objNews.IMAGE) {
-    		var img = insertImage(objNews.IMAGE, userId);
-            if (img) {
-            	objNews.IMAGE_ID = img;
-            	}
-            }
     	return dataNews.insertNews(objNews, userId);
     }
 }
@@ -155,10 +166,11 @@ function validateInsertNews(objNews, userId) {
     var BreakException = {};
     var keys = ['TITLE',
         'DESCRIPTION',
-        'STATUS_ID'
+        'STATUS_ID',
+        'CONTENT'
     ];
     
-    var optionalKeys = ['IMAGE_ID', 'URGENT'];
+    var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
 
     if (!objNews){
         throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", "The object News is not found");
@@ -187,7 +199,7 @@ function validateInsertNews(objNews, userId) {
             throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", JSON.stringify(errors));
         }
     }
-    if (objNews.IMAGE_ID || objNews.URGENT){
+    if (objNews.ATTACHMENT_ID || objNews.URGENT){
         optionalKeys.forEach(function (key) {
                 // validate attribute type
                 isValid = validateType(key, objNews[key]);
@@ -197,47 +209,6 @@ function validateInsertNews(objNews, userId) {
                 }
         });
         isValid = true;
-    }
-    return isValid;
-}
-
-function validateInsertImage(objImage, userId) {
-    if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleInsert/insertNews", userId);
-    }
-    var isValid = false;
-    var errors = {};
-    var BreakException = {};
-    var keys = ['IMAGE_URL',
-        'NAME',
-        'DESCRIPTION'];
-
-    if (!objImage) {
-        throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertImage", "The object Image is not found");
-    }
-
-    try {
-        keys.forEach(function (key) {
-            if (objImage[key] === null || objImage[key] === undefined) {
-                errors[key] = null;
-                throw BreakException;
-            } else {
-                // validate attribute type
-                isValid = validateTypeForImage(key, objImage[key]);
-                if (!isValid) {
-                    errors[key] = objImage[key];
-                    throw BreakException;
-                }
-            }
-        });
-        isValid = true;
-    } catch (e) {
-        if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertImage", e.toString());
-        }
-        else {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertImage", JSON.stringify(errors));
-        }
     }
     return isValid;
 }
@@ -253,10 +224,11 @@ function validateUpdateNews(objNews, userId) {
     var keys = ['NEWS_ID',
         'TITLE',
         'DESCRIPTION',
-        'STATUS_ID'
+        'STATUS_ID',
+        'CONTENT'
     ];
     
-    var optionalKeys = ['IMAGE_ID', 'URGENT'];
+    var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
     
     if (!objNews) {
         throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", "The object News is not found");
@@ -285,7 +257,7 @@ function validateUpdateNews(objNews, userId) {
             throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", JSON.stringify(errors));
         }
     }
-    if (objNews.IMAGE_ID || objNews.URGENT){
+    if (objNews.ATTACHMENT_ID || objNews.URGENT){
         optionalKeys.forEach(function (key) {
                 // validate attribute type
                 isValid = validateType(key, objNews[key]);
@@ -357,7 +329,7 @@ function validateType(key, value) {
         case 'AUTHOR_ID':
             valid = !isNaN(value) && value > 0;
             break;
-        case 'IMAGE_ID':
+        case 'ATTACHMENT_ID':
             valid = (!value) || (!isNaN(value) && value > 0);
             break;
         case 'URGENT':
@@ -366,26 +338,13 @@ function validateType(key, value) {
         case 'STATUS_ID':
         	valid = !isNaN(value) && value > 0;
         	break;
+        case 'CONTENT':
+        	valid = (value && value.length > 0);
+        	break;
     }
     return valid;
 }
 
-//Check data types
-function validateTypeForImage(key, value) {
-    var valid = true;
-    switch (key) {
-        case 'IMAGE_ID':
-            valid = !isNaN(value) && value > 0;
-            break;
-        case 'NAME':
-            valid = value.length > 0 && value.length <= 255;
-            break;
-        case 'IMAGE_URL':
-            valid = value.length > 0 && value.length <= 500;
-            break;
-        case 'DESCRIPTION':
-            valid = value.length > 0 && value.length <= 500;
-            break;
-    }
-    return valid;
+function ab2str(buf) {
+	return String.fromCharCode.apply(null, new Uint8Array(buf));
 }

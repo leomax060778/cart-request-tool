@@ -25,7 +25,92 @@ var dataRequestDataProtection = mapper.getDataRequestDataProtection();
 var dataRDataProtection = mapper.getDataRequestDataProtection();
 var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
+var utilLib = mapper.getUtil();
+
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+
+/* VALIDATION KEYS FOR INSERTS & UPDATES */
+
+var RequestServiceKeys = ["REQUEST_SERVICE_ID", "REQUEST_ID", "CURRENCY_ID", "CART_AMOUNT", "TOTAL_BUDGET"];
+var nonSapVendorKeys = ["ENTITY_ID", "NAME", "CONTACT_NAME", "CONTACT_PHONE", "CONTACT_EMAIL"];
+var RequestServiceOptKeys = ["PURCHASE_ORDER_AMOUNT", "PURCHASE_ORDER_TO_UPLIFT", "LINE_TO_UPLIFT", "SAP_BUYER_NAME"];
+var CostObjectKeys = ["REQUEST_COST_OBJECT_ID", "REQUEST_ID", "ENTITY_ID", "COST_OBJECT_TYPE_ID", "COST_VALUE"];
+var ServiceKeys = ["REQUEST_ID", "START_DATE", "END_DATE", "DESCRIPTION", "AMOUNT", "CURRENCY_ID", "BUDGET", "ITEM"];
+var dpAnswersKeys = ["REQUEST_ID", "QUESTION_ID", "OPTION_ID"];
+var noteKeys = ["NOTE_TYPE_ID", "NOTE_TEXT"];
+var attachmentKeys = ["REQUEST_ID", "ATTACHMENT_ID"];
+var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
+
+//Check data types
+function validateType(key, value) {
+	var valid = true;
+	switch (key) {
+	case 'REQUEST_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'SERVICE_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'NON_SAP_VENDOR_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'NOTE_TYPE_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'REQUEST_RISK_FUNDED_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'ATTACHMENT_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'ENTITY_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'CURRENCY_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'START_DATE':
+		valid = value.length > 0;
+		break;
+	case 'END_DATE':
+		valid = value.length > 0;
+		break;
+	case 'DESCRIPTION':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'AMOUNT':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'BUDGET':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'AMOUNT_KEUR':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'ITEM':
+		valid = !isNaN(value);
+		break;
+	case 'NAME':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'CONTACT_NAME':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'CONTACT_PHONE':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'CONTACT_EMAIL':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'NOTE_TEXT':
+		valid = value.length > 0 && value.length <= 1000;
+		break;
+	}
+	return valid;
+}
+
+
+/* ! VALIDATION KEYS FOR UPDATES */
 
 /*----- REQUEST SERVICE -----*/
 
@@ -249,26 +334,27 @@ function updateDataProtectionAnswer(item, user_id){
 //NOTE REQUEST
 function insertManualNoteRequest(objNoteReq, request_id, user_id){
 	objNoteReq.REQUEST_ID = request_id;
-	//if(validateInsertNoteRequest(objNoteReq, user_id)){
+	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNoteRequest";
+	if(utilLib.validateObjectAttributes(objNoteReq, user_id, noteKeys, serviceUrl, validateType)){
 		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
-	//}
+	}
 }
 
 //ATTACHMENT REQUEST
 function insertAttachmentRequest(attachment, in_request_id, userId){
 	attachment.REQUEST_ID = in_request_id;
-//	if(validateInsertAttachmentRequest){
+	var serviceUrl = "requestService/handleUpdate/updateRequest/insertAttachmentRequest";
+	
+	if(utilLib.validateObjectAttributes(attachment, userId, attachmentKeys, serviceUrl, validateType)){
 		return dataAttachmentR.insertAttachmentRequest(attachment, userId);
-//	}
+	}
 }
 
 function deleteAttachment(attachment, in_request_id, userId){
 	attachment.REQUEST_ID = in_request_id;
-//	if(validateInsertAttachmentRequest){
 		if(bussinesAttachment.deleteManualAttachment(attachment, userId)){
 			bussinesAttachment.deleteManualAttachmentRequestConection(attachment.ATTACHMENT_ID, in_request_id ,userId);
 		}
-//	}
 }
 
 function updateAttachments(original_attachments, newAttachments, request_id, user_id){
@@ -330,9 +416,7 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
 }
 
 function deleteManualNoteRequest(note_request_id, user_id){
-	//if(validateInsertNoteRequest(objNoteReq, user_id)){
-		dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id); 
-	//}
+	dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id); 
 }
 
 
@@ -364,7 +448,13 @@ function deleteSpecialRequest(special_request_id, user_id){
 
 //RISK FUNDED
 function updateRiskFunded(risk_funded, user_id){
-	dataRRiskFunded.updateManualRiskFunded(risk_funded, user_id);
+	var serviceUrl = "requestService/handleUpdate/updateRequest/updateRiskFunded";
+	var updateRiskFundedKeys = riskFundedKeys;
+	updateRiskFundedKeys.push("REQUEST_RISK_FUNDED_ID");
+	if(utilLib.validateObjectAttributes(risk_funded, user_id, updateRiskFundedKeys, serviceUrl, validateType)){
+		return dataRRiskFunded.updateManualRiskFunded(risk_funded, user_id);
+	}	
+	
 }
 
 function deleteRiskFunded(risk_funded, user_id){
@@ -372,9 +462,10 @@ function deleteRiskFunded(risk_funded, user_id){
 }
 
 function insertRiskFunded(reqBody, user_id){
-//	if(validateInsertRiskFunded(reqBody, user_id)){
+	var serviceUrl = "requestService/handleUpdate/updateRequest/insertRiskFunded";
+	if(utilLib.validateObjectAttributes(reqBody, user_id, riskFundedKeys, serviceUrl, validateType)){
 		return dataNewCartRiskFunded.insertRiskFunded(reqBody, user_id);
-//	}	
+	}	
 }
 
 //COST OBJECT
@@ -384,13 +475,19 @@ function updateCostObject(cost_object, user_id){
 
 //NON-SAP VENDOR
 function insertManualNonSapVendor(non_sap_vendor, user_id){
-	//if(validateInsertNonSapVendor){
-	return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);	
-	//}
+	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNonSapVendor";
+	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, nonSapVendorKeys, serviceUrl, validateType)){
+		return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);	
+	}
 }
 
 function updateManualNonSapVendor(non_sap_vendor, user_id){
-	return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);	
+	var serviceUrl = "requestService/handleUpdate/updateRequest/updateManualNonSapVendor";
+	var updateNonSapVendorKeys = nonSapVendorKeys;
+	updateNonSapVendorKeys.push("NON_SAP_VENDOR_ID");
+	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, updateNonSapVendorKeys, serviceUrl, validateType)){
+		return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);	
+	}
 }
 
 function deleteManualNonSapVendor(non_sap_vendor_id, user_id){
@@ -417,8 +514,9 @@ function updateNotes(original_notes, notes, request_id, userId){
             }
             updateOriginalNotes.forEach(function (updateNote) {
             	updateNote.NOTE_REQUEST_ID = Number(updateNote.NOTE_REQUEST_ID);
-                if (updateNote.NOTE_TEXT !== null && o_note_id === updateNote.NOTE_REQUEST_ID) {
-                    result = false;
+                if (updateNote.NOTE_TEXT !== null && (updateNote.NOTE_TEXT).length > 0 && o_note_id === updateNote.NOTE_REQUEST_ID) {
+       
+                	result = false;
                 }
             });
             if (result) {
@@ -435,7 +533,7 @@ function updateNotes(original_notes, notes, request_id, userId){
                 if (typeof o_note_id === 'string') {
                     o_note_id = Number(o_note_id);
                 }
-                if (newNote.NOTE_REQUEST_ID !== undefined && newNote.NOTE_TEXT !== null && newNote.NOTE_REQUEST_ID === o_note_id) {
+                if (newNote.NOTE_REQUEST_ID !== undefined && newNote.NOTE_TEXT !== null && (newNote.NOTE_TEXT).length > 0 && newNote.NOTE_REQUEST_ID === o_note_id) {
                     result = true;
                 }
             });
@@ -453,7 +551,7 @@ function updateNotes(original_notes, notes, request_id, userId){
                 if (typeof o_note_id === 'string') {
                     o_note_id = Number(o_note_id);
                 }
-                if (newNote.NOTE_TEXT === null || newNote.NOTE_REQUEST_ID === o_note_id) {
+                if (newNote.NOTE_TEXT === null || (newNote.NOTE_TEXT).length === 0 || newNote.NOTE_REQUEST_ID === o_note_id) {
                     result = false;
                 }
             });
@@ -489,9 +587,10 @@ function updateRequestService(reqBody, user_id){
 } 
 
 function insertService(reqBody, user_id){
-	//if(validateInsertService(reqBody, user_id)){
+	var serviceUrl = "requestService/handleUpdate/updateRequest/insertService";
+	if(utilLib.validateObjectAttributes(reqBody, user_id, ServiceKeys, serviceUrl, validateType)){
 		return dataService.insertService(reqBody, user_id);
-	//}	
+	}	
 }
 
 //Return the total amount to be used in Request Service
@@ -516,9 +615,12 @@ function insertEditServices(services, requestId, userId){
 }
 
 function updateService(reqBody, user_id){
-	//if(validateUpdateService(reqBody, user_id)){
+	var updateServiceKeys = ServiceKeys;
+	updateServiceKeys.push('SERVICE_ID');
+	var serviceUrl = "requestService/handleUpdate/updateRequest/updateService";
+	if(utilLib.validateObjectAttributes(reqBody, user_id, updateServiceKeys, serviceUrl, validateType)){
 		return dataUpdateService.updateService(reqBody, user_id);
-	//}	
+	}	
 }
 
 function deleteService(service_id, user_id){
@@ -803,5 +905,11 @@ function getRequestDataProtection(requestId, user_id){
 }
 
 function getAttachmentRequest(requestId, user_id){
-	return dataRequest.getAttachmentByRequestId(requestId, user_id);
+	var result = dataRequest.getAttachmentByRequestId(requestId, user_id);
+	result = JSON.parse(JSON.stringify(result));
+	result.forEach(function(attach){
+		attach.ATTACHMENT_SIZE = (parseFloat(Number(attach.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+	});
+	
+	return result;
 }

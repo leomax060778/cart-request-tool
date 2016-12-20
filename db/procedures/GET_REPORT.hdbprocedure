@@ -1,4 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT" (
+IN in_user_id bigint,
 OUT out_result TABLE (request_id nvarchar(15),
                         request_date nvarchar(15),
                         requester nvarchar(255),
@@ -41,41 +42,55 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-    out_result = SELECT REQUEST_ID,
- 	 				  REQUEST_DATE,
- 	 				  REQUESTER,
- 	 				  TEAM,
- 	 				  GOODS_RECIPIENT_USERNAME,
- 	 				  VENDOR_NAME,
- 	 				  NON_SAP_VENDOR_NAME,
- 	 				  VENDOR_ACCOUNT,
- 	 				  DESCRIPTION_PURCHASE_ORDER,
- 	 				  PRODUCT_CATALOG,
- 	 				  PRODUCT_CATEGORY,
- 	 				  MATERIAL_DESCRIPTION,
- 	 				  MATERIAL_CODE,
- 	 				  SPECIAL_REQUEST_DESCRIPTION,
-	                  SPECIAL_REQUEST_CODE,
- 	 				  SAP_ENTITY,
- 	 				  COST_OBJECT,
- 	 				  START_DATE,
- 	 				  END_DATE,
- 	 				  AMOUNT_LINE,
- 	 				  CURRENCY,
- 	 				  BUDGET,
- 	 				  CART_NUMBER,
- 	 				  CART_DATE,
- 	 				  PURCHASE_ORDER_NUMBER,
- 	 				  ITEM,
- 	 				  LINE_NUMBER,
- 	 				  PURCHASE_DATE,
- 	 				  STATUS,
- 	 				  STAGE_PASSES,
- 	 				  DAYS_OUTSTANDING,
- 	 				  PURCHASE_TURN_AROUND_TIME,
- 	 				  MESSAGE_INFO,
- 	 				  RETURN_TYPE,
- 	 				  LAST_MESSAGE
-             FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT"
-             ORDER BY REQUEST_ID;
+    out_result = SELECT DISTINCT RQR.REQUEST_ID,
+ 	 				  RQR.REQUEST_DATE,
+ 	 				  RQR.REQUESTER,
+ 	 				  RQR.TEAM,
+ 	 				  RQR.GOODS_RECIPIENT_USERNAME,
+ 	 				  RQR.VENDOR_NAME,
+ 	 				  RQR.NON_SAP_VENDOR_NAME,
+ 	 				  RQR.VENDOR_ACCOUNT,
+ 	 				  RQR.DESCRIPTION_PURCHASE_ORDER,
+ 	 				  RQR.PRODUCT_CATALOG,
+ 	 				  RQR.PRODUCT_CATEGORY,
+ 	 				  RQR.MATERIAL_DESCRIPTION,
+ 	 				  RQR.MATERIAL_CODE,
+ 	 				  RQR.SPECIAL_REQUEST_DESCRIPTION,
+	                  RQR.SPECIAL_REQUEST_CODE,
+ 	 				  RQR.SAP_ENTITY,
+ 	 				  RQR.COST_OBJECT,
+ 	 				  RQR.START_DATE,
+ 	 				  RQR.END_DATE,
+ 	 				  RQR.AMOUNT_LINE,
+ 	 				  RQR.CURRENCY,
+ 	 				  RQR.BUDGET,
+ 	 				  RQR.CART_NUMBER,
+ 	 				  RQR.CART_DATE,
+ 	 				  RQR.PURCHASE_ORDER_NUMBER,
+ 	 				  RQR.ITEM,
+ 	 				  RQR.LINE_NUMBER,
+ 	 				  RQR.PURCHASE_DATE,
+ 	 				  RQR.STATUS,
+ 	 				  RQR.STAGE_PASSES,
+ 	 				  RQR.DAYS_OUTSTANDING,
+ 	 				  RQR.PURCHASE_TURN_AROUND_TIME,
+ 	 				  RQR.MESSAGE_INFO,
+ 	 				  RQR.RETURN_TYPE,
+ 	 				  RQR.LAST_MESSAGE
+             FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT" RQR
+             	INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
+	         WHERE (in_user_id = 1 OR USR.ROLE_ID = 1)
+              		OR (in_user_id != 1 
+              			AND USR.ROLE_ID = 2 
+              			AND (
+              				 (HL3.HL3_ID = RQR.HL3_ID AND RQR.CREATED_USER_ID = in_user_id) 
+              				 OR (HL3.HL3_ID is null AND RQR.CREATED_USER_ID = in_user_id)
+              				)
+              		   )
+              		OR (in_user_id != 1 
+              			AND USR.ROLE_ID > 2 
+              			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
+              		   )
+             ORDER BY RQR.REQUEST_ID;
 END;

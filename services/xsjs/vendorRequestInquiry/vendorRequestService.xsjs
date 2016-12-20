@@ -129,7 +129,6 @@ function handlePost(reqBody, userId) {
 	reqBody.VENDOR_ID = resVendor;
     var resRequest = request.insertVendorRequestManual(reqBody, userId);
     reqBody.VENDOR_REQUEST_ID = resRequest;
-    protection.insertAnswer(reqBody, userId);
     //request.sendSubmitMail(resRequest, userId);
     var res = {"vendorId": resVendor, "newVendorRequestId": resRequest};
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);

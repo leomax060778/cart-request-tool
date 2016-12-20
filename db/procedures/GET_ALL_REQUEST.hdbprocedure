@@ -29,8 +29,10 @@ BEGIN
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.DELETED = 0 AND RM.ENABLED = 1
 				 		GROUP BY RM.REQUEST_ID, RM.CREATED_USER_ID;
 				 		
-	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID
-						FROM "USER_ROLE" USR;
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID
+						WHERE USR.USER_ID = in_user_id;
 				 		
 	out_result = SELECT RQ.REQUEST_ID, 
 						 ST.STATUS_ID AS STATUS_ID, 
@@ -68,8 +70,21 @@ BEGIN
 					  LEFT JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
 					  LEFT JOIN "BUDGET_YEAR" BUD ON RQ.BUDGET_YEAR_ID = BUD.BUDGET_YEAR_ID
 					  LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
-					  INNER JOIN :va_user_role USR ON USR.USER_ID = in_user_id
-				  WHERE (in_user_id != 1 AND RQ.CREATED_USER_ID = in_user_id AND RQ.ENABLED = 1 AND RQ.DELETED = 0) 
-              			OR (in_user_id = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+					  INNER JOIN :va_user_role USR ON USR.ENABLED = 1 
+				  WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		              		OR (in_user_id != 1 AND USR.ROLE_ID = 2 
+		              			AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
+		              			AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		              		OR (in_user_id != 1 AND USR.ROLE_ID > 2 AND (USR.HL3_ID = RQ.HL3_ID OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
               	ORDER BY RQ.request_id DESC;
 END;
+
+
+
+
+
+
+
+
+
+

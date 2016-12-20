@@ -13,12 +13,18 @@ function insertAttachmentInquiry(objAttachmentInquiry, userId) {
 
 //Get attachment inquiry by id
 function getAttachmentInquiryById(inquiryId) {
-    return dataAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+    var result = dataAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+    result = JSON.parse(JSON.stringify(result));
+	result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+	return result;
 }
 
 //Get attachment inquiry by id manually
 function getAttachmentInquiryByIdManual(inquiryId) {
-  return dataAttachmentInquiry.getAttachmentInquiryByIdManual(inquiryId);
+  var result = dataAttachmentInquiry.getAttachmentInquiryByIdManual(inquiryId);
+  result = JSON.parse(JSON.stringify(result));
+  result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+  return result;
 }
 
 //Delete attachment inquiry

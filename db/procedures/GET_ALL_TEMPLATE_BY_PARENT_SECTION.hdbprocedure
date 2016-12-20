@@ -1,0 +1,44 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE_BY_PARENT_SECTION" (
+	IN in_parent_id bigint,
+	IN in_section_id bigint,
+	OUT out_result TABLE ( 
+		template_id bigint, 
+		user_id bigint, 
+		template_type_id bigint, 
+		template_parent_id bigint, 
+		name nvarchar(2048), 
+		link nvarchar(2048), 
+		template_order integer, 
+		deleted_template_name nvarchar(255), 
+		description nvarchar(1000), 
+		section_id bigint,
+		attachment_id bigint,
+		template_type_name nvarchar (255)
+	)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT 
+		"TEMPLATE".TEMPLATE_ID, 
+		"TEMPLATE".USER_ID, 
+		"TEMPLATE".TEMPLATE_TYPE_ID, 
+		"TEMPLATE".TEMPLATE_PARENT_ID, 
+		"TEMPLATE".NAME, 
+		"TEMPLATE".LINK, 
+		"TEMPLATE".TEMPLATE_ORDER, 
+		"TEMPLATE".DELETED_TEMPLATE_NAME, 
+		"TEMPLATE".DESCRIPTION, 
+		"TEMPLATE".SECTION_ID,
+		"TEMPLATE".ATTACHMENT_ID,
+		(CASE WHEN (TEMPLATE.ATTACHMENT_ID is not null) THEN ATTACHMENT.ATTACHMENT_TYPE ELSE TEMPLATE_TYPE.name END) as template_type_name
+	FROM "TEMPLATE"
+		INNER JOIN "TEMPLATE_TYPE" as TEMPLATE_TYPE ON TEMPLATE.template_type_id = TEMPLATE_TYPE.template_type_id
+ 		LEFT JOIN "ATTACHMENT" as ATTACHMENT ON TEMPLATE.ATTACHMENT_ID = ATTACHMENT.ATTACHMENT_ID
+		WHERE in_parent_id = "TEMPLATE".TEMPLATE_PARENT_ID
+		AND in_section_id = "TEMPLATE".SECTION_ID
+		AND TEMPLATE.deleted = 0
+		AND TEMPLATE.enabled = 1;
+END;

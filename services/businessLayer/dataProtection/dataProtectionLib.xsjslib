@@ -89,7 +89,7 @@ function validateInsertOption(objOption, user_id) {
 	if (!objOption)
 		throw ErrorLib.getErrors().CustomError("",
 				"OptionService/handlePost/insertOption",
-				"The object Request is not found");
+				"The object Option is not found");
 
 	try {
 		keys.forEach(function(key) {
@@ -133,7 +133,7 @@ function validateUpdateOption(objOption, user_id) {
 	if (!objOption)
 		throw ErrorLib.getErrors().CustomError("",
 				"OptionService/handlePut/updateOption",
-				"The object Request is not found");
+				"The object Option is not found");
 
 	try {
 		keys.forEach(function(key) {
@@ -214,8 +214,8 @@ function insertQuestion(objQuestion, user_id) {
 	if (validateInsertQuestion(objQuestion, user_id)) {
 		try {
 			var questionId = data.insertQuestionManual(objQuestion, user_id);
-			(objQuestion.OPTIONS_ID).forEach(function(optionId) {
-				data.insertQuestionOption(questionId, optionId, user_id);
+			(objQuestion.OPTIONS).forEach(function(option_id) {
+				data.insertQuestionOption(questionId, option_id, user_id);
 			});
 			dbHelper.commit();
 			return questionId;
@@ -293,7 +293,7 @@ function updateQuestion(objQuestion, user_id) {
 // QUESTION - OPTION
 function updateQuestionOption(objQuestion, userId) {
 	var options = getOptionByQuestionId(objQuestion.QUESTION_ID);	
-	var updateOptions = objQuestion.OPTIONS_ID;
+	var updateOptions = objQuestion.OPTIONS;
 	var insertOptions = [];
 	var deleteOptions = [];
 	(options).forEach(function(option) {
@@ -352,12 +352,12 @@ function validateInsertQuestion(objQuestion, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'CONTENT', 'DESCRIPTION', 'OPTIONS_ID' ];
+	var keys = [ 'CONTENT', 'OPTIONS' ];
 
 	if (!objQuestion)
 		throw ErrorLib.getErrors().CustomError("",
 				"QuestionService/handlePost/insertQuestion",
-				"The object Request is not found");
+				"The object Question is not found");
 
 	try {
 		keys.forEach(function(key) {
@@ -396,12 +396,12 @@ function validateUpdateQuestion(objQuestion, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'QUESTION_ID', 'CONTENT', 'DESCRIPTION', 'OPTIONS_ID' ];
+	var keys = [ 'QUESTION_ID', 'CONTENT', 'OPTIONS' ];
 
 	if (!objQuestion)
 		throw ErrorLib.getErrors().CustomError("",
 				"QuestionService/handlePut/updateQuestion",
-				"The object Request is not found");
+				"The object Question is not found");
 
 	try {
 		keys.forEach(function(key) {
@@ -454,7 +454,7 @@ function validateType(key, value) {
 	case 'MODIFIED_USER_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
-	case 'OPTIONS_ID':
+	case 'OPTIONS':
 		valid = Array.isArray(value) && value.length > 0;
 		break;
 	case 'ATTACHMENT_DATA_PROTECTION_ID':

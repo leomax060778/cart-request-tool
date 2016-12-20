@@ -6,6 +6,19 @@ var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 //Get report
-function getReport() {
-    return data.getReport();
+function getReport(userId) {
+    var result = data.getReport(userId);
+    result = JSON.parse(JSON.stringify(result));
+    result.forEach(function (elem){
+    	if(elem.RETURN_TYPE){
+    		elem.MESSAGE_INFO = elem.MESSAGE_INFO + " / " + elem.RETURN_TYPE;
+    	}
+    	if(elem.STATUS !== 'In process'){
+    		elem.DAYS_OUTSTANDING = 'Not applicable';
+    	}
+    	if(elem.STATUS !== 'Approved' ){
+    		elem.PURCHASE_TURN_AROUND_TIME = 'Not applicable';
+    	}
+    });
+	return result;
 }

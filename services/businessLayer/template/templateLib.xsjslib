@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataTemplate = mapper.getDataTemplate();
 var dataTemplateType = mapper.getDataTemplateType();
 var dataTemplateSection = mapper.getDataTemplateSection(); 
+var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -36,6 +37,10 @@ function getManualTemplateById(templateId) {
 // Get all template
 function getAllTemplate() {
 	return dataTemplate.getTemplate();
+}
+
+function getAllTemplateByParentAndSection(objRequest, userId) {
+	return dataTemplate.getAllTemplateByParentAndSection(objRequest);
 }
 
 // Get template by Type ID
@@ -77,6 +82,34 @@ function deleteTemplate(objTemplate, userId) {
 	return dataTemplate.deleteTemplate(objTemplate, userId);
 }
 
+function deleteSelectedTemplate(reqObj, userId){
+	try{
+		if(reqObj.TEMPLATE_LIST && reqObj.TEMPLATE_LIST.length >0){
+			reqObj.TEMPLATE_LIST.forEach(function(template){
+				deleteManualTemplate(template,userId);
+			});
+		}
+		dbHelper.commit();
+	} catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(),"deleteTemplate");
+	}
+	finally{
+		dbHelper.closeConnection();
+	}
+	return {};
+}
+
+function deleteManualTemplate(objTemplate, userId) {
+	validateTemplateParameters(objTemplate.TEMPLATE_ID, userId);
+	if (!existTemplate(objTemplate.TEMPLATE_ID)) {
+		throw ErrorLib.getErrors().CustomError("",
+				"templateService/handleDelete/deleteTemplate",
+				"The object Template doesn't exist");
+	}
+	return dataTemplate.deleteManualTemplate(objTemplate, userId);
+}
+
 function validateTemplateParameters(templateId, userId) {
 	if (!templateId) {
 		throw ErrorLib.getErrors().CustomError("", "templateService",
@@ -110,8 +143,7 @@ function validateInsertTemplate(objTemplate, userId) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'TEMPLATE_PARENT_ID', 'NAME', 'LINK',
-			'TEMPLATE_ORDER', 'DESCRIPTION',
+	var keys = [ 'TEMPLATE_PARENT_ID', 'NAME', 'TEMPLATE_ORDER', 'DESCRIPTION',
 			'SECTION_ID' ];
 
 	if (!objTemplate) {
@@ -158,7 +190,7 @@ function validateUpdateTemplate(objTemplate, userId) {
 	var errors = {};
 	var BreakException = {};
 	var keys = [ 'TEMPLATE_ID', 'TEMPLATE_TYPE_ID',
-			'TEMPLATE_PARENT_ID', 'NAME', 'LINK', 'TEMPLATE_ORDER',
+			'TEMPLATE_PARENT_ID', 'NAME', 'TEMPLATE_ORDER',
 			'DESCRIPTION', 'SECTION_ID' ];
 
 	if (!objTemplate) {

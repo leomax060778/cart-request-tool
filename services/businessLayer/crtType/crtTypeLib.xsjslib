@@ -32,6 +32,17 @@ function getAllCrtType() {
     return dataCrtType.getAllCrtType();
 }
 
+//Get crt type with data protection
+function getCrtTypeWithDataProtection() {
+    return dataCrtType.getCrtTypeWithDataProtection();
+}
+
+//Get crt type with data protection manual
+function getCrtTypeWithDataProtection() {
+    return dataCrtType.getCrtTypeWithDataProtectionManual();
+}
+
+
 //Update crt type
 function updateCrtType(objCrtType, userId) {
     if (validateUpdateCrtType(objCrtType, userId)) {

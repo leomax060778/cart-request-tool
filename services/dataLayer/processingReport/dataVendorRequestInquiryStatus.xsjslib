@@ -84,6 +84,19 @@ function getChangeVendorRequestById(changeId) {
     }
 }
 
+//Get change vendor request by id Manually
+function getChangeVendorRequestByIdManual(changeId) {
+    var parameters = {};
+    parameters.in_change_vendor_request_id = changeId;
+    var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
+}
+
 //Get extend vendor request by status
 function getExtendVendorRequestByStatus(statusId) {
     var parameters = {};

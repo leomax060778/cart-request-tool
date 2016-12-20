@@ -1,12 +1,27 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var request = mapper.getDataVendorRequest();
+var businessAttachmentVendor = mapper.getAttachmentVendor();
+var businessAttachment = mapper.getAttachment();
 var vendorMail = mapper.getVendorMail();
+var dataVRDataProtection = mapper.getDataVendorDataProtection();
 var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var dbHelper  = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var vendorType = {"VENDOR_REQUEST": 3};
+
+//Insert Vendor Request Data Protection
+function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
+	reqBody.VENDOR_REQUEST_ID = in_vendor_request_id;
+	if(validateInsertDataProtectionAnswer(reqBody, user_id)){
+		reqBody.QUESTION_ID = Number(reqBody.QUESTION_ID);
+		reqBody.QUESTION_ID = Number(reqBody.QUESTION_ID);
+		return dataVRDataProtection.insertAnswerManual(reqBody, user_id);
+	}	
+}
 
 //Insert vendor request
 function insertVendorRequest(objVendorRequest, userId) {
@@ -17,8 +32,35 @@ function insertVendorRequest(objVendorRequest, userId) {
 
 //Insert vendor request manual
 function insertVendorRequestManual(objVendorRequest, userId) {
-	if (validateInsertVendorRequest(objVendorRequest, userId)) {
-    	return request.insertVendorRequestManual(objVendorRequest, userId);
+    if (validateInsertVendorRequest(objVendorRequest, userId)) {
+    	try{
+    		objVendorRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+        	//Insert the Vendor Request
+        	var result_id = request.insertVendorRequestManual(objVendorRequest, userId);
+           	//Insert attachments
+        	if(objVendorRequest.ATTACHMENTS != undefined && objVendorRequest.ATTACHMENTS != null && result_id !== null){
+           		(objVendorRequest.ATTACHMENTS).forEach(function(attachment){
+        			attachment.VENDOR_TYPE_ID = objVendorRequest.VENDOR_TYPE_ID;
+        			attachment.VENDOR_ID = result_id;
+        			businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
+           		});    		
+        	}
+        	//Insert vendor request Data Protection answers
+    		(objVendorRequest.DATA_PROTECTION_ANSWERS).forEach(function(item){
+    			insertDataProtectionAnswer(item, result_id, userId);
+    		});
+    		
+    		dbHelper.commit();
+    	}
+    	catch(e){
+    		dbHelper.rollback();
+    		throw ErrorLib.getErrors().CustomError("", e.toString(),"insertVendorRequestManual");
+    	}
+    	finally{
+    		dbHelper.closeConnection();
+    	}
+		
+        return result_id;
     }
 }
 
@@ -35,18 +77,39 @@ function deleteVendorRequest(objVendorRequest, userId) {
 
 //Get vendor request by ID
 function getVendorRequestById(vendorRequestId) {
+    var objRequest = {};
     if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
     }
-    return request.getVendorRequestById(vendorRequestId);
+    var resRequest = request.getVendorRequestById(vendorRequestId);
+    
+    resRequest = JSON.parse(JSON.stringify(resRequest));
+    if(resRequest){
+    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
+    	 resRequest.ATTACHMENTS = attachments;
+    }
+    return resRequest;
 }
 
 //Get vendor request by ID manually
 function getVendorRequestByIdManual(vendorRequestId) {
+    var objRequest = {};
     if (!vendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestService/handleGet/getVendorRequestById", vendorRequestId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
     }
-    return request.getVendorRequestByIdManual(vendorRequestId);
+    var resRequest = request.getVendorRequestById(vendorRequestId);
+    
+    resRequest = JSON.parse(JSON.stringify(resRequest));
+    
+    if(resRequest){
+    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorByIdManual(objRequest);
+    	 resRequest.ATTACHMENTS = attachments;
+    }
+    return resRequest;
 }
 
 //Get all vendor request
@@ -115,8 +178,7 @@ function validateInsertVendorRequest(objVendorRequest, userId) {
         'ACCEPT_AMERICAN_EXPRESS',
         'COST_CENTER_OWNER',
         'VENDOR_ID',
-        'OPTION_ID',
-        'QUESTION_ID'
+        'DATA_PROTECTION_ANSWERS'
     ];
 
     var optionalKeys = [
@@ -182,6 +244,45 @@ function validateParams(vendorRequestId, userId) {
 		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
 				"The userId is not found");
 	}
+}
+
+function validateInsertDataProtectionAnswer(reqBody, user_id) {
+	if(!user_id)
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","dataProtectionService/handlePost/insertDataProtection",request_id);	
+	
+	var isValid = false;
+	var errors = {};
+	var BreakException = {};
+	var keys = ['VENDOR_REQUEST_ID',
+	            'QUESTION_ID',
+	            'OPTION_ID'];
+	
+	if(!reqBody)
+		throw ErrorLib.getErrors().CustomError("","dataProtectionService/handlePost/insertDataProtection","The object DataProtection is not found");
+	
+	try {
+		keys.forEach(function(key) {
+			if (reqBody[key] === null || reqBody[key] === undefined) {
+				errors[key] = null;
+				throw BreakException;
+			} else {
+				// validate attribute type
+				isValid = validateType(key, reqBody[key])
+				if (!isValid) {
+					errors[key] = reqBody[key];
+					throw BreakException;
+				}
+			}
+		});
+		isValid = true;
+	} catch (e) {
+		if (e !== BreakException)
+			throw ErrorLib.getErrors().CustomError("", "dataProtectionService/handlePost/insertDataProtection", e.toString());
+		else
+			throw ErrorLib.getErrors().CustomError("", "dataProtectionService/handlePost/insertDataProtection"
+					,JSON.stringify(errors));
+	}
+	return isValid;
 }
 
 //Check data types
@@ -254,10 +355,13 @@ function validateType(key, value) {
         case 'RECEIVER_USER_ID':
             valid = (!value) || (!isNaN(value) && value > 0);
             break;
-        case 'OPTION_ID':
-            valid = !isNaN(value) && value > 0;
+        case 'DATA_PROTECTION_ANSWERS':
+            valid = value.length > 0;
             break;
         case 'QUESTION_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'OPTION_ID':
             valid = !isNaN(value) && value > 0;
             break;
     }

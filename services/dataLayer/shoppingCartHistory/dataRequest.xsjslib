@@ -126,13 +126,14 @@ function deleteRequestDataProtectionAnswersByRequestId(requestId, userId){
 	return db.executeScalarManual(DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID, parameters, 'out_result');
 }
 
-function getAttachmentByRequestId(requestId, userId){
+function getAttachmentByRequestId(requestId){
 	var parameters = {};
     parameters.in_request_id = requestId;
     parameters.out_result = '?';
     
     var result = db.executeProcedureManual(GET_ATTACHMENT_BY_REQUEST_ID, parameters);
     return db.extractArray(result.out_result);
+    
 }
 
 function deleteAttachmentRequest(requestId, userId){

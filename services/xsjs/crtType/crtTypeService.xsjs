@@ -7,6 +7,7 @@ var crtType = mapper.getCrtType();
 
 var GET_ALL_CRT_TYPE = "GET_ALL_CRT_TYPE";
 var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID";
+var GET_CRT_TYPE_WITH_DATA_PROTECTION = "GET_CRT_TYPE_WITH_DATA_PROTECTION";
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -17,6 +18,7 @@ function processRequest() {
  * @param {object} parameters
  * @param {void} [parameters.GET_ALL_CRT_TYPE] - get all
  * @param {string} [parameters.GET_CRT_TYPE_BY_ID] - get by id
+ *  * @param {string} [GET_CRT_TYPE_WITH_DATA_PROTECTION] - get crt types that use Data Protection
  * @returns {CrtType} CrtType - one or more CrtTypes
  */
 function handleGet(parameters) {
@@ -34,6 +36,8 @@ function handleGet(parameters) {
             } else {
                 rdo = crtType.getCrtTypeById(parameters[0].value);
             }
+        } else if (parameters[0].name === GET_CRT_TYPE_WITH_DATA_PROTECTION) {
+                rdo = crtType.getCrtTypeWithDataProtection();
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",

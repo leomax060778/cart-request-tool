@@ -10,6 +10,7 @@ var INS_NEWS = "INS_NEWS";
 var UPD_NEWS = "UPD_NEWS";
 var UPD_NEWS_STATUS = "UPD_NEWS_STATUS";
 var DEL_NEWS = "DEL_NEWS";
+var INS_READ_NEWS = "INS_READ_NEWS";
 
 var GET_NEWS_BY_ID = "GET_NEWS_BY_ID";
 var GET_ALL_NEWS = "GET_ALL_NEWS";
@@ -19,6 +20,14 @@ var GET_NEWS_BY_STATUS = "GET_NEWS_BY_STATUS";
 var GET_NEWS_BY_YEAR = "GET_NEWS_BY_YEAR";
 var GET_NEWS_BY_STATUS_YEAR = "GET_NEWS_BY_STATUS_YEAR";
 var GET_NEWS_URGENT = "GET_NEWS_URGENT";
+var GET_NEWS_UNREAD = "GET_NEWS_UNREAD";
+
+function getNewsUnread(userId){
+	var parameters = {};
+    parameters.in_user_id = userId;
+    var result = db.executeProcedure(GET_NEWS_UNREAD, parameters);
+    return db.extractArray(result.out_result);
+}
 
 function getNewsById(newsId){
     var parameters = {};
@@ -76,6 +85,16 @@ function getNewsByStatusYear(objNews){
     return db.extractArray(result.out_result);
 }
 
+function insertNewsRead(objNews, userId){
+    var parameters = {};
+    parameters.in_news_id = objNews.NEWS_ID;
+    parameters.in_user_id = userId;
+    parameters.in_created_user_id = userId;
+    parameters.OUT_RESULT = '?';
+    return db.executeScalar(INS_READ_NEWS, parameters, 'out_result');
+
+}
+
 function insertNews(objNews, userId){
     var parameters = {};
     parameters.IN_TITLE = objNews.TITLE;
@@ -83,10 +102,11 @@ function insertNews(objNews, userId){
     parameters.IN_AUTHOR_ID = userId;
     parameters.IN_STATUS_ID = objNews.STATUS_ID;
     parameters.IN_PUBLISHED_DATE = objNews.PUBLISHED_DATE;
-    parameters.IN_IMAGE_ID = objNews.IMAGE_ID || null;
+    parameters.IN_ATTACHMENT_ID = objNews.ATTACHMENT_ID || null;
     parameters.IN_URGENT = objNews.URGENT || 0;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
     parameters.IN_CREATED_USER_ID = userId;
+    parameters.IN_CONTENT = objNews.CONTENT;
     parameters.OUT_RESULT = '?';
     return  db.executeScalar(INS_NEWS, parameters, 'out_result');
 
@@ -101,9 +121,10 @@ function updateNews(objNews, userId){
     parameters.in_status_id = objNews.STATUS_ID;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
     parameters.in_published_date = objNews.PUBLISHED_DATE;
-    parameters.in_image_id = objNews.IMAGE_ID || null;
+    parameters.in_attachment_id = objNews.ATTACHMENT_ID || null;
     parameters.in_urgent = objNews.URGENT || 0;
     parameters.in_modified_user_id = userId;
+    parameters.in_content = objNews.CONTENT;
     parameters.out_result = '?';
     return db.executeScalar(UPD_NEWS, parameters, 'out_result');
 }

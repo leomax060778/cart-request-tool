@@ -92,16 +92,17 @@ function ExecutePermission() {
 /** ************************************************************************ */
 
 /** ************URLs******************* */
-var AppUrl = "http://OPT.Hana.com";
-var UrlLogin = "http://OPT.Hana.com";
+var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
+var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
+
 /** ******************************* */
 
 /** ************Email Accounts********************* */
-var SMTPAccount = "lpeccin@folderit.net";// "info_planningtool@sap.com";//
-											// //adderes configured - SMTP
+var SMTPAccount = "info_cartrequesttool@sap.com";//
 											// server
-var SupportAccount = "lpeccin@folderit.net";// "support_planningtool@sap.com";
-var SiteAdministrator = "lpeccin@folderit.net";// "support_planningtool@sap.com";
+var SupportAccount = "support_cartrequesttool@sap.com";
+var SiteAdministrator = "support_cartrequesttool@sap.com";
+
 /** ************************************** */
 
 // TODO: move this to configuration

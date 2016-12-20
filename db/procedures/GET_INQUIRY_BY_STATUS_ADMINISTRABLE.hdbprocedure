@@ -19,18 +19,30 @@ BEGIN
 				 		WHERE IM.CREATED_USER_ID != in_user_id AND IM.ENABLED = 1 AND IM.DELETED = 0
 				 		GROUP BY IM.INQUIRY_ID;
 
-  out_result = SELECT CT.ISO || TO_NVARCHAR(INQ.inquiry_id) AS crt_inquiry_id,
-  						INQ.inquiry_id AS inquiry_id,
-  						(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
-  						ST.name AS status_name,
-  						VAM.MESSAGE_READ,
-  						INQ.CREATED_USER_ID
+  out_result = SELECT DISTINCT CT.ISO || TO_NVARCHAR(INQ.inquiry_id) AS crt_inquiry_id,
+		  						INQ.inquiry_id AS inquiry_id,
+		  						(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+		  						ST.name AS status_name,
+		  						VAM.MESSAGE_READ,
+		  						INQ.CREATED_USER_ID
               FROM "INQUIRY" INQ
 	              INNER JOIN "USER" US ON US.USER_ID = INQ.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 	              INNER JOIN "INQUIRY_STATUS" ST ON INQ.status_id = ST.status_id AND ST.enabled = 1 AND ST.deleted = 0
 	              INNER JOIN "CRT_TYPE" CT ON INQ.crt_type_id = CT.crt_type_id AND CT.enabled = 1 AND CT.deleted = 0  
 	              LEFT JOIN :va_message VAM ON INQ.INQUIRY_ID = VAM.INQUIRY_ID
-              WHERE (in_user_id != 1 AND INQ.CREATED_USER_ID = in_user_id AND INQ.STATUS_ID = ST.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND INQ.ENABLED = 1 AND INQ.DELETED = 0) 
-              		OR (in_user_id = 1 AND INQ.STATUS_ID = ST.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND INQ.ENABLED = 1 AND INQ.DELETED = 0)
+              	  INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+				  LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
+				  LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = INQ.CREATED_USER_ID
+	          WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND INQ.ENABLED = 1 AND INQ.DELETED = 0)
+	              		OR (in_user_id != 1 
+	              			AND USR.ROLE_ID = 2
+	              			AND INQ.CREATED_USER_ID = in_user_id
+	              		   )
+	              		OR (in_user_id != 1
+	              			AND USR.ROLE_ID > 2 
+	              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND INQ.CREATED_USER_ID = in_user_id)) 
+	              			AND INQ.ENABLED = 1 
+	              			AND INQ.DELETED = 0
+	              		   )
               ORDER BY INQ.inquiry_id DESC;
 END;

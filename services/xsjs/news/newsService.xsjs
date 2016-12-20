@@ -12,6 +12,7 @@ var GET_NEWS_BY_STATUS = "GET_NEWS_BY_STATUS";
 var GET_NEWS_BY_YEAR = "GET_NEWS_BY_YEAR";
 var GET_NEWS_BY_STATUS_YEAR = "GET_NEWS_BY_STATUS_YEAR";
 var GET_NEWS_URGENT = "GET_NEWS_URGENT";
+var GET_NEWS_UNREAD = "GET_NEWS_UNREAD";
 
 var GET_ALL_NEWS_STATUS = "GET_ALL_NEWS_STATUS";
 var UPD_NEWS_STATUS = "UPD_NEWS_STATUS";
@@ -35,7 +36,7 @@ function processRequest(){
  * @param {string} [parameters.GET_ALL_NEWS_STATUS] - get all the news status
  * @returns {News} News - one or more News
  */
-function handleGet(parameters) {
+function handleGet(parameters,userId) {
     var rdo = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_NEWS_BY_ID) {
@@ -69,6 +70,9 @@ function handleGet(parameters) {
         else if (parameters[0].name === GET_ALL_NEWS_STATUS) {
             rdo = news.getAllNewsStatus();
 
+        } if (parameters[0].name === GET_NEWS_UNREAD) {
+            rdo = news.getNewsUnread(userId);
+
         }
     }
     else {
@@ -88,13 +92,18 @@ function handleGet(parameters) {
  * @param {string} newsBody.TITLE - title of the news
  * @param {string} newsBody.DESCRIPTION - text of the news
  * @param {string} newsBody.AUTHOR_ID - author id of the news (id of the user who create the news)
- * @param {string} [newsBody.IMAGE_ID] - id of the image
+ * @param {string} [newsBody.ATTACHEMT_ID] - id of the image
  * @param {int} newsBody.URGENT - is the news urgent
  * @param userId
  * @returns {string} id - Id of the new news
  */
 function handlePost(newsBody, userId) {
-    var res = news.insertNews(newsBody, userId);
+	var res = {}
+	if (newsBody.POST === "NEWS_READED") {
+		res = news.newsReaded(newsBody, userId);
+    } else {
+    	res = news.insertNews(newsBody, userId);
+    }
     return http.handleResponse(res, http.OK, http.AppJson);
 }
 
@@ -105,7 +114,7 @@ function handlePost(newsBody, userId) {
  * @param {string} newsBody.NEWS_ID - id of the news to update
  * @param {string} newsBody.TITLE - New title for the news
  * @param {string} newsBody.DESCRIPTION - New description for the news
- * @param {string} [newsBody.IMAGE_ID] - id of the image
+ * @param {string} [newsBody.ATTACHEMT_ID] - id of the image
  * @param {int} newsBody.URGENT - is the news urgent
  * @param userId
  * @returns {int} count - Modified rows count

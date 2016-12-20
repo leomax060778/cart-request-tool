@@ -2,13 +2,14 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NEWS" (
 	IN in_news_id bigint,
 	IN in_title nvarchar(255),
 	IN in_description nvarchar(2000),
-	IN in_image_id bigint,
+	IN in_attachment_id bigint,
 	IN in_urgent tinyint,
 	IN in_modified_user_id bigint,
 	IN in_status_id bigint,
 	IN in_budget_year_id bigint,
 	IN in_published_date timestamp,
- OUT out_result bigint
+	IN in_content nclob,
+ 	OUT out_result bigint
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -18,13 +19,14 @@ BEGIN
 	UPDATE NEWS
 	SET 	NEWS.title = in_title,
 			NEWS.description = in_description,
-			NEWS.IMAGE_ID = in_image_id,
+			NEWS.attachment_id = in_attachment_id,
 			NEWS.urgent = in_urgent,
 			NEWS.status_id = in_status_id,
 			NEWS.budget_year_id = in_budget_year_id,
 			NEWS.published_date = in_published_date,
 			NEWS.modified_date_tz = CURRENT_TIMESTAMP,
-			NEWS.modified_user_id = in_modified_user_id
+			NEWS.modified_user_id = in_modified_user_id,
+			NEWS.CONTENT = in_content
 	FROM "NEWS" NEWS
 	WHERE NEWS.news_id = in_news_id;
 

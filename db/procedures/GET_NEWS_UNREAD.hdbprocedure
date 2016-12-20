@@ -1,0 +1,47 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_UNREAD" (
+IN in_user_id bigint,
+OUT out_result TABLE(
+	news_id bigint, 
+	title nvarchar(255), 
+	description nvarchar(2000), 
+	author_id bigint, 
+	published_date nvarchar(15), 
+	attachment_id bigint, 
+	author_name nvarchar(255),
+	budget_year_id bigint,
+	budget_year bigint,
+	content text
+)) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+ out_result = SELECT TOP 1 
+ 	"NEWS".NEWS_ID, 
+	"NEWS".TITLE, 
+	"NEWS".DESCRIPTION, 
+	"NEWS".AUTHOR_ID, 
+	TO_NVARCHAR("NEWS".PUBLISHED_DATE, 'YYYY/MM/DD') AS PUBLISHED_DATE, 
+	"NEWS".ATTACHMENT_ID, 
+	author.USER_NAME AS author_name,
+	"NEWS".BUDGET_YEAR_ID,
+	BUDGET_YEAR.BUDGET_YEAR,
+	"NEWS".content
+	FROM "NEWS"
+	INNER JOIN "USER" author ON author.USER_ID = "NEWS".AUTHOR_ID
+	INNER JOIN "NEWS_STATUS" news_st ON news_st.NEWS_STATUS_ID = "NEWS".STATUS_ID
+	INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR_ID = "NEWS".BUDGET_YEAR_ID
+	WHERE "NEWS".ENABLED = 1 
+		AND "NEWS".DELETED = 0
+		AND "NEWS".STATUS_ID = 3
+		AND DAYS_BETWEEN ("NEWS".PUBLISHED_DATE, CURRENT_TIMESTAMP) >= 0
+		AND NOT EXISTS
+	        (
+		        SELECT  READ_NEWS.USER_ID
+		        FROM    "READ_NEWS" READ_NEWS
+		        WHERE   READ_NEWS.USER_ID = in_user_id
+		        		and READ_NEWS.NEWS_ID = "NEWS".NEWS_ID
+	        )
+    ORDER BY "NEWS".PUBLISHED_DATE ASC;
+END;

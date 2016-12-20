@@ -30,7 +30,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getVendorRequestInquiryByStatus(parameters[0].value, userId);
@@ -39,11 +39,11 @@ function handleGet(parameters, userId) {
         
         //Get all vendor by status administrable
         else if (parameters[0].name === GET_VENDOR_REQUEST_INQUIRY_BY_STATUS_ADMINISTRABLE) {
-        	if (parameters[0].value > 1 || parameters[0].value < 0 || isNaN(parameters[0].value)){
+        	if (parameters[0].value > 1 || parameters[0].value < 0 || isNaN(parameters[0].value) || !parameters[0].value){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be 1 or 0)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be 1 or 0)"
                 );
             } else {
             	res = request.getVendorRequestInquiryByStatusAdministrable(parameters[0].value, userId);
@@ -56,7 +56,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getChangeVendorRequestByStatus(parameters[0].value);
@@ -65,15 +65,17 @@ function handleGet(parameters, userId) {
        
         //Get change vendor by id
         else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_BY_ID) {
+        	var objChange = {};
         	if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                var resChange = request.getChangeVendorRequestById(parameters[0].value);
+                var resChange = request.getChangeVendorRequestByIdManual(parameters[0].value);
+                    
                 res = {'changeVendor': resChange, 'selection': resSelection};
             }
         } 
@@ -84,7 +86,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getExtendVendorRequestByStatus(parameters[0].value);
@@ -97,7 +99,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getExtendVendorRequestById(parameters[0].value);
@@ -110,7 +112,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getVendorRequestByStatus(parameters[0].value);
@@ -123,7 +125,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getVendorRequestById(parameters[0].value);
@@ -136,7 +138,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getVendorInquiryByStatus(parameters[0].value);
@@ -149,7 +151,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestServices/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	res = request.getVendorInquiryById(parameters[0].value);

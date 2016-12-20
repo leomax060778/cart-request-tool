@@ -27,7 +27,7 @@ function handleGet(parameters, userId) {
             	res = inquiry.getInquiryByStatus(parameters[0].value);
             }
         } else if (parameters[0].name === GET_INQUIRY_BY_STATUS_ADMINISTRABLE) {
-        	if (isNaN(parameters[0].value || parameters[0].value < 0)){
+        	if (isNaN(parameters[0].value) || parameters[0].value < 0 || !parameters[0].value){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "inquiryServices/handleGet",

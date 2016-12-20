@@ -7,7 +7,36 @@ var ErrorLib = mapper.getErrors();
 
 // Check if the inquiry exists
 function existAttachment(attachmentId) {
-	return getManualAttachmentById(attachmentId).length > 0;
+	return Object.keys(getManualAttachmentById(attachmentId)).length > 0;
+}
+
+function getAttachmentsById(attachments, userId){
+	if (attachments && attachments.length > 0) {
+		var attachmentList = [];
+		var attachmentArray = attachments.split("-");
+		try {
+			attachmentArray.forEach(function(attachmentId){
+				if(attachmentId && attachmentId != "" && isNumeric(attachmentId)) {
+					var result = getManualAttachmentById(Number(attachmentId));
+					if(result){
+						attachmentList.push(result);
+					}
+				}
+			});			
+			return attachmentList;
+		} catch (e) {
+			throw e;
+			dbHelper.rollback();
+			throw ErrorLib.getErrors().CustomError("", e.toString(), "insertAttachment");
+		} finally {
+			//dbHelper.closeConnection();
+		}
+	}
+	return [];
+}
+
+function isNumeric(value) {
+    return /^\d+$/.test(value);
 }
 
 function getManualAttachmentById(attachmentId) {
@@ -17,7 +46,11 @@ function getManualAttachmentById(attachmentId) {
 				"attachmentService/handleGet/getAttachmentById", attachmentId);
 	}	
 	var result = dataAttachment.getManualAttachment(attachmentId);
-	return result;
+	if(result.ATTACHMENT_ID){
+		result = JSON.parse(JSON.stringify(result));
+		result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+		return result;
+	}
 }
 
 // Get attachment by ID
@@ -27,7 +60,10 @@ function getAttachmentById(attachmentId) {
 				"The Parameter attachmentId is not found",
 				"attachmentService/handleGet/getAttachmentById", attachmentId);
 	}
-	return dataAttachment.getAttachment(attachmentId);
+	var result = dataAttachment.getAttachment(attachmentId);
+	result = JSON.parse(JSON.stringify(result));
+	result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+	return result;
 }
 
 // Insert attachment

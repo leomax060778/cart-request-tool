@@ -14,9 +14,9 @@ var UPD_VENDOR_INQUIRY = "UPD_VENDOR_INQUIRY";
 //Insert new Vendor inquiry data
 function insertVendorInquiry(objVendorInquiry, userId) {
     var parameters = {};
-    parameters.in_user_id = userId;//objVendorInquiry.USER_ID;
-    parameters.in_vendor_type_id = 4;//objVendorInquiry.VENDOR_TYPE_ID;
-    parameters.in_created_user_id = userId;//objVendorInquiry.CREATED_USER_ID;
+    parameters.in_user_id = userId;
+    parameters.in_vendor_type_id = objVendorInquiry.VENDOR_TYPE_ID;
+    parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
     parameters.out_result = '?';
     return db.executeScalar(INS_VENDOR_INQUIRY, parameters, 'out_result');
@@ -25,9 +25,9 @@ function insertVendorInquiry(objVendorInquiry, userId) {
 //Insert new Vendor inquiry data manually
 function insertVendorInquiryManual(objVendorInquiry, userId) {
     var parameters = {};
-    parameters.in_user_id = userId;//objVendorInquiry.USER_ID;
-    parameters.in_vendor_type_id = 4;//objVendorInquiry.VENDOR_TYPE_ID;
-    parameters.in_created_user_id = userId;//objVendorInquiry.CREATED_USER_ID;
+    parameters.in_user_id = userId;
+    parameters.in_vendor_type_id = objVendorInquiry.VENDOR_TYPE_ID;
+    parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_VENDOR_INQUIRY, parameters, 'out_result');
@@ -68,7 +68,7 @@ function getVendorInquiryByIdManual(vendorInquiryId) {
 function deleteVendorInquiry(objVendorInquiry, userId) {
     var parameters = {};
     parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
-    parameters.in_modified_user_id = userId;//objVendorInquiry.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_VENDOR_INQUIRY, parameters, 'out_result');
 }
@@ -78,7 +78,7 @@ function updateVendorInquiry(objVendorInquiry, userId) {
     var parameters = {};
     parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
     parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
-    parameters.in_modified_user_id = userId;//objVendorInquiry.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_INQUIRY, parameters, 'out_result');
 }

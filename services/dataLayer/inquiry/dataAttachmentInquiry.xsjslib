@@ -24,8 +24,12 @@ function getAttachmentInquiryById(inquiryId) {
         var parameters = {};
         parameters.in_inquiry_id = inquiryId;
         var result = db.executeProcedure(GET_ATTACHMENT_INQUIRY, parameters);
-       
-        return db.extractArray(result.out_result);
+        var list = db.extractArray(result.out_result);
+        if(list.length){
+     	   return list[0];
+        } else {
+     	   	return {};
+        }
 }
 
 //Get attachment inquiry by ID manually
@@ -33,8 +37,12 @@ function getAttachmentInquiryByIdManual(inquiryId) {
 var parameters = {};
 parameters.in_inquiry_id = inquiryId;
 var result = db.executeProcedureManual(GET_ATTACHMENT_INQUIRY, parameters);
-
-return db.extractArray(result.out_result);
+var list = db.extractArray(result.out_result);
+if(list.length){
+	   return list[0];
+} else {
+	   	return {};
+}
 }
 
 

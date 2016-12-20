@@ -14,20 +14,39 @@ var UPD_EXTEND_VENDOR_REQUEST = "UPD_EXTEND_VENDOR_REQUEST";
 //Insert extend vendor request
 function insertExtendVendorRequest(objExtendVendorRequest, userId) {
     var parameters = {};
-    parameters.in_user_id = userId;//objExtendVendorRequest.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_entity_id = objExtendVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objExtendVendorRequest.COMMODITY_ID;
     parameters.in_service_supplier = objExtendVendorRequest.SERVICE_SUPPLIER;
-    parameters.in_vendor_type_id = 2;//objExtendVendorRequest.VENDOR_TYPE_ID;
+    parameters.in_vendor_type_id = objExtendVendorRequest.VENDOR_TYPE_ID;
     parameters.in_purchase_amount = objExtendVendorRequest.PURCHASE_AMOUNT;
     parameters.in_expected_amount = objExtendVendorRequest.EXPECTED_AMOUNT || null;
     parameters.in_purchase_currency_id = objExtendVendorRequest.PURCHASE_CURRENCY_ID;
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
-    parameters.in_created_user_id = userId;//objExtendVendorRequest.CREATED_USER_ID;
+    parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
     parameters.out_result = '?';
     return db.executeScalar(INS_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
+}
+
+//Insert extend vendor request manually
+function insertExtendVendorRequestManual(objExtendVendorRequest, userId) {
+    var parameters = {};
+    parameters.in_user_id = userId;
+    parameters.in_entity_id = objExtendVendorRequest.ENTITY_ID;
+    parameters.in_commodity_id = objExtendVendorRequest.COMMODITY_ID;
+    parameters.in_service_supplier = objExtendVendorRequest.SERVICE_SUPPLIER;
+    parameters.in_vendor_type_id = objExtendVendorRequest.VENDOR_TYPE_ID;
+    parameters.in_purchase_amount = objExtendVendorRequest.PURCHASE_AMOUNT;
+    parameters.in_expected_amount = objExtendVendorRequest.EXPECTED_AMOUNT || null;
+    parameters.in_purchase_currency_id = objExtendVendorRequest.PURCHASE_CURRENCY_ID;
+    parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
+    parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_created_user_id = userId;
+    parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
+    parameters.out_result = '?';
+    return db.executeScalarManual(INS_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
 }
 
 //Get extend vendor request
@@ -74,7 +93,7 @@ function deleteExtendVendorRequest(objExtendVendorRequest, userId) {
 function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     var parameters = {};
     parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-    parameters.in_user_id = userId; //objExtendVendorRequest.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_entity_id = objExtendVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objExtendVendorRequest.COMMODITY_ID;
     parameters.in_service_supplier = objExtendVendorRequest.SERVICE_SUPPLIER;
@@ -83,7 +102,7 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     parameters.in_purchase_currency_id = objExtendVendorRequest.PURCHASE_CURRENCY_ID;
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
-    parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
 }

@@ -8,7 +8,20 @@ var ErrorLib = mapper.getErrors();
 //Get attachment vendor by ID
 function getAttachmentVendorById(objAttachment) {
 	if (validateGetAttachmentVendor(objAttachment)) {
-		return dataAttachmentV.getAttachmentVendor(objAttachment);
+		var result = dataAttachmentV.getAttachmentVendor(objAttachment);
+		result = JSON.parse(JSON.stringify(result));
+		result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+		return result;
+	}
+}
+
+//Get attachment vendor by ID Manually
+function getAttachmentVendorByIdManual(objAttachment) {
+	if (validateGetAttachmentVendor(objAttachment)) {
+		var result = dataAttachmentV.getAttachmentVendorManual(objAttachment);
+		result = JSON.parse(JSON.stringify(result));
+		result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+		return result;
 	}
 }
 
@@ -16,6 +29,16 @@ function getAttachmentVendorById(objAttachment) {
 function insertAttachmentVendor(objAttachment, userId) {
     if (validateInsertAttachmentVendor(objAttachment, userId)) {
         return dataAttachmentV.insertAttachmentVendor(objAttachment, userId);
+    }
+    if (!existAttachment(objAttachment.ATTACHMENT_ID)) {
+        throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handlePost/insertAttachmentVendor", "The Attachment with the id " + objAttachment.ATTACHMENT_ID + " does not exist");
+    }
+}
+
+//Insert attachment vendor
+function insertManualAttachmentVendor(objAttachment, userId) {
+    if (validateInsertAttachmentVendor(objAttachment, userId)) {
+        return dataAttachmentV.insertManualAttachmentVendor(objAttachment, userId);
     }
     if (!existAttachment(objAttachment.ATTACHMENT_ID)) {
         throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handlePost/insertAttachmentVendor", "The Attachment with the id " + objAttachment.ATTACHMENT_ID + " does not exist");
@@ -31,6 +54,17 @@ function deleteAttachmentVendor(objAttachment, userId) {
         throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handleDelete/deleteAttachmentVendor", "The Attachment with the id " + objAttachment.ATTACHMENT_ID + " does not exist");
     }
     return dataAttachmentV.deleteAttachmentVendor(objAttachment, userId);
+}
+ 
+//Delete attachment vendor Manually
+function deleteAttachmentVendorManual(objAttachment, userId) {
+    if (!objAttachment.ATTACHMENT_ID) {
+        throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handleDelete/deleteAttachmentVendor", "The ATTACHMENT_ID is not found");
+    }
+    if (!existAttachment(objAttachment.ATTACHMENT_ID)) {
+        throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handleDelete/deleteAttachmentVendor", "The Attachment with the id " + objAttachment.ATTACHMENT_ID + " does not exist");
+    }
+    return dataAttachmentV.deleteAttachmentVendorManual(objAttachment, userId);
 }
 
 //Check if the attachment exists

@@ -7,7 +7,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURE LIST NAME
 var GET_REPORT = "GET_REPORT";
 
-function getReport() {
-    var result = db.extractArray(db.executeProcedure(GET_REPORT, {}).out_result);
+function getReport(userId) {
+    var result = db.extractArray(db.executeProcedure(GET_REPORT, {'in_user_id': userId}).out_result);
     return result;
 }

@@ -2,6 +2,8 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataStatus = mapper.getDataVendorRequestInquiryStatus();
 var dataExtendVendor = mapper.getDataExtendVendorRequest();
+var businessAttachmentVendor = mapper.getAttachmentVendor();
+var businessAttachment = mapper.getAttachment();
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
@@ -16,6 +18,8 @@ var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5, 'CANCELLED': 6};
+//Vendor types
+var vendorType = {"CHANGE_VENDOR_REQUEST": 1, "EXTEND_VENDOR_REQUEST": 2, "VENDOR_INQUIRY": 4, "VENDOR_REQUEST": 3};
 
 //Get vendor request inquiry by status
 function getVendorRequestInquiryByStatus(statusId) {
@@ -56,10 +60,20 @@ function getVendorInquiryByStatus(statusId) {
 
 //Get vendor inquiry by id
 function getVendorInquiryById(inquiryId) {
+	var objInquiry = {};
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", inquiryId);
     }
-    return dataStatus.getVendorInquiryById(inquiryId);
+    var resInquiry = dataStatus.getVendorInquiryById(inquiryId);
+    
+    resInquiry = JSON.parse(JSON.stringify(resInquiry));
+    if(resInquiry){
+    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
+    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
+    	 resInquiry.ATTACHMENTS = attachments;
+    }
+    return resInquiry;
 }
 
 //Get change vendor request by status
@@ -72,10 +86,37 @@ function getChangeVendorRequestByStatus(statusId) {
 
 //Get change vendor request by id
 function getChangeVendorRequestById(changeId) {
+	var objChange = {};
     if (!changeId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeId);
     }
-    return dataStatus.getChangeVendorRequestById(changeId);
+    
+    var resChange = dataStatus.getChangeVendorRequestById(changeId);
+    resChange = JSON.parse(JSON.stringify(resChange));
+    if(resChange){
+    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
+    	 resChange.ATTACHMENTS = attachments;
+    }
+    return resChange;
+}
+
+//Get change vendor request by id
+function getChangeVendorRequestByIdManual(changeId) {
+	var objChange = {};
+    if (!changeId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter changeId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeId);
+    }
+    var resChange = dataStatus.getChangeVendorRequestByIdManual(changeId);
+    resChange = JSON.parse(JSON.stringify(resChange));
+    if(resChange){
+    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
+    	 resChange.ATTACHMENTS = attachments;
+    }
+    return resChange;
 }
 
 //Get extend vendor request by status
@@ -88,10 +129,20 @@ function getExtendVendorRequestByStatus(statusId) {
 
 //Get extend vendor request by id
 function getExtendVendorRequestById(extendId) {
+	var objExtend = {};
     if (!extendId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter extendId is not found", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", extendId);
     }
-    return dataStatus.getExtendVendorRequestById(extendId);
+    
+    var resExtend = dataStatus.getExtendVendorRequestById(extendId);
+    resExtend = JSON.parse(JSON.stringify(resExtend));
+    if(resExtend){
+    	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
+    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
+    	 resExtend.ATTACHMENTS = attachments;
+    }
+    return resExtend;
 }
 
 function getManualExtendVendorRequestById(extendId) {
@@ -111,10 +162,21 @@ function getVendorRequestByStatus(statusId) {
 
 //Get vendor request by id
 function getVendorRequestById(requestId) {
+	var objRequest = {};
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", requestId);
     }
-    return dataStatus.getVendorRequestById(requestId);
+    
+    var resRequest = dataStatus.getVendorRequestById(requestId);
+    
+    resRequest = JSON.parse(JSON.stringify(resRequest));
+    if(resRequest){
+    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
+    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
+    	 resRequest.ATTACHMENTS = attachments;
+    }
+    return resRequest;
 }
 
 //Update vendor inquiry status
@@ -229,6 +291,87 @@ function updateVendorRequestStatusManual(objVendorRequest, userId) {
     		return dataStatus.updateVendorRequestStatusManual(objVendorRequest, userId);
     	}
     }
+}
+
+//UPDATE CHANGE VENDOR ATTACHMENTS
+function updateChangeVendorAttachments(reqBody, user_id){
+	var params = {};
+	params.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+	params.VENDOR_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
+	var original_attachments = businessAttachmentVendor.getAttachmentVendorById(params);
+
+	var originalAttachmentsToUpdate = reqBody.ATTACHMENTS;
+	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length == 0){
+		original_attachments.forEach(function(attachment){
+			businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
+			businessAttachment.deleteManualAttachment(attachment, user_id);
+		});
+	}else if(original_attachments.length == 0 && originalAttachmentsToUpdate.length > 0){
+		originalAttachmentsToUpdate.forEach(function(attachment){
+    		params.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+    		params.VENDOR_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
+    		params.ATTACHMENT_ID = attachment.ATTACHMENT_ID;
+    		businessAttachmentVendor.insertManualAttachmentVendor(params, user_id);
+    	});
+		
+	} else if(original_attachments.length > 0 && originalAttachmentsToUpdate.length > 0){
+		
+	    var insertOriginalAttachments = [];
+	    var deleteOriginalAttachments = [];
+	    
+	    //DELETE
+	    original_attachments.forEach(function (o_attachment) {
+	        var result = true;
+	        var o_attachment_id = o_attachment.ATTACHMENT_ID;
+	        if (typeof o_attachment_id === 'string') {
+	        	o_attachment_id = Number(o_attachment_id);
+	        }
+	        originalAttachmentsToUpdate.forEach(function (updateAttach) {
+	        	updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
+	            if (o_attachment_id === updateAttach.ATTACHMENT_ID) {
+	                result = false;
+	            }
+	        });
+	        if (result) {
+	        	deleteOriginalAttachments.push(o_attachment);
+	        }
+	    });
+	    
+	    //INSERT
+	    originalAttachmentsToUpdate.forEach(function (newAttach) {
+	        var result = true;
+	        newAttach.ATTACHMENT_ID = Number(newAttach.ATTACHMENT_ID);
+	        original_attachments.forEach(function (attachment) {
+	            var o_attachment_id = attachment.ATTACHMENT_ID;
+	            if (typeof o_attachment_id === 'string') {
+	            	o_attachment_id = Number(o_attachment_id);
+	            }
+	            if (newAttach.ATTACHMENT_ID === o_attachment_id) {
+	                result = false;
+	            }
+	        });
+	        if (result) {
+	        	insertOriginalAttachments.push(newAttach);
+	        }
+	    });
+	    //ACTIONS
+	    var data = {};
+	    if(insertOriginalAttachments.length > 0){
+	    	insertOriginalAttachments.forEach(function(attachment){
+	    		data.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+	    		data.VENDOR_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
+	    		data.ATTACHMENT_ID = attachment.ATTACHMENT_ID;
+	    		businessAttachmentVendor.insertManualAttachmentVendor(data, user_id);
+	    	});
+	    }
+	    if(deleteOriginalAttachments.length > 0){
+	    	deleteOriginalAttachments.forEach(function(attachment){
+	    		businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
+				businessAttachment.deleteManualAttachment(attachment, user_id);
+	    	});
+	    }
+	}
+	
 }
 
 //Validate update vendor inquiry status

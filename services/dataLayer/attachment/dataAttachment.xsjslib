@@ -31,14 +31,24 @@ function getAttachment(attachmentId) {
     var parameters = {};
     parameters.in_attachment_id = attachmentId;
     var result = db.executeProcedure(GET_ATTACHMENT, parameters);
-    return db.extractArray(result.out_result);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function getManualAttachment(attachmentId) {
     var parameters = {};
     parameters.in_attachment_id = attachmentId;
     var result = db.executeProcedureManual(GET_ATTACHMENT, parameters);
-    return db.extractArray(result.out_result);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 //Update Attachment

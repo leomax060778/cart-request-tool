@@ -11,10 +11,12 @@ var GET_TEMPLATE_BY_ID = "GET_TEMPLATE_BY_ID";
 var GET_TEMPLATE_BY_TYPE_ID = "GET_TEMPLATE_BY_TYPE_ID";
 var UPD_TEMPLATE = "UPD_TEMPLATE";
 var DEL_TEMPLATE = "DEL_TEMPLATE";
+var GET_ALL_TEMPLATE_BY_PARENT_SECTION = "GET_ALL_TEMPLATE_BY_PARENT_SECTION";
 
 //Insert template
 function insertTemplate(objTemplate, userId) {
     var parameters = getTemplateParams(objTemplate);
+    parameters.in_attachment_id = objTemplate.ATTACHMENT_ID;
     parameters.in_user_id = userId;//objTemplate.IN_USER_ID;
     parameters.in_created_user_id = userId;    
     parameters.out_result = '?';
@@ -51,6 +53,14 @@ function getTemplateByTypeId(typeId) {
     return db.extractArray(result.out_result);
 }
 
+function getAllTemplateByParentAndSection(objRequest) {
+    var parameters = {};
+    parameters.in_parent_id = objRequest.PARENT_ID;
+    parameters.in_section_id = objRequest.SECTION_ID;
+    var result = db.executeProcedure(GET_ALL_TEMPLATE_BY_PARENT_SECTION, parameters);
+    return db.extractArray(result.out_result);
+}
+
 //Update template
 function updateTemplate(objTemplate, userId) {
     var parameters = getTemplateParams(objTemplate);
@@ -68,6 +78,14 @@ function deleteTemplate(objTemplate, userId) {
     parameters.in_modified_user_id = userId;//objTemplate.IN_MODIFIED_USER_ID;
     parameters.out_result = '?';
     return db.executeScalar(DEL_TEMPLATE, parameters, 'out_result');
+}
+
+function deleteManualTemplate(objTemplate, userId) {
+    var parameters = {};
+    parameters.in_template_id = objTemplate.TEMPLATE_ID;
+    parameters.in_modified_user_id = userId;//objTemplate.IN_MODIFIED_USER_ID;
+    parameters.out_result = '?';
+    return db.executeScalarManual(DEL_TEMPLATE, parameters, 'out_result');
 }
 
 function getTemplateParams(objTemplate){

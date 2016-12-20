@@ -8,5 +8,5 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CURRENCY
 BEGIN
 	out_result = SELECT currency_id, country, name, abbreviation, conversion_rate, currency_year
 					FROM "CURRENCY"
-						WHERE enabled = 1 AND deleted = 0;
+						WHERE enabled = 1 AND deleted = 0 ORDER BY country ASC;
 END;

@@ -14,12 +14,12 @@ var UPD_CHANGE_VENDOR_REQUEST = "UPD_CHANGE_VENDOR_REQUEST";
 //Insert change vendor request
 function insertChangeVendorRequest(objChangeVendorRequest, userId) {
     var parameters = {};
-    parameters.in_user_id = userId;//objChangeVendorRequest.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_entity_id = objChangeVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objChangeVendorRequest.COMMODITY_ID;
-    parameters.in_vendor_type_id = 1;//objChangeVendorRequest.VENDOR_TYPE_ID;
+    parameters.in_vendor_type_id = objChangeVendorRequest.VENDOR_TYPE_ID;
     parameters.in_vendor_id = objChangeVendorRequest.VENDOR_ID;
-    parameters.in_created_user_id = userId;//objChangeVendorRequest.CREATED_USER_ID;
+    parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(INS_CHANGE_VENDOR_REQUEST, parameters, 'out_result'); 
 }
@@ -27,12 +27,12 @@ function insertChangeVendorRequest(objChangeVendorRequest, userId) {
 //Insert change vendor request manually
 function insertChangeRequestManual(objChangeVendorRequest, userId) {
     var parameters = {};
-    parameters.in_user_id = userId;//objChangeVendorRequest.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_entity_id = objChangeVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objChangeVendorRequest.COMMODITY_ID;
-    parameters.in_vendor_type_id = 1;//objChangeVendorRequest.VENDOR_TYPE_ID;
+    parameters.in_vendor_type_id = objChangeVendorRequest.VENDOR_TYPE_ID;
     parameters.in_vendor_id = objChangeVendorRequest.VENDOR_ID;
-    parameters.in_created_user_id = userId;//objChangeVendorRequest.CREATED_USER_ID;
+    parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_CHANGE_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -72,7 +72,7 @@ function getChangeVendorRequestByIdManual(changeVendorRequestId) {
 function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
     var parameters = {};
     parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-    parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_CHANGE_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -81,7 +81,7 @@ function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
 function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
     var parameters = {};
     parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-    parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_CHANGE_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -90,10 +90,10 @@ function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
 function updateChangeVendorRequest(objChangeVendorRequest, userId) {
     var parameters = {};
     parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-    parameters.in_user_id = userId;//objChangeVendorRequest.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_entity_id = objChangeVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objChangeVendorRequest.COMMODITY_ID;
-    parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CHANGE_VENDOR_REQUEST, parameters, 'out_result');
 }

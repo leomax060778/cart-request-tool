@@ -14,6 +14,9 @@ var UPD_VENDOR_DATA_PROTECTION_ANSWER = "UPD_VENDOR_DATA_PROTECTION_ANSWER";
 //Insert new answer to vendor data protection
 function insertAnswerManual(objDataProtection, userId){
 	var parameters = {};	
+	objDataProtection.QUESTION_ID = Number(objDataProtection.QUESTION_ID);
+	objDataProtection.OPTION_ID = Number(objDataProtection.OPTION_ID);
+	objDataProtection.VENDOR_REQUEST_ID = Number(objDataProtection.VENDOR_REQUEST_ID);
 	parameters.in_vendor_request_id = objDataProtection.VENDOR_REQUEST_ID;
 	parameters.in_question_id = objDataProtection.QUESTION_ID;
 	parameters.in_option_id = objDataProtection.OPTION_ID; 
