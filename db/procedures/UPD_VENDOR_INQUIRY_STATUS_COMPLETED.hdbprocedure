@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_INQUIRY_STATUS_COMPLETED" (
+  IN in_vendor_inquiry_id bigint,
+  IN in_status_id bigint,
+  IN in_modified_user_id bigint,
+  IN in_previous_status_id bigint,
+  IN in_user_id_status bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE vinquiry
+	SET vinquiry.receiver_date_completed_tz = CURRENT_TIMESTAMP,
+		vinquiry.status_id = in_status_id,
+        vinquiry.modified_user_id = in_modified_user_id,
+        vinquiry.user_id_status = in_user_id_status,
+        vinquiry.previous_status_id = in_previous_status_id,
+        vinquiry.update_status_tz = CURRENT_TIMESTAMP,
+        vinquiry.modified_date_tz = CURRENT_TIMESTAMP
+	FROM "CART_REQUEST_TOOL"."VENDOR_INQUIRY" vinquiry
+	WHERE vinquiry.vendor_inquiry_id = in_vendor_inquiry_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;
