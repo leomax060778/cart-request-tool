@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var inquiryStatus = mapper.getDataInquiryStatus();
 var inquiry = mapper.getInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
+var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
@@ -41,7 +42,13 @@ function getInquiryById(inquiryId) {
 	if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getInquiryById", inquiryId);
     }
-	return inquiryStatus.getInquiryById(inquiryId);
+	
+	var inquiry = inquiryStatus.getInquiryById(inquiryId);
+    inquiry = JSON.parse(JSON.stringify(inquiry));
+    
+    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+    return inquiry;
+
 }
 
 //Update inquiry status

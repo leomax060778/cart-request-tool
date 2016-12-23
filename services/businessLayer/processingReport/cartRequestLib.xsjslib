@@ -24,6 +24,9 @@ function getAllCartRequest(userId) {
     	} else {
     		elem.SHOW_MESSAGE_READ = 0;
     	}
+    	if(elem.STATUS_NAME !== 'In process'){
+    		elem.DAYS_OUTSTANDING = 'Not applicable';
+    	}
     });
 	return request;
 }

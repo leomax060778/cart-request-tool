@@ -2,25 +2,58 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataInquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
+var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
+var dbHelper = mapper.getdbHelper();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 //Insert inquiry
 function insertInquiry(objInquiry, userId) {
+	var result_id;
     if (validateInsertInquiry(objInquiry, userId)) {
-        return dataInquiry.insertInquiry(objInquiry, userId);
+    	if(!objInquiry.ATTACHMENTS || objInquiry.ATTACHMENTS.length == 0){
+    			result_id = dataInquiry.insertInquiry(objInquiry, userId);
+    	}
+    	else{
+    		try{
+    			result_id = dataInquiry.insertInquiryManual(objInquiry, userId);
+    			(objInquiry.ATTACHMENTS).forEach(function(attachment){
+        			attachment.INQUIRY_ID = result_id;
+        			businessAttachmentInquiry.insertAttachmentInquiryManual(attachment, userId);
+           		}); 
+    			dbHelper.commit();
+    		} catch (e) {
+    			dbHelper.rollback();
+    			throw ErrorLib.getErrors().CustomError("", e.toString(),
+			 			"insertInquiry");
+    		} finally {
+    			dbHelper.closeConnection();
+    		}
+    		
+    	}
+       
     }
+    return result_id;
 }
 
 //Get inquiry by id
 function getInquiryById(inquiryId) {
-    return dataInquiry.getInquiryById(inquiryId);
+    var inquiry = dataInquiry.getInquiryById(inquiryId);
+    inquiry = JSON.parse(JSON.stringify(inquiry));
+    
+    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+    return inquiry;
 }
 
 //Get inquiry by id manually
 function getInquiryByIdManual(inquiryId) {
-  return dataInquiry.getInquiryByIdManual(inquiryId);
+  var inquiry = dataInquiry.getInquiryByIdManual(inquiryId);
+  inquiry = JSON.parse(JSON.stringify(inquiry));
+  
+  inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiry.INQUIRY_ID);
+  return inquiry;
+  
 }
 
 //Get all inquiries
@@ -65,7 +98,7 @@ function deleteInquiry(objInquiry, userId) {
 
 //Check if the inquiry exists
 function existInquiry(inquiryId) {
-    return getInquiryByIdManual(inquiryId).length > 0;
+    return Object.keys(getInquiryByIdManual(inquiryId)).length > 0;
 }
 
 //Validate insert inquiry

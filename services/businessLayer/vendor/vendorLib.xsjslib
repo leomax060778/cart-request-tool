@@ -96,8 +96,8 @@ function getVendorById(vendor_id, user_id) {
 	var ven = {};
 	try{
 		var vendor_result = data.getManualVendorById(vendor_id);
-		if (vendor_result.length > 0) {
-			ven = JSON.parse(JSON.stringify(vendor_result[0]));
+		if (vendor_result.VENDOR_ID) {
+			ven = JSON.parse(JSON.stringify(vendor_result));
 			completeVendor(ven);
 		}
 		dbHelper.commit();

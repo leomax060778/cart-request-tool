@@ -19,17 +19,23 @@ function insertAttachmentInquiry(objAttachment, userId) {
         return db.executeScalar(INS_ATTACHMENT_INQUIRY, parameters, 'out_result');
 }
 
+//Insert Attachment Inquiry Manually
+function insertAttachmentInquiryManual(objAttachment, userId) {
+        var parameters = {};
+        parameters.in_inquiry_id = objAttachment.INQUIRY_ID;
+        parameters.in_attachment_id = objAttachment.ATTACHMENT_ID;
+        parameters.in_created_user_id = userId;//objAttachment.CREATED_USER_ID;
+        parameters.out_result = '?';
+        return db.executeScalarManual(INS_ATTACHMENT_INQUIRY, parameters, 'out_result');
+}
+
 //Get attachment inquiry by ID
 function getAttachmentInquiryById(inquiryId) {
         var parameters = {};
         parameters.in_inquiry_id = inquiryId;
         var result = db.executeProcedure(GET_ATTACHMENT_INQUIRY, parameters);
-        var list = db.extractArray(result.out_result);
-        if(list.length){
-     	   return list[0];
-        } else {
-     	   	return {};
-        }
+        return db.extractArray(result.out_result);
+
 }
 
 //Get attachment inquiry by ID manually
@@ -37,12 +43,8 @@ function getAttachmentInquiryByIdManual(inquiryId) {
 var parameters = {};
 parameters.in_inquiry_id = inquiryId;
 var result = db.executeProcedureManual(GET_ATTACHMENT_INQUIRY, parameters);
-var list = db.extractArray(result.out_result);
-if(list.length){
-	   return list[0];
-} else {
-	   	return {};
-}
+return db.extractArray(result.out_result);
+
 }
 
 

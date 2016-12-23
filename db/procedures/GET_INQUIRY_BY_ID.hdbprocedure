@@ -6,7 +6,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_I
   						last_name nvarchar(255), 
   						topic_id bigint, 
   						topic_description nvarchar(255),
-  						inquiry_text nvarchar (1000)
+  						inquiry_text nvarchar (1000),
+  						iso nvarchar(2)
   						)
 )
 LANGUAGE SQLSCRIPT
@@ -20,7 +21,8 @@ BEGIN
   						US.last_name, 
   						INQ.topic_id, 
   						TP.description as topic_description,
-  						INQ.inquiry_text
+  						INQ.inquiry_text,
+  						CRTT.ISO as iso
               FROM "INQUIRY" INQ
               INNER JOIN "USER" US ON INQ.user_id = US.user_id 
               						AND US.enabled = 1 
@@ -28,6 +30,8 @@ BEGIN
               INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id 
               						AND TP.enabled = 1 
               						AND TP.deleted = 0 
+              INNER JOIN "CRT_TYPE" CRTT ON CRTT.CRT_TYPE_ID = 1
+              						
                WHERE INQ.INQUIRY_ID = in_inquiry_id 
                      AND INQ.ENABLED = 1 
                      AND INQ.DELETED = 0;

@@ -23,6 +23,18 @@ function insertInquiry(objInquiry, userId) {
     return db.executeScalar(INS_INQUIRY, parameters, 'out_result');
 }
 
+//Insert new inquiry
+function insertInquiryManual(objInquiry, userId) {
+    var parameters = {};
+    parameters.in_user_id = userId;//objInquiry.USER_ID;
+    parameters.in_topic_id = objInquiry.TOPIC_ID;
+    parameters.in_inquiry_text = objInquiry.INQUIRY_TEXT;
+    parameters.in_crt_type_id = 1;//objInquiry.CRT_TYPE_ID;
+    parameters.in_created_user_id = userId;//objVendorRequest.CREATED_USER_ID;
+    parameters.out_result = '?';
+    return db.executeScalarManual(INS_INQUIRY, parameters, 'out_result');
+}
+
 //Get all inquiries
 function getAllInquiry(userId) {
     var parameters = {'in_user_id': userId};

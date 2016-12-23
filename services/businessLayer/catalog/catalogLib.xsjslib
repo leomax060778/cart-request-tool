@@ -141,9 +141,7 @@ function validateUpdateCatalog(objCatalog, userId) {
     var BreakException = {};
     var keys = [
         'CATALOG_ID',
-        'NAME',
-        'CATALOG_TYPE_ID',
-        'CATALOG_PARENT_ID'];
+        'NAME'];
 
     if (!objCatalog) {
         throw ErrorLib.getErrors().CustomError("", "catalogService/handlePut/updateCatalog", "The object Catalog is not found");
@@ -151,7 +149,7 @@ function validateUpdateCatalog(objCatalog, userId) {
 
     try {
         keys.forEach(function (key) {
-            if ((objCatalog[key] === null || objCatalog[key] === undefined) && key !== 'CATALOG_PARENT_ID') {
+            if ((objCatalog[key] === null || objCatalog[key] === undefined)) {
                 errors[key] = null;
                 throw BreakException;
             } else {
@@ -186,10 +184,10 @@ function validateType(key, value) {
             valid = value.length > 0 && value.length <= 255;
             break;
         case 'CATALOG_TYPE_ID':
-            valid = !isNaN(value) && value > 0;
+            valid = (!value) || (!isNaN(value) && value > 0);
             break;
         case 'CATALOG_PARENT_ID':
-            valid = (!isNaN(value) && value > 0) || (!value);
+            valid = (!value) || (!isNaN(value) && value > 0);
             break;
     }
     return valid;

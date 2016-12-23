@@ -11,6 +11,13 @@ function insertAttachmentInquiry(objAttachmentInquiry, userId) {
     }
 }
 
+//Insert attachment inquiry Manually
+function insertAttachmentInquiryManual(objAttachmentInquiry, userId) {
+    if (validateInsertAttachmentInquiry(objAttachmentInquiry, userId)) {
+        return dataAttachmentInquiry.insertAttachmentInquiryManual(objAttachmentInquiry, userId);
+    }
+}
+
 //Get attachment inquiry by id
 function getAttachmentInquiryById(inquiryId) {
     var result = dataAttachmentInquiry.getAttachmentInquiryById(inquiryId);
