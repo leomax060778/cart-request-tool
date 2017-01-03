@@ -28,21 +28,17 @@ function handlePost(reqBody, userId) {
 	var password = reqBody.password;
 	var currentPassword = reqBody.currentPassword
 	var token = reqBody.token;
-	if (typeMethod && typeMethod === confirmToken) {
-		return httpUtil.handleResponse(loginLib.confirmToken(token, userId),
-				httpUtil.OK, httpUtil.AppJson);
-	} else {
-		if (typeMethod && typeMethod === recovery) {
-			if (loginLib.validateCurrentPassword(username, currentPassword)) {
-				var token = loginLib.recoveryPassword(username, password,
-						userId);
-				return httpUtil.handleResponse(token, httpUtil.OK,
-						httpUtil.AppJson);
-			}
-		} else {
-			var login = loginLib.login(username, password);
-			return httpUtil
-					.handleResponse(login, httpUtil.OK, httpUtil.AppJson);
+	if(typeMethod && typeMethod === confirmToken){
+		return httpUtil.handleResponse(loginLib.confirmToken(token,userId),httpUtil.OK,httpUtil.AppJson);
+	}else{
+		if(typeMethod && typeMethod === recovery){	
+			//if(loginLib.validateCurrentPassword(username,currentPassword)){
+				var token = loginLib.recoveryPassword(username,password, userId);
+				return httpUtil.handleResponse(token,httpUtil.OK,httpUtil.AppJson);
+			//}
+		}else{		
+			var login = loginLib.login(username,password);			
+			return	httpUtil.handleResponse(login,httpUtil.OK,httpUtil.AppJson); 
 		}
 	}
 

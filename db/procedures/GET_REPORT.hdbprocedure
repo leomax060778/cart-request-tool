@@ -80,16 +80,14 @@ BEGIN
              FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT" RQR
              	INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
-	         WHERE (in_user_id = 1 OR USR.ROLE_ID = 1)
-              		OR (in_user_id != 1 
-              			AND USR.ROLE_ID = 2 
+	         WHERE (USR.ROLE_ID = 1)
+              		OR (USR.ROLE_ID = 2 
               			AND (
               				 (HL3.HL3_ID = RQR.HL3_ID AND RQR.CREATED_USER_ID = in_user_id) 
               				 OR (HL3.HL3_ID is null AND RQR.CREATED_USER_ID = in_user_id)
               				)
               		   )
-              		OR (in_user_id != 1 
-              			AND USR.ROLE_ID > 2 
+              		OR (USR.ROLE_ID > 2 
               			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
               		   )
              ORDER BY RQR.REQUEST_ID;

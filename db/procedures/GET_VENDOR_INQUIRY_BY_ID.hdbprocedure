@@ -5,7 +5,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 								vendor_legal_name nvarchar (511),
 								name nvarchar(255),
 								vendor_id bigint,
-								vendor_type_id bigint
+								vendor_type_id bigint,
+								USER_NAME nvarchar(255),
+								FIRST_NAME nvarchar(255),
+								LAST_NAME nvarchar(255)
 							)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -18,9 +21,13 @@ BEGIN
 						V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
 						ST.NAME,
 						VI.VENDOR_ID,
-						VI.VENDOR_TYPE_ID
+						VI.VENDOR_TYPE_ID,
+						US.USER_NAME,
+						US.FIRST_NAME,
+						US.LAST_NAME
 	FROM "VENDOR_INQUIRY" VI
 	 INNER JOIN "VENDOR" V ON V.VENDOR_ID = VI.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	 INNER JOIN "USER" US ON US.user_id = VI.user_id AND US.ENABLED = 1 AND US.DELETED = 0
 	 INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.status_id = VI.status_id AND ST.ENABLED = 1 AND ST.DELETED = 0
 	  WHERE in_vendor_inquiry_id = VI.VENDOR_INQUIRY_ID
 	   AND VI.ENABLED = 1

@@ -57,13 +57,11 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = VI.CREATED_USER_ID
-             			WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND VI.ENABLED = 1 AND VI.DELETED = 0)
-			              		OR (in_user_id != 1 
-			              			AND USR.ROLE_ID = 2
+             			WHERE (USR.ROLE_ID = 1 AND VI.ENABLED = 1 AND VI.DELETED = 0)
+			              		OR (USR.ROLE_ID = 2
 			              			AND VI.CREATED_USER_ID = in_user_id
 			              		   )
-			              		OR (in_user_id != 1
-			              			AND USR.ROLE_ID > 2 
+			              		OR (USR.ROLE_ID > 2 
 			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND VI.CREATED_USER_ID = in_user_id)) 
 			              			AND VI.ENABLED = 1 
 			              			AND VI.DELETED = 0
@@ -89,13 +87,11 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = VR.CREATED_USER_ID
-             			WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND VR.ENABLED = 1 AND VR.DELETED = 0)
-			              		OR (in_user_id != 1 
-			              			AND USR.ROLE_ID = 2
+             			WHERE (USR.ROLE_ID = 1 AND VR.ENABLED = 1 AND VR.DELETED = 0)
+			              		OR (USR.ROLE_ID = 2
 			              			AND VR.CREATED_USER_ID = in_user_id
 			              		   )
-			              		OR (in_user_id != 1
-			              			AND USR.ROLE_ID > 2 
+			              		OR (USR.ROLE_ID > 2 
 			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND VR.CREATED_USER_ID = in_user_id)) 
 			              			AND VR.ENABLED = 1 
 			              			AND VR.DELETED = 0
@@ -122,13 +118,11 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = CVR.CREATED_USER_ID
-             			WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND CVR.ENABLED = 1 AND CVR.DELETED = 0)
-			              		OR (in_user_id != 1 
-			              			AND USR.ROLE_ID = 2
+             			WHERE (USR.ROLE_ID = 1 AND CVR.ENABLED = 1 AND CVR.DELETED = 0)
+			              		OR (USR.ROLE_ID = 2
 			              			AND CVR.CREATED_USER_ID = in_user_id
 			              		   )
-			              		OR (in_user_id != 1
-			              			AND USR.ROLE_ID > 2 
+			              		OR (USR.ROLE_ID > 2 
 			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND CVR.CREATED_USER_ID = in_user_id)) 
 			              			AND CVR.ENABLED = 1 
 			              			AND CVR.DELETED = 0
@@ -155,13 +149,11 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
 					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = EVR.CREATED_USER_ID
-             			WHERE (in_user_id = 1 OR USR.ROLE_ID = 1 AND EVR.ENABLED = 1 AND EVR.DELETED = 0)
-			              		OR (in_user_id != 1 
-			              			AND USR.ROLE_ID = 2
+             			WHERE (USR.ROLE_ID = 1 AND EVR.ENABLED = 1 AND EVR.DELETED = 0)
+			              		OR (USR.ROLE_ID = 2
 			              			AND EVR.CREATED_USER_ID = in_user_id
 			              		   )
-			              		OR (in_user_id != 1
-			              			AND USR.ROLE_ID > 2 
+			              		OR (USR.ROLE_ID > 2 
 			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND EVR.CREATED_USER_ID = in_user_id)) 
 			              			AND EVR.ENABLED = 1 
 			              			AND EVR.DELETED = 0

@@ -35,19 +35,21 @@ function getDataProtectionById(vendorRequestId) {
     if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorDataProtectionService/handleGet/getDataProtectionById", vendorRequestId);
     }
-    return data.getVendorRequestById(vendorRequestId);
+    return data.getDataProtectionById(vendorRequestId);
 }
 
 //Update answer of vendor data protection manually
-function updateDataProtectionManual(objDataProtection, userId) {
-    if (!vendorRequest.existVendorRequest(objDataProtection.VENDOR_REQUEST_ID)) {
+function updateDataProtectionManual(objDataProtection, vendor_request_id, userId) {
+    if (!vendorRequest.existVendorRequest(vendor_request_id)) {
         throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateDataProtectionManual", "The object Vendor Request " + objDataProtection.VENDOR_REQUEST_ID + " does not exist");
     }
-    validateParams(objDataProtection.VENDOR_REQUEST_ID, userId);
+    validateParams(vendor_request_id, userId);
     var keys = ['VENDOR_REQUEST_ID', 'QUESTION_ID', 'OPTION_ID'];
     var vendorDataProtectionUrl = "vendorRequestInquiryService/handlePut/updateDataProtectionManual";
-    utilLib.validateObjectAttributes(objDataProtection, userId, keys, vendorDataProtectionUrl, validateType);
-    return data.updateupdateDataProtectionManual(objDataProtection, userId);
+    (objDataProtection).forEach(function(datap) {
+    	utilLib.validateObjectAttributes(datap, userId, keys, vendorDataProtectionUrl, validateType);
+    	data.updateDataProtectionManual(datap, userId);
+    });
 
 }
 

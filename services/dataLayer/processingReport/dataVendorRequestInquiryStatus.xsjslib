@@ -63,6 +63,18 @@ function getVendorInquiryById(inquiryId) {
     }
 }
 
+function getVendorInquiryByIdManual(inquiryId) {
+    var parameters = {};
+    parameters.in_vendor_inquiry_id = inquiryId;
+    var result = db.executeProcedureManual(GET_VENDOR_INQUIRY_PROCESSING_REPORT_BY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
+}
+
 //Get change vendor request by status
 function getChangeVendorRequestByStatus(statusId) {
     var parameters = {};

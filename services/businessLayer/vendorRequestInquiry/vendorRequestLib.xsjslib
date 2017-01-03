@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var request = mapper.getDataVendorRequest();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
+var businessVendorDP = mapper.getVendorDataProtection();
 var vendorMail = mapper.getVendorMail();
 var dataVRDataProtection = mapper.getDataVendorDataProtection();
 var mail = mapper.getMail();
@@ -89,6 +90,9 @@ function getVendorRequestById(vendorRequestId) {
     	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
     	 resRequest.ATTACHMENTS = attachments;
+    	 
+    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
+    	 resRequest.DATA_PROTECTION = data_protection;
     }
     return resRequest;
 }
@@ -117,6 +121,87 @@ function getAllVendorRequest() {
     return request.getAllVendorRequest();
 }
 
+//UPDATE VENDOR REQUEST ATTACHMENTS
+function updateVendorRequestAttachments(reqBody, user_id){
+	var params = {};
+	params.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+	params.VENDOR_ID = reqBody.VENDOR_REQUEST_ID;
+	var original_attachments = businessAttachmentVendor.getAttachmentVendorById(params);
+
+	var originalAttachmentsToUpdate = reqBody.ATTACHMENTS;
+	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length == 0){
+		original_attachments.forEach(function(attachment){
+			businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
+			businessAttachment.deleteManualAttachment(attachment, user_id);
+		});
+	}else if(original_attachments.length == 0 && originalAttachmentsToUpdate.length > 0){
+		originalAttachmentsToUpdate.forEach(function(attachment){
+    		params.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+    		params.VENDOR_ID = reqBody.VENDOR_REQUEST_ID;
+    		params.ATTACHMENT_ID = attachment.ATTACHMENT_ID;
+    		businessAttachmentVendor.insertManualAttachmentVendor(params, user_id);
+    	});
+		
+	} else if(original_attachments.length > 0 && originalAttachmentsToUpdate.length > 0){
+		
+	    var insertOriginalAttachments = [];
+	    var deleteOriginalAttachments = [];
+	    
+	    //DELETE
+	    original_attachments.forEach(function (o_attachment) {
+	        var result = true;
+	        var o_attachment_id = o_attachment.ATTACHMENT_ID;
+	        if (typeof o_attachment_id === 'string') {
+	        	o_attachment_id = Number(o_attachment_id);
+	        }
+	        originalAttachmentsToUpdate.forEach(function (updateAttach) {
+	        	updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
+	            if (o_attachment_id === updateAttach.ATTACHMENT_ID) {
+	                result = false;
+	            }
+	        });
+	        if (result) {
+	        	deleteOriginalAttachments.push(o_attachment);
+	        }
+	    });
+	    
+	    //INSERT
+	    originalAttachmentsToUpdate.forEach(function (newAttach) {
+	        var result = true;
+	        newAttach.ATTACHMENT_ID = Number(newAttach.ATTACHMENT_ID);
+	        original_attachments.forEach(function (attachment) {
+	            var o_attachment_id = attachment.ATTACHMENT_ID;
+	            if (typeof o_attachment_id === 'string') {
+	            	o_attachment_id = Number(o_attachment_id);
+	            }
+	            if (newAttach.ATTACHMENT_ID === o_attachment_id) {
+	                result = false;
+	            }
+	        });
+	        if (result) {
+	        	insertOriginalAttachments.push(newAttach);
+	        }
+	    });
+	    //ACTIONS
+	    var data = {};
+	    if(insertOriginalAttachments.length > 0){
+	    	insertOriginalAttachments.forEach(function(attachment){
+	    		data.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+	    		data.VENDOR_ID = reqBody.VENDOR_REQUEST_ID;
+	    		data.ATTACHMENT_ID = attachment.ATTACHMENT_ID;
+	    		businessAttachmentVendor.insertManualAttachmentVendor(data, user_id);
+	    	});
+	    }
+	    if(deleteOriginalAttachments.length > 0){
+	    	deleteOriginalAttachments.forEach(function(attachment){
+	    		businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
+				businessAttachment.deleteManualAttachment(attachment, user_id);
+	    	});
+	    }
+	}
+	
+}
+
 //Update vendor request
 function updateVendorRequest(objVendorRequest, userId) {
     if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
@@ -128,13 +213,16 @@ function updateVendorRequest(objVendorRequest, userId) {
     var vendorRequestUrl = "vendorRequestInquiryService/handlePut/updateVendorRequest";
     utilLib.validateObjectAttributes(objVendorRequest, userId, keys, vendorRequestUrl, validateType);
     validateOptionalVendorRequestKeys(optionalKeys, objVendorRequest);
+    
+    updateVendorRequestAttachments(objVendorRequest, userId);
+        
     return request.updateVendorRequest(objVendorRequest, userId);
 
 }
 
 //Check if the request exists
 function existVendorRequest(vendorRequestId) {
-    return getVendorRequestByIdManual(vendorRequestId).length > 0;
+    return Object.keys(getVendorRequestByIdManual(vendorRequestId)).length > 0;
 }
 
 function validateOptionalVendorRequestKeys(optionalKeys, objVendorRequest) {

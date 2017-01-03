@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dbHelper = mapper.getdbHelper();
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
+var businessPOService = mapper.getPurchaseOrderService();
 var dataRequest = mapper.getDataRequest();
 var dataAttachmentR = mapper.getDataAttachmentRequest();
 var bussinesAttachment = mapper.getAttachment();
@@ -238,6 +239,16 @@ function completeRequest(item, user_id) {
 	
 }
 
+function completeAllRequest(request, user_id) {
+	request.SERVICES = getServicesByRequestId(request.REQUEST_ID, user_id);
+	var purchase_order_service = businessPOService.getPurchaseOrderByIdManual(request.REQUEST_ID);
+	request.SERVICES = JSON.parse(JSON.stringify(request.SERVICES));
+	request.SERVICES.forEach(function(service){
+		service.PURCHASE_ORDER_SERVICE = purchase_order_service;
+	});
+	request.ATTACHMENTS = getAttachmentRequest(request.REQUEST_ID, user_id);
+}
+
 /*----- REQUEST -----*/
 
 function getAllRequest(userId) {
@@ -254,7 +265,9 @@ function getAllRequest(userId) {
 	    	} else {
 	    		elem.SHOW_MESSAGE_READ = 0;
 	    	}
+	    	completeAllRequest(elem, userId);
 	    });
+
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
@@ -284,8 +297,9 @@ function getRequestByFilters(objFilters, userId) {
 					"Invalid date format (YYYY-MM-DD)", "getRequestByFilters");
 		}
 		var request = dataRequest.getRequestByFilters(objFilters);
+		request = JSON.parse(JSON.stringify(request));
 		(request).forEach(function(item) {
-			completeRequest(item, userId);
+			completeAllRequest(item, userId);
 		});
 		dbHelper.commit();
 	} catch (e) {
@@ -412,7 +426,7 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
     		deleteAttachment(attachment, request_id, user_id);
     	});
     }
-	
+	return 1; 
 }
 
 function deleteManualNoteRequest(note_request_id, user_id){
@@ -723,7 +737,27 @@ function updateServices(original_services, services, request_id, conversion_rate
 	return amount;
 }
 
-
+function updateAttachmentRequest(objRequest, user_id){
+	var request;
+	try{
+		var atachmentList = dataRequest.getAttachmentByRequestId(objRequest.REQUEST_ID, user_id);
+		
+		//ATTACHMENTS UPDATE
+		if(atachmentList){
+			request = updateAttachments(atachmentList, objRequest.ATTACHMENTS, objRequest.REQUEST_ID, user_id);
+		}
+		dbHelper.commit();
+	}
+	catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(),"updateAttachmentRequest");
+	}
+	finally{
+		dbHelper.closeConnection();
+	}
+	return request;
+	
+}
 
 //REQUEST
 function updateRequest(reqBody, user_id){

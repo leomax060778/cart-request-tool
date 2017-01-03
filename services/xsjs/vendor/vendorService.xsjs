@@ -9,6 +9,7 @@ var vendor = mapper.getVendor();
 
 var GET_VENDOR_BY_ID = "GET_VENDOR_BY_ID";
 var GET_ALL_VENDOR = "GET_ALL_VENDOR";
+var GET_ALL_VENDOR_STATUS = "GET_ALL_VENDOR_STATUS";
 var GET_ALL_VENDOR_FOR_FILTERS = "GET_ALL_VENDOR_FOR_FILTERS";
 var GET_VENDOR_BY_ENTITY_ID = "GET_VENDOR_BY_ENTITY_ID";
 var GET_VENDOR_BY_STATUS = "GET_VENDOR_BY_STATUS";
@@ -44,8 +45,10 @@ function handleGet(parameters, user_id) {
             }
 		} else if (parameters[0].name === GET_ALL_VENDOR) {
 			rdo = vendor.getAllVendor();
+		} else if (parameters[0].name === GET_ALL_VENDOR_STATUS) {
+			rdo = vendor.getAllVendorStatus();
 		} else if (parameters[0].name === GET_ALL_VENDOR_FOR_FILTERS) {
-			rdo = vendor.getAllVendorForFilters();
+			rdo = vendor.getAllVendorForFilters(user_id);
 		} else if (parameters[0].name === GET_VENDOR_BY_STATUS) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
                 throw ErrorLib.getErrors().BadRequest(

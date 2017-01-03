@@ -527,9 +527,9 @@ function existVendorRequest(vendorRequestId) {
 
 //Check if the vendor inquiry exists
 function existVendorInquiry(vendorInquiryId) {
-    return vendorInquiry.getVendorInquiryByIdManual(vendorInquiryId).length > 0;
+    return Object.keys(vendorInquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
 }
-
+ 
 //Check if the extend vendor request exists
 function existExtendVendorRequest(extendVendorRequestId) {
     return extend.getExtendVendorRequestByIdManual(extendVendorRequestId).length > 0;

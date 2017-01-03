@@ -27,8 +27,8 @@ function getAllVendor() {
 	return ven;
 }
 
-function getAllVendorForFilters() {
-	return data.getAllVendorForFilters();
+function getAllVendorForFilters(user_id) {
+	return data.getAllVendorForFilters(user_id);
 }
 
 function getAllVendorByEntity(entityId) {
@@ -263,6 +263,10 @@ function deleteManualVendor(objVendor, user_id) {
 				"The object vendor does not exist", objVendor);
 	}
 	return data.deleteManualVendor(objVendor.VENDOR_ID, user_id);
+}
+
+function getAllVendorStatus(){
+	return data.getAllVendorStatus();
 }
 
 function validateInsertVendor(objVendor, user_id) {

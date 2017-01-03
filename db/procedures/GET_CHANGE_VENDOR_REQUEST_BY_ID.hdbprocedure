@@ -5,7 +5,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							first_name nvarchar(255),
 							last_name nvarchar(255),
 							entity_id bigint, 
-							commodity_id bigint, 
+							commodity_id bigint,
+							COMMODITY_DESCRIPTION nvarchar(255),
 							vendor_name nvarchar(511),
 							vendor_contact_name nvarchar(255), 
 							vendor_contact_email nvarchar(255),
@@ -29,6 +30,7 @@ BEGIN
 						US.LAST_NAME,
 						CVR.ENTITY_ID, 
 						CVR.COMMODITY_ID,
+						COMMODITY.DESCRIPTION as COMMODITY_DESCRIPTION,
 						VAI.VENDOR_NAME,
 						V.CONTACT_NAME AS VENDOR_CONTACT_NAME,
 						V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL,
@@ -41,6 +43,7 @@ BEGIN
 						CVR.vendor_id
 	FROM "CHANGE_VENDOR_REQUEST" CVR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = CVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID AND V.ENABLED = 1 AND V.DELETED = 0
 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
 		                 ON (CVR.VENDOR_ID = VAI.VENDOR_ID
 		                     AND(

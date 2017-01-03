@@ -77,14 +77,11 @@ function handlePost(reqBody, userId) {
 		var resSelection = selection.insertChangeSelectionManual(reqBody, userId);
 		request.sendSubmitMail(resRequest, userId);
 		var res = {'changeVendorId': resRequest, "selection": resSelection};
+		db.commit();
 		return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 	} catch(e){
 		db.rollback();		
 		throw ErrorLib.getErrors().InternalServerError("Internal Server Error - SQL ",e.toString(),"dbHelper.executeScalar");	
-	}
-	finally{
-		db.commit();
-		db.closeConnection();
 	}
 }
 

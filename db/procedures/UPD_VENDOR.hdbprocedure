@@ -14,6 +14,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR" (
   IN in_informal_name nvarchar (255),
   IN in_account nvarchar(255),
   IN in_modified_user_id bigint,
+  IN in_status_id bigint,
   OUT out_result bigint
 )
 LANGUAGE SQLSCRIPT
@@ -37,7 +38,8 @@ BEGIN
  	vendor.informal_name = in_informal_name,
  	vendor.account = in_account,
 	vendor.modified_date_tz = CURRENT_TIMESTAMP,
-	vendor.modified_user_id = in_modified_user_id
+	vendor.modified_user_id = in_modified_user_id,
+	vendor.status_id = in_status_id
 	FROM "VENDOR" vendor
 	WHERE vendor.vendor_id = in_vendor_id;
 

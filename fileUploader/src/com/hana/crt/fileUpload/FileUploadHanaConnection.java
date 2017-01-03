@@ -76,7 +76,6 @@ public class FileUploadHanaConnection {
 			String line;
 			while ((line = rd.readLine()) != null) {
 				response.append(line);
-				response.append('\r');
 			}
 			rd.close();
 			return response.toString();

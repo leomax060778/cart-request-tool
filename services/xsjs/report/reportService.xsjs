@@ -6,6 +6,7 @@ var report = mapper.getReport();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_REPORT = "GET_REPORT";
+var GET_REPORT_TYPE = "GET_REPORT_TYPE";
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -16,18 +17,20 @@ function handleGet(parameters, userId) {
     if (parameters.length > 0) {
         if (parameters[0].name === GET_REPORT) {
             res = report.getReport(userId);
+        } else if (parameters[0].name === GET_REPORT_TYPE) {
+            res = report.getReportType(userId);
         } else {
         	throw ErrorLib.getErrors().BadRequest(
         		"",
         		"reportService/handleGet",
-        		"invalid parameter name " + parameters[0].name + " (should be: GET_REPORT)"
+        		"invalid parameter name " + parameters[0].name + " (can be: GET_REPORT or GET_REPORT_TYPE)"
             );
         }
     } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "reportService/handleGet",
-                "invalid parameter name (should be: GET_REPORT)"
+                "invalid parameter name (can be: GET_REPORT or GET_REPORT_TYPE)"
                 );
         }
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);

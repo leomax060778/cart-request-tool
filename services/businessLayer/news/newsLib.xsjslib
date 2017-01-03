@@ -8,36 +8,77 @@ function getAllNewsStatus() {
     return dataNews.getAllNewsStatus();
 }
 
-function getNewsUnread(userId){
-	var result = dataNews.getNewsUnread(userId);
-    var news = {};
-    if(result && result.length > 0){
-    	news = result[0];
-    	news = JSON.parse(JSON.stringify(news));
-    	news.CONTENT = ab2str(news.CONTENT);
-    }
-    return [news];
+function getNewsUnread(userId) {
+	try {
+	    var result = dataNews.getNewsUnreadManual(userId);
+	    result = JSON.parse(JSON.stringify(result));
+	    var newTextLength = 5000;
+	    var splitNumber = result.CONTENT_LENGTH / newTextLength;
+	    var startPosition = 1;
+	    var newsContent = "";
+	    var newsId = result.NEWS_ID;
+	    for (var i = 0; i < splitNumber; i++) {
+	        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
+	        startPosition = startPosition + newTextLength;
+	    }
+	    result.CONTENT = newsContent;
+	    dbHelper.commit();
+	} catch (e) {
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(), "getNewsUnread");
+	} finally {
+		dbHelper.closeConnection();
+	}
+	return [result];
 }
 
 function getNewsById(newsId) {
-    if (!newsId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+    try {
+        if (!newsId) {
+            throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+        }
+        var result = dataNews.getManualNewsById(newsId);
+        result = JSON.parse(JSON.stringify(result));
+        var newTextLength = 5000;
+        var splitNumber = result.CONTENT_LENGTH / newTextLength;
+        var startPosition = 1;
+        var newsContent = "";
+        for (var i = 0; i < splitNumber; i++) {
+            newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
+            startPosition = startPosition + newTextLength;
+        }
+        result.CONTENT = newsContent;
+        dbHelper.commit();
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(),
+            "getNewsById");
+    } finally {
+        dbHelper.closeConnection();
     }
-    var result = dataNews.getNewsById(newsId);
-    var news = {};
-    if(result && result.length > 0){
-    	news = result[0];
-    	news = JSON.parse(JSON.stringify(news));
-    	news.CONTENT = ab2str(news.CONTENT);
-    }
-    return [news];
+    return result;
 }
 
 function getManualNewsById(newsId) {
     if (!newsId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
     }
-    return dataNews.getManualNewsById(newsId);
+    if (!newsId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+    }
+    var result = dataNews.getManualNewsById(newsId);
+    result = JSON.parse(JSON.stringify(result));
+    var newTextLength = 5000;
+    var splitNumber = result.CONTENT_LENGTH / newTextLength;
+    var startPosition = 1;
+    var newsContent = "";
+    for (var i = 0; i < splitNumber; i++) {
+        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
+        startPosition = startPosition + newTextLength;
+    }
+    result.CONTENT = newsContent;
+
+    return result;
 }
 
 function getAllNews() {
@@ -61,17 +102,17 @@ function getNewsByStatus(statusId) {
 }
 
 function getNewsByYear(budgetYearId) {
-    if (!budgetYearId){
+    if (!budgetYearId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByYear", budgetYearId);
     }
     return dataNews.getNewsByYear(budgetYearId);
 }
 
 function getNewsByStatusYear(statusId, year) {
-    if (!year){
+    if (!year) {
         throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByStatusYear", year);
     }
-    if (!statusId){
+    if (!statusId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "newsService/handleGet/getNewsByStatusYear", statusId);
     }
     var objNews = {};
@@ -80,21 +121,21 @@ function getNewsByStatusYear(statusId, year) {
     return dataNews.getNewsByStatusYear(objNews);
 }
 
-function newsReaded(objNews, userId) {
-	if(!objNews.NEWS_ID){
-		throw ErrorLib.getErrors().BadRequest("The Parameter NEWS_ID is not found", "newsService/handlePost/newsReaded", "");
-	}
+function newsRead(objNews, userId) {
+    if (!objNews.NEWS_ID) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter NEWS_ID is not found", "newsService/handlePost/newsRead", "");
+    }
     return dataNews.insertNewsRead(objNews, userId);
 }
 
 function insertNews(objNews, userId) {
     if (validateInsertNews(objNews, userId)) {
-    	return dataNews.insertNews(objNews, userId);
+        return dataNews.insertNews(objNews, userId);
     }
 }
 
 function existNews(newsId) {
-    return getManualNewsById(newsId).length > 0;
+    return Object.keys(getManualNewsById(newsId)).length > 0;
 }
 
 function updateNews(objNews, userId) {
@@ -107,39 +148,39 @@ function updateNews(objNews, userId) {
 }
 
 function updateNewsStatus(objNews, userId) {
-	if (!(Array.isArray(objNews.NEWS_STATUS) && objNews.NEWS_STATUS.length > 0)){
+    if (!(Array.isArray(objNews.NEWS_STATUS) && objNews.NEWS_STATUS.length > 0)) {
         throw ErrorLib.getErrors().BadRequest("The Parameter news elements is not found", "newsService/handlePut/updateNewsStatus", objNews);
     }
-	try{
-		(objNews.NEWS_STATUS).forEach(function(news){
-			updateSingleNewsStatus(news, userId);				
-		});
-		dbHelper.commit();
-	} catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),"insertVendor");
-	}
-	finally{
-		dbHelper.closeConnection();
-	}
-	return {};
+    try {
+        (objNews.NEWS_STATUS).forEach(function (news) {
+            updateSingleNewsStatus(news, userId);
+        });
+        dbHelper.commit();
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(), "insertVendor");
+    }
+    finally {
+        dbHelper.closeConnection();
+    }
+    return {};
 }
 
 function updateSingleNewsStatus(objNews, userId) {
-    if (!userId){
+    if (!userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handlePut/updateNewsStatus", userId);
     }
-    if (!objNews.STATUS_ID){
+    if (!objNews.STATUS_ID) {
         throw ErrorLib.getErrors().BadRequest("The Parameter STATUS_ID is not found", "newsService/handlePut/updateNewsStatus", objNews.STATUS_ID);
     }
-    if (validateUpdateNewsStatus(objNews, userId)){
-    	if (!existNews(objNews.NEWS_ID, userId)) {
-    		throw ErrorLib.getErrors().CustomError("",
-    			"newsService/handlePut/updateNewsStatus",
-               	"The News with the id " + objNews.NEWS_ID + " does not exist");
-    	} else {
-    		return dataNews.updateNewsStatusManual(objNews, userId);
-    	}
+    if (validateUpdateNewsStatus(objNews, userId)) {
+        if (!existNews(objNews.NEWS_ID, userId)) {
+            throw ErrorLib.getErrors().CustomError("",
+                "newsService/handlePut/updateNewsStatus",
+                "The News with the id " + objNews.NEWS_ID + " does not exist");
+        } else {
+            return dataNews.updateNewsStatusManual(objNews, userId);
+        }
     }
 }
 
@@ -151,10 +192,10 @@ function deleteNews(newsId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleDelete/deleteNews", newsId);
     }
     if (!existNews(newsId, userId)) {
-    	throw ErrorLib.getErrors().CustomError("", "newsService/handleDelete/deleteNews", "The News with the id " + newsId + " does not exist");
+        throw ErrorLib.getErrors().CustomError("", "newsService/handleDelete/deleteNews", "The News with the id " + newsId + " does not exist");
     } else {
-    	return dataNews.deleteNews(newsId, userId);
-    	}
+        return dataNews.deleteNews(newsId, userId);
+    }
 }
 
 function validateInsertNews(objNews, userId) {
@@ -169,10 +210,10 @@ function validateInsertNews(objNews, userId) {
         'STATUS_ID',
         'CONTENT'
     ];
-    
+
     var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
 
-    if (!objNews){
+    if (!objNews) {
         throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", "The object News is not found");
     }
 
@@ -199,14 +240,14 @@ function validateInsertNews(objNews, userId) {
             throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", JSON.stringify(errors));
         }
     }
-    if (objNews.ATTACHMENT_ID || objNews.URGENT){
+    if (objNews.ATTACHMENT_ID || objNews.URGENT) {
         optionalKeys.forEach(function (key) {
-                // validate attribute type
-                isValid = validateType(key, objNews[key]);
-                if (!isValid) {
-                    errors[key] = objNews[key];
-                    throw BreakException;
-                }
+            // validate attribute type
+            isValid = validateType(key, objNews[key]);
+            if (!isValid) {
+                errors[key] = objNews[key];
+                throw BreakException;
+            }
         });
         isValid = true;
     }
@@ -227,9 +268,9 @@ function validateUpdateNews(objNews, userId) {
         'STATUS_ID',
         'CONTENT'
     ];
-    
+
     var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
-    
+
     if (!objNews) {
         throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", "The object News is not found");
     }
@@ -257,14 +298,14 @@ function validateUpdateNews(objNews, userId) {
             throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", JSON.stringify(errors));
         }
     }
-    if (objNews.ATTACHMENT_ID || objNews.URGENT){
+    if (objNews.ATTACHMENT_ID || objNews.URGENT) {
         optionalKeys.forEach(function (key) {
-                // validate attribute type
-                isValid = validateType(key, objNews[key]);
-                if (!isValid) {
-                    errors[key] = objNews[key];
-                    throw BreakException;
-                }
+            // validate attribute type
+            isValid = validateType(key, objNews[key]);
+            if (!isValid) {
+                errors[key] = objNews[key];
+                throw BreakException;
+            }
         });
         isValid = true;
     }
@@ -336,15 +377,15 @@ function validateType(key, value) {
             valid = (!value) || !isNaN(value);
             break;
         case 'STATUS_ID':
-        	valid = !isNaN(value) && value > 0;
-        	break;
+            valid = !isNaN(value) && value > 0;
+            break;
         case 'CONTENT':
-        	valid = (value && value.length > 0);
-        	break;
+            valid = (value && value.length > 0);
+            break;
     }
     return valid;
 }
 
 function ab2str(buf) {
-	return String.fromCharCode.apply(null, new Uint8Array(buf));
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
 }

@@ -22,3 +22,8 @@ function getReport(userId) {
     });
 	return result;
 }
+
+//Get report type
+function getReportType(userId) {
+    return data.getReportType(userId);
+}

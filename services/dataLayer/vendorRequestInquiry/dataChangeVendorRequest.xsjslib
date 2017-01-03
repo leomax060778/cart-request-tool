@@ -93,6 +93,7 @@ function updateChangeVendorRequest(objChangeVendorRequest, userId) {
     parameters.in_user_id = userId;
     parameters.in_entity_id = objChangeVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objChangeVendorRequest.COMMODITY_ID;
+    parameters.in_vendor_id = objChangeVendorRequest.VENDOR_ID;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CHANGE_VENDOR_REQUEST, parameters, 'out_result');

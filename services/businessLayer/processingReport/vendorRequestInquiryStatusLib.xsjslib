@@ -4,6 +4,7 @@ var dataStatus = mapper.getDataVendorRequestInquiryStatus();
 var dataExtendVendor = mapper.getDataExtendVendorRequest();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
+var businessVendorDP = mapper.getVendorDataProtection();
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
@@ -175,7 +176,11 @@ function getVendorRequestById(requestId) {
     	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
     	 resRequest.ATTACHMENTS = attachments;
+    	 
+    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
+    	 resRequest.DATA_PROTECTION = data_protection;
     }
+    
     return resRequest;
 }
 

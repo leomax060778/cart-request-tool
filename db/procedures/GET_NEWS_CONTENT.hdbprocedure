@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_CONTENT" (
+	IN in_start_position integer,
+	IN in_string_length integer,
+	IN in_news_id bigint,
+	OUT out_result TABLE(content nvarchar(5000)))
+	 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+
+ out_result = SELECT substring(to_nvarchar(NW.content), in_start_position, in_string_length) as content
+	FROM "NEWS" NW
+	WHERE NW.NEWS_ID = in_news_id 
+		AND NW.ENABLED = 1 
+		AND NW.DELETED = 0;
+END;

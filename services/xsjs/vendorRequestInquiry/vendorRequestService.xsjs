@@ -74,7 +74,7 @@ function handleGet(parameters) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
-	protection.updateDataProtectionManual(reqBody, userId);
+	protection.updateDataProtectionManual(reqBody.DATA_PROTECTION_ANSWERS, reqBody.VENDOR_REQUEST_ID, userId);
 	var resVendor = vendor.updateManualVendor(reqBody, userId);
     var resRequest = request.updateVendorRequest(reqBody, userId);
     var res = {"vendorId": resVendor, "vendorRequestId": resRequest};

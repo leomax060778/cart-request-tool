@@ -1,5 +1,5 @@
 /****** libs ************/
-$.import("xscartrequesttool.services.commonLib","mapper");
+$.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var http = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
@@ -19,13 +19,14 @@ var UPD_NEWS_STATUS = "UPD_NEWS_STATUS";
 var UPD_NEWS = "UPD_NEWS";
 
 /******************************************/
-function processRequest(){
-    http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+function processRequest() {
+    http.processRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
 /**
  *
  * @param {object} parameters
+ * @param userId
  * @param {void} [parameters.GET_NEWS_BY_ID] - get news by id
  * @param {string} [parameters.GET_ALL_NEWS] - get all news
  * @param {string} [parameters.GET_NEWS_URGENT] - get all news with the urgent flag
@@ -34,44 +35,46 @@ function processRequest(){
  * @param {string} [parameters.GET_NEWS_BY_YEAR] - get news by year
  * @param {string} [parameters.GET_NEWS_BY_STATUS_YEAR] - get news by status and year
  * @param {string} [parameters.GET_ALL_NEWS_STATUS] - get all the news status
+ * @param {string} [parameters.GET_NEWS_UNREAD] - get news unread
  * @returns {News} News - one or more News
  */
-function handleGet(parameters,userId) {
-    var rdo = {};
+function handleGet(parameters, userId) {
+    var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_NEWS_BY_ID) {
-            rdo = news.getNewsById(parameters[0].value);
+            res = news.getNewsById(parameters[0].value);
 
         }
         else if (parameters[0].name === GET_ALL_NEWS) {
-            rdo = news.getAllNews();
+            res = news.getAllNews();
 
         }
         else if (parameters[0].name === GET_NEWS_URGENT) {
-            rdo = news.getNewsUrgent();
+            res = news.getNewsUrgent();
 
         }
         else if (parameters[0].name === GET_NEWS_CAROUSEL) {
-            rdo = news.getNewsCarousel();
+            res = news.getNewsCarousel();
 
         }
         else if (parameters[0].name === GET_NEWS_BY_STATUS) {
-            rdo = news.getNewsByStatus(parameters[0].value);
+            res = news.getNewsByStatus(parameters[0].value);
 
         }
         else if (parameters[0].name === GET_NEWS_BY_YEAR) {
-            rdo = news.getNewsByYear(parameters[0].value);
+            res = news.getNewsByYear(parameters[0].value);
 
         }
         else if (parameters[0].name === GET_NEWS_BY_STATUS_YEAR) {
-            rdo = news.getNewsByStatusYear(parameters[1].value, parameters[2].value);
+            res = news.getNewsByStatusYear(parameters[1].value, parameters[2].value);
 
         }
         else if (parameters[0].name === GET_ALL_NEWS_STATUS) {
-            rdo = news.getAllNewsStatus();
+            res = news.getAllNewsStatus();
 
-        } if (parameters[0].name === GET_NEWS_UNREAD) {
-            rdo = news.getNewsUnread(userId);
+        }
+        if (parameters[0].name === GET_NEWS_UNREAD) {
+            res = news.getNewsUnread(userId);
 
         }
     }
@@ -79,11 +82,11 @@ function handleGet(parameters,userId) {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "newsService/handleGet",
-            "invalid parameter name (can be: GET_NEWS_BY_ID, GET_ALL_NEWS, GET_NEWS_URGENT, GET_ALL_NEWS_BY_STATUS, GET_ALL_NEWS_BY_YEAR or GET_ALL_NEWS_BY_STATUS_YEAR)"
+            "invalid parameter name (can be: GET_NEWS_BY_ID, GET_ALL_NEWS, GET_NEWS_URGENT, GET_NEWS_UNREAD, GET_ALL_NEWS_BY_STATUS, GET_ALL_NEWS_BY_YEAR or GET_ALL_NEWS_BY_STATUS_YEAR)"
         );
     }
 
-    return http.handleResponse(rdo, http.OK, http.AppJson);
+    return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 /**
@@ -98,17 +101,17 @@ function handleGet(parameters,userId) {
  * @returns {string} id - Id of the new news
  */
 function handlePost(newsBody, userId) {
-	var res = {}
-	if (newsBody.POST === "NEWS_READED") {
-		res = news.newsReaded(newsBody, userId);
+    var res = {};
+    if (newsBody.POST === "NEWS_READ") {
+        res = news.newsRead(newsBody, userId);
     } else {
-    	res = news.insertNews(newsBody, userId);
+        res = news.insertNews(newsBody, userId);
     }
     return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 /**
- * 
+ *
  * @param {object} newsBody
  * @param {string} newsBody.UPDATE - name of the table to update (can be "NEWS_STATUS" or "NEWS")
  * @param {string} newsBody.NEWS_ID - id of the news to update
@@ -120,11 +123,11 @@ function handlePost(newsBody, userId) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(newsBody, userId) {
-    var rdo = {};
+    var res = {};
     if (newsBody.UPDATE === "NEWS_STATUS") {
-        rdo = news.updateNewsStatus(newsBody, userId);
+        res = news.updateNewsStatus(newsBody, userId);
     } else if (newsBody.UPDATE === "NEWS") {
-        rdo = news.updateNews(newsBody, userId);
+        res = news.updateNews(newsBody, userId);
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
@@ -132,18 +135,18 @@ function handlePut(newsBody, userId) {
             "invalid json (the keys must be: UPDATE, NEWS_ID, TITLE, DESCRIPTION and URGENT)"
         );
     }
-    return http.handleResponse(rdo, http.OK, http.AppJson);
+    return http.handleResponse(res, http.OK, http.AppJson);
 }
 /**
- * 
+ *
  * @param {object} newsBody
  * @param {string} newsBody.NEWS_ID - id of the news to delete
  * @param userId
  * @returns {int} count - Modified rows count
  */
 function handleDelete(newsBody, userId) {
-    var rdo =  news.deleteNews(newsBody.NEWS_ID, userId);
-    return http.handleResponse(rdo,http.OK,http.AppJson);
+    var res = news.deleteNews(newsBody.NEWS_ID, userId);
+    return http.handleResponse(res, http.OK, http.AppJson);
 
 }
 

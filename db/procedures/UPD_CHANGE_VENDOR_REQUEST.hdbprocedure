@@ -3,6 +3,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_CHANGE_VENDO
   IN in_user_id bigint, 
   IN in_entity_id bigint, 
   IN in_commodity_id bigint,
+  IN in_vendor_id bigint,
   IN in_modified_user_id bigint,
  OUT out_result bigint
  ) 
@@ -15,6 +16,7 @@ BEGIN
 	SET CVR.user_id = in_user_id,
 		CVR.entity_id = in_entity_id,
 		CVR.commodity_id = in_commodity_id,
+		CVR.vendor_id = in_vendor_id,
 		CVR.modified_date_tz = CURRENT_TIMESTAMP,
 		CVR.modified_user_id = in_modified_user_id
         FROM "CHANGE_VENDOR_REQUEST" CVR

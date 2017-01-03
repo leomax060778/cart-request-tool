@@ -146,11 +146,11 @@ public class FileUpload extends HttpServlet {
 		String uploadUrl = propesties.getProperty(UPLOAD_URL_PROPERTY);
 		FileUploadHanaConnection connection = new FileUploadHanaConnection();
 		List<Attachment> attachmentList = this.createFiles(request, response);
-		String responseString = "";
+		List<String> responseString = new ArrayList<String>();
 		for (Attachment attachment : attachmentList) {
-			responseString = connection.executePost(uploadUrl, attachment.getJson());
+			responseString.add(connection.executePost(uploadUrl, attachment.getJson()));
 		}
-		response.getWriter().append(responseString);
+		response.getWriter().append(responseString.toString());
 	}
 
 	protected List<Attachment> createFiles(HttpServletRequest request, HttpServletResponse response)

@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_ID" (
   IN in_vendor_id bigint,
-  OUT out_result TABLE (vendor_id bigint, account nvarchar (255), name nvarchar (255), contact_name nvarchar (255), contact_email nvarchar (255), contact_phone nvarchar (255), address_1 nvarchar(255), address_2 nvarchar(255), city nvarchar(255), state nvarchar(255), zip nvarchar (255), phone nvarchar(255), fax nvarchar(255), legal_name nvarchar(511), informal_name nvarchar(511))
+  OUT out_result TABLE (vendor_id bigint, account nvarchar (255), name nvarchar (255), contact_name nvarchar (255), contact_email nvarchar (255), contact_phone nvarchar (255), address_1 nvarchar(255), address_2 nvarchar(255), city nvarchar(255), state nvarchar(255), zip nvarchar (255), phone nvarchar(255), fax nvarchar(255), legal_name nvarchar(511), informal_name nvarchar(511), status_id bigint)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
@@ -22,7 +22,8 @@ BEGIN
 				V.phone, 
 				V.fax, 
 				V.legal_name, 
-				V.informal_name
+				V.informal_name,
+				V.status_id
             FROM "VENDOR" V
             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
             WHERE V.vendor_id = in_vendor_id

@@ -5,7 +5,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							first_name nvarchar(255),
 							last_name nvarchar(255),
 							entity_id bigint, 
-							commodity_id bigint, 
+							commodity_id bigint,
+							commodity_description nvarchar(255),
 							vendor_legal_name nvarchar(511),
 							vendor_informal_name nvarchar(511), 
 							vendor_contact_name nvarchar(255), 
@@ -18,7 +19,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							purchase_amount decimal(19,2), 
 							expected_amount decimal(19,2),
 							purchase_currency_id integer, 
-							expected_currency_id integer, 
+							expected_currency_id integer,
+							PURCHASE_CURRENCY_ABBREVIATION nvarchar(255), 
+							EXPECTED_CURRENCY_ABBREVIATION nvarchar(255),  
 							additional_information nvarchar(1000), 
 							receiver_user_id bigint, 
 							vendor_account nvarchar(255), 
@@ -40,6 +43,7 @@ BEGIN
 						US.LAST_NAME, 
 						EVR.ENTITY_ID, 
 						EVR.COMMODITY_ID, 
+						COMMODITY.description as COMMODITY_DESCRIPTION,
 						V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
 						V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME,
 						V.CONTACT_NAME AS VENDOR_CONTACT_NAME, 
@@ -53,7 +57,9 @@ BEGIN
 					    EVR.PURCHASE_AMOUNT, 
 					    EVR.EXPECTED_AMOUNT,
 						EVR.PURCHASE_CURRENCY_ID, 
-						EVR.EXPECTED_CURRENCY_ID, 
+						EVR.EXPECTED_CURRENCY_ID,
+						CURRENCY_PURCHASE.ABBREVIATION as PURCHASE_CURRENCY_ABBREVIATION, 
+						CURRENCY_EXPECTED.ABBREVIATION as EXPECTED_CURRENCY_ABBREVIATION, 
 						EVR.ADDITIONAL_INFORMATION, 
 						EVR.RECEIVER_USER_ID, 
 						V.ACCOUNT AS VENDOR_ACCOUNT, 
@@ -64,6 +70,9 @@ BEGIN
 						EVR.VENDOR_ID
 	FROM "EXTEND_VENDOR_REQUEST" EVR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = EVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	INNER JOIN "COMMODITY" COMMODITY ON EVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
+	INNER JOIN "CURRENCY" CURRENCY_PURCHASE ON EVR.PURCHASE_CURRENCY_ID = CURRENCY_PURCHASE.CURRENCY_ID
+	INNER JOIN "CURRENCY" CURRENCY_EXPECTED ON EVR.EXPECTED_CURRENCY_ID = CURRENCY_EXPECTED.CURRENCY_ID
 	INNER JOIN "USER" US ON US.user_id = EVR.user_id AND US.ENABLED = 1 AND US.DELETED = 0
 		WHERE EVR.EXTEND_VENDOR_REQUEST_ID = in_extend_vendor_request_id
 		AND EVR.deleted = 0

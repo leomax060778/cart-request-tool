@@ -13,6 +13,7 @@ var DEL_NEWS = "DEL_NEWS";
 var INS_READ_NEWS = "INS_READ_NEWS";
 
 var GET_NEWS_BY_ID = "GET_NEWS_BY_ID";
+var GET_NEWS_CONTENT = "GET_NEWS_CONTENT";
 var GET_ALL_NEWS = "GET_ALL_NEWS";
 var GET_ALL_NEWS_STATUS = "GET_ALL_NEWS_STATUS";
 var GET_NEWS_CAROUSEL = "GET_NEWS_CAROUSEL";
@@ -22,24 +23,53 @@ var GET_NEWS_BY_STATUS_YEAR = "GET_NEWS_BY_STATUS_YEAR";
 var GET_NEWS_URGENT = "GET_NEWS_URGENT";
 var GET_NEWS_UNREAD = "GET_NEWS_UNREAD";
 
-function getNewsUnread(userId){
+function getNewsUnreadManual(userId){
 	var parameters = {};
     parameters.in_user_id = userId;
-    var result = db.executeProcedure(GET_NEWS_UNREAD, parameters);
-    return db.extractArray(result.out_result);
+    var result = db.executeProcedureManual(GET_NEWS_UNREAD, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function getNewsById(newsId){
     var parameters = {};
     parameters.in_news_id = newsId;
     var result = db.executeProcedure(GET_NEWS_BY_ID, parameters);
-    return db.extractArray(result.out_result);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
+}
+
+function getNewsContentManual(newsId, startPosition, stringLength){
+    var parameters = {};
+    parameters.in_news_id = newsId;
+    parameters.in_start_position = startPosition;
+    parameters.in_string_length = stringLength;
+    var result = db.executeProcedureManual(GET_NEWS_CONTENT, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function getManualNewsById(newsId){
     var parameters = {'in_news_id': newsId};
     var result = db.executeProcedureManual(GET_NEWS_BY_ID, parameters);
-    return db.extractArray(result.out_result);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function getAllNews(){

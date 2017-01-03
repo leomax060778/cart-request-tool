@@ -186,7 +186,7 @@ function updateVendorInquiryAttachments(reqBody, user_id){
 
 //Check if the inquiry exists
 function existVendorInquiry(vendorInquiryId) {
-    return Object.keys(getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
+    return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
 }
 
 function validateInsertVendorInquiry(objVendorInquiry, userId) {

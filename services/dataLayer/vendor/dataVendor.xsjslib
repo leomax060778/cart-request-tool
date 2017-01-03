@@ -12,6 +12,7 @@ var UPD_VENDOR = 'UPD_VENDOR';
 var UPD_VENDOR_ACCOUNT = 'UPD_VENDOR_ACCOUNT';
 var DEL_VENDOR = 'DEL_VENDOR';
 var GET_ALL_VENDOR_FOR_FILTERS = "GET_ALL_VENDOR_FOR_FILTERS";
+var GET_ALL_VENDOR_STATUS = "GET_ALL_VENDOR_STATUS";
 
 var INS_VENDOR_ADDITIONAL_INFORMATION = 'INS_VENDOR_ADDITIONAL_INFORMATION';
 var DEL_VENDOR_ADDITIONAL_INFORMATION = 'DEL_VENDOR_ADDITIONAL_INFORMATION';
@@ -23,9 +24,10 @@ function getAllVendor() {
 	return db.extractArray(result.out_result);
 }
 
-function getAllVendorForFilters() {
+function getAllVendorForFilters(user_id) {
 	var param = {};
 	param.out_result = '?';
+	param.in_user_id = user_id;
 	var result = db.executeProcedure(GET_ALL_VENDOR_FOR_FILTERS, param);
 	return db.extractArray(result.out_result);
 }
@@ -165,6 +167,13 @@ function getVendorAdditionalInformationParams(objVendor) {
 	return params;
 }
 
+function getAllVendorStatus(){
+	var param = {};
+	param.out_result = '?';
+	var result = db.executeProcedureManual(GET_ALL_VENDOR_STATUS, param);
+	return db.extractArray(result.out_result);
+}
+
 //MAPPER
 function getParams(objVendor) {
 	var params = {};
@@ -180,5 +189,6 @@ function getParams(objVendor) {
 	params.in_fax = objVendor.FAX || null;
 	params.in_legal_name = objVendor.LEGAL_NAME || null;
 	params.in_informal_name = objVendor.INFORMAL_NAME || null;
+	params.in_status_id = objVendor.STATUS_ID || null;
 	return params;
 }

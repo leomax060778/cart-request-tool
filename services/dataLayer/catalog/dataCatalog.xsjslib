@@ -19,7 +19,7 @@ function insertCatalog(objCatalog, userId) {
     parameters.in_catalog_type_id = objCatalog.CATALOG_TYPE_ID;
     parameters.in_catalog_parent_id = objCatalog.CATALOG_PARENT_ID || 0;
     parameters.in_pop_up = objCatalog.POP_UP;
-    parameters.in_created_user_id = userId;//objCatalog.CREATED_USER_ID;
+    parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(INS_CATALOG, parameters, 'out_result');
 }
@@ -76,10 +76,8 @@ function updateCatalog(objCatalog, userId) {
     var parameters = {};
     parameters.in_catalog_id = objCatalog.CATALOG_ID;
     parameters.in_name = objCatalog.NAME;
-    parameters.in_catalog_type_id = objCatalog.CATALOG_TYPE_ID;
-    parameters.in_catalog_parent_id = objCatalog.CATALOG_PARENT_ID || 0;
     parameters.in_pop_up = objCatalog.POP_UP;
-    parameters.in_modified_user_id = userId;//objCatalog.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CATALOG, parameters, 'out_result');
 }
@@ -88,7 +86,7 @@ function updateCatalog(objCatalog, userId) {
 function deleteCatalog(objCatalog, userId) {
     var parameters = {};
     parameters.in_catalog_id = objCatalog.CATALOG_ID;
-    parameters.in_modified_user_id = userId;//objCatalog.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_CATALOG, parameters, 'out_result');
 }
@@ -97,7 +95,7 @@ function deleteCatalog(objCatalog, userId) {
 function deleteCatalogManual(objCatalog, userId) {
     var parameters = {};
     parameters.in_catalog_id = objCatalog.CATALOG_ID;
-    parameters.in_modified_user_id = userId;//objCatalog.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalarManual(DEL_CATALOG, parameters, 'out_result');
 }
