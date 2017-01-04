@@ -1,4 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER_FOR_FILTERS" (
+IN in_user_id bigint,
  OUT out_result TABLE(USER_ID bigint, USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255))
  ) 
 	LANGUAGE SQLSCRIPT
@@ -6,7 +7,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER_FOR
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	out_result = SELECT USER_ID, USER_NAME, FIRST_NAME, LAST_NAME
-   FROM "USER";
+	out_result = SELECT DISTINCT US.USER_ID, US.USER_NAME, US.FIRST_NAME, US.LAST_NAME
+  						 FROM "USER" US
+   							INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+   							WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3 OR USR.ROLE_ID = 4 AND US.USER_ID = in_user_id)
+		       				OR (USR.ROLE_ID = 2 AND US.USER_ID = in_user_id );
 END;
 

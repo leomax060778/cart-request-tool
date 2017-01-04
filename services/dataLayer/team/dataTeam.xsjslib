@@ -28,9 +28,10 @@ function getAllTeam(){
 	return db.extractArray(result.out_result);
 }
 
-function getAllTeamForFilters(){
+function getAllTeamForFilters(user_id){
 	var param = {};
 	param.out_result = '?';
+	param.in_user_id = user_id;
 	var result = db.executeProcedure(GET_ALL_TEAM_FOR_FILTERS, param);
 	return db.extractArray(result.out_result);
 }

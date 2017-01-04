@@ -14,7 +14,7 @@ function getAllTeamForFilters(user_id){
 				"The Parameter user_id is not found",
 				"teamService/handleGet/getAllTeamForFilters", user_id);
 	}
-	return data.getAllTeamForFilters();
+	return data.getAllTeamForFilters(user_id);
 }
 
 function insertTeam(objTeam, user_id) {

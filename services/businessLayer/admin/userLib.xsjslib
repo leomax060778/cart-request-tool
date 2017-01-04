@@ -341,8 +341,8 @@ function validateUser(user) {
 	return true;
 }
 
-function getAllForFilters() {
-	return dbUser.getAllUserForFilters();
+function getAllForFilters(user_id) {
+	return dbUser.getAllUserForFilters(user_id);
 }
 
 function notifyInsertByEmail(TO, username, password) {

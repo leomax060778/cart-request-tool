@@ -1,4 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEAM_FOR_FILTERS" (
+	IN in_user_id bigint,
 	OUT out_result TABLE ( 
 	  	team_id bigint, 
 	  	name nvarchar(255)

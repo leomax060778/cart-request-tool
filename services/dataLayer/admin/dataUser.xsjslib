@@ -26,9 +26,11 @@ function getAllUser() {
 	return db.extractArray(rdo.out_result);
 }
 
-function getAllUserForFilters() {
-
-	var rdo = db.executeProcedure(spGetAllForFilters, {});
+function getAllUserForFilters(user_id) {
+	var param = {};
+	param.in_user_id = user_id;
+	param.OUT_RESULT = '?';
+	var rdo = db.executeProcedure(spGetAllForFilters, param);
 	return db.extractArray(rdo.OUT_RESULT);
 }
 

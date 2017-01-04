@@ -24,13 +24,15 @@ function getAllRequest(userId){
     return db.extractArray(result.out_result);
 }
 
-function getRequestByFilters(objFilters){
+function getRequestByFilters(objFilters, userId){
     var parameters = {};
     parameters.in_goods_recipient = objFilters.GOODS_RECIPIENT;
+    parameters.in_budget_year_id = objFilters.BUDGET_YEAR_ID;
     parameters.in_team_id = objFilters.TEAM_ID;
     parameters.in_request_date_from = objFilters.REQUEST_DATE_FROM;
     parameters.in_request_date_to = objFilters.REQUEST_DATE_TO;
-    parameters.in_user_id = objFilters.USER_ID;
+    parameters.in_requester_user_id = objFilters.USER_ID;
+    parameters.in_user_id = userId;
     parameters.in_vendor_id = objFilters.VENDOR_ID;
     parameters.in_status_id = objFilters.STATUS_ID;
     parameters.out_result = '?';

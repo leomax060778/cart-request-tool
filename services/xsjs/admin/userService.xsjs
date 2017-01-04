@@ -31,7 +31,7 @@ function handleGet(parameters, userId){
 				return	httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 		        break;
 		    case getAllForFilters: //get all users
-		    	var rdo = user.getAllForFilters();
+		    	var rdo = user.getAllForFilters(userId);
 				return	httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 		        break;
 		    case getUserbyId: // get one user by id

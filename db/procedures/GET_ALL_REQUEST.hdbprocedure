@@ -74,12 +74,11 @@ BEGIN
 					  LEFT JOIN "BUDGET_YEAR" BUD ON RQ.BUDGET_YEAR_ID = BUD.BUDGET_YEAR_ID
 					  LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
 					  INNER JOIN :va_user_role USR ON USR.ENABLED = 1 
-				  WHERE (USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+				  WHERE (USR.ROLE_ID != 2 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
 		              		OR (USR.ROLE_ID = 2 
 		              			AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
 		              			AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
-		              		OR (USR.ROLE_ID > 2 AND (USR.HL3_ID = RQ.HL3_ID OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
-              	ORDER BY RQ.request_id DESC;
+		              		ORDER BY RQ.request_id DESC;
 END;
 
 

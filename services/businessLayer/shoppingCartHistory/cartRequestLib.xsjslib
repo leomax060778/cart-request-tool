@@ -287,7 +287,7 @@ function getRequestByFilters(objFilters, userId) {
 				getRequestByFilters);
 	}
 	try {
-		var filtersArray = [ "GOODS_RECIPIENT", "TEAM_ID", "REQUEST_DATE_FROM",
+		var filtersArray = [ "GOODS_RECIPIENT","BUDGET_YEAR_ID" ,"TEAM_ID", "REQUEST_DATE_FROM",
 				"REQUEST_DATE_TO", "USER_ID", "USER_ID", "VENDOR_ID",
 				"STATUS_ID" ];
 		validateFilterParameters(objFilters, filtersArray);
@@ -296,7 +296,7 @@ function getRequestByFilters(objFilters, userId) {
 			throw ErrorLib.getErrors().CustomError("",
 					"Invalid date format (YYYY-MM-DD)", "getRequestByFilters");
 		}
-		var request = dataRequest.getRequestByFilters(objFilters);
+		var request = dataRequest.getRequestByFilters(objFilters, userId);
 		request = JSON.parse(JSON.stringify(request));
 		(request).forEach(function(item) {
 			completeAllRequest(item, userId);
