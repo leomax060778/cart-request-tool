@@ -5,6 +5,11 @@ function getMail(){
     return $.xscartrequesttool.services.businessLayer.util.mail;
 }
 
+function getPopUpLib(){
+    $.import("xscartrequesttool.services.businessLayer.util","popUpLib");
+    return $.xscartrequesttool.services.businessLayer.util.popUpLib;
+}
+
 function getLogError(){
     $.import("xscartrequesttool.services.businessLayer.util","logError");
     return $.xscartrequesttool.services.businessLayer.util.logError;
@@ -118,11 +123,6 @@ function getExtendVendorRequest(){
 function getMaterial(){
     $.import("xscartrequesttool.services.businessLayer.newCartRequest","materialLib");
     return $.xscartrequesttool.services.businessLayer.newCartRequest.materialLib;
-}
-
-function getRequestCostObject(){
-    $.import("xscartrequesttool.services.businessLayer.newCartRequest","requestCostObjectLib");
-    return $.xscartrequesttool.services.businessLayer.newCartRequest.requestCostObjectLib;
 }
 
 function getInquiry() {
@@ -380,6 +380,11 @@ function getReport(){
 function getdbHelper(){
     $.import("xscartrequesttool.services.dataLayer.util","dbHelper");
     return $.xscartrequesttool.services.dataLayer.util.dbHelper;
+}
+
+function getDataPopUp(){
+    $.import("xscartrequesttool.services.dataLayer.util","dataPopUp");
+    return $.xscartrequesttool.services.dataLayer.util.dataPopUp;
 }
 
 function getDataLogError(){

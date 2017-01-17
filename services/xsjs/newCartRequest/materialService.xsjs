@@ -37,6 +37,11 @@ function handleGet(objMat, user_id) {
 	     "invalid parameter name (can be: GET_MATERIAL_BY_ID, GET_ALL_MATERIAL or GET_MATERIAL_BY_CATALOG_ID)"
 	       + objMat[0].name);
 	  }
+	 } else {
+		   throw ErrorLib.getErrors().BadRequest(
+				     "",
+				     "materialServices/handleGet",
+				     "invalid parameter name (can be: GET_MATERIAL_BY_ID, GET_ALL_MATERIAL or GET_MATERIAL_BY_CATALOG_ID)");
 	 }
 	 http.handleResponse(rdo, http.OK, http.AppJson);
 }

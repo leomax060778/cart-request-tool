@@ -14,7 +14,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
-							account nvarchar(255)
+							account nvarchar(255),
+							entity_name nvarchar(255)
 						 )
  ) 
 	LANGUAGE SQLSCRIPT
@@ -25,7 +26,7 @@ BEGIN
 	out_result = SELECT VT.ISO || TO_NVARCHAR(CVR.CHANGE_VENDOR_REQUEST_ID) AS CRT_VENDOR_ID,
 						CVR.CHANGE_VENDOR_REQUEST_ID AS change_vendor_request_id,
                     	to_nvarchar(CVR.created_date_tz, 'YYYY-MM-DD') AS request_date,
-                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	V.account AS vendor_account,
                     	VAI.VENDOR_NAME,
                     	V.contact_name,
@@ -36,7 +37,8 @@ BEGIN
                     	TO_NVARCHAR(CVR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
                     	TO_NVARCHAR(CVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	CVR.RECEIVER_YVC_REQUEST,
-                    	V.ACCOUNT
+                    	V.ACCOUNT,
+                    	ENT.ENTITY_NAME
                     FROM "CHANGE_VENDOR_REQUEST" CVR
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = CVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = CVR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
@@ -49,5 +51,6 @@ BEGIN
 				        INNER JOIN "VENDOR" V ON CVR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
 				        INNER JOIN "COMMODITY" COM ON CVR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0
 				        INNER JOIN "CHANGE_VENDOR_REQUEST_STATUS" ST ON CVR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+				        INNER JOIN "ENTITY" ENT ON CVR.ENTITY_ID = ENT.ENTITY_ID AND ENT.ENABLED = 1 AND ENT.DELETED = 0
                     WHERE CVR.change_vendor_request_id = in_change_vendor_request_id AND CVR.ENABLED = 1 AND CVR.DELETED = 0;
 END;

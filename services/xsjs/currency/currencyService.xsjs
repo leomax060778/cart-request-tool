@@ -12,6 +12,7 @@ var INS_CURRENCY = "INS_CURRENCY";
 var UPD_CURRENCY = "UPD_CURRENCY";
 var DEL_CURRENCY = "DEL_CURRENCY";
 var GET_CURRENCY_BY_YEAR = "GET_CURRENCY_BY_YEAR";
+var GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR = "GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR";
 
 /******************************************/
 
@@ -44,6 +45,8 @@ function handleGet(parameters, user_id) {
         	} else {
         		res = currency.getCurrencyByYear(parameters[0].value);
         	}
+        } else if (parameters[0].name === GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR) {
+    		res = currency.getAllCurrencyByDefaultYear();
         } else {
             throw ErrorLib.getErrors().BadRequest(
                     "",

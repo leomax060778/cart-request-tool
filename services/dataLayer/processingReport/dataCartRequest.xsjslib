@@ -28,6 +28,17 @@ function getRequestById(requestId) {
     }
 }
 
+function getRequestByIdManual(requestId) {
+    var parameters = {'in_request_id': requestId};
+    var result = db.executeProcedureManual(GET_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
+}
+
 function getRequestDataProtection(requestId) {
     var parameters = {'in_request_id': requestId};
     var result = db.executeProcedureManual(GET_REQUEST_DATA_PROTECTION, parameters);

@@ -27,6 +27,8 @@ var dataRDataProtection = mapper.getDataRequestDataProtection();
 var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
 var utilLib = mapper.getUtil();
+var requestMail = mapper.getCartRequestMail();
+var mail = mapper.getMail();
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 
@@ -299,6 +301,11 @@ function getRequestByFilters(objFilters, userId) {
 		var request = dataRequest.getRequestByFilters(objFilters, userId);
 		request = JSON.parse(JSON.stringify(request));
 		(request).forEach(function(item) {
+			if(item.MESSAGE_READ > 0){
+				item.SHOW_MESSAGE_READ = 1;
+	    	} else {
+	    		item.SHOW_MESSAGE_READ = 0;
+	    	}
 			completeAllRequest(item, userId);
 		});
 		dbHelper.commit();
@@ -759,12 +766,30 @@ function updateAttachmentRequest(objRequest, user_id){
 	
 }
 
+function getUrlBase(){
+	 return "http://localhost:63342/crt/webapp/index.html";
+}
+
+//Send Mail
+function sendResubmitMail(requestId, requester, userId){
+	 var requestMailObj = {};
+	 requestMailObj.REQUEST_ID = requestId;
+	 var mailObj = requestMail.parseResubmitted(requestMailObj,getUrlBase(), requester);
+	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
+	 mail.sendMail(emailObj,true,null);
+}
+
 //REQUEST
 function updateRequest(reqBody, user_id){
 	var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
 	var atachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
 	var request;
 	try{
+		//Infrastructure & location of work logic
+		if(reqBody.INFRASTRUCTURE_OF_WORK_ID == 0 || reqBody.LOCATION_OF_WORK_ID == 0){
+			reqBody.INFRASTRUCTURE_OF_WORK_ID = null;
+			reqBody.LOCATION_OF_WORK_ID = null;
+		}
 		//STATUS UPDATE
 		reqBody.PREVIOUS_STATUS_ID = reqBody.STATUS_ID;
 		if(Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED){
@@ -873,6 +898,8 @@ function updateRequest(reqBody, user_id){
 		}
 		
 		dbHelper.commit();
+		
+		sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
 	}
 	catch(e){
 		dbHelper.rollback();
@@ -947,3 +974,7 @@ function getAttachmentRequest(requestId, user_id){
 	
 	return result;
 }
+
+function getEmailList(requestMailObj){
+	 return [{address:'iberon@folderit.net'}];
+	}

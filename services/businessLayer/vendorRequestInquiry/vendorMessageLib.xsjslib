@@ -337,7 +337,7 @@ function existVendorRequest(vendorRequestId) {
 
 //Check if the inquiry exists
 function existVendorInquiry(vendorInquiryId) {
-  return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
+	 return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
 }
 
 //Check if the extend vendor request exists

@@ -16,6 +16,9 @@ function getReport(userId) {
     	if(elem.STATUS !== 'In process'){
     		elem.DAYS_OUTSTANDING = 'Not applicable';
     	}
+    	if(Number(elem.DAYS_OUTSTANDING) < 0){
+    		elem.DAYS_OUTSTANDING = 'Not Applicable';
+    	}
     	if(elem.STATUS !== 'Approved' ){
     		elem.PURCHASE_TURN_AROUND_TIME = 'Not applicable';
     	}

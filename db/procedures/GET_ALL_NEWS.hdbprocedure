@@ -8,7 +8,8 @@ OUT out_result TABLE( news_id bigint,
 						status_id bigint, 
 						status_name nvarchar(255),
 						update_status_tz nvarchar(15),
-						urgent tinyint
+						urgent tinyint,
+						content_length integer
 					)
 ) 
 	LANGUAGE SQLSCRIPT
@@ -25,7 +26,8 @@ BEGIN
  						"NEWS".STATUS_ID, 
 					 	news_st.NAME AS status_name, 
 					 	TO_NVARCHAR("NEWS".UPDATE_STATUS_TZ, 'YYYY-MM-DD') AS UPDATE_STATUS_TZ,
-					 	"NEWS".URGENT
+					 	"NEWS".URGENT,
+					 	LENGTH ("NEWS".CONTENT) AS content_length
   			  FROM "NEWS"
   			  INNER JOIN "NEWS_STATUS" news_st ON news_st.NEWS_STATUS_ID = "NEWS".STATUS_ID
   			  INNER JOIN "USER" author ON author.USER_ID = "NEWS".AUTHOR_ID

@@ -5,9 +5,26 @@ var request = mapper.getDataRequest();
 var status = mapper.getCartRequest();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+var requestMail = mapper.getCartRequestMail();
+var mail = mapper.getMail();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+
+
+function getUrlBase(){
+	 return "http://localhost:63342/crt/webapp/index.html";
+}
+
+//Send Mail
+function parseNewMessage(requestId, requester, userId){
+	 var requestMailObj = {};
+	 requestMailObj.REQUEST_ID = requestId;
+	 var mailObj = requestMail.parseNewMessage(requestMailObj,getUrlBase(), requester);
+	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
+	 mail.sendMail(emailObj,true,null);
+}
+
 
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
@@ -19,7 +36,10 @@ function insertRequestMessage(objRequest, userId) {
 			objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
 			status.updateRequestStatusManual(objRequest, userId);
 		}
-        return message.insertRequestMessage(objRequest, userId);
+        var return_id = message.insertRequestMessage(objRequest, userId);
+        parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
+        
+        return return_id;
     }
 }
 
@@ -148,4 +168,8 @@ function validateType(key, value) {
             break;
     }
     return valid;
+}
+
+function getEmailList(requestMailObj){
+	 return [{address:'iberon@folderit.net'}];
 }

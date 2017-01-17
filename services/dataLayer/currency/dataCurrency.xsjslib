@@ -12,6 +12,7 @@ var GET_CURRENCY_BY_ID = 'GET_CURRENCY_BY_ID';
 var GET_CURRENCY_CONVERSION_RATE = "GET_CURRENCY_CONVERSION_RATE";
 var GET_CURRENCY_BY_ABBREVIATION_YEAR = "GET_CURRENCY_BY_ABBREVIATION_YEAR";
 var GET_CURRENCY_BY_YEAR = "GET_CURRENCY_BY_YEAR";
+var GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR = "GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR";
 var INS_CURRENCY = 'INS_CURRENCY';
 var UPD_CURRENCY = 'UPD_CURRENCY';
 var DEL_CURRENCY = 'DEL_CURRENCY';
@@ -20,6 +21,12 @@ var DEL_CURRENCY = 'DEL_CURRENCY';
 function getAllCurrency() {
     var parameters = {};
     var result = db.executeProcedure(GET_ALL_CURRENCY, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllCurrencyByDefaultYear(){
+	var parameters = {};
+    var result = db.executeProcedure(GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR, parameters);
     return db.extractArray(result.out_result);
 }
 

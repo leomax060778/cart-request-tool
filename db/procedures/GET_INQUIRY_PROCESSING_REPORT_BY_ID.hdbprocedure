@@ -18,7 +18,7 @@ BEGIN
 	out_result = SELECT CT.ISO || TO_NVARCHAR(INQ.INQUIRY_ID) AS CRT_INQUIRY_ID,
 						INQ.INQUIRY_ID,
                     	to_nvarchar(INQ.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
-                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	TP.DESCRIPTION AS topic_description,
                     	INQ.inquiry_text,
                     	INQ.STATUS_ID,

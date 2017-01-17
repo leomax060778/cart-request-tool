@@ -12,7 +12,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE
 		deleted_template_name nvarchar(255), 
 		description nvarchar(1000), 
 		section_id bigint,
-		attachment_id bigint,
+		attachment_id integer,
 		template_type_name nvarchar (255)
 	)
  ) 

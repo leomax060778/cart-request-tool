@@ -20,7 +20,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 						  LAST_NAME nvarchar(255),
 						  FIRST_NAME nvarchar(255),
 						  REQUEST_CREATED_DATE nvarchar(50),
-  						  message_read integer
+  						  message_read integer,						  
+  						  user_message bigint,
+  						  EDITABLE boolean
 						 )
 	 )
 	LANGUAGE SQLSCRIPT
@@ -28,10 +30,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ
+	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ, RM.CREATED_USER_ID
 				 	FROM "REQUEST_MESSAGE" RM
-				 		WHERE RM.ENABLED = 1 AND RM.DELETED = 0
-				 		GROUP BY RM.REQUEST_ID;
+				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.DELETED = 0 AND RM.ENABLED = 1
+				 		GROUP BY RM.REQUEST_ID, RM.CREATED_USER_ID;
 				 		
 	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
 						FROM "USER_ROLE" USR
@@ -50,7 +52,9 @@ BEGIN
 						 US.LAST_NAME AS LAST_NAME,
 						 US.FIRST_NAME AS FIRST_NAME,
 						 To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') AS REQUEST_CREATED_DATE,
-               			 VAM.MESSAGE_READ
+               			 VAM.MESSAGE_READ,
+               			 VAM.CREATED_USER_ID AS USER_MESSAGE,
+               			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) AND USR.ROLE_ID != 1 THEN FALSE ELSE TRUE END) AS EDITABLE
 				  FROM "REQUEST" RQ
 						  INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID
 						  LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON
@@ -69,8 +73,11 @@ BEGIN
 						  LEFT JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
 						  LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
 						  INNER JOIN :va_user_role USR ON USR.ENABLED = 1 
-						  	WHERE ((USR.ROLE_ID = 1 AND RQ.ENABLED = 1 AND RQ.DELETED = 0) OR (USR.ROLE_ID = 2 AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) AND RQ.ENABLED = 1 AND RQ.DELETED = 0) OR (in_user_id != 1 AND USR.ROLE_ID > 2 AND (USR.HL3_ID = RQ.HL3_ID OR RQ.CREATED_USER_ID = in_user_id) AND RQ.ENABLED = 1 AND RQ.DELETED = 0))
-							  AND (in_goods_recipient IS NULL OR in_goods_recipient = '' OR RQ.GOODS_RECIPIENT_USERNAME like '%' || in_goods_recipient || '%')
+						  	  WHERE ((USR.ROLE_ID != 2 AND RQ.ENABLED = 1 AND RQ.DELETED = 0)
+		              			OR (USR.ROLE_ID = 2 
+		              				AND ((USR.HL3_ID = RQ.HL3_ID AND RQ.CREATED_USER_ID = in_user_id) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)) 
+		              				))
+						  	  AND (in_goods_recipient IS NULL OR in_goods_recipient = '' OR RQ.GOODS_RECIPIENT_USERNAME like '%' || in_goods_recipient || '%')
 	   						  AND (RQ.HL3_ID = in_team_id OR in_team_id IS NULL)
 	   						  AND (RQ.BUDGET_YEAR_ID = in_budget_year_id OR in_budget_year_id IS NULL)
 							  AND (To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') >= in_request_date_from OR in_request_date_from IS NULL)

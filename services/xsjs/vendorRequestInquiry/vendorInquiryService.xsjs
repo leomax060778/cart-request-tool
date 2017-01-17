@@ -67,11 +67,8 @@ function handleDelete(reqBody, userId) {
  */
 function handlePost(reqBody, userId) {
     var res = inquiry.insertVendorInquiryManual(reqBody, userId);
-    reqBody.VENDOR_INQUIRY_ID = res;
-    var resMessage = message.insertVendorInquiryMessage(reqBody, userId);
-    inquiry.sendSubmitMail(res, userId);
-    var resVendorInquiry = {'inquiry': res, 'message': resMessage};
-    return httpUtil.handleResponse(resVendorInquiry, httpUtil.OK, httpUtil.AppJson);
+   
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 processRequest();

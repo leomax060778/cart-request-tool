@@ -8,6 +8,10 @@ function getAllCurrency() {
 	return data.getAllCurrency();
 }
 
+function getAllCurrencyByDefaultYear(){
+	return data.getAllCurrencyByDefaultYear();
+}
+
 function getCurrencyByYear(currencyYear){
 	if (!currencyYear){
 		throw ErrorLib.getErrors().BadRequest(

@@ -11,11 +11,17 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROC
 							contact_name nvarchar(255),
 							contact_email nvarchar(255),
 							phone nvarchar(255),
+							alternative_vendor_name nvarchar(255),
+							alternative_vendor_phone nvarchar(255),
+							alternative_vendor_email nvarchar(255),
 							non_sap_vendor_contact_name nvarchar(255),
 							non_sap_vendor_contact_email nvarchar(255),
 							non_sap_vendor_contact_phone nvarchar(255),
 							status_id bigint,
-							status_name nvarchar(255)
+							status_name nvarchar(255),
+							budget_year integer,
+							material_id bigint,
+							goods_recipient_username nvarchar(255)
 						 )
 )
 LANGUAGE SQLSCRIPT
@@ -27,18 +33,24 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                     CR.REQUEST_ID AS REQUEST_ID,
                     to_nvarchar(CR.created_date_tz, 'YYYY-MM-DD') AS request_date,
                     HL3.ACRONYM as team,
-                    (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    (US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     ET.entity_name AS entity,
                		VAI.VENDOR_NAME,
                     V.account AS vendor_account,
 	                V.contact_name,
     	            V.contact_email,
         	        V.phone,
+        	        CR.ALTERNATIVE_VENDOR_NAME,
+					CR.ALTERNATIVE_VENDOR_PHONE,
+					CR.ALTERNATIVE_VENDOR_EMAIL,
         	        NV.contact_name AS non_sap_vendor_contact_name,
     	            NV.contact_email AS non_sap_vendor_contact_email,
         	        NV.contact_phone AS non_sap_vendor_contact_phone,
         	        CR.status_id,
-        	        ST.name as STATUS_NAME
+        	        ST.name as STATUS_NAME,
+        	        BUD.BUDGET_YEAR,
+        	        CR.MATERIAL_ID,
+        	        CR.GOODS_RECIPIENT_USERNAME
              FROM "REQUEST" CR
                INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
                LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
@@ -58,6 +70,7 @@ out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
                LEFT JOIN "NON_SAP_VENDOR" NV ON CR.NON_SAP_VENDOR_ID = NV.NON_SAP_VENDOR_ID AND NV.ENABLED = 1 AND NV.DELETED = 0
                INNER JOIN "ENTITY" ET ON CR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
                INNER JOIN "REQUEST_STATUS" ST ON CR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+               INNER JOIN "BUDGET_YEAR" BUD ON CR.BUDGET_YEAR_ID = BUD.BUDGET_YEAR_ID
                WHERE CR.REQUEST_ID = in_request_id AND CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
 
 END;

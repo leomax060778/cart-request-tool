@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_UNREAD" (
 IN in_user_id bigint,
 OUT out_result TABLE(
-	news_id bigint, 
+	news_id integer, 
 	title nvarchar(255), 
 	description nvarchar(2000), 
 	author_id bigint, 

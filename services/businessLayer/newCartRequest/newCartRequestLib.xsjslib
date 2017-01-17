@@ -46,7 +46,7 @@ function insertServices(services, requestId, conversion_rate, userId){
 	(services).forEach(function(itemService){
 		itemService.REQUEST_ID = requestId;
 		amount += Number(itemService.AMOUNT);
-		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
 		insertService(itemService, userId);
 	});
 	return amount;
@@ -105,7 +105,12 @@ function insertManualNonSapVendor(objVendor, user_id){
 
 function insertRequest(reqBody, user_id){
 	try{
-
+		//Infrastructure & Location logic
+		if(reqBody.INFRASTRUCTURE_OF_WORK_ID == 0 || reqBody.LOCATION_OF_WORK_ID == 0){
+			reqBody.INFRASTRUCTURE_OF_WORK_ID = null;
+			reqBody.LOCATION_OF_WORK_ID = null;
+		}
+		//NON-SAP Vendor logic
 		if(reqBody.NON_SAP_VENDOR !== null){
 			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = nonsap;
@@ -124,7 +129,7 @@ function insertRequest(reqBody, user_id){
 				var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
 				var cart_amount = insertServices(reqBody.SERVICES, request, conversion_rate, user_id);
 				reqBody.CART_AMOUNT = cart_amount;
-				reqBody.TOTAL_BUDGET = cart_amount * conversion_rate;
+				reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
 				insertRequestService(reqBody.REQUEST_SERVICE, request ,user_id);
 			}
 		
@@ -137,7 +142,7 @@ function insertRequest(reqBody, user_id){
 				var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 				reqBody.RISK_FUNDED.REQUEST_ID = request;
 				reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-				reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
+				reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
 				insertRiskFunded(reqBody.RISK_FUNDED, user_id);
 			}
 			(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
@@ -217,13 +222,24 @@ function validateInsertRequest(objRequest, user_id) {
 	            'ENTITY_ID',
 	            'STAGE_ID',
 	            'GOODS_RECIPIENT_USERNAME',
-	            'INFRASTRUCTURE_OF_WORK_ID',
-	            'LOCATION_OF_WORK_ID',
-	            'DATA_PROTECTION_ENABLED',
 	            'BUDGET_YEAR_ID',
 	            'DATA_PROTECTION_ANSWERS'
-	            //'ATTACHMENTS'
 	            ];
+	var optionalKeys = ['ALTERNATIVE_VENDOR_NAME',
+	            'ALTERNATIVE_VENDOR_PHONE',
+	            'ALTERNATIVE_VENDOR_EMAIL'
+	            ];
+	
+	if (objRequest.DATA_PROTECTION_ENABLED) {
+		keys.push('DATA_PROTECTION_ENABLED');
+	}
+	
+	if (objRequest.INFRASTRUCTURE_OF_WORK_ID) {
+		keys.push('INFRASTRUCTURE_OF_WORK_ID');
+	}
+	if(objRequest.LOCATION_OF_WORK_ID) {
+		keys.push('LOCATION_OF_WORK_ID');
+	}
 	
 	if(!objRequest)
 		throw ErrorLib.getErrors().CustomError("","requestService/handlePost/insertRequest","The object Request is not found");
@@ -242,6 +258,16 @@ function validateInsertRequest(objRequest, user_id) {
 				}
 			}
 		});
+		optionalKeys.forEach(function(key) {
+			// validate attribute type
+			isValid = validateType(key, objRequest[key])
+				if (!isValid) {
+					errors[key] = objRequest[key];
+					throw BreakException;
+				}
+			
+		});
+
 		isValid = true;
 	} catch (e) {
 		if (e !== BreakException)
@@ -611,13 +637,13 @@ function validateType(key, value) {
 		valid = value.length > 0 && value.length <= 127;
 		break;
 	case 'INFRASTRUCTURE_OF_WORK_ID':
-		valid = !isNaN(value) && value > 0;
+		valid = (!value) || (!isNaN(value) && value > 0);
 		break;
 	case 'LOCATION_OF_WORK_ID':
-		valid = !isNaN(value) && value > 0;
+		valid = (!value) || (!isNaN(value) && value > 0);
 		break;
 	case 'DATA_PROTECTION_ENABLED':
-		valid = !isNaN(value);
+		valid = (!value) || (!isNaN(value));
 		break;
 	case 'CREATED_USER_ID':
 		valid = !isNaN(value) && value > 0;
@@ -718,6 +744,15 @@ function validateType(key, value) {
 	case 'BUDGET_YEAR_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
+	case 'ALTERNATIVE_VENDOR_NAME':
+		valid = (!value) || (value.length > 0 && value.length <= 255);
+		break;
+	case 'ALTERNATIVE_VENDOR_PHONE':
+		valid = (!value) || (value.length > 0 && value.length <= 255);
+		break;
+	case 'ALTERNATIVE_VENDOR_EMAIL':
+		valid = (!value) || (value.length > 0 && value.length <= 255);
+		break;
 	}
 	
 	return valid;
@@ -738,10 +773,10 @@ function validateServiceType(key, value) {
 	return valid;
 }
 
-function sendSubmitMail(newCartRequestId, userId){
+function sendSubmitMail(newCartRequestId, requester, userId){
 	var newCartRequestObj = {};
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
-	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(),"Colleague");
+	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -751,5 +786,5 @@ function getUrlBase(){
 }
 
 function getEmailList(vendorRequestObj){
-	return [{address:'gorellano@folderit.net'}];
+	return [{address:'iberon@folderit.net'}];
 }

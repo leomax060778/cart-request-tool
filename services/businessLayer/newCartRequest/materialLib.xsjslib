@@ -5,11 +5,12 @@ var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 
 function getMaterialById(in_material_id, user_id){
-		if(!in_material_id)	
-			throw ErrorLib.getErrors().BadRequest("The Parameter in_material_id is not found","materialService/handleGet/getMaterialById",in_material_id);	
-		if(!user_id)	
+		if(!in_material_id)	{
+			throw ErrorLib.getErrors().BadRequest("The Parameter in_material_id is not found","materialService/handleGet/getMaterialById",in_material_id);
+		}
+		if(!user_id){	
 			throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","materialService/handleGet/getMaterialById",user_id);	
-		
+		}
 		return data.getMaterialById(in_material_id); 
 }
 
@@ -17,6 +18,13 @@ function getMaterialByCatalogId(in_catalog_id, user_id){
 		if(!in_catalog_id)	
 			throw ErrorLib.getErrors().BadRequest("The Parameter in_catalog_id is not found","materialService/handleGet/getMaterialByCatalogId",in_catalog_id);	
 		return data.getMaterialByCatalogId(in_catalog_id); 
+}
+
+function getManualMaterialByCatalogId(in_catalog_id, user_id){
+	if(!in_catalog_id) {
+		throw ErrorLib.getErrors().BadRequest("The Parameter in_catalog_id is not found","materialService/handleGet/getMaterialByCatalogId",in_catalog_id);
+	}
+	return data.getManualMaterialByCatalogId(in_catalog_id); 
 }
 
 function getAllMaterial(user_id){
@@ -204,14 +212,14 @@ function validateType(key, value) {
 }
 
 function existMaterial(material_id, userId) {
-	return getManualMaterialById(material_id, userId).length > 0;
+	return data.getManualMaterialById(material_id, userId).length > 0;
 }
 
 function getManualMaterialById(material_id, userId){
 	if (!userId)
 		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter user_id is not found",
-				"materialService/handleGet/getManualMaterialById", user_id);
+				"The Parameter userId is not found",
+				"materialService/handleGet/getManualMaterialById", userId);
 	if (!material_id)
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter material_id is not found",

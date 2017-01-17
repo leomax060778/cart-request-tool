@@ -18,7 +18,7 @@ BEGIN
 out_result = SELECT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS CRT_VENDOR_INQUIRY_ID,
 						VI.VENDOR_INQUIRY_ID,
                     	to_nvarchar(VI.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
-                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	VAI.VENDOR_NAME,
                     	VIM.message_content as inquiry_text,
                     	VI.status_id,

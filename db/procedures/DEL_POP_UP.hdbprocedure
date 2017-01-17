@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_POP_UP" (
+	IN in_pop_up_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE pop
+	SET pop.enabled = 0,
+		pop.deleted = 1,
+		pop.modified_date_tz = CURRENT_TIMESTAMP,
+		pop.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."POP_UP" pop
+	WHERE pop.pop_up_id = in_pop_up_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

@@ -13,6 +13,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
  					vendor_id bigint, 
  					vendor_name nvarchar(255),	
  					vendor_account nvarchar(255), 
+ 					alternative_vendor_name nvarchar(255),	
+ 					alternative_vendor_phone nvarchar(255), 
+ 					alternative_vendor_email nvarchar(255), 
  					non_sap_vendor_id bigint, 
  					non_sap_name nvarchar(255), 
  					non_sap_contact_name nvarchar(255), 
@@ -53,6 +56,9 @@ BEGIN
 	RQ.VENDOR_ID, 
 	VAI.VENDOR_NAME AS VENDOR_NAME,
 	V.ACCOUNT AS vendor_account,
+	RQ.ALTERNATIVE_VENDOR_NAME,
+	RQ.ALTERNATIVE_VENDOR_PHONE,
+	RQ.ALTERNATIVE_VENDOR_EMAIL,
 	NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
 	NSV.NAME AS non_sap_name,
 	NSV.CONTACT_NAME AS non_sap_contact_name,
@@ -85,8 +91,8 @@ BEGIN
 	 	INNER JOIN "STAGE" STG ON RQ.STAGE_ID = STG.STAGE_ID
 	 	INNER JOIN "REQUEST_STATUS" AS ST ON RQ.STATUS_ID = ST.STATUS_ID
 	 	LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
-	 	INNER JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
-	 	INNER JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
+	 	LEFT JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
+	 	LEFT JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
 	 	INNER JOIN "CRT_TYPE" CTY ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID
 	    WHERE RQ.REQUEST_ID = in_request_id
 		AND RQ.enabled = 1

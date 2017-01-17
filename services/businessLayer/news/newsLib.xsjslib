@@ -12,14 +12,15 @@ function getNewsUnread(userId) {
 	try {
 	    var result = dataNews.getNewsUnreadManual(userId);
 	    result = JSON.parse(JSON.stringify(result));
-	    var newTextLength = 5000;
-	    var splitNumber = result.CONTENT_LENGTH / newTextLength;
+	    var newsTextLength = 5000;
+	    var splitNumber = result.CONTENT_LENGTH / newsTextLength;
 	    var startPosition = 1;
 	    var newsContent = "";
 	    var newsId = result.NEWS_ID;
-	    for (var i = 0; i < splitNumber; i++) {
-	        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
-	        startPosition = startPosition + newTextLength;
+	    var i;
+	    for (i = 0; i < splitNumber; i++) {
+	        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newsTextLength)[0]);
+	        startPosition = startPosition + newsTextLength;
 	    }
 	    result.CONTENT = newsContent;
 	    dbHelper.commit();
@@ -39,13 +40,14 @@ function getNewsById(newsId) {
         }
         var result = dataNews.getManualNewsById(newsId);
         result = JSON.parse(JSON.stringify(result));
-        var newTextLength = 5000;
-        var splitNumber = result.CONTENT_LENGTH / newTextLength;
+        var newsTextLength = 5000;
+        var splitNumber = result.CONTENT_LENGTH / newsTextLength;
         var startPosition = 1;
         var newsContent = "";
-        for (var i = 0; i < splitNumber; i++) {
-            newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
-            startPosition = startPosition + newTextLength;
+        var i;
+        for (i = 0; i < splitNumber; i++) {
+            newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newsTextLength)[0]);
+            startPosition = startPosition + newsTextLength;
         }
         result.CONTENT = newsContent;
         dbHelper.commit();
@@ -68,13 +70,14 @@ function getManualNewsById(newsId) {
     }
     var result = dataNews.getManualNewsById(newsId);
     result = JSON.parse(JSON.stringify(result));
-    var newTextLength = 5000;
-    var splitNumber = result.CONTENT_LENGTH / newTextLength;
+    var newsTextLength = 5000;
+    var splitNumber = result.CONTENT_LENGTH / newsTextLength;
     var startPosition = 1;
     var newsContent = "";
-    for (var i = 0; i < splitNumber; i++) {
-        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newTextLength)[0]);
-        startPosition = startPosition + newTextLength;
+    var i;
+    for (i = 0; i < splitNumber; i++) {
+        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newsTextLength)[0]);
+        startPosition = startPosition + newsTextLength;
     }
     result.CONTENT = newsContent;
 
@@ -82,7 +85,24 @@ function getManualNewsById(newsId) {
 }
 
 function getAllNews() {
-    return dataNews.getAllNews();
+    var news = dataNews.getAllNews();
+    news = JSON.parse(JSON.stringify(news));
+    news.forEach(function(elem){
+    	var splitNumber;
+        var newsId;
+        var i;
+    	var startPosition = 1;
+    	var newsTextLength = 5000;
+    	var newsContent = "";
+	    splitNumber = elem.CONTENT_LENGTH / newsTextLength;
+	    newsId = elem.NEWS_ID;
+	    for (i = 0; i < splitNumber; i++) {
+	        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newsTextLength)[0]);
+	        startPosition = startPosition + newsTextLength;
+	    }
+	    elem.CONTENT = newsContent;
+    });
+    return news;
 }
 
 //Get news with the urgent flag

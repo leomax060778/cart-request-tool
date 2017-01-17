@@ -11,6 +11,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
 	IN in_data_protection_enabled tinyint,
 	IN in_infrastructure_of_work_id bigint,
 	IN in_location_of_work_id bigint,
+	IN in_alternative_vendor_name nvarchar(255),
+ 	IN in_alternative_vendor_phone nvarchar(255),
+ 	IN in_alternative_vendor_email nvarchar(255),
 
 	IN in_modified_user_id bigint,
  OUT out_result bigint
@@ -31,6 +34,9 @@ BEGIN
 			REQUEST.data_protection_enabled = in_data_protection_enabled,
 			REQUEST.infrastructure_of_work_id = in_infrastructure_of_work_id,
 			REQUEST.location_of_work_id = in_location_of_work_id,
+			REQUEST.alternative_vendor_name = in_alternative_vendor_name,
+			REQUEST.alternative_vendor_phone = in_alternative_vendor_phone,
+			REQUEST.alternative_vendor_email = in_alternative_vendor_email,
 
 			REQUEST.modified_date_tz = CURRENT_TIMESTAMP,
 			REQUEST.modified_user_id = in_modified_user_id

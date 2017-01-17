@@ -1,0 +1,12 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_POP_UP" (
+	OUT out_result TABLE (pop_up_id bigint, pop_up_name nvarchar(255), content nvarchar(1000), code nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT pop_up_id, name as pop_up_name, content, code
+					FROM "POP_UP"
+						WHERE enabled = 1 AND deleted = 0;
+END;

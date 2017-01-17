@@ -18,7 +18,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
-							account nvarchar(255)
+							account nvarchar(255),
+							commodity_description nvarchar(255)
 							)
 ) 
 	LANGUAGE SQLSCRIPT
@@ -29,7 +30,7 @@ BEGIN
 out_result = SELECT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS CRT_EXTEND_VENDOR_REQUEST_ID,
 						EVR.EXTEND_VENDOR_REQUEST_ID,
                     	to_nvarchar(EVR.created_date_tz, 'YYYY-MM-DD') AS request_date,
-                    	(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
+                    	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	ET.entity_name AS entity,
                     	VAI.VENDOR_NAME,
                     	V.INFORMAL_NAME,
@@ -44,7 +45,8 @@ out_result = SELECT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS CRT_E
                     	TO_NVARCHAR(EVR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
                     	TO_NVARCHAR(EVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	EVR.RECEIVER_YVC_REQUEST,
-                    	V.ACCOUNT
+                    	V.ACCOUNT,
+                    	COM.DESCRIPTION AS COMMODITY_DESCRIPTION
                     FROM "EXTEND_VENDOR_REQUEST" EVR
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = EVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = EVR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
@@ -58,5 +60,6 @@ out_result = SELECT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS CRT_E
 						INNER JOIN "CURRENCY" CUR ON EVR.PURCHASE_CURRENCY_ID = CUR.CURRENCY_ID AND CUR.ENABLED = 1 AND CUR.DELETED = 0
 						INNER JOIN "VENDOR" V ON EVR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
 						INNER JOIN "EXTEND_VENDOR_REQUEST_STATUS" ST ON EVR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+						INNER JOIN "COMMODITY" COM ON EVR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0
                     WHERE EVR.EXTEND_VENDOR_REQUEST_ID = in_extend_vendor_request_id AND EVR.ENABLED = 1 AND EVR.DELETED = 0;
 END;

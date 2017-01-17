@@ -94,6 +94,9 @@ function updateRequestManual(objRequest, userId){
     parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;
     parameters.in_infrastructure_of_work_id = objRequest.INFRASTRUCTURE_OF_WORK_ID;
     parameters.in_location_of_work_id = objRequest.LOCATION_OF_WORK_ID;
+    parameters.in_alternative_vendor_name = objRequest.ALTERNATIVE_VENDOR_NAME;
+    parameters.in_alternative_vendor_phone = objRequest.ALTERNATIVE_VENDOR_PHONE;
+    parameters.in_alternative_vendor_email = objRequest.ALTERNATIVE_VENDOR_EMAIL;
     
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';

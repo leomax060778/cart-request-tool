@@ -6,6 +6,11 @@ var request = mapper.getCartRequest();
 var service = mapper.getService();
 var purchase = mapper.getPurchaseOrderService();
 var requestService = mapper.getRequest();
+var material = mapper.getMaterial();
+var catalog = mapper.getCatalog();
+var special = mapper.getDataSpecialRequest();
+var requestService = mapper.getRequest();
+var budgetYear = mapper.getBudgetYear();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_ALL_REQUEST = "GET_ALL_REQUEST";
@@ -29,13 +34,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-             	var resReqService = requestService.getRequestServiceByRequestId(parameters[0].value);
-             	var resService = requestService.getServicesByRequestId(parameters[0].value);
-	            var resNote = requestService.getNoteRequestByRequestId(parameters[0].value);
-	            var resRequest = request.getRequestById(parameters[0].value);
-	            var resDataProtection = request.getRequestDataProtection(parameters[0].value);
-	            var resPurchase = purchase.getPurchaseOrderByIdManual(parameters[0].value);
-	            res = {'request': resRequest, 'notes': resNote, 'requestService': resReqService, 'service': resService, 'dataProtection': resDataProtection, 'purchaseOrder': resPurchase};
+             	res = request.getRequestById(parameters[0].value, userId);
             }
         } else {
         	throw ErrorLib.getErrors().BadRequest(

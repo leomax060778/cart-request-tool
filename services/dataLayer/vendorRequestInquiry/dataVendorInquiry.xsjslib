@@ -57,6 +57,7 @@ function getVendorInquiryByIdManual(vendorInquiryId) {
     var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
     var result = db.executeProcedureManual(GET_VENDOR_INQUIRY_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
+
     if(list.length){
     	   return list[0];
     } else {

@@ -7,6 +7,9 @@ var businessAttachment = mapper.getAttachment();
 var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
+var dbHelper = mapper.getdbHelper();
+
+var message = mapper.getVendorMessage();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 //VENDOR TYPE
@@ -64,18 +67,36 @@ function insertVendorInquiry(objVendorInquiry, userId) {
 //Insert new vendor inquiry manually
 function insertVendorInquiryManual(objVendorInquiry, userId) {
     if (validateInsertVendorInquiry(objVendorInquiry, userId)) {
-    	objVendorInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
-    	//Insert the Vendor Inquiry
-    	var result_id = inquiry.insertVendorInquiryManual(objVendorInquiry, userId);
-       	//If the Inquiry insert was success and has attachments, then we insert them.
-    	if(objVendorInquiry.ATTACHMENTS != undefined && objVendorInquiry.ATTACHMENTS != null && result_id !== null){
-       		(objVendorInquiry.ATTACHMENTS).forEach(function(attachment){
-    			attachment.VENDOR_TYPE_ID = objVendorInquiry.VENDOR_TYPE_ID;
-    			attachment.VENDOR_ID = result_id;
-    			businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
-       		});    		
-    	}
-        return result_id;
+//    	try{
+    		objVendorInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
+        	//Insert the Vendor Inquiry
+        	var result_id = inquiry.insertVendorInquiryManual(objVendorInquiry, userId);
+           	//If the Inquiry insert was success and has attachments, then we insert them.
+        	if(objVendorInquiry.ATTACHMENTS != undefined && objVendorInquiry.ATTACHMENTS != null && result_id !== null){
+           		(objVendorInquiry.ATTACHMENTS).forEach(function(attachment){
+        			attachment.VENDOR_TYPE_ID = objVendorInquiry.VENDOR_TYPE_ID;
+        			attachment.VENDOR_ID = result_id;
+        			businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
+           		});    		
+        	}
+        	
+        	
+        		objVendorInquiry.VENDOR_INQUIRY_ID = result_id;
+        	    var resMessage = message.insertVendorInquiryMessage(objVendorInquiry, userId);
+        	    sendSubmitMail(result_id, userId);
+        	    var resVendorInquiry = {'inquiry': result_id, 'message': resMessage};
+        	
+//        	dbHelper.commit();
+//    	}
+//    	catch(e){
+//    		dbHelper.rollback();
+//    		throw ErrorLib.getErrors().CustomError("", e.toString(),"insertRequest");
+//    	}
+//    	finally{
+//    		dbHelper.closeConnection();
+//    	}
+    	
+        return resVendorInquiry;
     }
 }
 
@@ -203,17 +224,13 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
     }
     try {
         keys.forEach(function (key) {
-            if (objVendorInquiry[key] === null || objVendorInquiry[key] === undefined) {
-                errors[key] = null;
-                throw BreakException;
-            } else {
                 // validate attribute type
                 isValid = validateType(key, objVendorInquiry[key]);
                 if (!isValid) {
                     errors[key] = objVendorInquiry[key];
                     throw BreakException;
                 }
-            }
+            
         });
         isValid = true;
     } catch (e) {
@@ -255,7 +272,7 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'VENDOR_ID':
-            valid = !isNaN(value) && value > 0;
+            valid = (!value) || !isNaN(value) && value > 0;
             break;
     }
     return valid;

@@ -1,10 +1,17 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
+var db = mapper.getdbHelper();
 var data = mapper.getDataCartRequest();
 var request = mapper.getRequest();
 var cartRequestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
+var service = mapper.getService();
+var purchase = mapper.getPurchaseOrderService();
+var material = mapper.getMaterial();
+var catalog = mapper.getCatalog();
+var special = mapper.getDataSpecialRequest();
+var budgetYear = mapper.getBudgetYear();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
@@ -27,13 +34,61 @@ function getAllCartRequest(userId) {
     	if(elem.STATUS_NAME !== 'In process'){
     		elem.DAYS_OUTSTANDING = 'Not applicable';
     	}
+    	if(Number(elem.DAYS_OUTSTANDING) < 0){
+    		elem.DAYS_OUTSTANDING = 'Not Applicable';
+    	}
     });
 	return request;
 }
 
 //Get request by id
-function getRequestById(requestId) {
-    return data.getRequestById(requestId);
+function getRequestById(requestId, userId) {
+	var resReqService = request.getRequestServiceByRequestId(requestId)[0];
+ 	var resService = request.getServicesByRequestId(requestId);
+    var resNote = request.getNoteRequestByRequestId(requestId);
+    var resRequest = data.getRequestByIdManual(requestId);
+    var resDataProtection = request.getRequestDataProtection(requestId);
+    var resPurchase = purchase.getPurchaseOrderByIdManual(requestId);
+    var resCostObject = request.getCostObjectByRequestId(requestId)[0];
+    var resAttachment = request.getAttachmentRequest(requestId, userId);
+    var resMaterial = "";
+    var resSubCategory = "";
+    var resCategory = "";
+    var resCatalog = "";
+    var resSpecial = "";
+    if (Number(resRequest.MATERIAL_ID) > 0){
+    	resMaterial = material.getManualMaterialById(Number(resRequest.MATERIAL_ID), userId)[0];
+    	if (resMaterial){
+		    resSubCategory = catalog.getCatalogByIdManual(Number(resMaterial.CATALOG_ID))[0];
+		    resCategory = catalog.getCatalogByIdManual(resSubCategory.CATALOG_PARENT_ID)[0];
+		    if (resCategory.CATALOG_PARENT_ID > 0) {
+		    	resCatalog = catalog.getCatalogByIdManual(resCategory.CATALOG_PARENT_ID)[0];
+		    } else {
+		    	resCatalog = resCategory;
+		    	resCategory = resSubCategory;
+		    	resSubCategory = "";
+		    } 
+    	}
+    } else {
+    	resSpecial = special.getSpecialRequestByRequestId(requestId)[0];
+    }
+    var res = JSON.parse(JSON.stringify(resRequest));
+    res.NOTES = resNote;
+    res.REQUEST_SERVICE = resReqService;
+    res.SERVICE = resService;
+    res.DATA_PROTECTION = resDataProtection;
+    res.PURCHASE = resPurchase;
+    res.COST_OBJECT = resCostObject;
+    res.ATTACHMENT = resAttachment;
+    if (res.MATERIAL_ID){
+    	res.MATERIAL = resMaterial || "";
+    	res.SUB_CATEGORY = resSubCategory;
+    	res.CATEGORY = resCategory;
+    	res.CATALOG = resCatalog;
+    } else {
+    	res.SPECIAL_REQUEST = resSpecial;
+    }
+    return res;
 }
 
 //Get request data protection answer by request id
