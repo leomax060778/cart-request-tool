@@ -59,6 +59,10 @@
       <descriptions defaultDescription="ENTITY_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="ENTITY_ID"/>
     </attribute>
+    <attribute id="BUDGET_YEAR_ID" order="15" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="BUDGET_YEAR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="BUDGET_YEAR_ID"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>

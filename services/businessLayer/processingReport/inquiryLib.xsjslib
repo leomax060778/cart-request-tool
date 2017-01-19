@@ -6,7 +6,11 @@ var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var pathName = "CRT_INQUIRY";
 
 //Get inquiry by status
 function getInquiryByStatus(statusId) {
@@ -139,13 +143,13 @@ function sendMailByStatus(inquiryId, statusId, userId){
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj,getUrlBase(),"Colleague");
+		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj,getUrlBase(),"Colleague");
+		mailObj = inquiryMail.parseCompleted(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj,getUrlBase(),"Colleague");
+		mailObj = inquiryMail.parseCancelled(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 		break;
 	}
 	
@@ -154,9 +158,13 @@ function sendMailByStatus(inquiryId, statusId, userId){
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(inquiryMailObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

@@ -1,4 +1,8 @@
 -- *************************************************************************************
+-- Clean the tables
+delete from "CART_REQUEST_TOOL"."MATERIAL";
+delete from "CART_REQUEST_TOOL"."CATALOG";
+-- *************************************************************************************
 -- Insert Marketing Catalog, Categories and Sub-categories
 insert into "CART_REQUEST_TOOL"."CATALOG"(CATALOG_ID, NAME, CATALOG_TYPE_ID, CATALOG_PARENT_ID,CREATED_USER_ID) values(1,'Marketing Catalog',1,0,1);
 insert into "CART_REQUEST_TOOL"."CATALOG"(CATALOG_ID, NAME, CATALOG_TYPE_ID, CATALOG_PARENT_ID,CREATED_USER_ID) values(2,'Advertising, Media, Branding',2,1,1);
@@ -147,7 +151,6 @@ insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,C
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(97,43,'Data Maintenance','49011071',1);
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(98,44,'Data & Lists Purchase','49011069',1);
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(99,45,'Production Printing Collateral','49010450',1);
-
 -- *************************************************************************************
 -- Update schema version
 INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT) 

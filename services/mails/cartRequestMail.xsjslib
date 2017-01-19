@@ -1,90 +1,90 @@
 
-function parseReturnToRequest(cartRequestObj, path, userName){
+function parseReturnToRequest(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = 'Dear '+userName+',<br /> <br /> Your <b>Cart Request</b> has been returned '+
 	'to you with an <b>Action and/or Response that is required</b> in order to process '+
 	'your request.<br /> <br /> A message has been added to the Message History for your '+
 	'request <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br /> <br /> Log in to '+
 	'CRT, then copy and paste the following link if you would like '+
-	'to access this specific request: <a href="'+path+'/newCartRequest">Cart Request Manager</a><br /> <br />';
+	'to access this specific request: <a href="'+urlBase+path+'">Cart Request Manager</a><br /> <br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Action/Response Required Message - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseCancelled(cartRequestObj,path, userName){
+function parseCancelled(cartRequestObj,urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = 'Dear '+userName+',<br /><br />Your <b>CR'+cartRequestObj.REQUEST_ID+'</b> has been <b>Cancelled.</b><br />'+
 	'<br />The reason for cancellation has been recorded in the Message History as FYI Only, '+
 	'requiring no response.<br /><br />Log in to CRT, then copy and paste '+
 	'the following link if you would like to access this specific request:'+ 
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request - has been Cancelled - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseSubmit(cartRequestObj,path, userName){
+function parseSubmit(cartRequestObj,urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = '<b>Dear CRT Admin,</b> <br /> <br /> You have new activity within the '+
 	'<b>Cart Request Tool.</b> <br /> <br /> <b>Requester '+userName+' has created a '+
 	'CR'+cartRequestObj.REQUEST_ID+'</b> <br /> <br /> Log in to CRT, then copy '+
 	'and paste the following link if you would like to access this specific request: '+
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request Created - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseResubmitted(cartRequestObj, path , userName){
+function parseResubmitted(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br /> You have new activity within the '+
 	'<b>Cart Request Tool.</b><br /><br /> <b>Requester '+userName+'</b> has re-submitted a '+
 	'<b>CR'+cartRequestObj.REQUEST_ID+'</b><br /><br /> Log in to CRT, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request Re-Submitted - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseApproved(cartRequestObj, path, userName){
+function parseApproved(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = 'Dear '+userName+',<br /><br /> Your cart is now <b>Approved.</b><br /><br />'+
 	parseTablePO(cartRequestObj) + '<br /><br /> Log in to CRT, then copy and paste the '+
 	'following link if you would like to access this specific request: '+
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request Approved - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseInProcess(cartRequestObj, path, userName){
+function parseInProcess(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = 'Dear '+userName+',<br /><br />Your <b>Cart Request </b> is now <b>In Process.</b>'+
 	'<br /><br /><b>Shopping Cart #: '+cartRequestObj.SHOPPING_CART+'</b> has been submitted.<br /><br />'+
 	'The message is FYI Only, requiring no response. <br /><br />Log in to CRT using '+
 	'Google Chrome, then copy and paste the following link if you would like to access '+
 	'this specific request: '+
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request is In Process - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseNewMessage(cartRequestObj, path, userName){
+function parseNewMessage(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = '<b>Dear '+userName+',</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+
 	'<br /><br /> Log in to CRT, then copy and paste the'+
 	'following link if you would like to access this specific request: '+
-	'<a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - New Message - '+getDateNow()+'';
 	return mailObj;
 }
 
-function parseFYI(cartRequestObj, path, userName){
+function parseFYI(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />A message has been added to the '+
 	'Message History tab for your request <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the '+
 	'<b>Cart Request Tool.</b><br /><br />The message is <b>FYI Only, '+
 	'requiring no response.</b><br /><br />Log in to CRT, '+
 	'then copy and paste the following link if you would like to access this '+
-	'specific request: <a href="'+path+'/newCartRequest">Cart Request Manager</a><br/><br />';
+	'specific request: <a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - FYI Only Messagge - '+getDateNow()+'';
 	return mailObj;
 }

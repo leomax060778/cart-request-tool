@@ -7,10 +7,12 @@ var status = mapper.getInquiryStatus();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
-
+var pathName = "CRT_INQUIRY";
 //Insert message
 function insertInquiryMessage(objInquiry, userId) {
 	if (validateInsertInquiryMessage(objInquiry, userId)) {
@@ -147,15 +149,19 @@ function validateType(key, value) {
 function sendMessageMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseFYI(inquiryMailObj,getUrlBase(),"Colleague");
+	var mailObj = inquiryMail.parseFYI(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(inquiryMailObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

@@ -6,14 +6,14 @@ OUT out_result TABLE(
 	description nvarchar(2000), 
 	author_id bigint, 
 	published_date nvarchar(15), 
-	attachment_id bigint, 
-	status_id bigint, 
-	previous_status_id bigint,
+	attachment_id integer, 
+	status_id integer, 
+	previous_status_id integer,
 	user_id_status bigint, 
 	update_status_tz nvarchar(15),
 	author_name nvarchar(255),
 	status_name nvarchar(255),
-	budget_year_id bigint,
+	budget_year_id integer,
 	budget_year bigint,
 	content_length integer
 )) 

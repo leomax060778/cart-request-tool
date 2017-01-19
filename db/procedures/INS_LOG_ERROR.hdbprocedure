@@ -1,21 +1,20 @@
-PROCEDURE "PLANNING_TOOL"."xsplanningtool.db.procedures::INS_LOG_ERROR" (
-	IN in_name_error nvarchar(255),
-	IN in_message nvarchar(1000),
-	IN in_stack nvarchar(5000),
-	IN in_details nvarchar(5000),
-	IN in_user_id bigint,
-	IN in_modified_user_id bigint,
-	OUT out_error_id bigint
- ) 
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_LOG_ERROR"(
+		IN in_name_error NVARCHAR(255), 
+		IN in_message NVARCHAR(1000), 
+		IN in_stack NVARCHAR(5000), 
+		IN in_details NVARCHAR(5000), 
+		IN in_user_id BIGINT, 
+		IN in_modified_user_id BIGINT, 
+		OUT out_error_id BIGINT
+	)
 	LANGUAGE SQLSCRIPT
-	SQL SECURITY INVOKER 
+	SQL SECURITY INVOKER
 	DEFAULT SCHEMA PLANNING_TOOL
-	AS
+AS
 BEGIN
-		INSERT INTO "PLANNING_TOOL"."LOG_ERROR"
-		(NAME_ERROR, MESSAGE,STACK,DETAILS,USER_ID,MODIFIED_DATE_TZ,MODIFIED_USER_ID) 
-		VALUES(in_name_error, in_message, in_stack, in_details, in_user_id, CURRENT_TIMESTAMP,
-		 in_modified_user_id );
-	
-		SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_error_id FROM "PLANNING_TOOL"."LOG_ERROR"; 
+	INSERT INTO "CART_REQUEST_TOOL"."LOG_ERROR"(NAME_ERROR, MESSAGE, STACK, DETAILS, USER_ID, MODIFIED_DATE_TZ, MODIFIED_USER_ID) VALUES(in_name_error, in_message, in_stack, in_details, in_user_id, CURRENT_TIMESTAMP, in_modified_user_id);
+	SELECT TOP 1
+			 CURRENT_IDENTITY_VALUE()
+		INTO out_error_id
+		FROM "CART_REQUEST_TOOL"."LOG_ERROR";
 END;

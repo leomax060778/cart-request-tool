@@ -1,14 +1,14 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NEWS_BY_YEAR" (
 IN in_budget_year_id bigint,
-OUT out_result TABLE(news_id bigint, 
+OUT out_result TABLE(news_id integer, 
 						title nvarchar(255), 
 						description nvarchar(2000), 
 						author_id bigint, 
 						published_date nvarchar(15), 
-						attachment_id bigint, 
-						status_id bigint,
+						attachment_id integer, 
+						status_id integer,
 						status_name nvarchar(255),
-						previous_status_id bigint,
+						previous_status_id integer,
 						user_id_status bigint,
 						author_name nvarchar(255),
 						update_status_tz nvarchar(15)

@@ -15,12 +15,21 @@ var extendVendorMail = mapper.getExtendVendorMail();
 var vendorInquiryMail = mapper.getVendorInquiryMail();
 var vendorRequestMail = mapper.getVendorMail();
 var mail = mapper.getMail();
+var config = mapper.getDataConfig();
 var ErrorLib = mapper.getErrors();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5, 'CANCELLED': 6};
 //Vendor types
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1, "EXTEND_VENDOR_REQUEST": 2, "VENDOR_INQUIRY": 4, "VENDOR_REQUEST": 3};
+
+var pathName = {
+		"CHANGE_VENDOR_MAIL" : "HOME",
+		"EXTEND_VENDOR_MAIL" : "EXTEND_VENDOR_REQUEST",
+		"VENDOR_INQUIRY_MAIL" : "VENDOR_INQUIRY",
+		"VENDOR_REQUEST_MAIL" : "VENDOR_REQUEST"
+};
 
 //Get vendor request inquiry by status
 function getVendorRequestInquiryByStatus(statusId) {
@@ -607,16 +616,16 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
-				mailObj = changeVendorMail.parseInProcess(changeVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = changeVendorMail.parseInProcess(changeVendorRequestMailObj,getUrlBase(), getPath(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj,getUrlBase(), getPath(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 			case '5':
-				mailObj = changeVendorMail.parseApproved(changeVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = changeVendorMail.parseApproved(changeVendorRequestMailObj,getUrlBase(), getPath(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 			case '6':
-				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj,getUrlBase(), getPath(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 		}
 		
@@ -635,16 +644,16 @@ function sendExtendVendorMailByStatus(objRequest,extendVendorData, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
-				mailObj = extendVendorMail.parseInProcess(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = extendVendorMail.parseInProcess(extendVendorRequestMailObj,getUrlBase(), getPath(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = extendVendorMail.parseReturnToRequest(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = extendVendorMail.parseReturnToRequest(extendVendorRequestMailObj,getUrlBase(), getPath(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 			case '5':
-				mailObj = extendVendorMail.parseApproved(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = extendVendorMail.parseApproved(extendVendorRequestMailObj,getUrlBase(), getPath(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 			case '6':
-				mailObj = extendVendorMail.parseCancelled(extendVendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = extendVendorMail.parseCancelled(extendVendorRequestMailObj,getUrlBase(), getPath(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 		}
 		
@@ -661,13 +670,13 @@ function sendVendorInquiryMailByStatus(objRequest, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '2':
-				mailObj = vendorInquiryMail.parseReturnToRequest(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorInquiryMail.parseReturnToRequest(vendorInquiryMailObj,getUrlBase(), getPath(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
 				break;
 			case '3':
-				mailObj = vendorInquiryMail.parseCompleted(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorInquiryMail.parseCompleted(vendorInquiryMailObj,getUrlBase(), getPath(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = vendorInquiryMail.parseCancelled(vendorInquiryMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorInquiryMail.parseCancelled(vendorInquiryMailObj,getUrlBase(), getPath(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
 				break;
 		}
 		
@@ -686,16 +695,16 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
-				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj,getUrlBase(), getPath(pathName.VENDOR_REQUEST_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj,getUrlBase(), getPath(pathName.VENDOR_REQUEST_MAIL), "Colleague");
 				break;
 			case '5':
-				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj,getUrlBase(), getPath(pathName.VENDOR_REQUEST_MAIL), "Colleague");
 				break;
 			case '6':
-				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj,getUrlBase(), getPath(pathName.VENDOR_REQUEST_MAIL), "Colleague");
 				break;
 		}
 		
@@ -705,9 +714,13 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(mailObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

@@ -17,8 +17,11 @@ var businessAttachment = mapper.getAttachment();
 var dataNoteReq = mapper.getDataNoteRequest();
 var newCartRequestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
+var config = mapper.getDataConfig();
 var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
+
+var pathName = "CART_REQUEST";
 
 function insertRequestService(reqBody, requestId, user_id){
 	reqBody.REQUEST_ID = requestId;
@@ -776,15 +779,19 @@ function validateServiceType(key, value) {
 function sendSubmitMail(newCartRequestId, requester, userId){
 	var newCartRequestObj = {};
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
-	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(), requester);
+	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(), getPath(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
-function getEmailList(vendorRequestObj){
-	return [{address:'iberon@folderit.net'}];
+function getEmailList(newCartRequestObj){
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

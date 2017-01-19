@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_BUDGET_YEAR" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_BUDGET_YEAR"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="BUDGET_YEAR" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="BUDGET_YEAR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="BUDGET_YEAR" columnName="BUDGET_YEAR"/>
+    </attribute>
+    <attribute id="BUDGET_YEAR_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="BUDGET_YEAR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="BUDGET_YEAR" columnName="BUDGET_YEAR_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="BUDGET_YEAR"/>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="BUDGET_YEAR" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

@@ -28,9 +28,11 @@ var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
 var utilLib = mapper.getUtil();
 var requestMail = mapper.getCartRequestMail();
+var config = mapper.getDataConfig();
 var mail = mapper.getMail();
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var pathName = "CART_REQUEST";
 
 /* VALIDATION KEYS FOR INSERTS & UPDATES */
 
@@ -766,15 +768,11 @@ function updateAttachmentRequest(objRequest, user_id){
 	
 }
 
-function getUrlBase(){
-	 return "http://localhost:63342/crt/webapp/index.html";
-}
-
 //Send Mail
 function sendResubmitMail(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseResubmitted(requestMailObj,getUrlBase(), requester);
+	 var mailObj = requestMail.parseResubmitted(requestMailObj,getUrlBase(), getPath(pathName), requester);
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
 	 mail.sendMail(emailObj,true,null);
 }
@@ -848,7 +846,7 @@ function updateRequest(reqBody, user_id){
 			var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
 			var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 			reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-			reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
+			reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
 			updateRiskFunded(reqBody.RISK_FUNDED, user_id);
 		
 		} else if((original_request.RISK_FUNDED).length == 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
@@ -975,6 +973,14 @@ function getAttachmentRequest(requestId, user_id){
 	return result;
 }
 
+function getUrlBase(){
+	return config.getUrlBase();
+}
+
 function getEmailList(requestMailObj){
-	 return [{address:'iberon@folderit.net'}];
-	}
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
+}

@@ -7,9 +7,12 @@ var businessAttachment = mapper.getAttachment();
 var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1};
+var pathName = "HOME";
 
 //Insert change vendor request
 function insertChangeVendorRequest(objChangeVendorRequest, userId) {
@@ -287,7 +290,7 @@ function validateType(key, value) {
 function sendSubmitMail(changeVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseSubmit(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = changeVendorMail.parseSubmit(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -295,7 +298,7 @@ function sendSubmitMail(changeVendorRequestId, userId){
 function sendResubmitMail(changeVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -303,15 +306,19 @@ function sendResubmitMail(changeVendorRequestId, userId){
 function sendMessageMail(changeVendorRequest, userId){
 	var vendorMailObj = {};
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-	var mailObj = changeVendorMail.parseFYI(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = changeVendorMail.parseFYI(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(changeVendorRequest){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

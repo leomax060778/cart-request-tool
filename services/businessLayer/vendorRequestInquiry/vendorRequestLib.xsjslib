@@ -10,9 +10,12 @@ var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var dbHelper  = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var vendorType = {"VENDOR_REQUEST": 3};
+var pathName = "PROCESSING_REPORT";
 
 //Insert Vendor Request Data Protection
 function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
@@ -202,6 +205,12 @@ function updateVendorRequestAttachments(reqBody, user_id){
 	
 }
 
+//Update Data Protection Answers
+//DATA PROTECTION
+function updateDataProtectionAnswer(item, user_id){
+	dataVRDataProtection.updateDataProtectionManual(item, user_id);
+}
+
 //Update vendor request
 function updateVendorRequest(objVendorRequest, userId) {
     if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
@@ -215,6 +224,14 @@ function updateVendorRequest(objVendorRequest, userId) {
     validateOptionalVendorRequestKeys(optionalKeys, objVendorRequest);
     
     updateVendorRequestAttachments(objVendorRequest, userId);
+    
+    //DATA PROTECTION ANSWERS UPDATE
+    if(objVendorRequest.DATA_PROTECTION_ANSWERS.length > 0){
+    	(objVendorRequest.DATA_PROTECTION_ANSWERS).forEach(function(item){
+    		updateDataProtectionAnswer(item, userId);
+    	});
+    }
+	
         
     return request.updateVendorRequest(objVendorRequest, userId);
 
@@ -459,7 +476,7 @@ function validateType(key, value) {
 function sendSubmitMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
-	var mailObj = vendorMail.parseSubmit(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = vendorMail.parseSubmit(vendorMailObj,getUrlBase(), getPath(pathName),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -467,7 +484,7 @@ function sendSubmitMail(newVendorRequestId, userId){
 function sendResubmitMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
-	var mailObj = vendorMail.parseResubmitted(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = vendorMail.parseResubmitted(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -475,15 +492,19 @@ function sendResubmitMail(newVendorRequestId, userId){
 function sendMessageMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId.VENDOR_REQUEST_ID;
-	var mailObj = vendorMail.parseFYI(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = vendorMail.parseFYI(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(vendorRequestObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

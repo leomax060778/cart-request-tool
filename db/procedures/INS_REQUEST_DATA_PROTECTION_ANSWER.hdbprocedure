@@ -13,5 +13,5 @@ BEGIN
   INSERT INTO "CART_REQUEST_TOOL"."REQUEST_DATA_PROTECTION_ANSWER"(request_id, question_id, option_id, created_user_id) 
   VALUES(in_request_id, in_question_id, in_option_id, in_created_user_id);
   
-  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST_DATA_PROTECTION_ANSWER";
+  SELECT 1 INTO out_result FROM DUMMY;
 END;

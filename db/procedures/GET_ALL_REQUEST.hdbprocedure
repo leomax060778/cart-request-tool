@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST" (
 	IN in_user_id bigint,
-	OUT out_result TABLE(REQUEST_ID BIGINT, 
+	OUT out_result TABLE(REQUEST_ID integer, 
 						 iso nvarchar(2), 
 						 STATUS_ID bigint,
 						 STATUS_NAME nvarchar(255),

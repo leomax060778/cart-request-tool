@@ -95,6 +95,16 @@ function ExecutePermission() {
 var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
 var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
 
+var complete_path = {
+		"HOME": "/home",
+		"CART_REQUEST": "/shoppingCartHistory",
+		"CRT_INQUIRY": "/crtInquiry",
+		"EXTEND_VENDOR_REQUEST": "/vendorRequestInquiry",
+		"CHANGE_VENDOR_REQUEST": "/vendorRequestInquiry",
+		"VENDOR_REQUEST": "/vendorRequestInquiry",
+		"VENDOR_INQUIRY": "/vendorRequestInquiry",
+		"PROCESSING_REPORT": "/processingReport"
+};
 /** ******************************* */
 
 /** ************Email Accounts********************* */
@@ -103,6 +113,7 @@ var SMTPAccount = "info_cartrequesttool@sap.com";//
 var SupportAccount = "support_cartrequesttool@sap.com";
 var SiteAdministrator = "support_cartrequesttool@sap.com";
 
+var emailAccount = "lhildt@folderit.net";
 /** ************************************** */
 
 // TODO: move this to configuration
@@ -150,4 +161,16 @@ function getDefaultPassword() {
 
 function getRoleEnum() {
 	return RoleEnum;
+}
+
+function getEmailList(requestMailObj){
+	 return [{address: emailAccount}];
+}
+
+function getUrlBase(){
+	 return AppUrl;
+}
+
+function getPath(nameString){
+	return complete_path[nameString];
 }

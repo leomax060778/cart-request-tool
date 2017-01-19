@@ -7,20 +7,18 @@ var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var requestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
-
-
-function getUrlBase(){
-	 return "http://localhost:63342/crt/webapp/index.html";
-}
+var pathName = "CART_REQUEST";
 
 //Send Mail
 function parseNewMessage(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseNewMessage(requestMailObj,getUrlBase(), requester);
+	 var mailObj = requestMail.parseNewMessage(requestMailObj,getUrlBase(), getPath(pathName), requester);
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
 	 mail.sendMail(emailObj,true,null);
 }
@@ -170,6 +168,14 @@ function validateType(key, value) {
     return valid;
 }
 
+function getUrlBase(){
+	return config.getUrlBase();
+}
+
 function getEmailList(requestMailObj){
-	 return [{address:'iberon@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

@@ -1,6 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT" (
 IN in_user_id bigint,
 OUT out_result TABLE (request_id nvarchar(15),
+						r_id bigint,
+						budget_year nvarchar(5),
                         request_date nvarchar(15),
                         requester nvarchar(255),
                         team nvarchar(32),
@@ -43,6 +45,8 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
     out_result = SELECT DISTINCT RQR.REQUEST_ID,
+    				  RQR.R_ID,
+    				  TO_NVARCHAR(RQR.BUDGET_YEAR) AS BUDGET_YEAR,
  	 				  RQR.REQUEST_DATE,
  	 				  RQR.REQUESTER,
  	 				  RQR.TEAM,
@@ -90,5 +94,5 @@ BEGIN
               		OR (USR.ROLE_ID > 2 
               			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
               		   )
-             ORDER BY RQR.REQUEST_ID;
+             ORDER BY RQR.R_ID;
 END;

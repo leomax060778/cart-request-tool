@@ -5,12 +5,16 @@ var extendVendorMail = mapper.getExtendVendorMail();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var mail = mapper.getMail();
+var config = mapper.getDataConfig();
+
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var vendorType = {"EXTEND_VENDOR_REQUEST": 2};
+var pathName = "EXTEND_VENDOR_REQUEST";
 
 //Insert extend vendor request
 function insertExtendVendorRequest(objExtendVendorRequest, userId) {
@@ -341,7 +345,7 @@ function validateType(key, value) {
 function sendSubmitMail(extendVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
-	var mailObj = extendVendorMail.parseSubmit(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = extendVendorMail.parseSubmit(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -349,7 +353,7 @@ function sendSubmitMail(extendVendorRequestId, userId){
 function sendResubmitMail(extendVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
-	var mailObj = extendVendorMail.parseResubmitted(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = extendVendorMail.parseResubmitted(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -357,15 +361,19 @@ function sendResubmitMail(extendVendorRequestId, userId){
 function sendMessageMail(extendVendorRequest, userId){
 	var vendorMailObj = {};
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-	var mailObj = extendVendorMail.parseFYI(vendorMailObj,getUrlBase(),"Colleague");
+	var mailObj = extendVendorMail.parseFYI(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(extendVendorRequest){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

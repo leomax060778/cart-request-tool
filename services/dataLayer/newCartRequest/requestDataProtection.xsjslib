@@ -35,9 +35,9 @@ function insertDataProtectionAnswer(reqDP, user_id){
 	parameters.in_question_id = reqDP.QUESTION_ID;
 	parameters.in_option_id = reqDP.OPTION_ID; 
 	parameters.in_created_user_id = user_id;
+	parameters.out_result = '?';
 	
-	var result = db.executeProcedureManual(INS_DATA_PROTECTION_ANSWER, parameters);
-	return db.extractArray(result.out_result);
+	return db.executeScalarManual(INS_DATA_PROTECTION_ANSWER, parameters, 'out_result');
 
 }
 

@@ -12,10 +12,13 @@ var material = mapper.getMaterial();
 var catalog = mapper.getCatalog();
 var special = mapper.getDataSpecialRequest();
 var budgetYear = mapper.getBudgetYear();
+var config = mapper.getDataConfig();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var stageMap = {'STAGE_B': 2, 'STAGE_C': 3, 'STAGE_D': 4, 'STAGE_E': 5, 'STAGE_F': 6};
+var pathName = "CART_REQUEST";
 
 //Get request by status
 function getAllCartRequest(userId) {
@@ -210,20 +213,20 @@ function sendMailByStatus(objRequest, mailData, userId){
 			case '3':
 			case 3:
 				cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
-				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,getUrlBase(), getPath(pathName),"Colleague");
 				break;
 			case '4':
 			case 4:
-				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
 				break;
 			case '5':
 			case 5:
 				cartRequestMailObj.SERVICES = mailData;
-				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
 				break;
 			case '6':
 			case 6:
-				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,getUrlBase(),"Colleague");
+				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
 				break;
 		}
 		
@@ -237,9 +240,13 @@ function getRequestMailDataByRequestId(objRequest, userId){
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(inquiryMailObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }

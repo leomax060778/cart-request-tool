@@ -6,7 +6,10 @@ var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+var config = mapper.getDataConfig();
 /** ***********END INCLUDE LIBRARIES*************** */
+
+var pathName = "CRT_INQUIRY";
 
 //Insert inquiry
 function insertInquiry(objInquiry, userId) {
@@ -203,7 +206,7 @@ function validateType(key, value) {
 function sendSubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseSubmit(inquiryMailObj,getUrlBase(),"Colleague");
+	var mailObj = inquiryMail.parseSubmit(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -211,15 +214,19 @@ function sendSubmitMail(inquiryId, userId){
 function sendResubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj,getUrlBase(),"Colleague");
+	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
-	return "http://localhost:63342/crt/webapp/index.html";
+	return config.getUrlBase();
 }
 
 function getEmailList(inquiryMailObj){
-	return [{address:'gorellano@folderit.net'}];
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
 }
