@@ -779,7 +779,7 @@ function validateServiceType(key, value) {
 function sendSubmitMail(newCartRequestId, requester, userId){
 	var newCartRequestObj = {};
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
-	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj,getUrlBase(), getPath(pathName), requester);
+	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -794,4 +794,8 @@ function getEmailList(newCartRequestObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

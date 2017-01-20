@@ -149,7 +149,7 @@ function validateType(key, value) {
 function sendMessageMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseFYI(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+	var mailObj = inquiryMail.parseFYI(inquiryMailObj, getBasicData(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -164,4 +164,8 @@ function getEmailList(inquiryMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

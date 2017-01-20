@@ -301,7 +301,7 @@ function validateType(key, value) {
 function sendSubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseSubmit(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+	var mailObj = inquiryMail.parseSubmit(inquiryMailObj, getBasicData(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -309,7 +309,7 @@ function sendSubmitMail(inquiryId, userId){
 function sendResubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj, getBasicData(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -324,4 +324,8 @@ function getEmailList(inquiryMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

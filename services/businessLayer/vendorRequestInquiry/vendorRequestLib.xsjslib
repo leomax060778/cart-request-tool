@@ -479,7 +479,7 @@ function validateType(key, value) {
 function sendSubmitMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
-	var mailObj = vendorMail.parseSubmit(vendorMailObj,getUrlBase(), getPath(pathName),"Colleague");
+	var mailObj = vendorMail.parseSubmit(vendorMailObj, getBasicData(pathName),"Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -487,7 +487,7 @@ function sendSubmitMail(newVendorRequestId, userId){
 function sendResubmitMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
-	var mailObj = vendorMail.parseResubmitted(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
+	var mailObj = vendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -495,7 +495,7 @@ function sendResubmitMail(newVendorRequestId, userId){
 function sendMessageMail(newVendorRequestId, userId){
 	var vendorMailObj = {};
 	vendorMailObj.REQUEST_ID = newVendorRequestId.VENDOR_REQUEST_ID;
-	var mailObj = vendorMail.parseFYI(vendorMailObj,getUrlBase(), getPath(pathName), "Colleague");
+	var mailObj = vendorMail.parseFYI(vendorMailObj, getBasicData(pathName), "Colleague");
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -510,4 +510,8 @@ function getEmailList(vendorRequestObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

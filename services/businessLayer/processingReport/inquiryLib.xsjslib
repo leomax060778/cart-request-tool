@@ -143,13 +143,13 @@ function sendMailByStatus(inquiryId, statusId, userId){
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName), "Colleague");
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName), "Colleague");
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj,getUrlBase(), getPath(pathName), "Colleague");
+		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName), "Colleague");
 		break;
 	}
 	
@@ -167,4 +167,8 @@ function getEmailList(inquiryMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

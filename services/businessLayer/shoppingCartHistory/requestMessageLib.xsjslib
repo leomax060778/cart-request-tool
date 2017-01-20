@@ -18,7 +18,7 @@ var pathName = "CART_REQUEST";
 function parseNewMessage(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseNewMessage(requestMailObj,getUrlBase(), getPath(pathName), requester);
+	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName), requester);
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
 	 mail.sendMail(emailObj,true,null);
 }
@@ -178,4 +178,8 @@ function getEmailList(requestMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

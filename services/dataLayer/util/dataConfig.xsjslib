@@ -94,15 +94,16 @@ function ExecutePermission() {
 /** ************URLs******************* */
 var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
 var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
+var Environment = "Development"; //Can be: Development - Staging - Production.
 
 var complete_path = {
 		"HOME": "/home",
-		"CART_REQUEST": "/shoppingCartHistory",
-		"CRT_INQUIRY": "/crtInquiry",
-		"EXTEND_VENDOR_REQUEST": "/vendorRequestInquiry",
-		"CHANGE_VENDOR_REQUEST": "/vendorRequestInquiry",
-		"VENDOR_REQUEST": "/vendorRequestInquiry",
-		"VENDOR_INQUIRY": "/vendorRequestInquiry",
+		"CART_REQUEST": "/editCartRequest",
+		"CRT_INQUIRY": "/crtInquiry/edit",
+		"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/edit",
+		"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/edit",
+		"VENDOR_REQUEST": "/newVendorRequest/edit",
+		"VENDOR_INQUIRY": "/vendorInquiry/edit",
 		"PROCESSING_REPORT": "/processingReport"
 };
 /** ******************************* */
@@ -163,6 +164,11 @@ function getRoleEnum() {
 	return RoleEnum;
 }
 
+function getEnvironment() {
+	Environment = (Environment !== "Production")? '('+Environment+')' : "";
+	return Environment;
+}
+
 function getEmailList(requestMailObj){
 	 return [{address: emailAccount}];
 }
@@ -173,4 +179,16 @@ function getUrlBase(){
 
 function getPath(nameString){
 	return complete_path[nameString];
+}
+
+function getBasicData(stringPathName){
+	var parameters = {};
+	parameters.URL_BASE = getUrlBase();
+	parameters.ENVIRONMENT = getEnvironment();
+	
+	if(stringPathName){
+		parameters.PATH = getPath(stringPathName);
+	}
+	
+	return parameters;
 }

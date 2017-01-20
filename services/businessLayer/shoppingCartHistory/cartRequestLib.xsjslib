@@ -772,7 +772,7 @@ function updateAttachmentRequest(objRequest, user_id){
 function sendResubmitMail(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseResubmitted(requestMailObj,getUrlBase(), getPath(pathName), requester);
+	 var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
 	 mail.sendMail(emailObj,true,null);
 }
@@ -983,4 +983,8 @@ function getEmailList(requestMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }

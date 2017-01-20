@@ -213,20 +213,20 @@ function sendMailByStatus(objRequest, mailData, userId){
 			case '3':
 			case 3:
 				cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
-				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj,getUrlBase(), getPath(pathName),"Colleague");
+				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj, getBasicData(pathName),"Colleague");
 				break;
 			case '4':
 			case 4:
-				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
+				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName), "Colleague");
 				break;
 			case '5':
 			case 5:
 				cartRequestMailObj.SERVICES = mailData;
-				mailObj = cartRequestMail.parseApproved(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
+				mailObj = cartRequestMail.parseApproved(cartRequestMailObj, getBasicData(pathName), "Colleague");
 				break;
 			case '6':
 			case 6:
-				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj,getUrlBase(), getPath(pathName), "Colleague");
+				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName), "Colleague");
 				break;
 		}
 		
@@ -249,4 +249,8 @@ function getEmailList(inquiryMailObj){
 
 function getPath(stringName){
 	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }
