@@ -1,6 +1,7 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataAttachmentInquiry = mapper.getDataAttachmentInquiry();
+var dataAttachment = mapper.getDataAttachment();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -22,7 +23,9 @@ function insertAttachmentInquiryManual(objAttachmentInquiry, userId) {
 function getAttachmentInquiryById(inquiryId) {
     var result = dataAttachmentInquiry.getAttachmentInquiryById(inquiryId);
     result = JSON.parse(JSON.stringify(result));
-	result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+    result.forEach(function (elem){
+    	elem.ATTACHMENT_SIZE = (Number(elem.ATTACHMENT_SIZE) / 1048576).toFixed(2) + " MB";
+    });
 	return result;
 }
 
@@ -30,7 +33,9 @@ function getAttachmentInquiryById(inquiryId) {
 function getAttachmentInquiryByIdManual(inquiryId) {
   var result = dataAttachmentInquiry.getAttachmentInquiryByIdManual(inquiryId);
   result = JSON.parse(JSON.stringify(result));
-  result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+  result.forEach(function (elem){
+  	elem.ATTACHMENT_SIZE = (Number(elem.ATTACHMENT_SIZE) / 1048576).toFixed(2) + " MB";
+  });
   return result;
 }
 
@@ -46,9 +51,38 @@ function deleteAttachmentInquiry(objAttachmentInquiry, userId) {
     }
 }
 
+//Delete attachment inquiry
+function deleteAttachmentInquiryManual(objAttachmentInquiry, userId) {
+    if (!objAttachmentInquiry.ATTACHMENT_ID) {
+        throw ErrorLib.getErrors().CustomError("", "attachmentInquiryService/handleDelete/deleteAttachmentInquiry", "The ATTACHMENT_ID is not found");
+    }
+    if (!existAttachmentInquiry(objAttachmentInquiry.ATTACHMENT_ID)) {
+        throw ErrorLib.getErrors().CustomError("", "attachmentInquiryService/handleDelete/deleteAttachmentInquiry", "The object ATTACHMENT_ID " + objAttachmentInquiry.ATTACHMENT_ID + " does not exist");
+    } else {
+        return dataAttachmentInquiry.deleteAttachmentInquiryManual(objAttachmentInquiry, userId);
+    }
+}
+
+//Delete Master attachment-Inquiry
+function deleteAttachmentInquiryConectionManual(attachment_id, inquiry_id, userId) {
+	if (!attachment_id) {
+		throw ErrorLib.getErrors().CustomError("",
+				"attachmentService/handleDelete/deleteAttachment",
+				"The ATTACHMENT_ID is not found");
+	}
+	if (!inquiry_id) {
+		throw ErrorLib.getErrors().CustomError("",
+				"attachmentService/handleDelete/deleteAttachment",
+				"The INQUIRY_ID is not found");
+	}
+	var result = dataAttachmentInquiry.deleteAttachmentInquiryConectionManual(attachment_id, inquiry_id, userId);
+	return result;
+	
+}
+
 //Check if the attachment exists
 function existAttachmentInquiry(attachmentId) {
-    return getAttachmentInquiryByIdManual(attachmentId).length > 0;
+    return Object.keys(dataAttachment.getManualAttachment(attachmentId)).length > 0;
 }
 
 //Check if the inquiry exists

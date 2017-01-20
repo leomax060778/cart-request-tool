@@ -102,6 +102,7 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     parameters.in_purchase_currency_id = objExtendVendorRequest.PURCHASE_CURRENCY_ID;
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST, parameters, 'out_result');

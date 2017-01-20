@@ -15,7 +15,7 @@ var config = mapper.getDataConfig();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var vendorType = {"VENDOR_REQUEST": 3};
-var pathName = "PROCESSING_REPORT";
+var pathName = "VENDOR_REQUEST";
 
 //Insert Vendor Request Data Protection
 function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
@@ -30,7 +30,9 @@ function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
 //Insert vendor request
 function insertVendorRequest(objVendorRequest, userId) {
     if (validateInsertVendorRequest(objVendorRequest, userId)) {
-        return request.insertVendorRequest(objVendorRequest, userId);
+    	var result_id = request.insertVendorRequest(objVendorRequest, userId);
+    	sendSubmitMail(result_id, userId);
+    	return result_id;
     }
 }
 
@@ -53,7 +55,8 @@ function insertVendorRequestManual(objVendorRequest, userId) {
     		(objVendorRequest.DATA_PROTECTION_ANSWERS).forEach(function(item){
     			insertDataProtectionAnswer(item, result_id, userId);
     		});
-    		
+    		sendSubmitMail(result_id, userId);
+            		
     		dbHelper.commit();
     	}
     	catch(e){

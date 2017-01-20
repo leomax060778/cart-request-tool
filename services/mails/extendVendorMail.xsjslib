@@ -6,7 +6,7 @@ function parseReturnToRequest(extendVendorObj, urlBase, path, userName){
 	'required</b> in order to process your request.<br /><br /><br />'+
 	'A message has been added to the Message History for your request '+
 	'<b> EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+
-	'Log in to CRT using Google Chrome, then copy and paste the following '+
+	'Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Action/Response Required Message - '+getDateNow()+'';
@@ -17,7 +17,7 @@ function parseCancelled(extendVendorObj,urlBase, path, userName){
 	var mailObj = {};
 	mailObj.body =  'Dear '+userName+',<br /><br />Your <b>EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> has been <b>Cancelled.</b>'+
 	'<br /><br />The reason for cancellation has been recorded in the Message History as '+
-	'FYI Only, requiring no response.<br /><br />Log in to CRT using Google Chrome, '+
+	'FYI Only, requiring no response.<br /><br />Log in to CRT, '+
 	'then copy and paste the following link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor - has been Cancelled - '+getDateNow()+'';
@@ -28,7 +28,7 @@ function parseSubmit(extendVendorObj,urlBase, path, userName){
 	var mailObj = {};
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br /> You have new activity within the '+
 	'<b>Cart Request Tool.</b><br /><br /> <b>Requester '+userName+' has created a  EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b>'+
-	'<br /><br /> Log in to CRT using Google Chrome, then copy and paste the following '+
+	'<br /><br /> Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Created - '+getDateNow()+'';
@@ -39,7 +39,7 @@ function parseResubmitted(extendVendorObj, urlBase, path, userName){
 	var mailObj = {};
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br /> You have new activity within the '+
 	'<b>Cart Request Tool.</b><br /><br /> <b>Requester '+userName+'</b> has re-submitted a '+
-	'<b> EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b><br /><br /> Log in to CRT using Google Chrome, then copy and paste '+
+	'<b> EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b><br /><br /> Log in to CRT, then copy and paste '+
 	'the following link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Re-Submitted - '+getDateNow()+'';
@@ -51,7 +51,7 @@ function parseApproved(extendVendorObj, urlBase, path, userName){
 	mailObj.body = '<b>Dear '+userName+',</b><br /><br />Your <b>EV</b> is now <b>Approved.'+
 	'</b><br /><br /><b>Vendor ID # '+extendVendorObj.VENDOR_ID+'</b> has been issued on '+
 	'<b>'+getDateNow()+'</b><br /><br />The message is FYI Only, requiring no response.: '+
-	'<br /><br />Log in to CRT using Google Chrome, then copy and paste the following '+
+	'<br /><br />Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Approved - '+getDateNow()+'';
@@ -63,7 +63,7 @@ function parseInProcess(extendVendorObj, urlBase, path, userName){
 	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> is now '+
 	'<b>In Process.</b><br /><br /><b>Cart # / YVC #: '+extendVendorObj.RECEIVER_YVC_REQUEST+'</b> '+
 	'has been submitted.<br /><br />The message is FYI Only, requiring no '+
-	'response.<br /><br />Log in to CRT using Google Chrome, then copy and '+
+	'response.<br /><br />Log in to CRT, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor is In Process - '+getDateNow()+'';
@@ -75,7 +75,7 @@ function parseFYI(extendVendorObj, urlBase, path, userName){
 	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />A message has been added to the '+
 	'Message History tab for your request <b>EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> in the <b>Cart Request Tool.'+
 	'</b><br /><br />The message is <b>FYI Only, requiring no response.</b><br /><br /> '+
-	'Log in to CRT using Google Chrome, then copy and paste the following link if you '+
+	'Log in to CRT, then copy and paste the following link if you '+
 	'would like to access this specific request: '+
 	'<a href="'+urlBase+path+'">VENDOR INQUIRY</a><br /><br />';
 	mailObj.subject = 'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - FYI Only Messagge - '+getDateNow()+'';

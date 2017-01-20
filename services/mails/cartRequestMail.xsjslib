@@ -58,8 +58,8 @@ function parseInProcess(cartRequestObj, urlBase, path,  userName){
 	var mailObj = {};
 	mailObj.body = 'Dear '+userName+',<br /><br />Your <b>Cart Request </b> is now <b>In Process.</b>'+
 	'<br /><br /><b>Shopping Cart #: '+cartRequestObj.SHOPPING_CART+'</b> has been submitted.<br /><br />'+
-	'The message is FYI Only, requiring no response. <br /><br />Log in to CRT using '+
-	'Google Chrome, then copy and paste the following link if you would like to access '+
+	'The message is FYI Only, requiring no response. <br /><br />Log in to CRT'+
+	', then copy and paste the following link if you would like to access '+
 	'this specific request: '+
 	'<a href="'+urlBase+path+'">Cart Request Manager</a><br/><br />';
 	mailObj.subject = 'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request is In Process - '+getDateNow()+'';

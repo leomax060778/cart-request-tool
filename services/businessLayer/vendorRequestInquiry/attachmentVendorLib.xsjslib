@@ -10,7 +10,9 @@ function getAttachmentVendorById(objAttachment) {
 	if (validateGetAttachmentVendor(objAttachment)) {
 		var result = dataAttachmentV.getAttachmentVendor(objAttachment);
 		result = JSON.parse(JSON.stringify(result));
-		result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+		result.forEach(function (elem){
+			elem.ATTACHMENT_SIZE = (Number(elem.ATTACHMENT_SIZE) / 1048576).toFixed(2) + " MB";
+		});
 		return result;
 	}
 }
@@ -20,7 +22,9 @@ function getAttachmentVendorByIdManual(objAttachment) {
 	if (validateGetAttachmentVendor(objAttachment)) {
 		var result = dataAttachmentV.getAttachmentVendorManual(objAttachment);
 		result = JSON.parse(JSON.stringify(result));
-		result.ATTACHMENT_SIZE = (parseFloat(Number(result.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+		result.forEach(function (elem){
+			elem.ATTACHMENT_SIZE = (Number(elem.ATTACHMENT_SIZE) / 1048576).toFixed(2) + " MB";
+		});
 		return result;
 	}
 }

@@ -76,6 +76,16 @@ function updateInquiry(objInquiry, userId) {
     return db.executeScalar(UPD_INQUIRY, parameters, 'out_result');
 }
 
+//Update inquiry
+function updateInquiryManual(objInquiry, userId) {
+    var parameters = {};
+    parameters.in_inquiry_id = objInquiry.INQUIRY_ID;
+    parameters.in_topic_id = objInquiry.TOPIC_ID;
+    parameters.in_modified_user_id = userId; //objInquiry.MODIFIED_USER_ID;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_INQUIRY, parameters, 'out_result');
+}
+
 //Delete inquiry
 function deleteInquiry(objInquiry, userId) {
 	var parameters = {};

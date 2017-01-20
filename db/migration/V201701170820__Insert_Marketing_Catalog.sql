@@ -151,6 +151,15 @@ insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,C
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(97,43,'Data Maintenance','49011071',1);
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(98,44,'Data & Lists Purchase','49011069',1);
 insert into "CART_REQUEST_TOOL"."MATERIAL"(MATERIAL_ID, CATALOG_ID,DESCRIPTION,CODE,CREATED_USER_ID) values(99,45,'Production Printing Collateral','49010450',1);
+
+-- *************************************************************************************
+-- Insert Cost object type
+INSERT INTO "CART_REQUEST_TOOL"."COST_OBJECT_TYPE"(COST_OBJECT_TYPE_ID, NAME, CREATED_USER_ID) 
+	VALUES(2, 'Cost Center #', 1);
+
+INSERT INTO "CART_REQUEST_TOOL"."COST_OBJECT_TYPE"(COST_OBJECT_TYPE_ID, NAME, CREATED_USER_ID) 
+	VALUES(3, 'IO #', 1);
+	
 -- *************************************************************************************
 -- Update schema version
 INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT) 

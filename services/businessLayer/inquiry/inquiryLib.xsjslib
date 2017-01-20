@@ -77,13 +77,108 @@ function getAllInquiry(userId) {
 	return inquiry;
 }
 
+//ATTACHMENT UPDATE
+function insertAttachmentInquiry(attachment, in_inquiry_id, userId){
+	attachment.INQUIRY_ID = in_inquiry_id;
+	var serviceUrl = "inquiryService/handleUpdate/updateInquiry/insertAttachmentInquiry";
+	return businessAttachmentInquiry.insertAttachmentInquiryManual(attachment, userId);
+	
+}
+
+function deleteAttachment(attachment, in_inquiry_id, userId){
+	attachment.INQUIRY_ID = in_inquiry_id;
+		if(businessAttachmentInquiry.deleteAttachmentInquiryManual(attachment, userId)){
+			businessAttachmentInquiry.deleteAttachmentInquiryConectionManual(attachment.ATTACHMENT_ID, in_inquiry_id ,userId);
+		}
+}
+
+function updateAttachments(original_attachments, newAttachments, inquiry_id, user_id){
+
+	var original_attachments_local = original_attachments;
+    var originalAttachmentsToUpdate = newAttachments;
+
+    var insertOriginalAttachments = [];
+    var deleteOriginalAttachments = [];
+    
+    //DELETE
+    original_attachments_local.forEach(function (o_attachment) {
+        var result = true;
+        var o_attachment_id = o_attachment.ATTACHMENT_ID;
+        if (typeof o_attachment_id === 'string') {
+        	o_attachment_id = Number(o_attachment_id);
+        }
+        originalAttachmentsToUpdate.forEach(function (updateAttach) {
+        	updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
+            if (o_attachment_id === updateAttach.ATTACHMENT_ID) {
+                result = false;
+            }
+        });
+        if (result) {
+        	deleteOriginalAttachments.push(o_attachment);
+        }
+    });
+    
+    //INSERT
+    originalAttachmentsToUpdate.forEach(function (newAttach) {
+        var result = true;
+        newAttach.ATTACHMENT_ID = Number(newAttach.ATTACHMENT_ID);
+        original_attachments_local.forEach(function (attachment) {
+            var o_attachment_id = attachment.ATTACHMENT_ID;
+            if (typeof o_attachment_id === 'string') {
+            	o_attachment_id = Number(o_attachment_id);
+            }
+            if (newAttach.ATTACHMENT_ID === o_attachment_id) {
+                result = false;
+            }
+        });
+        if (result) {
+        	insertOriginalAttachments.push(newAttach);
+        }
+    });
+         
+    //ACTIONS
+    if(insertOriginalAttachments.length > 0){
+    	insertOriginalAttachments.forEach(function(attachment){
+    		insertAttachmentInquiry(attachment, inquiry_id, user_id);
+    	});
+    }
+    if(deleteOriginalAttachments.length > 0){
+    	deleteOriginalAttachments.forEach(function(attachment){
+    		deleteAttachment(attachment, inquiry_id, user_id);
+    	});
+    }
+	return 1; 
+}
+
 //Update inquiry
 function updateInquiry(objInquiry, userId) {
     if (validateUpdateInquiry(objInquiry, userId)) {
         if (!existInquiry(objInquiry.INQUIRY_ID)) {
             throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/updateInquiry", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
         } else {
-            return dataInquiry.updateInquiry(objInquiry, userId);
+        	var result_id;
+        	try{
+                
+        		result_id = dataInquiry.updateInquiryManual(objInquiry, userId);
+                if(result_id){
+            		var atachmentList = businessAttachmentInquiry.getAttachmentInquiryByIdManual(objInquiry.INQUIRY_ID);
+            		
+            		//ATTACHMENTS UPDATE
+            		if(atachmentList){
+            			updateAttachments(atachmentList, objInquiry.ATTACHMENTS, objInquiry.INQUIRY_ID, userId);
+            		}
+                }
+        		dbHelper.commit();
+        	}
+        	catch(e){
+        		dbHelper.rollback();
+        		throw ErrorLib.getErrors().CustomError("", e.toString(),"updateAttachmentRequest");
+        	}
+        	finally{
+        		dbHelper.closeConnection();
+        	}
+        	
+            return result_id;
         }
     }
 }
