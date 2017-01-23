@@ -7,7 +7,7 @@ function parseSubmit(vendorObj,basicData, userName){
 	' has created a NV'
 	+ vendorObj.REQUEST_ID +
 	'</b><br /><br />Log in to CRT, then copy and paste the following link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.VENDOR_REQUEST_ID +'">New Vendor</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.REQUEST_ID +'">New Vendor</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor Created - '+getDateNow()+'';
 	return mailObj;
 }
@@ -31,7 +31,7 @@ function parseResubmitted(vendorObj, basicData, userName){
 	'</b><br /><br /> <b>Requester '+userName+'</b> has re-submitted a <b>NV'+vendorObj.REQUEST_ID+'</b><br /><br /> '+
 	'Log in to CRT, then copy and paste the following link if you would like to '+
 	'access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.VENDOR_REQUEST_ID +'">New Vendor</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.REQUEST_ID +'">New Vendor</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor Re-Submitted - '+getDateNow()+'';
 	return mailObj;
 }
@@ -65,7 +65,7 @@ function parseFYI(vendorObj, basicData, userName){
 	'<br />The message is <b>FYI Only, requiring no response.</b><br /><br /> Log in to CRT'+
 	', then copy and paste the following link if you would like to access this specific '+
 	'request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.VENDOR_REQUEST_ID +'">New Vendor</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+vendorObj.REQUEST_ID +'">New Vendor</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - FYI Only Messagge - '+getDateNow()+'';
 	return mailObj;
 }

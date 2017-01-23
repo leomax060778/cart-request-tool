@@ -8,7 +8,7 @@ function parseReturnToRequest(extendVendorObj, basicData, userName){
 	'<b> EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+
 	'Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Action/Response Required Message - '+getDateNow()+'';
 	return mailObj;
 }
@@ -19,7 +19,7 @@ function parseCancelled(extendVendorObj,basicData, userName){
 	'<br /><br />The reason for cancellation has been recorded in the Message History as '+
 	'FYI Only, requiring no response.<br /><br />Log in to CRT, '+
 	'then copy and paste the following link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor - has been Cancelled - '+getDateNow()+'';
 	return mailObj;
 }
@@ -30,7 +30,7 @@ function parseSubmit(extendVendorObj,basicData, userName){
 	'<b>Cart Request Tool.</b><br /><br /> <b>Requester '+userName+' has created a  EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b>'+
 	'<br /><br /> Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Created - '+getDateNow()+'';
 	return mailObj;
 }
@@ -41,7 +41,7 @@ function parseResubmitted(extendVendorObj, basicData, userName){
 	'<b>Cart Request Tool.</b><br /><br /> <b>Requester '+userName+'</b> has re-submitted a '+
 	'<b> EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b><br /><br /> Log in to CRT, then copy and paste '+
 	'the following link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Re-Submitted - '+getDateNow()+'';
 	return mailObj;
 }
@@ -53,7 +53,7 @@ function parseApproved(extendVendorObj, basicData, userName){
 	'<b>'+getDateNow()+'</b><br /><br />The message is FYI Only, requiring no response.: '+
 	'<br /><br />Log in to CRT, then copy and paste the following '+
 	'link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor Approved - '+getDateNow()+'';
 	return mailObj;
 }
@@ -65,7 +65,7 @@ function parseInProcess(extendVendorObj, basicData, userName){
 	'has been submitted.<br /><br />The message is FYI Only, requiring no '+
 	'response.<br /><br />Log in to CRT, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor is In Process - '+getDateNow()+'';
 	return mailObj;
 }
@@ -77,7 +77,7 @@ function parseFYI(extendVendorObj, basicData, userName){
 	'</b><br /><br />The message is <b>FYI Only, requiring no response.</b><br /><br /> '+
 	'Log in to CRT, then copy and paste the following link if you '+
 	'would like to access this specific request: '+
-	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">VENDOR INQUIRY</a><br /><br />';
+	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'">EXTEND VENDOR REQUEST</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - FYI Only Messagge - '+getDateNow()+'';
 	return mailObj;
 }

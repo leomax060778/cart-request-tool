@@ -236,7 +236,9 @@ function updateVendorRequest(objVendorRequest, userId) {
     }
 	
         
-    return request.updateVendorRequest(objVendorRequest, userId);
+    var return_id = request.updateVendorRequest(objVendorRequest, userId);
+    
+    sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId)
 
 }
 
