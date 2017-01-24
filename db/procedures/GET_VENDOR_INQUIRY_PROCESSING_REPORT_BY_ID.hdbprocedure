@@ -1,12 +1,12 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_PROCESSING_REPORT_BY_ID" (
 	IN in_vendor_inquiry_id bigint,
 	OUT out_result TABLE (CRT_VENDOR_INQUIRY_ID nvarchar(255),
-							VENDOR_INQUIRY_ID bigint,
+							VENDOR_INQUIRY_ID integer,
 							inquiry_date nvarchar(255),
 							requester nvarchar(255),
 							vendor_name nvarchar(255),
 							inquiry_text nvarchar(1000),
-							status_id bigint,
+							status_id integer,
 							status_name nvarchar(255)
 							)
  ) 

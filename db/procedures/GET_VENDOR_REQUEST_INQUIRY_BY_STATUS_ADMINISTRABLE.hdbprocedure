@@ -2,7 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 	IN in_administrable bigint,
 	IN in_user_id bigint,
   	OUT out_result TABLE (VENDOR_REQUEST_INQUIRY_ID nvarchar(255),
-							V_ID bigint,
+							V_ID integer,
   							message_read integer,
 							VENDOR_NAME NVARCHAR (255),
 							STATUS_NAME NVARCHAR(255),

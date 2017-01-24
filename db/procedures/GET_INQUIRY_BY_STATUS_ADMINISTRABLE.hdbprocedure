@@ -2,7 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_S
   IN in_administrable bigint,
   IN in_user_id bigint,
   OUT out_result TABLE (crt_inquiry_id nvarchar(255), 
-  						inquiry_id bigint,
+  						inquiry_id integer,
   						REQUESTER nvarchar(255), 
   						status_name nvarchar(255),
   						message_read integer,

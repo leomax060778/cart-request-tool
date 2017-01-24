@@ -30,7 +30,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							receiver_yvc_request nvarchar(255), 
 							receiver_modified_date_tz nvarchar(15), 
 							vendor_id bigint,
-							BUDGET_YEAR bigint
+							BUDGET_YEAR integer
 						)
  ) 
 	LANGUAGE SQLSCRIPT

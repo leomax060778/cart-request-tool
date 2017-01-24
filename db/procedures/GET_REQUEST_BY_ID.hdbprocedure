@@ -1,101 +1,119 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_ID" (
- IN in_request_id bigint,
- OUT out_result TABLE (
- 					request_id bigint, 
- 					requester_id bigint, 
- 					requester nvarchar(255),
- 					budget_year_id bigint,
- 					budget_year integer, 
- 					team_id bigint, 
- 					team_name nvarchar(255), 
- 					entity_id bigint,
- 					entity_name nvarchar(255), 
- 					vendor_id bigint, 
- 					vendor_name nvarchar(255),	
- 					vendor_account nvarchar(255), 
- 					alternative_vendor_name nvarchar(255),	
- 					alternative_vendor_phone nvarchar(255), 
- 					alternative_vendor_email nvarchar(255), 
- 					non_sap_vendor_id bigint, 
- 					non_sap_name nvarchar(255), 
- 					non_sap_contact_name nvarchar(255), 
- 					non_sap_contact_email nvarchar(255), 
- 					non_sap_contact_phone nvarchar(255),
-					stage_id bigint, 
-					stage_name nvarchar(127), 
-					status_id bigint, 
-					status_name nvarchar(255), 
-					material_id bigint,
-					material_description nvarchar(255), 
-					material_parent_id bigint, 
-					material_code nvarchar(255), 
-					goods_recipient_username nvarchar(127),
-					data_protection_enabled tinyint, 
-					infrastructure_of_work_id bigint, 
-					infrastructure_name nvarchar(255), 
-					location_of_work_id bigint, 
-					location_name nvarchar(255), 
-					iso nvarchar(2), 
-					request_date nvarchar(255)) 
-						) 
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_ID"(
+		IN in_request_id BIGINT, 
+		OUT out_result TABLE (
+			request_id BIGINT,
+			requester_id BIGINT,
+			requester NVARCHAR(255),
+			budget_year_id BIGINT,
+			budget_year INTEGER,
+			team_id BIGINT,
+			team_name NVARCHAR(255),
+			entity_id BIGINT,
+			entity_name NVARCHAR(255),
+			vendor_id BIGINT,
+			vendor_name NVARCHAR(255),
+			vendor_account NVARCHAR(255),
+			alternative_vendor_name NVARCHAR(255),
+			alternative_vendor_phone NVARCHAR(255),
+			alternative_vendor_email NVARCHAR(255),
+			non_sap_vendor_id BIGINT,
+			non_sap_name NVARCHAR(255),
+			non_sap_contact_name NVARCHAR(255),
+			non_sap_contact_email NVARCHAR(255),
+			non_sap_contact_phone NVARCHAR(255),
+			stage_id BIGINT,
+			stage_name NVARCHAR(127),
+			status_id BIGINT,
+			status_name NVARCHAR(255),
+			material_id BIGINT,
+			material_description NVARCHAR(255),
+			material_parent_id BIGINT,
+			material_code NVARCHAR(255),
+			goods_recipient_username NVARCHAR(127),
+			data_protection_enabled TINYINT,
+			infrastructure_of_work_id BIGINT,
+			infrastructure_name NVARCHAR(255),
+			location_of_work_id BIGINT,
+			location_name NVARCHAR(255),
+			iso NVARCHAR(2),
+			request_date NVARCHAR(255)
+		)
+	)
 	LANGUAGE SQLSCRIPT
-	SQL SECURITY INVOKER 
+	SQL SECURITY INVOKER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
-	READS SQL DATA AS
+	READS SQL DATA
+AS
 BEGIN
-	out_result = SELECT 
-	RQ.REQUEST_ID, 
-	RQ.CREATED_USER_ID AS requester_id, 
-	US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS requester,
-	BYEAR.BUDGET_YEAR_ID AS budget_year_id,
-	BYEAR.BUDGET_YEAR AS budget_year, 
-	RQ.HL3_ID as team_id, 
-	HL3.HL3_DESCRIPTION AS team_name, 
-	RQ.ENTITY_ID,
-	ET.ENTITY_NAME AS entity_name, 
-	RQ.VENDOR_ID, 
-	VAI.VENDOR_NAME AS VENDOR_NAME,
-	V.ACCOUNT AS vendor_account,
-	RQ.ALTERNATIVE_VENDOR_NAME,
-	RQ.ALTERNATIVE_VENDOR_PHONE,
-	RQ.ALTERNATIVE_VENDOR_EMAIL,
-	NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
-	NSV.NAME AS non_sap_name,
-	NSV.CONTACT_NAME AS non_sap_contact_name,
-	NSV.CONTACT_EMAIL AS non_sap_contact_email,
-	NSV.CONTACT_PHONE AS non_sap_contact_phone,
-	RQ.STAGE_ID, 
-	STG.NAME AS stage_name, 
-	RQ.STATUS_ID, 
-	ST.NAME AS status_name, 
-	RQ.MATERIAL_ID, 
-	MT.DESCRIPTION AS material_description, 
-	MT.CATALOG_ID AS material_parent_id,
-	MT.CODE AS material_code, 
-	RQ.GOODS_RECIPIENT_USERNAME, 
-	RQ.DATA_PROTECTION_ENABLED, 
-	RQ.INFRASTRUCTURE_OF_WORK_ID, 
-	IOW.INFRASTRUCTURE_NAME AS infrastructure_name, 
-	RQ.LOCATION_OF_WORK_ID, 
-	LOW.LOCATION_NAME AS location_name, 
-	CTY.ISO AS iso, 
-	TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS request_date
-	 FROM "REQUEST" RQ
-	 	INNER JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
-	 	INNER JOIN "BUDGET_YEAR" BYEAR ON RQ.BUDGET_YEAR_ID = BYEAR.BUDGET_YEAR_ID 
-	 	INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID
-	 	INNER JOIN "ENTITY" ET ON RQ.ENTITY_ID = ET.ENTITY_ID
-	 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON RQ.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
-	 	LEFT JOIN "VENDOR" V ON RQ.VENDOR_ID = V.VENDOR_ID
-	 	LEFT JOIN "NON_SAP_VENDOR" NSV ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
-	 	INNER JOIN "STAGE" STG ON RQ.STAGE_ID = STG.STAGE_ID
-	 	INNER JOIN "REQUEST_STATUS" AS ST ON RQ.STATUS_ID = ST.STATUS_ID
-	 	LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
-	 	LEFT JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
-	 	LEFT JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
-	 	INNER JOIN "CRT_TYPE" CTY ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID
-	    WHERE RQ.REQUEST_ID = in_request_id
-		AND RQ.enabled = 1
-		AND RQ.deleted = 0;
-
+	out_result = SELECT RQ.REQUEST_ID, 
+				RQ.CREATED_USER_ID AS requester_id, 
+				US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS requester, 
+				BYEAR.BUDGET_YEAR_ID AS budget_year_id, 
+				BYEAR.BUDGET_YEAR AS budget_year, 
+				RQ.HL3_ID AS team_id, 
+				HL3.HL3_DESCRIPTION AS team_name, 
+				RQ.ENTITY_ID, 
+				ET.ENTITY_NAME AS entity_name, 
+				RQ.VENDOR_ID, 
+				VAI.VENDOR_NAME AS VENDOR_NAME, 
+				V.ACCOUNT AS vendor_account, 
+				RQ.ALTERNATIVE_VENDOR_NAME, 
+				RQ.ALTERNATIVE_VENDOR_PHONE, 
+				RQ.ALTERNATIVE_VENDOR_EMAIL, 
+				NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id, 
+				NSV.NAME AS non_sap_name, 
+				NSV.CONTACT_NAME AS non_sap_contact_name, 
+				NSV.CONTACT_EMAIL AS non_sap_contact_email, 
+				NSV.CONTACT_PHONE AS non_sap_contact_phone, 
+				RQ.STAGE_ID, 
+				STG.NAME AS stage_name, 
+				RQ.STATUS_ID, 
+				ST.NAME AS status_name, 
+				RQ.MATERIAL_ID, 
+				MT.DESCRIPTION AS material_description, 
+				MT.CATALOG_ID AS material_parent_id, 
+				MT.CODE AS material_code, 
+				RQ.GOODS_RECIPIENT_USERNAME, 
+				RQ.DATA_PROTECTION_ENABLED, 
+				RQ.INFRASTRUCTURE_OF_WORK_ID, 
+				IOW.INFRASTRUCTURE_NAME AS infrastructure_name, 
+				RQ.LOCATION_OF_WORK_ID, 
+				LOW.LOCATION_NAME AS location_name, 
+				CTY.ISO AS iso, 
+				TO_NVARCHAR(
+					RQ.CREATED_DATE_TZ, 
+					'YYYY-MM-DD'
+				) AS request_date
+			FROM "REQUEST" AS RQ
+				INNER JOIN "USER" AS US
+				ON RQ.CREATED_USER_ID = US.USER_ID
+				INNER JOIN "BUDGET_YEAR" AS BYEAR
+				ON RQ.BUDGET_YEAR_ID = BYEAR.BUDGET_YEAR_ID
+				LEFT JOIN "HL3" AS HL3
+				ON RQ.HL3_ID = HL3.HL3_ID
+				INNER JOIN "ENTITY" AS ET
+				ON RQ.ENTITY_ID = ET.ENTITY_ID
+				LEFT OUTER JOIN "VENDOR_ADDITIONAL_INFORMATION" AS VAI
+				ON RQ.VENDOR_ID = VAI.VENDOR_ID
+					AND VAI.ENABLED = 1
+					AND VAI.DELETED = 0
+				LEFT OUTER JOIN "VENDOR" AS V
+				ON RQ.VENDOR_ID = V.VENDOR_ID
+				LEFT OUTER JOIN "NON_SAP_VENDOR" AS NSV
+				ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
+				INNER JOIN "STAGE" AS STG
+				ON RQ.STAGE_ID = STG.STAGE_ID
+				INNER JOIN "REQUEST_STATUS" AS ST
+				ON RQ.STATUS_ID = ST.STATUS_ID
+				LEFT OUTER JOIN "MATERIAL" AS MT
+				ON RQ.MATERIAL_ID = MT.MATERIAL_ID
+				LEFT OUTER JOIN "INFRASTRUCTURE_OF_WORK" AS IOW
+				ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
+				LEFT OUTER JOIN "LOCATION_OF_WORK" AS LOW
+				ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
+				INNER JOIN "CRT_TYPE" AS CTY
+				ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID
+			WHERE RQ.REQUEST_ID = in_request_id
+				AND RQ.enabled = 1
+				AND RQ.deleted = 0;
 END;

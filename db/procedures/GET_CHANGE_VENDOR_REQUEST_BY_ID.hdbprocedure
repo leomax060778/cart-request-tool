@@ -1,11 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_BY_ID" (	
 	IN in_change_vendor_request_id bigint,
-	OUT out_result TABLE (CHANGE_VENDOR_REQUEST_id bigint, 
+	OUT out_result TABLE (CHANGE_VENDOR_REQUEST_id integer, 
 							user_name nvarchar(255),
 							first_name nvarchar(255),
 							last_name nvarchar(255),
-							entity_id bigint, 
-							commodity_id bigint,
+							entity_id integer, 
+							commodity_id integer,
 							COMMODITY_DESCRIPTION nvarchar(255),
 							vendor_name nvarchar(511),
 							vendor_contact_name nvarchar(255), 
@@ -16,7 +16,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							receiver_date_completed_tz nvarchar(15), 
 							receiver_yvc_request nvarchar(255), 
 							receiver_modified_date_tz nvarchar(15), 
-							vendor_id bigint
+							vendor_id integer
 						)
  ) 
 	LANGUAGE SQLSCRIPT

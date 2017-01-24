@@ -1,76 +1,108 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROCESSING_REPORT_BY_ID" (
-	IN in_request_id bigint,
-	OUT out_result TABLE (crt_request_id nvarchar(32),
-							request_id bigint,
-							request_date nvarchar(32),
-							team nvarchar(255),
-							requester nvarchar(255),
-							entity nvarchar(255),
-							vendor_name nvarchar(255),
-							vendor_account nvarchar(255),
-							contact_name nvarchar(255),
-							contact_email nvarchar(255),
-							phone nvarchar(255),
-							alternative_vendor_name nvarchar(255),
-							alternative_vendor_phone nvarchar(255),
-							alternative_vendor_email nvarchar(255),
-							non_sap_vendor_contact_name nvarchar(255),
-							non_sap_vendor_contact_email nvarchar(255),
-							non_sap_vendor_contact_phone nvarchar(255),
-							status_id bigint,
-							status_name nvarchar(255),
-							budget_year integer,
-							material_id bigint,
-							goods_recipient_username nvarchar(255)
-						 )
-)
-LANGUAGE SQLSCRIPT
-SQL SECURITY INVOKER
-DEFAULT SCHEMA "CART_REQUEST_TOOL"
-READS SQL DATA AS
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROCESSING_REPORT_BY_ID"(
+		IN in_request_id BIGINT, 
+		OUT out_result TABLE (
+			crt_request_id NVARCHAR(32),
+			request_id INTEGER,
+			request_date NVARCHAR(32),
+			team NVARCHAR(255),
+			requester NVARCHAR(255),
+			entity NVARCHAR(255),
+			vendor_name NVARCHAR(255),
+			vendor_account NVARCHAR(255),
+			contact_name NVARCHAR(255),
+			contact_email NVARCHAR(255),
+			phone NVARCHAR(255),
+			alternative_vendor_name NVARCHAR(255),
+			alternative_vendor_phone NVARCHAR(255),
+			alternative_vendor_email NVARCHAR(255),
+			non_sap_vendor_contact_name NVARCHAR(255),
+			non_sap_vendor_contact_email NVARCHAR(255),
+			non_sap_vendor_contact_phone NVARCHAR(255),
+			status_id INTEGER,
+			status_name NVARCHAR(255),
+			budget_year INTEGER,
+			material_id INTEGER,
+			goods_recipient_username NVARCHAR(255)
+		)
+	)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA
+AS
 BEGIN
-out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID,
-                    CR.REQUEST_ID AS REQUEST_ID,
-                    to_nvarchar(CR.created_date_tz, 'YYYY-MM-DD') AS request_date,
-                    HL3.ACRONYM as team,
-                    (US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
-                    ET.entity_name AS entity,
-               		VAI.VENDOR_NAME,
-                    V.account AS vendor_account,
-	                V.contact_name,
-    	            V.contact_email,
-        	        V.phone,
-        	        CR.ALTERNATIVE_VENDOR_NAME,
-					CR.ALTERNATIVE_VENDOR_PHONE,
-					CR.ALTERNATIVE_VENDOR_EMAIL,
-        	        NV.contact_name AS non_sap_vendor_contact_name,
-    	            NV.contact_email AS non_sap_vendor_contact_email,
-        	        NV.contact_phone AS non_sap_vendor_contact_phone,
-        	        CR.status_id,
-        	        ST.name as STATUS_NAME,
-        	        BUD.BUDGET_YEAR,
-        	        CR.MATERIAL_ID,
-        	        CR.GOODS_RECIPIENT_USERNAME
-             FROM "REQUEST" CR
-               INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
-               LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-                 ON (CR.VENDOR_ID = VAI.VENDOR_ID
-                     AND(
-                     	((CR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= CR.MODIFIED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ))))
-                     	OR                     	
-                     	(CR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
-                          and VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ)
-                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))))
-                 )
-               INNER JOIN "USER" US ON US.USER_ID = CR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-               INNER JOIN "HL3" HL3 ON HL3.HL3_ID = CR.HL3_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
-               LEFT JOIN "VENDOR" V ON CR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
-               LEFT JOIN "NON_SAP_VENDOR" NV ON CR.NON_SAP_VENDOR_ID = NV.NON_SAP_VENDOR_ID AND NV.ENABLED = 1 AND NV.DELETED = 0
-               INNER JOIN "ENTITY" ET ON CR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
-               INNER JOIN "REQUEST_STATUS" ST ON CR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
-               INNER JOIN "BUDGET_YEAR" BUD ON CR.BUDGET_YEAR_ID = BUD.BUDGET_YEAR_ID
-               WHERE CR.REQUEST_ID = in_request_id AND CR.ENABLED = 1 AND CR.DELETED = 0 ORDER BY CR.REQUEST_ID DESC;
-
+	out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID, 
+				CR.REQUEST_ID AS REQUEST_ID, 
+				to_nvarchar(
+					CR.created_date_tz, 
+					'YYYY-MM-DD'
+				) AS request_date, 
+				HL3.ACRONYM AS team, 
+				US.first_name || ' ' || US.last_name || ', ' || US.user_name AS REQUESTER, 
+				ET.entity_name AS entity, 
+				VAI.VENDOR_NAME, 
+				V.account AS vendor_account, 
+				V.contact_name, 
+				V.contact_email, 
+				V.phone, 
+				CR.ALTERNATIVE_VENDOR_NAME, 
+				CR.ALTERNATIVE_VENDOR_PHONE, 
+				CR.ALTERNATIVE_VENDOR_EMAIL, 
+				NV.contact_name AS non_sap_vendor_contact_name, 
+				NV.contact_email AS non_sap_vendor_contact_email, 
+				NV.contact_phone AS non_sap_vendor_contact_phone, 
+				CR.status_id, 
+				ST.name AS STATUS_NAME, 
+				BUD.BUDGET_YEAR, 
+				CR.MATERIAL_ID, 
+				CR.GOODS_RECIPIENT_USERNAME
+			FROM "REQUEST" AS CR
+				INNER JOIN "CRT_TYPE" AS CT
+				ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID
+					AND CT.ENABLED = 1
+					AND CT.DELETED = 0
+				LEFT OUTER JOIN "VENDOR_ADDITIONAL_INFORMATION" AS VAI
+				ON CR.VENDOR_ID = VAI.VENDOR_ID
+					AND (CR.MODIFIED_DATE_TZ IS NOT NULL
+						AND (VAI.MODIFIED_DATE_TZ IS NOT NULL
+							AND VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ
+							AND VAI.MODIFIED_DATE_TZ >= CR.MODIFIED_DATE_TZ
+							OR VAI.MODIFIED_DATE_TZ IS NULL
+							AND VAI.CREATED_DATE_TZ <= CR.MODIFIED_DATE_TZ)
+						OR CR.MODIFIED_DATE_TZ IS NULL
+						AND (VAI.MODIFIED_DATE_TZ IS NOT NULL
+							AND VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ
+							AND VAI.MODIFIED_DATE_TZ >= CR.CREATED_DATE_TZ
+							OR VAI.MODIFIED_DATE_TZ IS NULL
+							AND VAI.CREATED_DATE_TZ <= CR.CREATED_DATE_TZ))
+				INNER JOIN "USER" AS US
+				ON US.USER_ID = CR.CREATED_USER_ID
+					AND US.ENABLED = 1
+					AND US.DELETED = 0
+				LEFT JOIN "HL3" AS HL3
+				ON HL3.HL3_ID = CR.HL3_ID
+					AND HL3.ENABLED = 1
+					AND HL3.DELETED = 0
+				LEFT OUTER JOIN "VENDOR" AS V
+				ON CR.VENDOR_ID = V.VENDOR_ID
+					AND V.ENABLED = 1
+					AND V.DELETED = 0
+				LEFT OUTER JOIN "NON_SAP_VENDOR" AS NV
+				ON CR.NON_SAP_VENDOR_ID = NV.NON_SAP_VENDOR_ID
+					AND NV.ENABLED = 1
+					AND NV.DELETED = 0
+				INNER JOIN "ENTITY" AS ET
+				ON CR.ENTITY_ID = ET.ENTITY_ID
+					AND ET.ENABLED = 1
+					AND ET.DELETED = 0
+				INNER JOIN "REQUEST_STATUS" AS ST
+				ON CR.STATUS_ID = ST.STATUS_ID
+					AND ST.ENABLED = 1
+					AND ST.DELETED = 0
+				INNER JOIN "BUDGET_YEAR" AS BUD
+				ON CR.BUDGET_YEAR_ID = BUD.BUDGET_YEAR_ID
+			WHERE CR.REQUEST_ID = in_request_id
+				AND CR.ENABLED = 1
+				AND CR.DELETED = 0
+			ORDER BY CR.REQUEST_ID DESC;
 END;
