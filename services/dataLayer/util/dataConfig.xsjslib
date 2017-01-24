@@ -94,7 +94,7 @@ function ExecutePermission() {
 /** ************URLs******************* */
 var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
 var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
-var Environment = "Development"; //Can be: Development - Staging - Production.
+var Environment = "Staging"; //Can be: Development - Staging - Production.
 
 var complete_path = {
 		"HOME": "/home",
@@ -164,8 +164,12 @@ function getRoleEnum() {
 	return RoleEnum;
 }
 
-function getEnvironment() {
+function getMailEnvironment() {
 	Environment = (Environment !== "Production")? '('+Environment+')' : "";
+	return Environment;
+}
+
+function getEnvironment() {
 	return Environment;
 }
 
@@ -184,10 +188,12 @@ function getPath(nameString){
 function getBasicData(stringPathName){
 	var parameters = {};
 	parameters.URL_BASE = getUrlBase();
-	parameters.ENVIRONMENT = getEnvironment();
-	
+		
 	if(stringPathName){
 		parameters.PATH = getPath(stringPathName);
+		parameters.ENVIRONMENT = getMailEnvironment();
+	}else{
+		parameters.ENVIRONMENT = getEnvironment();
 	}
 	
 	return parameters;

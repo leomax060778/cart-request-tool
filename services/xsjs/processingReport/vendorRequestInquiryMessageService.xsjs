@@ -137,7 +137,7 @@ function handlePost(reqBody, userId) {
     		status.updateVendorRequestStatusManual(reqBody, userId);
     	}
         res = request.insertVendorRequestMessage(reqBody, userId);
-        vendorRequest.sendMessageMail(reqBody, userId);
+        
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
     	if (Number(reqBody.RETURN_TYPE_ID) === 3){
     		reqBody.STATUS_ID = 4;

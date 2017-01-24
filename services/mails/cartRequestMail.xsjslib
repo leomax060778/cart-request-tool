@@ -30,7 +30,7 @@ function parseSubmit(cartRequestObj,basicData,  userName){
 	'CR'+cartRequestObj.REQUEST_ID+'</b> <br /> <br /> Log in to CRT, then copy '+
 	'and paste the following link if you would like to access this specific request: '+
 	'<a href="'+basicData.URL_BASE+basicData.PATH+'/'+cartRequestObj.REQUEST_ID+'">Cart Request Manager</a><br/><br />';
-	mailObj.subject = basicData.ENVIRONMENT+basicData.ENVIRONMENT+'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request Created - '+getDateNow()+'';
+	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - Cart Request Created - '+getDateNow()+'';
 	return mailObj;
 }
 

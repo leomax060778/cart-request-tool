@@ -17,12 +17,31 @@ var statusRequest = mapper.getCartRequest();
 var statusVendor = mapper.getVendorRequestInquiryStatus();
 var statusInquiry = mapper.getInquiryStatus();
 var dbHelper = mapper.getdbHelper();
+var config = mapper.getDataConfig();
+
+var changeVendorMail = mapper.getChangeVendorMail();
+var extendVendorMail = mapper.getExtendVendorMail();
+var vendorInquiryMail = mapper.getVendorInquiryMail();
+var vendorMail = mapper.getVendorMail();
+var inquiryMail = mapper.getCrtInquiryMail();
+var requestMail = mapper.getCartRequestMail();
+
+var mail = mapper.getMail();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var issueTypeMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
 var returnTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
+var pathName = {
+		"CHANGE_VENDOR_MAIL" : "CHANGE_VENDOR_REQUEST",
+		"EXTEND_VENDOR_MAIL" : "EXTEND_VENDOR_REQUEST",
+		"VENDOR_INQUIRY_MAIL" : "VENDOR_INQUIRY",
+		"VENDOR_REQUEST_MAIL" : "VENDOR_REQUEST",
+		"CRT_INQUIRY_MAIL": "CRT_INQUIRY",
+		"CART_REQUEST_MAIL": "CART_REQUEST"
+};
 
 /** ***********INSERT*************** */
 //Insert new change vendor request message
@@ -41,7 +60,10 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	    	objChangeVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
 		}
-	    return dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
+	    var return_id = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
+	    sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
+	    
+	    return return_id;
     }
 }
 
@@ -61,7 +83,10 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	    	objExtendVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
 		}
-        return dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
+        var return_id = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
+        sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
+        
+        return return_id;
     }
 }
 
@@ -81,7 +106,10 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 	    	objVendorRequest.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
 		}
-        return dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
+        var return_id = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
+        sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
+        
+        return return_id;
     }
 }
 
@@ -101,7 +129,10 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 	    	objVendorInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
 		}
-        return dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
+        var return_id = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
+        sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
+        
+        return return_id;
     }
 }
 
@@ -118,7 +149,10 @@ function insertInquiryMessage(objInquiry, userId) {
 	    	objInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
 		}
-        return dataMessage.insertInquiryMessage(objInquiry, userId);
+        var return_id = dataMessage.insertInquiryMessage(objInquiry, userId);
+        sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
+        
+        return return_id;
     }
 }
 
@@ -138,7 +172,10 @@ function insertRequestMessage(objRequest, userId) {
 	    	objRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
-        return dataMessage.insertRequestMessage(objRequest, userId);
+        var return_id = dataMessage.insertRequestMessage(objRequest, userId);
+        sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
+        
+        return return_id;
     }
 }
 /** ***********END INSERT*************** */
@@ -856,4 +893,66 @@ function validateType(key, value) {
             break;
     }
     return valid;
+}
+
+/** EMAIL **/
+
+function sendMessageMail(reqBody, vendor_type, userId){
+	var reqMailObj = {};
+
+	switch(vendor_type) {
+	    case "CHANGE_VENDOR_REQUEST":
+	    	reqMailObj.CHANGE_VENDOR_REQUEST_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
+	    	var mailObj = changeVendorMail.parseFYI(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), "Colleague");
+	    	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+	    	mail.sendMail(emailObj,true,null);
+	        break;
+	    case "EXTEND_VENDOR_REQUEST":
+	    	reqMailObj.EXTEND_VENDOR_REQUEST_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
+	    	var mailObj = extendVendorMail.parseFYI(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), "Colleague");
+	    	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+	    	mail.sendMail(emailObj,true,null);
+	        break;
+	    case "VENDOR_INQUIRY":
+	    	reqMailObj.VENDOR_INQUIRY_ID = reqBody.VENDOR_INQUIRY_ID;
+	    	var mailObj = vendorInquiryMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
+	    	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+	    	mail.sendMail(emailObj,true,null);
+	        break;
+	    case "VENDOR_REQUEST":
+	    	reqMailObj.REQUEST_ID = reqBody.VENDOR_REQUEST_ID;
+	    	var mailObj = vendorMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), "Colleague");
+	    	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+	    	mail.sendMail(emailObj,true,null);
+	        break;
+	    case "CRT_INQUIRY":
+	    	reqMailObj.INQUIRY_ID = reqBody.INQUIRY_ID;
+			var mailObj = inquiryMail.parseFYI(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL), "Colleague");
+			var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
+			mail.sendMail(emailObj,true,null);
+			break;
+	    case "CART_REQUEST":
+	    	reqMailObj.REQUEST_ID = reqBody.REQUEST_ID;
+	   	 	var mailObj = requestMail.parseNewMessage(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL), "Colleague");
+	   	 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
+	   	 	mail.sendMail(emailObj,true,null);
+	    	break;
+	}
+
+}
+
+function getUrlBase(){
+	return config.getUrlBase();
+}
+
+function getEmailList(changeVendorRequest){
+	return config.getEmailList();
+}
+
+function getPath(stringName){
+	return config.getPath(stringName);
+}
+
+function getBasicData(stringPathName){
+	return config.getBasicData(stringPathName);
 }
