@@ -1,15 +1,30 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TRAINING_BY_ID" (
- IN in_training_id bigint,
- OUT out_result TABLE (training_id bigint, training_type_id bigint, parent_id bigint, link nvarchar (2048), name nvarchar (2048), description nvarchar (2048),training_order integer)
- ) 
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TRAINING_BY_ID"(
+		IN in_training_id BIGINT, 
+		OUT out_result TABLE (
+			training_id INTEGER,
+			training_type_id BIGINT,
+			parent_id INTEGER,
+			link NVARCHAR(2048),
+			name NVARCHAR(2048),
+			description NVARCHAR(2048),
+			training_order INTEGER
+		)
+	)
 	LANGUAGE SQLSCRIPT
-	SQL SECURITY INVOKER 
+	SQL SECURITY INVOKER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
-	READS SQL DATA AS
+	READS SQL DATA
+AS
 BEGIN
- out_result = SELECT training_id,training_type_id, parent_id, link, name, description ,training_order
- 			FROM "TRAINING" 
- 			 WHERE "TRAINING".training_id = in_training_id
- 			  AND ENABLED = 1
- 			  AND DELETED = 0;
+	out_result = SELECT training_id, 
+				training_type_id, 
+				parent_id, 
+				link, 
+				name, 
+				description, 
+				training_order
+			FROM "TRAINING"
+			WHERE "TRAINING".training_id = in_training_id
+				AND ENABLED = 1
+				AND DELETED = 0;
 END;

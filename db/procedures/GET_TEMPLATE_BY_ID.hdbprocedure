@@ -4,15 +4,15 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TEMPLATE_BY_
 		template_id bigint, 
 		user_id bigint, 
 		template_type_id bigint, 
-		template_parent_id bigint, 
+		template_parent_id integer, 
 		name nvarchar(2048), 
 		link nvarchar(2048), 
 		template_order integer, 
 		deleted_template_name nvarchar(255), 
 		description nvarchar(1000), 
 		section_id bigint,
-		attachment_id bigint)
- ) 
+		attachment_id integer)
+ )
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
