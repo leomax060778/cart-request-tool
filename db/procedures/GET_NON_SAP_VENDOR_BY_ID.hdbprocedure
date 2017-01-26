@@ -3,7 +3,6 @@ IN in_non_sap_vendor_id bigint,
 OUT out_result TABLE (
 		non_sap_vendor_id bigint, 
 		entity_id bigint,
-		name nvarchar (255), 
 		contact_name nvarchar (255), 
 		contact_email nvarchar (255), 
 		contact_phone nvarchar (255)
@@ -17,7 +16,6 @@ BEGIN
 out_result = SELECT 
 			NSV.non_sap_vendor_id, 
 			NSV.entity_id,
-			NSV.name, 
 			NSV.contact_name, 
 			NSV.contact_email, 
 			NSV.contact_phone

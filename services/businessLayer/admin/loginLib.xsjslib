@@ -85,16 +85,15 @@ function validateCurrentPassword(username, password){
 	var currentUser = userLib.getUserByUserName(username);
 	if(!currentUser){
 		throw ErrorLib.getErrors().LoginError("",
-				"LoginLib/validateCurrentPassword", "Invalid User Name.");	
+				"LoginLib/login", "Invalid credentials. Please log in again");	
 	}
 	
 	var currentUserId = currentUser['USER_ID'];
 	// Validate user password
 	if(!password){
 		throw ErrorLib.getErrors().LoginError("",
-				"LoginLib/login", "Invalid Current Password.");	
+				"LoginLib/login", "Invalid credentials. Please log in again");	
 	}
-	
 	var userHashedPassword = dbLogin.getPasswordHash(password);
 	var currentUserPassword = currentUser['PASSWORD'];
 	
@@ -107,7 +106,14 @@ function validateCurrentPassword(username, password){
 }
 
 function login(username,password){
-	
+	if(!username){
+		throw ErrorLib.getErrors().LoginError("",
+				"LoginLib/login", "Invalid credentials. Please log in again");	
+	}
+	if(!password){
+		throw ErrorLib.getErrors().LoginError("",
+				"LoginLib/login", "Invalid credentials. Please log in again");	
+	}
 	var currentUser = userLib.getUserByUserName(username);
 	if(!currentUser){
 		throw ErrorLib.getErrors().LoginError("",

@@ -1,7 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NON_SAP_VENDOR" ( 
   IN in_non_sap_vendor_id bigint,
   IN in_entity_id bigint,
-  IN in_name nvarchar(255),
   IN in_contact_name nvarchar (255),
   IN in_contact_email nvarchar (255),
   IN in_contact_phone nvarchar (255),
@@ -16,7 +15,6 @@ BEGIN
 	UPDATE vendor
 	SET 
 	vendor.entity_id = in_entity_id,
-	vendor.name = in_name,
 	vendor.contact_name = in_contact_name,
 	vendor.contact_email = in_contact_email,
 	vendor.contact_phone = in_contact_phone,

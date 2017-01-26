@@ -1,6 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NON_SAP_VENDOR" (
   IN in_entity_id bigint,
-  IN in_name nvarchar(255),
   IN in_contact_name nvarchar (255),
   IN in_contact_email nvarchar (255),
   IN in_contact_phone nvarchar (255),
@@ -12,7 +11,7 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-    INSERT INTO "CART_REQUEST_TOOL"."NON_SAP_VENDOR"(entity_id, name, contact_name, contact_email, contact_phone, created_user_id)
-    VALUES(in_entity_id, in_name, in_contact_name, in_contact_email, in_contact_phone, in_created_user_id);
+    INSERT INTO "CART_REQUEST_TOOL"."NON_SAP_VENDOR"(entity_id, contact_name, contact_email, contact_phone, created_user_id)
+    VALUES(in_entity_id, in_contact_name, in_contact_email, in_contact_phone, in_created_user_id);
     SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."NON_SAP_VENDOR";
 END;

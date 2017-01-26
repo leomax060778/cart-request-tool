@@ -132,7 +132,7 @@ function validateInsertNonSapVendor(objVendor, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'NAME', 'ENTITY_ID', 'CONTACT_NAME', 'CONTACT_EMAIL', 'CONTACT_PHONE'];
+	var keys = ['ENTITY_ID', 'CONTACT_NAME', 'CONTACT_EMAIL', 'CONTACT_PHONE'];
 
 	if (!objVendor)
 		throw ErrorLib.getErrors().CustomError("",
@@ -177,7 +177,7 @@ function validateUpdateNonSapVendor(objVendor, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'NON_SAP_VENDOR_ID', 'ENTITY_ID', 'NAME', 'CONTACT_NAME', 'CONTACT_EMAIL', 'CONTACT_PHONE' ];
+	var keys = [ 'NON_SAP_VENDOR_ID', 'ENTITY_ID', 'CONTACT_NAME', 'CONTACT_EMAIL', 'CONTACT_PHONE' ];
 
 	if (!objVendor)
 		throw ErrorLib.getErrors().CustomError("",
@@ -221,9 +221,6 @@ function validateType(key, value) {
 		break;
 	case 'ENTITY_ID':
 		valid = !isNaN(value) && value > 0;
-		break;
-	case 'NAME':
-		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'CONTACT_NAME':
 		valid = value.length > 0 && value.length <= 255;
