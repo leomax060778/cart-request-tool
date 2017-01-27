@@ -50,7 +50,7 @@ BEGIN
 				BYEAR.BUDGET_YEAR_ID AS budget_year_id, 
 				BYEAR.BUDGET_YEAR AS budget_year, 
 				RQ.HL3_ID AS team_id, 
-				HL3.HL3_DESCRIPTION AS team_name, 
+				HL3.ACRONYM AS team_name, 
 				RQ.ENTITY_ID, 
 				ET.ENTITY_NAME AS entity_name, 
 				RQ.VENDOR_ID, 
