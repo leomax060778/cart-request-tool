@@ -251,6 +251,7 @@ function completeAllRequest(request, user_id) {
 		service.PURCHASE_ORDER_SERVICE = purchase_order_service;
 	});
 	request.ATTACHMENTS = getAttachmentRequest(request.REQUEST_ID, user_id);
+	request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
 }
 
 /*----- REQUEST -----*/
@@ -283,6 +284,7 @@ function getAllRequest(userId) {
 
 	return request;
 }
+
 function getRequestByFilters(objFilters, userId) {
 	if (!objFilters) {
 		throw ErrorLib.getErrors().BadRequest(
