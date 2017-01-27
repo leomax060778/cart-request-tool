@@ -37,7 +37,7 @@ var pathName = "CART_REQUEST";
 /* VALIDATION KEYS FOR INSERTS & UPDATES */
 
 var RequestServiceKeys = ["REQUEST_SERVICE_ID", "REQUEST_ID", "CURRENCY_ID", "CART_AMOUNT", "TOTAL_BUDGET"];
-var nonSapVendorKeys = ["ENTITY_ID", "NAME", "CONTACT_NAME", "CONTACT_PHONE", "CONTACT_EMAIL"];
+var nonSapVendorKeys = ["ENTITY_ID", "CONTACT_NAME", "CONTACT_PHONE", "CONTACT_EMAIL"];
 var RequestServiceOptKeys = ["PURCHASE_ORDER_AMOUNT", "PURCHASE_ORDER_TO_UPLIFT", "LINE_TO_UPLIFT", "SAP_BUYER_NAME"];
 var CostObjectKeys = ["REQUEST_COST_OBJECT_ID", "REQUEST_ID", "ENTITY_ID", "COST_OBJECT_TYPE_ID", "COST_VALUE"];
 var ServiceKeys = ["REQUEST_ID", "START_DATE", "END_DATE", "DESCRIPTION", "AMOUNT", "CURRENCY_ID", "BUDGET", "ITEM"];
@@ -794,7 +794,7 @@ function updateRequest(reqBody, user_id){
 			reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
 			status.updateRequestStatusManual(reqBody, user_id);
 		}
-		
+	
 		//NON-SAP VENDOR UPDATE
 		if(original_request.NON_SAP_VENDOR_ID == null && reqBody.NON_SAP_VENDOR !== null){
 			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
@@ -884,7 +884,6 @@ function updateRequest(reqBody, user_id){
 		}
 		//REQUEST UPDATE
 		request = dataRequest.updateRequestManual(reqBody, user_id);
-		
 		//DATA PROTECTION ANSWERS UPDATE
 		(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
 			updateDataProtectionAnswer(item, user_id);

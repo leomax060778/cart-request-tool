@@ -110,7 +110,6 @@ function getManualAllNonSapVendor() {
 function getParams(objVendor) {
 	var params = {};
 	
-	params.in_name = objVendor.NAME;
 	params.in_entity_id = objVendor.ENTITY_ID;
 	params.in_contact_name = objVendor.CONTACT_NAME;
 	params.in_contact_email = objVendor.CONTACT_EMAIL;

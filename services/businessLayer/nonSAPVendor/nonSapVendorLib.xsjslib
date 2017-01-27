@@ -236,5 +236,5 @@ function validateType(key, value) {
 }
 
 function existNonSapVendor(non_sap_vendor_id, user_id){
-	return getManualNonSapVendorById(non_sap_vendor_id, user_id).length > 0;
+	return Object.keys(getManualNonSapVendorById(non_sap_vendor_id, user_id)).length > 0;
 }
