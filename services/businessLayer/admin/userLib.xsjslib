@@ -24,6 +24,10 @@ function getUserById(id) {
 
 }
 
+function getAllUserName() {
+	return dbUser.getAllUserName();
+}
+
 function getUserByUserName(userName) {
 	if (!userName)
 		throw ErrorLib.getErrors().BadRequest(

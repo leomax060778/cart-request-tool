@@ -7,6 +7,7 @@ var ErrorLib = mapper.getErrors();
 
 var spGetAll = "GET_ALL_USER";
 var spGetAllForFilters = "GET_ALL_USER_FOR_FILTERS";
+var spGetAllUserName = "GET_ALL_USER_NAME";
 var spGetUserById = "GET_USER_BY_ID";
 var spGetUserByUserName = "GET_USER_BY_USERNAME";
 var spInseruser = "INS_USER";
@@ -32,6 +33,12 @@ function getAllUserForFilters(user_id) {
 	param.OUT_RESULT = '?';
 	var rdo = db.executeProcedure(spGetAllForFilters, param);
 	return db.extractArray(rdo.OUT_RESULT);
+}
+
+function getAllUserName() {
+
+	var rdo = db.executeProcedure(spGetAllUserName, {});
+	return db.extractArray(rdo.out_result);
 }
 
 function getUserById(id) {

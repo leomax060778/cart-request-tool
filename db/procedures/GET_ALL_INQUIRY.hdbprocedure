@@ -6,6 +6,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INQUIRY"
   						completed_date_tz nvarchar(15),
   						topic_description nvarchar(255),
   						status_name nvarchar(255),
+  						administrable tinyint,
   						message_read integer,
   						created_user_id bigint
   						)
@@ -26,6 +27,7 @@ BEGIN
 			  						TO_NVARCHAR(INQ.completed_date_tz,'YYYY-MM-DD') AS completed_date_tz,
 			  						TP.description AS topic_description,
 			  						ST.name AS status_name,
+			  						ST.ADMINISTRABLE,
 			  						VAM.MESSAGE_READ,
 			  						INQ.CREATED_USER_ID
 	             		FROM "INQUIRY" INQ

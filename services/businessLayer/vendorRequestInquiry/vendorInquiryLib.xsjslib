@@ -4,6 +4,7 @@ var inquiry = mapper.getDataVendorInquiry();
 var vendorInquiryMail = mapper.getVendorInquiryMail();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
+var businessUser = mapper.getUser();
 var mail = mapper.getMail();
 var config = mapper.getDataConfig();
 var utilLib = mapper.getUtil();
@@ -283,24 +284,30 @@ function validateType(key, value) {
 
 function sendSubmitMail(vendorInquiryRequestId, userId){
 	var vendorMailObj = {};
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
-	var mailObj = vendorInquiryMail.parseSubmit(vendorMailObj, getBasicData(pathName), "Colleague");
+	var mailObj = vendorInquiryMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(vendorInquiryRequestId, userId){
 	var vendorMailObj = {};
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
-	var mailObj = vendorInquiryMail.parseResubmitted(vendorMailObj, getBasicData(pathName), "Colleague");
+	var mailObj = vendorInquiryMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(vendorInquiryRequest, userId){
 	var vendorMailObj = {};
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequest.VENDOR_INQUIRY_ID;
-	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName), "Colleague");
+	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }

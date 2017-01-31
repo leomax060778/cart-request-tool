@@ -5,6 +5,7 @@ var inquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
 var status = mapper.getInquiryStatus();
 var mail = mapper.getMail();
+var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var config = mapper.getDataConfig();
@@ -35,11 +36,14 @@ function getInquiryMessage(inquiryId, userId) {
     if (!userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
     }
-    var result = [];
+    var result = {};
     var objInquiry = {};
+    var inquiryText;
+    var inquiryMessage;
     try {
-    	result = message.getInquiryMessageManual(inquiryId);
-	    result.forEach(function (elem) {
+    	inquiryText = inquiry.getInquiryByIdManual(inquiryId).INQUIRY_TEXT;
+    	inquiryMessage = message.getInquiryMessageManual(inquiryId);
+    	inquiryMessage.forEach(function (elem) {
 	    	if(elem.CREATED_USER_ID !== userId){
 			    if(elem.MESSAGE_READ === 0) {
 			    	objInquiry.MESSAGE_READ = 1;
@@ -47,6 +51,8 @@ function getInquiryMessage(inquiryId, userId) {
 			    }
 	    	}
 	    });
+    	result.INQUIRY_TEXT = inquiryText;
+    	result.INQUIRY_MESSAGES = inquiryMessage;
     } catch (e) {
     	dbHelper.rollback();
 		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getInquiryMessage", e.toString());
@@ -149,7 +155,9 @@ function validateType(key, value) {
 function sendMessageMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseFYI(inquiryMailObj, getBasicData(pathName), "Colleague");
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
+	var mailObj = inquiryMail.parseMessage(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }

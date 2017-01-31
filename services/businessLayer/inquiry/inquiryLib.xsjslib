@@ -4,6 +4,7 @@ var dataInquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
+var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var config = mapper.getDataConfig();
@@ -301,7 +302,9 @@ function validateType(key, value) {
 function sendSubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseSubmit(inquiryMailObj, getBasicData(pathName), "Colleague");
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
+	var mailObj = inquiryMail.parseSubmit(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -309,7 +312,9 @@ function sendSubmitMail(inquiryId, userId){
 function sendResubmitMail(inquiryId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj, getBasicData(pathName), "Colleague");
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
+	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }

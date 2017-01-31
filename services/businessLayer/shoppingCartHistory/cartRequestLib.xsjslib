@@ -801,13 +801,11 @@ function updateRequest(reqBody, user_id){
 		if(original_request.NON_SAP_VENDOR_ID == null && reqBody.NON_SAP_VENDOR !== null){
 			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = nonsap;
-			reqBody.VENDOR_ID = null;
 		
 		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
 			var non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
 			updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = reqBody.NON_SAP_VENDOR.NON_SAP_VENDOR_ID;
-			reqBody.VENDOR_ID = null;
 
 		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR == null){
 			var non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);

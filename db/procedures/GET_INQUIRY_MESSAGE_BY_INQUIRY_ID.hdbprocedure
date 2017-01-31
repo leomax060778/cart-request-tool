@@ -34,5 +34,6 @@ BEGIN
 					  INNER JOIN "ROLE" ROLE ON IM.CREATED_USER_ID = USR.USER_ID AND ROLE.ROLE_ID = USR.ROLE_ID AND ROLE.ENABLED = 1 AND ROLE.DELETED = 0
 				 		WHERE IM.INQUIRY_ID = in_inquiry_id 
                             AND IM.ENABLED = 1 
-                            AND IM.DELETED = 0;
+                            AND IM.DELETED = 0
+                      ORDER BY IM.CREATED_DATE_TZ DESC;
 END;

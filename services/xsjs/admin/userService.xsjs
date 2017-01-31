@@ -8,6 +8,7 @@ var user = mapper.getUser();
 
 var getAll = "ALL";
 var getAllForFilters = "ALL_FOR_FILTERS";
+var getAllUserName = "ALL_USERNAME";
 var getUserbyId = "USERBYID";
 var updatePassword = "UPDPASS";
 var updateUser = "UPDUSER";
@@ -32,6 +33,10 @@ function handleGet(parameters, userId){
 		        break;
 		    case getAllForFilters: //get all users
 		    	var rdo = user.getAllForFilters(userId);
+				return	httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
+		        break;
+		    case getAllUserName: //get all user names
+		    	var rdo = user.getAllUserName();
 				return	httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 		        break;
 		    case getUserbyId: // get one user by id

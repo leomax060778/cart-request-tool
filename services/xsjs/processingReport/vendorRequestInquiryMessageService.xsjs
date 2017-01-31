@@ -11,6 +11,10 @@ var GET_VENDOR_INQUIRY_MESSAGE = "GET_VENDOR_INQUIRY_MESSAGE";
 var GET_VENDOR_REQUEST_MESSAGE = "GET_VENDOR_REQUEST_MESSAGE";
 var GET_EXTEND_VENDOR_REQUEST_MESSAGE = "GET_EXTEND_VENDOR_REQUEST_MESSAGE";
 var GET_CHANGE_VENDOR_REQUEST_MESSAGE = "GET_CHANGE_VENDOR_REQUEST_MESSAGE";
+var issueTypeMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+var returnTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -126,27 +130,27 @@ function handleDelete() {
 function handlePost(reqBody, userId) {
     var res;
     if (reqBody.VENDOR_INQUIRY_ID){
-    	if (Number(reqBody.RETURN_TYPE_ID) === 3){
-    		reqBody.STATUS_ID = 2;
+    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+    		reqBody.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
     		status.updateVendorInquiryStatusManual(reqBody, userId);
     	}
         res = request.insertVendorInquiryMessage(reqBody, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === 3){
-    		reqBody.STATUS_ID = 4;
+    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
     		status.updateVendorRequestStatusManual(reqBody, userId);
     	}
         res = request.insertVendorRequestMessage(reqBody, userId);
         
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === 3){
-    		reqBody.STATUS_ID = 4;
+    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
     		status.updateChangeVendorRequestStatusManual(reqBody, userId);
     	}
         res = request.insertChangeVendorRequestMessage(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === 3){
-    		reqBody.STATUS_ID = 4;
+    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
     		status.updateExtendVendorRequestStatusManual(reqBody, userId);
     	}
         res = request.insertExtendVendorRequestMessage(reqBody, userId);

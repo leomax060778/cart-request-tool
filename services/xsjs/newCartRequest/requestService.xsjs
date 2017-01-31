@@ -22,7 +22,7 @@ function handleDelete(reqBody, userId) {
 function handlePost(reqBody, userId) {
 
     var req = request.insertRequest(reqBody, userId);
-    request.sendSubmitMail(req, reqBody.REQUESTER, userId);
+    request.sendSubmitMail(req, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

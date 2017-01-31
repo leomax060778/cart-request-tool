@@ -17,6 +17,7 @@ var businessAttachment = mapper.getAttachment();
 var dataNoteReq = mapper.getDataNoteRequest();
 var newCartRequestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
+var businessUser = mapper.getUser();
 var config = mapper.getDataConfig();
 var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
@@ -776,8 +777,10 @@ function validateServiceType(key, value) {
 	return valid;
 }
 
-function sendSubmitMail(newCartRequestId, requester, userId){
+function sendSubmitMail(newCartRequestId, userId){
 	var newCartRequestObj = {};
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
 	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	

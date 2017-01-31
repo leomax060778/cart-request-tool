@@ -22,28 +22,28 @@ function getResourceIdByName(name) {
 
 /****Resources Names******* */
 function level1() {
-	return "level1"
+	return "level1";
 }
 function level2() {
-	return "level2"
+	return "level2";
 }
 function level3() {
 	return "level3"
 }
 function settings() {
-	return "settings"
+	return "settings";
 }
 function administration() {
 	return "administration";
 }
 function dereport() {
-	return "dereport"
+	return "dereport";
 }
 function report() {
-	return "report"
+	return "report";
 }
 function search() {
-	return "search"
+	return "search";
 }
 /** *********************** */
 
@@ -64,46 +64,46 @@ function getPermissionIdByName(name) {
 
 /** **Resources Names******* */
 function ReadPermission() {
-	return "Read"
+	return "Read";
 }
 function WritePermission() {
 	return "Write"
 }
 function DeletePermission() {
-	return "Delete"
+	return "Delete";
 }
 function CreatePermission() {
-	return "Create"
+	return "Create";
 }
 function EditPermission() {
-	return "Edit"
+	return "Edit";
 }
 function ViewPermission() {
-	return "View"
+	return "View";
 }
 function GrantPermission() {
-	return "Grant"
+	return "Grant";
 }
 function ExecutePermission() {
-	return "Execute"
+	return "Execute";
 }
 /** *********************** */
 
 /** ************************************************************************ */
 
 /** ************URLs******************* */
-var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
+var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html#";
 var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
 var Environment = "Staging"; //Can be: Development - Staging - Production.
 
 var complete_path = {
 		"HOME": "/home",
-		"CART_REQUEST": "/editCartRequest",
-		"CRT_INQUIRY": "/crtInquiry/edit",
-		"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/edit",
-		"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/edit",
-		"VENDOR_REQUEST": "/newVendorRequest/edit",
-		"VENDOR_INQUIRY": "/vendorInquiry/edit",
+		"CART_REQUEST": "/processingReport/CartRequest",
+		"CRT_INQUIRY": "/processingReport/CrtInquiry",
+		"EXTEND_VENDOR_REQUEST": "/processingReport/ExtendVendorRequest",
+		"CHANGE_VENDOR_REQUEST": "/processingReport/ChangeVendorRequest",
+		"VENDOR_REQUEST": "/processingReport/NewVendorRequest",
+		"VENDOR_INQUIRY": "/processingReport/VendorInquiry",
 		"PROCESSING_REPORT": "/processingReport"
 };
 /** ******************************* */
@@ -114,7 +114,8 @@ var SMTPAccount = "info_cartrequesttool@sap.com";//
 var SupportAccount = "support_cartrequesttool@sap.com";
 var SiteAdministrator = "support_cartrequesttool@sap.com";
 
-var emailAccount = "lhildt@folderit.net";
+var emailAccount = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
+
 /** ************************************** */
 
 // TODO: move this to configuration
@@ -129,7 +130,7 @@ var RoleEnum = {
 	Admin : 2,
 	Data_Entry : 3,
 	Campaign_Manager : 4
-}
+};
 // *************************
 
 function getAppUrl() {
@@ -174,7 +175,7 @@ function getEnvironment() {
 }
 
 function getEmailList(requestMailObj){
-	 return [{address: emailAccount}];
+	 return emailAccounts;
 }
 
 function getUrlBase(){
