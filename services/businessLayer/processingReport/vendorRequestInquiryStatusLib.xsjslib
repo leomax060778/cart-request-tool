@@ -9,6 +9,7 @@ var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
 var change = mapper.getChangeVendorRequest();
+var businessUser = mapper.getUser();
 var vendor = mapper.getVendor();
 var changeVendorMail = mapper.getChangeVendorMail();
 var extendVendorMail = mapper.getExtendVendorMail();
@@ -689,22 +690,24 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)){
 		var vendorRequestMailObj = {};
 		var mailObj = {};
+		var userData = businessUser.getUserById(userId)[0];
+		var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 		vendorRequestMailObj.VENDOR_REQUEST_ID = objRequest.VENDOR_REQUEST_ID;
 		vendorRequestMailObj.RECEIVER_YVC_REQUEST = objRequest.RECEIVER_YVC_REQUEST;
 		vendorRequestMailObj.VENDOR_ID = objRequest.VENDOR_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
-				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), "Colleague");
+				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 			case '4':
-				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), "Colleague");
+				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 			case '5':
-				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), "Colleague");
+				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 			case '6':
-				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), "Colleague");
+				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 		}
 		

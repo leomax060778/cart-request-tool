@@ -45,7 +45,7 @@ function parseApproved(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>NV</b> is now <b>Approved.</b><br /><br />'+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>NV</b> is now <b>Approved.</b><br /><br />'+
 	'<b>Vendor ID # '+vendorObj.VENDOR_ID+'</b> has been issued on <b>'+getDateNow()+'</b><br /><br />The message '+
 	'is FYI Only, requiring no response.<br /><br />Log in to CRT, then copy and '+
 	'paste the following link if you would like to access this specific request: '+
@@ -58,7 +58,7 @@ function parseInProcess(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>NV</b> is now <b>In Process.</b><br /><br />'+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>NV</b> is now <b>In Process.</b><br /><br />'+
 	'<b>YVC Request #: '+vendorObj.RECEIVER_YVC_REQUEST+'</b> has been submitted.<br /><br />The message is FYI Only, '+
 	'requiring no response.<br /><br /> Log in to CRT, then click the '+
 	'following link to process this specific request: '+
@@ -71,7 +71,7 @@ function parseFYI(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />A message has been added to the Message '+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message '+
 	'History tab for your request <b>NV'+vendorObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br />'+
 	'<br />The message is <b>FYI Only, requiring no response.</b><br /><br /> Log in to CRT'+
 	', then click the following link to process this specific request: '+
@@ -84,12 +84,25 @@ function parseReturnToRequest(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
-	mailObj.body =  'Dear '+userName+',<br /><br />Your <b>New Vendor</b> has been returned to you with '+
+	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>New Vendor</b> has been returned to you with '+
 	'an <b>Action and/or Response that is required</b> in order to process your request.<br />'+
-	'<br /><br />A message has been added to the Message History for your request <b>NV'+vendorObj.VENDOR_REQUEST_ID+'</b>'+
+	'<br /><br />A message has been added to the Message History for your request <b>NV'+vendorObj.REQUEST_ID+'</b>'+
 	' in the <b>Cart Request Tool.</b><br /><br />Log in to CRT, and click the following link to process this specific request: '+
 	'<a href="' + completePath +'">' + vendorRequestId + '</a><br /><br />';
-	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - Action/Response Required Message - '+getDateNow()+'';
+	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - Action/Response Required Message - '+getDateNow()+'';
+	return mailObj;
+}
+
+function parseMessage(vendorObj, basicData,  userName){
+	var mailObj = {};
+	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
+	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
+	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
+	'added to the Message History tab for <b>VI'+vendorObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+
+	'<br /><br /> Log in to CRT, then click the'+
+	'following link to process this specific request: '+
+	'<a href="' + completePath + '">' + vendorRequestId + '</a><br/><br />';
+	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+vendorObj.REQUEST_ID+' - New Message - '+getDateNow()+'';
 	return mailObj;
 }
 

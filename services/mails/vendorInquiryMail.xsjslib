@@ -3,7 +3,7 @@ function parseReturnToRequest(vendorInquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
-	mailObj.body =  'Dear '+userName+',<br /><br />Your <b>Vendor Inquiry</b> has been returned '+
+	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>Vendor Inquiry</b> has been returned '+
 	'to you with an <b>Action and/or Response that is required</b> in order to '+
 	'process your request.<br /><br /><br />A message has been added to the Message '+
 	'History for your request <b> VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b><br />'+
@@ -18,7 +18,7 @@ function parseCompleted(vendorInquiryObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
 	'<b>Completed.</b><br /><br />You may review the response in the '+
 	'Message History of your inquiry.<br /><br />Log in to CRT'+
 	', then click the following link to process this specific request: '+
@@ -31,7 +31,7 @@ function parseCancelled(vendorInquiryObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
-	mailObj.body =  'Dear '+userName+',<br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
+	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
 	'<b>Cancelled.</b><br /><br />The reason for cancellation has been '+
 	'recorded in the Message History as FYI Only, requiring no response.'+
 	'<br /><br />Log in to CRT, then click the '+
@@ -71,12 +71,25 @@ function parseFYI(vendorInquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />A message has been added to the '+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the '+
 	'Message History tab for your request <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> in the <b>Cart Request Tool.'+
 	'</b><br /><br />The message is <b>FYI Only, requiring no response.</b><br />'+
 	'<br /> Log in to CRT, then click the following link to process this specific request: '+
 	'<a href="' + completePath + '">' + vendorInquiryId + '</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+' - FYI Only Message - '+getDateNow()+'';
+	return mailObj;
+}
+
+function parseMessage(vendorInquiryObj, basicData,  userName){
+	var mailObj = {};
+	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
+	'added to the Message History tab for <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b>'+
+	'<br /><br /> Log in to CRT, then click the'+
+	'following link to process this specific request: '+
+	'<a href="' + completePath + '">' + vendorInquiryId + '</a><br/><br />';
+	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+' - New Message - '+getDateNow()+'';
 	return mailObj;
 }
 

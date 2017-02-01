@@ -3,7 +3,7 @@ function parseReturnToRequest(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body = 'Dear '+userName+',<br /> <br /> Your <b>Cart Request</b> has been returned '+
+	mailObj.body = 'Dear CRT Admin,<br /> <br /> Your <b>Cart Request</b> has been returned '+
 	'to you with an <b>Action and/or Response that is required</b> in order to process '+
 	'your request.<br /> <br /> A message has been added to the Message History for your '+
 	'request <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br /> <br /> Log in to '+
@@ -17,7 +17,7 @@ function parseCancelled(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body = 'Dear '+userName+',<br /><br />Your <b>CR'+cartRequestObj.REQUEST_ID+'</b> has been <b>Cancelled.</b><br />'+
+	mailObj.body = 'Dear CRT Admin,<br /><br />Your <b>CR'+cartRequestObj.REQUEST_ID+'</b> has been <b>Cancelled.</b><br />'+
 	'<br />The reason for cancellation has been recorded in the Message History as FYI Only, '+
 	'requiring no response.<br /><br />Log in to CRT, then click '+
 	'the following link to process this specific request:'+ 
@@ -56,7 +56,7 @@ function parseApproved(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body = 'Dear '+userName+',<br /><br /> Your cart is now <b>Approved.</b><br /><br />'+
+	mailObj.body = 'Dear CRT Admin,<br /><br /> Your cart is now <b>Approved.</b><br /><br />'+
 	parseTablePO(cartRequestObj) + '<br /><br /> Log in to CRT, and click the '+
 	'following link to process this specific request: '+
 	'<a href="' + completePath + '">' + requestId + '</a><br/><br />';
@@ -68,7 +68,7 @@ function parseInProcess(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body = 'Dear '+userName+',<br /><br />Your <b>Cart Request </b> is now <b>In Process.</b>'+
+	mailObj.body = 'Dear CRT Admin,<br /><br />Your <b>Cart Request </b> is now <b>In Process.</b>'+
 	'<br /><br /><b>Shopping Cart #: '+cartRequestObj.SHOPPING_CART+'</b> has been submitted.<br /><br />'+
 	'The message is FYI Only, requiring no response. <br /><br />Log in to CRT'+
 	', then click the following link to process this specific request: '+
@@ -81,9 +81,9 @@ function parseNewMessage(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body = '<b>Dear '+userName+',</b><br /><br />A message has been '+
+	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+
-	'<br /><br /> Log in to CRT, then click the'+
+	'<br /><br /> Log in to CRT, then click the '+
 	'following link to process this specific request: '+
 	'<a href="' + completePath + '">' + requestId + '</a><br/><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: CR'+cartRequestObj.REQUEST_ID+' - New Message - '+getDateNow()+'';
@@ -94,7 +94,7 @@ function parseFYI(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
-	mailObj.body =  '<b>Dear '+userName+',</b><br /><br />A message has been added to the '+
+	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the '+
 	'Message History tab for your request <b>CR'+cartRequestObj.REQUEST_ID+'</b> in the '+
 	'<b>Cart Request Tool.</b><br /><br />The message is <b>FYI Only, '+
 	'requiring no response.</b><br /><br />Log in to CRT, '+

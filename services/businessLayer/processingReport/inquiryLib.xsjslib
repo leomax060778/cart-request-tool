@@ -5,6 +5,7 @@ var inquiry = mapper.getInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
+var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 
@@ -140,16 +141,18 @@ function validateType(key, value) {
 function sendMailByStatus(inquiryId, statusId, userId){
 	var inquiryMailObj = {};
 	var mailObj = {};
+	var userData = businessUser.getUserById(userId)[0];
+	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName), "Colleague");
+		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName), requester);
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName), "Colleague");
+		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName), requester);
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName), "Colleague");
+		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName), requester);
 		break;
 	}
 	

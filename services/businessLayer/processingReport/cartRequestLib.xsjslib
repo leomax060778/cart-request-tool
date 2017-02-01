@@ -9,6 +9,7 @@ var ErrorLib = mapper.getErrors();
 var service = mapper.getService();
 var purchase = mapper.getPurchaseOrderService();
 var material = mapper.getMaterial();
+var businessUser = mapper.getUser();
 var catalog = mapper.getCatalog();
 var special = mapper.getDataSpecialRequest();
 var budgetYear = mapper.getBudgetYear();
@@ -207,26 +208,28 @@ function sendMailByStatus(objRequest, mailData, userId){
 	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)){
 		var cartRequestMailObj = {};
 		var mailObj = {};
+		var userData = businessUser.getUserById(userId)[0];
+		var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 		cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '3':
 			case 3:
 				cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
-				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj, getBasicData(pathName),"Colleague");
+				mailObj = cartRequestMail.parseInProcess(cartRequestMailObj, getBasicData(pathName),requester);
 				break;
 			case '4':
 			case 4:
-				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName), "Colleague");
+				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName), requester);
 				break;
 			case '5':
 			case 5:
 				cartRequestMailObj.SERVICES = mailData;
-				mailObj = cartRequestMail.parseApproved(cartRequestMailObj, getBasicData(pathName), "Colleague");
+				mailObj = cartRequestMail.parseApproved(cartRequestMailObj, getBasicData(pathName), requester);
 				break;
 			case '6':
 			case 6:
-				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName), "Colleague");
+				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName), requester);
 				break;
 		}
 		
