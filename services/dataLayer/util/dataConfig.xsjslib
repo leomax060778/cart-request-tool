@@ -114,7 +114,7 @@ var SMTPAccount = "info_cartrequesttool@sap.com";//
 var SupportAccount = "support_cartrequesttool@sap.com";
 var SiteAdministrator = "support_cartrequesttool@sap.com";
 
-var emailAccount = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
+var emailAccounts = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
 
 /** ************************************** */
 
