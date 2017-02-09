@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_MATERIAL" (
   IN in_catalog_id bigint,
-  IN in_description nvarchar (255),
-  IN in_popup nvarchar (255),
+  IN in_description nvarchar (1000),
+  IN in_popup nvarchar (1000),
   IN in_code nvarchar(255),
   IN in_created_user_id bigint,
   OUT out_result bigint

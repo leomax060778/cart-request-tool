@@ -232,10 +232,10 @@ function validateType(key, value) {
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'DESCRIPTION':
-		valid = value.length > 0 && value.length <= 255;
+		valid = value.length > 0 && value.length <= 1000;
 		break;
 	case 'POP_UP':
-		valid = (!value) || (value.length > 0 && value.length <= 255);
+		valid = (!value) || (value.length > 0 && value.length <= 1000);
 		break;
 	case 'CODE':
 		valid = value.length > 0 && value.length <= 255;
