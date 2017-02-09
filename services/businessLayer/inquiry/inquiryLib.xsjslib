@@ -50,6 +50,11 @@ function getInquiryById(inquiryId) {
     return inquiry;
 }
 
+//Get last inquiry id
+function getInquiryLastId() {
+	return dataInquiry.getInquiryLastId();
+}
+
 //Get inquiry by id manually
 function getInquiryByIdManual(inquiryId) {
   var inquiry = dataInquiry.getInquiryByIdManual(inquiryId);

@@ -28,7 +28,7 @@ function level2() {
 	return "level2";
 }
 function level3() {
-	return "level3"
+	return "level3";
 }
 function settings() {
 	return "settings";
@@ -62,24 +62,19 @@ function getPermissionIdByName(name) {
 	return null;
 }
 
-/** **Resources Names******* */
-function ReadPermission() {
-	return "Read";
-}
-function WritePermission() {
-	return "Write"
-}
-function DeletePermission() {
-	return "Delete";
-}
-function CreatePermission() {
-	return "Create";
-}
-function EditPermission() {
-	return "Edit";
-}
-function ViewPermission() {
-	return "View";
+/****Resources Names********/
+function ReadPermission(){ return "View/Read"}
+function CreatePermission(){ return "Create/Edit"}
+function DeletePermission(){ return "Delete"}
+
+/**************************/
+
+/***************************************************************************/
+
+
+function getConfigurationByName(key){
+	var result = db.executeProcedure(spGET_CONFIGURATION_BY_NAME,{'IN_KEY' : key});
+	return db.extractArray(result.out_result);
 }
 function GrantPermission() {
 	return "Grant";

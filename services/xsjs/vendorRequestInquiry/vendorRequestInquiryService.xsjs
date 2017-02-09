@@ -15,6 +15,7 @@ var GET_VENDOR_INQUIRY_BY_ID = "GET_VENDOR_INQUIRY_BY_ID";
 var GET_VENDOR_REQUEST_BY_ID = "GET_VENDOR_REQUEST_BY_ID";
 var GET_EXTEND_VENDOR_REQUEST_BY_ID = "GET_EXTEND_VENDOR_REQUEST_BY_ID";
 var GET_CHANGE_VENDOR_REQUEST_BY_ID = "GET_CHANGE_VENDOR_REQUEST_BY_ID";
+var GET_LAST_ID = "GET_LAST_ID";
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -35,12 +36,17 @@ function handleGet(parameters, userId) {
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_VENDOR_REQUEST_INQUIRY) {
             res = requestInquiry.getAllVendorRequestInquiry(userId);
+        } else if (parameters[0].name === GET_LAST_ID) {
+        	if (!parameters[0].value){
+        		throw ErrorLib.getErrors().CustomError("vendorRequestInquiryService/handleGet/getLastId", "Invalid parameter " + parameters[0].value + " for vendorRequestInquiryId. It can be EXTEND, CHANGE, REQUEST or INQUIRY");
+        	}
+            res = requestInquiry.getLastId(parameters[0].value);
         } else if (parameters[0].name === GET_VENDOR_INQUIRY_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestInquiryService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
                 res = inquiry.getVendorInquiryById(parameters[0].value);
@@ -50,7 +56,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestInquiryService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
                 res = request.getVendorRequestById(parameters[0].value);
@@ -60,7 +66,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestInquiryService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
                 res = extend.getExtendVendorRequestById(parameters[0].value);
@@ -70,7 +76,7 @@ function handleGet(parameters, userId) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorRequestInquiryService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
@@ -84,14 +90,14 @@ function handleGet(parameters, userId) {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "vendorRequestInquiryService/handleGet",
-                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_VENDOR_REQUEST_INQUIRY, GET_VENDOR_INQUIRY_BY_ID, GET_VENDOR_REQUEST_BY_ID, GET_EXTEND_VENDOR_REQUEST_BY_ID, GET_CHANGE_VENDOR_REQUEST_BY_ID)"
+                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_VENDOR_REQUEST_INQUIRY, GET_VENDOR_INQUIRY_BY_ID, GET_VENDOR_REQUEST_BY_ID, GET_EXTEND_VENDOR_REQUEST_BY_ID, GET_CHANGE_VENDOR_REQUEST_BY_ID or GET_LAST_ID)"
             );
         }
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "vendorRequestInquiryService/handleGet",
-            "invalid parameter (can be: GET_ALL_VENDOR_REQUEST_INQUIRY, GET_VENDOR_INQUIRY_BY_ID, GET_VENDOR_REQUEST_BY_ID, GET_EXTEND_VENDOR_REQUEST_BY_ID, GET_CHANGE_VENDOR_REQUEST_BY_ID)"
+            "invalid parameter (can be: GET_ALL_VENDOR_REQUEST_INQUIRY, GET_VENDOR_INQUIRY_BY_ID, GET_VENDOR_REQUEST_BY_ID, GET_EXTEND_VENDOR_REQUEST_BY_ID, GET_CHANGE_VENDOR_REQUEST_BY_ID or GET_LAST_ID)"
         );
     }
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);

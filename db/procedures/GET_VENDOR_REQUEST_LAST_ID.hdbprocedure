@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_LAST_ID" (
+	OUT out_result TABLE (NV_ID nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT (VT.ISO || (LAST_VALUE (NV.vendor_request_id order by NV.created_date_tz) + 1)) as NV_ID
+					FROM "VENDOR_REQUEST" NV
+						INNER JOIN "VENDOR_TYPE" VT ON NV.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
+					group by VT.ISO;
+END;

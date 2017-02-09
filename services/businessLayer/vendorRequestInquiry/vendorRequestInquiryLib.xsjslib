@@ -22,3 +22,29 @@ function getAllVendorRequestInquiry(userId) {
     });
 	return vendorRequestInquiry;
 }
+
+//Get last id
+function getLastId(vendorRequestInquiryId) {
+	if (!vendorRequestInquiryId) {
+		throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestInquiryId is not found", "vendorRequestInquiryService/handleGet/getLastId", vendorRequestInquiryId);
+    }
+	var vendorRequestInquiry;
+	switch (vendorRequestInquiryId) {
+	case "EXTEND":
+		vendorRequestInquiry = dataVendorRequestInquiry.getExtendVendorRequestLastId();
+		break;
+	case "CHANGE":
+		vendorRequestInquiry = dataVendorRequestInquiry.getChangeVendorRequestLastId();
+		break;
+	case "REQUEST":
+		vendorRequestInquiry = dataVendorRequestInquiry.getVendorRequestLastId();
+		break;
+	case "INQUIRY":
+		vendorRequestInquiry = dataVendorRequestInquiry.getVendorInquiryLastId();
+		break;
+	default:
+		throw ErrorLib.getErrors().CustomError("vendorRequestInquiryService/handleGet/getLastId", "Invalid parameter " + vendorRequestInquiryId + " for vendorRequestInquiryId. It can be EXTEND, CHANGE, REQUEST or INQUIRY");
+	}
+    
+	return vendorRequestInquiry;
+}

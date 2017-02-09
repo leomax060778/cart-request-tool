@@ -90,6 +90,13 @@ function insertAttachmentRequest(objAttachment, in_request_id, userId){
 	}
 }
 
+function insertAttachmentRequestAuto(objAttachment, in_request_id, userId){
+	objAttachment.REQUEST_ID = in_request_id;
+	if(validateInsertAttachmentRequest){
+		return dataAttachmentR.insertAttachmentRequestAuto(objAttachment, userId);
+	}
+}
+
 function insertNoteRequest(objNoteReq, in_request_id, user_id){
 	objNoteReq.REQUEST_ID = in_request_id;
 	if(validateInsertNoteRequest(objNoteReq, user_id)){

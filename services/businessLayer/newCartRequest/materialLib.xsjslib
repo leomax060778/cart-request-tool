@@ -14,6 +14,21 @@ function getMaterialById(in_material_id, user_id){
 		return data.getMaterialById(in_material_id); 
 }
 
+function getMaterialByCode(material_code, user_id){
+	if (!user_id) {
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter user_id is not found",
+				"materialService/handleGet/getMaterialByCode", user_id);
+	}
+	
+	if (!material_code) {
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter material_code is not found",
+				"materialService/handleGet/getMaterialByCode", material_code);
+	}
+	return data.getMaterialByCode(material_code);
+}
+
 function getMaterialByCatalogId(in_catalog_id, user_id){
 		if(!in_catalog_id)	
 			throw ErrorLib.getErrors().BadRequest("The Parameter in_catalog_id is not found","materialService/handleGet/getMaterialByCatalogId",in_catalog_id);	
@@ -104,9 +119,9 @@ function validateInsertMaterial(objMaterial, user_id) {
 	var errors = {};
 	var BreakException = {};
 	var keys = ["CATALOG_ID", 
-	            "DESCRIPTION", 
-	            "POP_UP", 
+	            "DESCRIPTION",
 	            "CODE"];
+	var optionalKeys = ["POP_UP"];
 
 	if (!objMaterial)
 		throw ErrorLib.getErrors().CustomError("",
@@ -126,6 +141,15 @@ function validateInsertMaterial(objMaterial, user_id) {
 					throw BreakException;
 				}
 			}
+		});
+		optionalKeys.forEach(function(key) {
+			// validate attribute type
+			isValid = validateType(key, objMaterial[key])
+			if (!isValid) {
+				errors[key] = objMaterial[key];
+				throw BreakException;
+			}
+			
 		});
 		isValid = true;
 	} catch (e) {
@@ -152,10 +176,10 @@ function validateUpdateMaterial(objMaterial, user_id) {
 	var BreakException = {};
 	var keys = [ "MATERIAL_ID", 
 	             "CATALOG_ID", 
-	             "DESCRIPTION", 
-	             "POP_UP", 
+	             "DESCRIPTION",
 	             "CODE"];
-
+	
+	var optionalKeys = ["POP_UP"];
 	if (!objMaterial)
 		throw ErrorLib.getErrors().CustomError("",
 				"materialService/handlePut/updateMaterial",
@@ -174,6 +198,15 @@ function validateUpdateMaterial(objMaterial, user_id) {
 					throw BreakException;
 				}
 			}
+		});
+		optionalKeys.forEach(function(key) {
+			// validate attribute type
+			isValid = validateType(key, objMaterial[key])
+			if (!isValid) {
+				errors[key] = objMaterial[key];
+				throw BreakException;
+			}
+			
 		});
 		isValid = true;
 	} catch (e) {
@@ -202,7 +235,7 @@ function validateType(key, value) {
 		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'POP_UP':
-		valid = (value.length > 0 && value.length <= 255) || (!value);
+		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'CODE':
 		valid = value.length > 0 && value.length <= 255;

@@ -11,5 +11,6 @@ BEGIN
 					INNER JOIN "CATALOG_TYPE" ON "CATALOG_TYPE".catalog_type_id = "CATALOG".catalog_type_id
 						WHERE "CATALOG".catalog_parent_id = 0
 						AND "CATALOG".enabled = 1 
-						AND "CATALOG".deleted = 0;
+						AND "CATALOG".deleted = 0
+					ORDER BY "CATALOG".name ASC;
 END;

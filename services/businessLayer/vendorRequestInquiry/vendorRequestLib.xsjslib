@@ -40,7 +40,6 @@ function insertVendorRequest(objVendorRequest, userId) {
 //Insert vendor request manual
 function insertVendorRequestManual(objVendorRequest, userId) {
     if (validateInsertVendorRequest(objVendorRequest, userId)) {
-    	try{
     		objVendorRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
         	//Insert the Vendor Request
         	var result_id = request.insertVendorRequestManual(objVendorRequest, userId);
@@ -57,17 +56,6 @@ function insertVendorRequestManual(objVendorRequest, userId) {
     			insertDataProtectionAnswer(item, result_id, userId);
     		});
     		sendSubmitMail(result_id, userId);
-            		
-    		dbHelper.commit();
-    	}
-    	catch(e){
-    		dbHelper.rollback();
-    		throw ErrorLib.getErrors().CustomError("", e.toString(),"insertVendorRequestManual");
-    	}
-    	finally{
-    		dbHelper.closeConnection();
-    	}
-		
         return result_id;
     }
 }

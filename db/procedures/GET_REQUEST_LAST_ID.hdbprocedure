@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_LAST_ID" (
+	OUT out_result TABLE (CR_ID nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT (CT.ISO || (LAST_VALUE (CR.request_id order by CR.created_date_tz) + 1)) as CR_ID
+					FROM "REQUEST" CR
+						INNER JOIN "CRT_TYPE" CT ON CR.CRT_TYPE_ID = CT.CRT_TYPE_ID
+					group by CT.ISO;
+END;

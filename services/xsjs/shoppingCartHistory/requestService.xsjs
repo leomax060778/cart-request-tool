@@ -7,6 +7,7 @@ var request = mapper.getRequest();
 var GET_ALL_REQUEST = "GET_ALL_REQUEST";
 var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
 var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
+var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
 
 /** *************************************** */
 function processRequest() {
@@ -19,12 +20,15 @@ function handleGet(parameters, userId) {
 		if (parameters[0].name === GET_ALL_REQUEST) {
 			req = request.getAllRequest(userId);
 
+		} else if (parameters[0].name === GET_REQUEST_LAST_ID) {
+			req = request.getRequestLastId();
+
 		} else if (parameters[0].name === GET_REQUEST_BY_ID) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "requestService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
             	req = request.getRequestById(parameters[0].value);
@@ -41,14 +45,14 @@ function handleGet(parameters, userId) {
 					.BadRequest(
 							"",
 							"requestServices/handleGet",
-							"invalid parameter name (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID or GET_REQUEST_BY_FILTERS)"
+							"invalid parameter name (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID, GET_REQUEST_LAST_ID or GET_REQUEST_BY_FILTERS)"
 									+ parameters[0].name);
 		}
 	} else {
         throw ErrorLib.getErrors().BadRequest(
                 "",
                 "requestService/handleGet",
-                "invalid parameter (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID or GET_REQUEST_BY_FILTERS)"
+                "invalid parameter (can be: GET_ALL_REQUEST, GET_REQUEST_BY_ID, GET_REQUEST_LAST_ID or GET_REQUEST_BY_FILTERS)"
             );
         }
 	return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);

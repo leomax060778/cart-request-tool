@@ -1,6 +1,12 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CATALOG_BY_ID" (
 	IN in_catalog_id bigint,
-	OUT out_result TABLE (catalog_id bigint, name nvarchar(255), pop_up nvarchar(512), catalog_type_id bigint, catalog_type_name nvarchar(255), catalog_parent_id bigint)
+	OUT out_result TABLE (	catalog_id bigint, 
+						  	name nvarchar(255), 
+						  	pop_up nvarchar(512), 
+						  	catalog_type_id bigint, 
+						  	catalog_type_name nvarchar(255), 
+						  	catalog_parent_id bigint
+						  )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -10,5 +16,8 @@ BEGIN
 	out_result = SELECT "CATALOG".catalog_id, "CATALOG".name, "CATALOG".pop_up, "CATALOG".catalog_type_id, "CATALOG_TYPE".name AS catalog_type_name, "CATALOG".catalog_parent_id
 					FROM "CATALOG"
 					INNER JOIN "CATALOG_TYPE" ON "CATALOG".CATALOG_TYPE_ID = "CATALOG_TYPE".CATALOG_TYPE_ID
-						WHERE "CATALOG".catalog_id = in_catalog_id AND "CATALOG".enabled = 1 AND "CATALOG".deleted = 0;
+						WHERE "CATALOG".catalog_id = in_catalog_id 
+							AND "CATALOG".enabled = 1 
+							AND "CATALOG".deleted = 0
+						ORDER BY "CATALOG".name ASC;
 END;

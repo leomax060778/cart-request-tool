@@ -17,6 +17,17 @@ function insertAttachmentRequest(objAttachment, userId) {
   
 }
 
+//Insert and commit
+function insertAttachmentRequestAuto(objAttachment, userId) {
+
+    var parameters = {};
+    parameters.in_request_id = objAttachment.REQUEST_ID;
+    parameters.in_attachment_id = objAttachment.ATTACHMENT_ID;
+    parameters.in_created_user_id = userId;
+    return db.executeProcedure(INS_ATTACHMENT_REQUEST, parameters);
+
+}
+
 //Delete Attachment request
 function deleteAttachmentRequest(objAttachment, userId) {
         var parameters = {};

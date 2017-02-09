@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST_RISK_FUNDED" (
  IN in_request_id bigint,
- IN in_amount bigint,
+ IN in_amount decimal(19,2),
  IN in_currency_id bigint,
  IN in_amount_keur decimal(19,2),
  IN in_user_id bigint,

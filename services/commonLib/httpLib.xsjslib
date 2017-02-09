@@ -93,7 +93,7 @@ function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvali
 		        case $.net.http.PUT:{
 		        	if(!WithOutPermission){
 		        	permissions.isAuthorized(userSessionID,
-       		    	config.getPermissionIdByName(config.EditPermission()),
+       		    	config.getPermissionIdByName(config.CreatePermission()),
          			ResourceID);
 		        	}
 		        	putMethod(reqBody,userSessionID);

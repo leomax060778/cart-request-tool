@@ -7,6 +7,7 @@ var inquiry = mapper.getInquiry();
 
 var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
+var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
@@ -35,18 +36,20 @@ function handleGet(parameters, userId) {
             } else {
                 rdo = inquiry.getInquiryById(parameters[0].value);
             }
+        }  else if (parameters[0].name === GET_INQUIRY_LAST_ID) {
+        	rdo = inquiry.getInquiryLastId();
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "inquiryServices/handleGet",
-                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_INQUIRY or GET_INQUIRY_BY_ID)"
+                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_INQUIRY, GET_INQUIRY_LAST_ID or GET_INQUIRY_BY_ID)"
             );
         }
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "inquiryServices/handleGet",
-            "invalid parameter (can be: GET_ALL_INQUIRY or GET_INQUIRY_BY_ID)"
+            "invalid parameter (can be: GET_ALL_INQUIRY, GET_INQUIRY_LAST_ID or GET_INQUIRY_BY_ID)"
         );
     }
     return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);

@@ -9,5 +9,6 @@ BEGIN
   out_result = SELECT material_id, catalog_id, description, popup, code
               FROM "CART_REQUEST_TOOL"."MATERIAL"
                WHERE ENABLED = 1 
-                    AND DELETED = 0;
+                    AND DELETED = 0
+               ORDER BY description ASC;
 END;

@@ -7,6 +7,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURE LIST NAME
 var INS_INQUIRY = "INS_INQUIRY";
 var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
+var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
 var UPD_INQUIRY = "UPD_INQUIRY";
 var DEL_INQUIRY = "DEL_INQUIRY";
@@ -40,6 +41,12 @@ function getAllInquiry(userId) {
     var parameters = {'in_user_id': userId};
     var result = db.executeProcedure(GET_ALL_INQUIRY, parameters);
     return db.extractArray(result.out_result);
+}
+
+//Get all inquiries
+function getInquiryLastId() {
+    var result = db.executeProcedure(GET_INQUIRY_LAST_ID, {});
+    return db.extractArray(result.out_result)[0];
 }
 
 //Get inquiry by id

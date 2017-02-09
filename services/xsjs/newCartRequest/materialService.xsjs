@@ -6,6 +6,7 @@ var ErrorLib = mapper.getErrors();
 var material = mapper.getMaterial();
 
 var GET_MATERIAL_BY_ID = "GET_MATERIAL_BY_ID";
+var GET_MATERIAL_BY_CODE = "GET_MATERIAL_BY_CODE";
 var GET_MATERIAL_BY_CATALOG_ID = "GET_MATERIAL_BY_CATALOG_ID";
 var GET_ALL_MATERIAL = "GET_ALL_MATERIAL";
 /******************************************/
@@ -26,6 +27,11 @@ function handleGet(objMat, user_id) {
 	   rdo = material.getMaterialByCatalogId(objMat[0].value,
 	     user_id);
 	   http.handleResponse(rdo, http.OK, http.AppJson);
+	  } else if (objMat[0].name === GET_MATERIAL_BY_CODE) {
+		   // get by catalog_id and user_id
+		   rdo = material.getMaterialByCode(objMat[0].value,
+		     user_id);
+		   http.handleResponse(rdo, http.OK, http.AppJson);
 	  } else if (objMat[0].name === GET_ALL_MATERIAL) {
 		   // get all Material
 		   rdo = material.getAllMaterial(user_id);

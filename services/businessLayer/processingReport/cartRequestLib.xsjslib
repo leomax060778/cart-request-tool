@@ -80,6 +80,14 @@ function getRequestById(requestId, userId) {
     res.NOTES = resNote;
     res.REQUEST_SERVICE = resReqService;
     res.SERVICE = resService;
+    resDataProtection = JSON.parse(JSON.stringify(resDataProtection));
+    resDataProtection.forEach(function (elem) {
+    	if (resDataProtection.indexOf(elem) % 2 === 0) {
+    		elem.INDEX_TYPE = 'odd';
+    	} else {
+    		elem.INDEX_TYPE = 'even';
+    	}
+    });
     res.DATA_PROTECTION = resDataProtection;
     res.PURCHASE = resPurchase;
     res.COST_OBJECT = resCostObject;

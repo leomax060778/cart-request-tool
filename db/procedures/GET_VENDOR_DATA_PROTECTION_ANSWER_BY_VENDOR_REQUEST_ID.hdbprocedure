@@ -1,13 +1,13 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_DATA_PROTECTION_ANSWER_BY_VENDOR_REQUEST_ID" (
 	IN in_vendor_request_id bigint,
-	OUT out_result TABLE (vendor_request_id bigint, question_id integer, question nvarchar(512), option_id integer, option nvarchar(512))
+	OUT out_result TABLE (vendor_request_id bigint, question_id integer, question nvarchar(512), option_id integer, option nvarchar(512), short_description nvarchar(255))
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT VDA.VENDOR_REQUEST_ID, VDA.QUESTION_ID, DPQ.CONTENT AS question , VDA.OPTION_ID, DPO.CONTENT as option
+	out_result = SELECT VDA.VENDOR_REQUEST_ID, VDA.QUESTION_ID, DPQ.CONTENT AS question , VDA.OPTION_ID, DPO.CONTENT as option, DPQ.short_description
 	 FROM "VENDOR_DATA_PROTECTION_ANSWER" VDA
 	 LEFT JOIN "DATA_PROTECTION_QUESTION" DPQ ON VDA.QUESTION_ID = DPQ.QUESTION_ID
 	 LEFT JOIN "DATA_PROTECTION_OPTION" DPO ON VDA.OPTION_ID = DPO.OPTION_ID

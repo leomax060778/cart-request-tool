@@ -187,8 +187,16 @@ function getVendorRequestById(requestId) {
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
     	 resRequest.ATTACHMENTS = attachments;
     	 
-    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
-    	 resRequest.DATA_PROTECTION = data_protection;
+    	 var resDataProtection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
+    	 resDataProtection = JSON.parse(JSON.stringify(resDataProtection));
+    	 resDataProtection.forEach(function (elem) {
+    	    	if (resDataProtection.indexOf(elem) % 2 === 0) {
+    	    		elem.INDEX_TYPE = 'odd';
+    	    	} else {
+    	    		elem.INDEX_TYPE = 'even';
+    	    	}
+    	    });
+    	 resRequest.DATA_PROTECTION = resDataProtection;
     }
     
     return resRequest;

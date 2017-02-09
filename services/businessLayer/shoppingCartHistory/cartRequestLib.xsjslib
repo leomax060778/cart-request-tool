@@ -285,6 +285,10 @@ function getAllRequest(userId) {
 	return request;
 }
 
+function getRequestLastId() {
+	return dataRequest.getRequestLastId();
+}
+
 function getRequestByFilters(objFilters, userId) {
 	if (!objFilters) {
 		throw ErrorLib.getErrors().BadRequest(

@@ -15,6 +15,7 @@ var DEL_REQUEST = "DEL_REQUEST";
 var DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID = "DEL_REQUEST_DATA_PROTECTION_ANSWERS_BY_REQUEST_ID";
 var GET_ATTACHMENT_BY_REQUEST_ID = "GET_ATTACHMENT_BY_REQUEST_ID";
 var DEL_ATTACHMENT_REQUEST = "DEL_ATTACHMENT_REQUEST";
+var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
 
 function getAllRequest(userId){
     var param = {};
@@ -22,6 +23,13 @@ function getAllRequest(userId){
     param.out_result = '?';
     var result = db.executeProcedureManual(GET_ALL_REQUEST, param);
     return db.extractArray(result.out_result);
+}
+
+function getRequestLastId(){
+    var param = {};
+    param.out_result = '?';
+    var result = db.executeProcedure(GET_REQUEST_LAST_ID, param);
+    return db.extractArray(result.out_result)[0];
 }
 
 function getRequestByFilters(objFilters, userId){

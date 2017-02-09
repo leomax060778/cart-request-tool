@@ -1,6 +1,10 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CATALOG_BY_PARENT_ID" (
 	IN in_parent_id bigint,
-	OUT out_result TABLE (catalog_id bigint, name nvarchar(255), catalog_type_id bigint, catalog_parent_id bigint)
+	OUT out_result TABLE (	catalog_id bigint, 
+							name nvarchar(255), 
+							catalog_type_id bigint, 
+							catalog_parent_id bigint
+						 )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -10,5 +14,8 @@ BEGIN
 	out_result = 
 	SELECT catalog_id, name, catalog_type_id, catalog_parent_id
 	FROM "CATALOG"
-	WHERE catalog_parent_id = in_parent_id AND enabled = 1 AND deleted = 0;
+		WHERE catalog_parent_id = in_parent_id 
+			AND enabled = 1 
+			AND deleted = 0
+		ORDER BY name ASC;
 END;

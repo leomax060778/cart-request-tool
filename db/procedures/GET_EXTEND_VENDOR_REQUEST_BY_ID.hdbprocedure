@@ -11,7 +11,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							vendor_informal_name nvarchar(511), 
 							vendor_contact_name nvarchar(255), 
 							vendor_contact_email nvarchar(255), 
-							vendor_type_id integer, status_id bigint, 
+							vendor_type_id integer,
+							iso nvarchar(2), 
+							status_id bigint, 
 							previous_status_id bigint, 
 							user_id_status bigint, 
 							update_status_tz nvarchar(15), 
@@ -49,7 +51,8 @@ BEGIN
 						V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME,
 						V.CONTACT_NAME AS VENDOR_CONTACT_NAME, 
 						V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL, 
-						EVR.VENDOR_TYPE_ID, 
+						EVR.VENDOR_TYPE_ID,
+						VT.ISO,
 						EVR.STATUS_ID, 
 					    EVR.PREVIOUS_STATUS_ID, 
 					    EVR.USER_ID_STATUS, 
@@ -72,6 +75,7 @@ BEGIN
 						BUDGET_YEAR.BUDGET_YEAR
 	FROM "EXTEND_VENDOR_REQUEST" EVR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = EVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	INNER JOIN "VENDOR_TYPE" VT ON EVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 	INNER JOIN "COMMODITY" COMMODITY ON EVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
 	INNER JOIN "CURRENCY" CURRENCY_PURCHASE ON EVR.PURCHASE_CURRENCY_ID = CURRENCY_PURCHASE.CURRENCY_ID
 	LEFT JOIN "CURRENCY" CURRENCY_EXPECTED ON EVR.EXPECTED_CURRENCY_ID = CURRENCY_EXPECTED.CURRENCY_ID

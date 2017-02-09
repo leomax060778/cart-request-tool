@@ -2,6 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_DATA_PROTECT
  IN in_question_id bigint, 
  IN in_content nvarchar (512), 
  IN in_description nvarchar (1000),
+ IN in_short_description nvarchar(255),
  IN in_crt_type_id bigint,
  IN in_modified_user_id bigint,
  OUT out_result bigint
@@ -14,6 +15,7 @@ BEGIN
 	UPDATE DATA_PROTECTION_QUESTION
 	SET	DATA_PROTECTION_QUESTION.content = in_content,
         	DATA_PROTECTION_QUESTION.description = in_description,
+        	DATA_PROTECTION_QUESTION.short_description = in_short_description,
         	DATA_PROTECTION_QUESTION.crt_type_id = in_crt_type_id,
 			DATA_PROTECTION_QUESTION.modified_user_id = in_modified_user_id,
         	DATA_PROTECTION_QUESTION.modified_date_tz = CURRENT_TIMESTAMP
