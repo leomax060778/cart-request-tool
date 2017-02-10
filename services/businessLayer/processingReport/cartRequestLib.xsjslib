@@ -36,10 +36,10 @@ function getAllCartRequest(userId) {
     		elem.SHOW_MESSAGE_READ = 0;
     	}
     	if(elem.STATUS_NAME !== 'In process'){
-    		elem.DAYS_OUTSTANDING = 'Not applicable';
+    		elem.DAYS_OUTSTANDING = 'N/A';
     	}
     	if(Number(elem.DAYS_OUTSTANDING) < 0){
-    		elem.DAYS_OUTSTANDING = 'Not Applicable';
+    		elem.DAYS_OUTSTANDING = 'N/A';
     	}
     });
 	return request;
