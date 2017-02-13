@@ -8,6 +8,7 @@ var ErrorLib = mapper.getErrors();
 //STORE PROCEDURE LIST NAME
 var GET_MATERIAL_BY_ID = "GET_MATERIAL_BY_ID";
 var GET_MATERIAL_BY_CODE = "GET_MATERIAL_BY_CODE";
+var GET_MATERIAL_BY_NAME = "GET_MATERIAL_BY_NAME";
 var GET_MATERIAL_BY_CATALOG_ID = "GET_MATERIAL_BY_CATALOG_ID";
 var GET_ALL_MATERIAL = "GET_ALL_MATERIAL";
 
@@ -34,6 +35,17 @@ function getMaterialByCode(in_material_code){
 	parameters.out_result = '?';
 	
 	var result = db.executeProcedure(GET_MATERIAL_BY_CODE, parameters);
+	return db.extractArray(result.out_result);
+}
+
+function getMaterialByName(materialName){
+	
+	var parameters = {};
+	
+	parameters.in_material_name = materialName; 
+	parameters.out_result = '?';
+	
+	var result = db.executeProcedure(GET_MATERIAL_BY_NAME, parameters);
 	return db.extractArray(result.out_result);
 }
 

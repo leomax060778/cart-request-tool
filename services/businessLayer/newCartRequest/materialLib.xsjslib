@@ -29,6 +29,21 @@ function getMaterialByCode(material_code, user_id){
 	return data.getMaterialByCode(material_code);
 }
 
+function getMaterialByName(materialName, user_id){
+	if (!user_id) {
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter user_id is not found",
+				"materialService/handleGet/getMaterialByName", user_id);
+	}
+	
+	if (!materialName) {
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter materialName is not found",
+				"materialService/handleGet/getMaterialByName", materialName);
+	}
+	return data.getMaterialByName(materialName);
+}
+
 function getMaterialByCatalogId(in_catalog_id, user_id){
 		if(!in_catalog_id)	
 			throw ErrorLib.getErrors().BadRequest("The Parameter in_catalog_id is not found","materialService/handleGet/getMaterialByCatalogId",in_catalog_id);	
