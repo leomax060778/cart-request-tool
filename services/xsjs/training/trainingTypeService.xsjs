@@ -8,8 +8,10 @@ var trainingType = mapper.getTrainingType();
 var GET_ALL_TRAINING_TYPE = "GET_ALL_TRAINING_TYPE";
 var GET_TRAINING_TYPE_BY_ID = "GET_TRAINING_TYPE_BY_ID";
 
+var service_name = "trainingTypeService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

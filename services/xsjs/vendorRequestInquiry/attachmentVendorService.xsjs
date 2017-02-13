@@ -10,8 +10,10 @@ var GET = "GET";
 var VENDOR_ID = "VENDOR_ID";
 var VENDOR_TYPE_ID = "VENDOR_TYPE_ID";
 
+var service_name = "attachmentVendorService"; 
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

@@ -10,8 +10,10 @@ var GET_TEMPLATE_BY_ID = "GET_TEMPLATE_BY_ID";
 var GET_TEMPLATE_BY_TYPE_ID = "GET_TEMPLATE_BY_TYPE_ID";
 var GET_ALL_TEMPLATE_BY_PARENT_SECTION = "GET_ALL_TEMPLATE_BY_PARENT_SECTION";
 
+var service_name = "templateService";
+
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

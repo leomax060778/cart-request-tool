@@ -18,8 +18,10 @@ var getUsersByHl2Id = "USERSBYHL2ID";
 var getUsersByHl3Id = "USERSBYHL3ID";
 var hl2Id = "hl2Id";
 
+var service_name = "userService";
+
 function processRequest(){
-	httpUtil.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	httpUtil.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId){

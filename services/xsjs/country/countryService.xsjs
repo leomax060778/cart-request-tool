@@ -7,8 +7,10 @@ var ErrorLib = mapper.getErrors();
 var GET_ALL_COUNTRY = "GET_ALL_COUNTRY";
 var GET_COUNTRY_BY_ID = "GET_COUNTRY_BY_ID";
 
+var service_name = "countryService";
+
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(params, userId) {

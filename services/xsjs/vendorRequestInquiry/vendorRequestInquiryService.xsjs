@@ -17,9 +17,12 @@ var GET_EXTEND_VENDOR_REQUEST_BY_ID = "GET_EXTEND_VENDOR_REQUEST_BY_ID";
 var GET_CHANGE_VENDOR_REQUEST_BY_ID = "GET_CHANGE_VENDOR_REQUEST_BY_ID";
 var GET_LAST_ID = "GET_LAST_ID";
 
+var service_name = "vendorRequestInquiryService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
+
 
 /**
  *

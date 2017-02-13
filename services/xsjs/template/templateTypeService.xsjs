@@ -8,8 +8,10 @@ var templateType = mapper.getTemplateType();
 var GET_ALL_TEMPLATE_TYPE = "GET_ALL_TEMPLATE_TYPE";
 var GET_TEMPLATE_TYPE_BY_ID = "GET_TEMPLATE_TYPE_BY_ID";
 
+var service_name = "templateTypeService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

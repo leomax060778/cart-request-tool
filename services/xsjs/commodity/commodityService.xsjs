@@ -8,8 +8,10 @@ var commodity = mapper.getCommodity();
 var GET_ALL_COMMODITY = "GET_ALL_COMMODITY";
 var GET_COMMODITY_BY_ID = "GET_COMMODITY_BY_ID";
 
+var service_name = "commodityService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

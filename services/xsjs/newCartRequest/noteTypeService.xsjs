@@ -8,9 +8,11 @@ var note_type = mapper.getNoteTypeLib();
 var GET_NOTE_TYPE_BY_ID = "GET_NOTE_TYPE_BY_ID";
 var GET_ALL_NOTE_TYPE = "GET_ALL_NOTE_TYPE";
 
+var service_name = "noteTypeService";
+
 /******************************************/
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

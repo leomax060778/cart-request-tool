@@ -8,9 +8,11 @@ var image = mapper.getImage();
 var GET_IMAGE_BY_ID = "GET_IMAGE_BY_ID";
 var DEFAULT_IMAGE = "DEFAULT_IMAGE";
 
+var service_name = "imageService";
+
 /******************************************/
 function processRequest(){
-    http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+    http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 /**

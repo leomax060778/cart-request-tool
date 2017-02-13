@@ -9,8 +9,10 @@ var GET_ALL_CATALOG = "GET_ALL_CATALOG";
 var GET_CATALOG_BY_ID = "GET_CATALOG_BY_ID";
 var GET_CATALOG_BY_PARENT_ID = "GET_CATALOG_BY_PARENT_ID";
 
+var service_name = "catalogService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

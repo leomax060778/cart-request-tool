@@ -8,8 +8,10 @@ var supDoc = mapper.getChangeVendorSupportingDocumentation();
 var GET_ALL = "GET_ALL";
 var GET_BY_ID = "GET_BY_ID";
 
+var service_name = "changeVendorSupportingDocumentationService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

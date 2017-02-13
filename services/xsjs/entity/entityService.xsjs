@@ -10,9 +10,11 @@ var entity = mapper.getEntity();
 var GET_ENTITY_BY_ID = "GET_ENTITY_BY_ID";
 var GET_ALL_ENTITY = "GET_ALL_ENTITY";
 
+var service_name = "entityService";
+
 /******************************************/
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

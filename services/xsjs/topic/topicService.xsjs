@@ -8,8 +8,10 @@ var ErrorLib = mapper.getErrors();
 var GET_ALL_TOPIC = "GET_ALL_TOPIC";
 var GET_TOPIC_BY_ID = "GET_TOPIC_BY_ID";
 
+var service_name = "topicService";
+
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(params) {

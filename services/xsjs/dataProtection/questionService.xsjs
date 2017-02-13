@@ -9,9 +9,11 @@ var GET_QUESTION_BY_ID = "GET_QUESTION_BY_ID";
 var GET_ALL_QUESTION = "GET_ALL_QUESTION";
 var GET_ALL_QUESTION_BY_CRT_TYPE_ID = "GET_ALL_QUESTION_BY_CRT_TYPE_ID";
 
+var service_name = "questionService";
+
 /******************************************/
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(reqObj, user_id) {

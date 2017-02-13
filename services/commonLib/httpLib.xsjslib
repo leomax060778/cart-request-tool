@@ -127,6 +127,75 @@ function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvali
 	}
 }
 
+//Function intended to be the main one.
+function processRequest3(getMethod, postMethod, putMethod, deleteMethod, Notvalidate, serviceName, WithOutPermission) {
+	try {
+		
+		/**********here  - Validate User() -----***/
+		var userSessionID = null;
+		
+		if(!Notvalidate){
+			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
+	
+			if(!userSessionID)
+				throw ErrorLib.getErrors().Unauthorized(getHeaderByName("x-csrf-token"));		
+			
+		}		
+		/**************************************************/
+		
+		var reqBody = $.request.body ? JSON.parse($.request.body.asString()) : undefined;
+		
+		
+		    switch ($.request.method) {
+		        case $.net.http.GET:{
+		        	//Check Read Permission
+		        	if(!WithOutPermission){
+			        	permissions.isAuthorized2(
+		        			userSessionID,
+		        			config.getPermissionIdByName(config.ReadPermission()),
+		        			serviceName
+	        			);	
+		        	}
+		        	getMethod(getUrlParameters(),userSessionID);
+		            break;
+		        }		        	
+		        case $.net.http.PUT:{
+		        	if(!WithOutPermission){
+		        	permissions.isAuthorized2(userSessionID,
+       		    	config.getPermissionIdByName(config.CreatePermission()),
+       		    	serviceName);
+		        	}
+		        	putMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+	            case $.net.http.POST:{
+	            	if(!WithOutPermission){
+		        	permissions.isAuthorized2(userSessionID,
+        			config.getPermissionIdByName(config.CreatePermission()),
+        			serviceName);
+	            	}
+	            	postMethod(reqBody,userSessionID);
+		            break;
+	            }	            	
+		        case $.net.http.DEL:{
+		        	if(!WithOutPermission){
+		        	permissions.isAuthorized2(userSessionID,
+        			config.getPermissionIdByName(config.DeletePermission()),
+        			serviceName);
+		        	}
+		        	deleteMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+		        default:
+		        	notImplementedMethod();
+			    	break;
+		    }	    
+
+	} catch (e) {
+		handleErrorResponse(e);
+	}
+}
+
 // get userSession from DB, if userToken ins't expired
 
 function validateUser(userToken) {

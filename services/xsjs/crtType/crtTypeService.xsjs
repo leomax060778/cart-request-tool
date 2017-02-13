@@ -9,8 +9,10 @@ var GET_ALL_CRT_TYPE = "GET_ALL_CRT_TYPE";
 var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID";
 var GET_CRT_TYPE_WITH_DATA_PROTECTION = "GET_CRT_TYPE_WITH_DATA_PROTECTION";
 
+var service_name = "crtTypeService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

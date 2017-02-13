@@ -8,8 +8,10 @@ var status = mapper.getInquiryStatus();
 
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE";
 
+var service_name = "inquiryMessageService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

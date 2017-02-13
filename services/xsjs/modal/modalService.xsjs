@@ -8,8 +8,10 @@ var modal = mapper.getModal();
 var GET_ALL_MODAL = "GET_ALL_MODAL";
 var GET_MODAL_BY_ID = "GET_MODAL_BY_ID";
 
+var service_name = "modalService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

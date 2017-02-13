@@ -8,8 +8,10 @@ var layout = mapper.getLayoutSection();
 var GET_ALL_LAYOUT_SECTION = "GET_ALL_LAYOUT_SECTION";
 var GET_LAYOUT_SECTION_BY_ID = "GET_LAYOUT_SECTION_BY_ID";
 
+var service_name = "layoutSectionService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

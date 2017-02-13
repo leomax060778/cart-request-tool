@@ -14,10 +14,12 @@ var DEL_CURRENCY = "DEL_CURRENCY";
 var GET_CURRENCY_BY_YEAR = "GET_CURRENCY_BY_YEAR";
 var GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR = "GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR";
 
+var service_name = "currencyService";
+
 /******************************************/
 
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 	}
 
 function handleGet(parameters, user_id) {

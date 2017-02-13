@@ -8,8 +8,10 @@ var templateSection = mapper.getTemplateSection();
 var GET_ALL_TEMPLATE_SECTION = "GET_ALL_TEMPLATE_SECTION";
 var GET_TEMPLATE_SECTION_BY_ID = "GET_TEMPLATE_SECTION_BY_ID";
 
+var service_name = "templateSectionService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

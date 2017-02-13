@@ -9,9 +9,11 @@ var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
 var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
 var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
 
+var service_name = "sch_requestService";
+
 /** *************************************** */
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

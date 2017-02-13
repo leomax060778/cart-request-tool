@@ -17,8 +17,10 @@ var GET_ALL_REQUEST = "GET_ALL_REQUEST";
 var GET_REQUEST_PROCESSING_REPORT_BY_ID = "GET_REQUEST_PROCESSING_REPORT_BY_ID";
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 
+var service_name = "cartRequestService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

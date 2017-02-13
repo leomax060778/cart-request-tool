@@ -11,8 +11,10 @@ var getRoleById = "ROLEBYID";
 var method = "method";
 var id = "id";
 
+var service_name = "roleService";
+
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 // Not Implemented Method

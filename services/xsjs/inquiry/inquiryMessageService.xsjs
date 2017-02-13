@@ -7,10 +7,11 @@ var inquiry = mapper.getInquiryMessage();
 
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE";
 
-function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
-}
+var service_name = "inquiryMessageService";
 
+function processRequest() {
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+}
 /**
  *
  * @param {object} parameters

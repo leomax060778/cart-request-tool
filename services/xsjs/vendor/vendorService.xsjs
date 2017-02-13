@@ -14,10 +14,12 @@ var GET_ALL_VENDOR_FOR_FILTERS = "GET_ALL_VENDOR_FOR_FILTERS";
 var GET_VENDOR_BY_ENTITY_ID = "GET_VENDOR_BY_ENTITY_ID";
 var GET_VENDOR_BY_STATUS = "GET_VENDOR_BY_STATUS";
 
+var service_name = "vendorService";
+
 /** *************************************** */
 
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

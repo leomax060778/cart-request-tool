@@ -18,9 +18,11 @@ var GET_ALL_NEWS_STATUS = "GET_ALL_NEWS_STATUS";
 var UPD_NEWS_STATUS = "UPD_NEWS_STATUS";
 var UPD_NEWS = "UPD_NEWS";
 
+var service_name = "newsService";
+
 /******************************************/
 function processRequest() {
-    http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name, true);
 }
 
 /**

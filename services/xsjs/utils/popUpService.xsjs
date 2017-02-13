@@ -11,8 +11,10 @@ var GET_POP_UP_BY_ID = "GET_POP_UP_BY_ID";
 var GET_ALL_POP_UP = "GET_ALL_POP_UP";
 var GET_ALL_POP_UP_ADMINISTRATION = "GET_ALL_POP_UP_ADMINISTRATION";
 
+var service_name = "popUpService";
+
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id){

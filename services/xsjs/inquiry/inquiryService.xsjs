@@ -9,8 +9,10 @@ var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
 var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
 
+var service_name = "inquiryService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

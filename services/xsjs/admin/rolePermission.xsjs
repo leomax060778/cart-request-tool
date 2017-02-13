@@ -9,8 +9,10 @@ var blRolePermission = mapper.getRolePermission();
 var GET_PERMISSION_BY_ROLE_ID = "ROLE_ID";
 var GET_ALL_PERMISSIONS = "ALL";
 
+var service_name = "rolePermission";
+
 function processRequest(){
-	httpUtil.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	httpUtil.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 //Implementation of GET call -- Get Role Permission

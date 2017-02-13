@@ -14,9 +14,11 @@ var DEL_TEAM = "DEL_TEAM";
 var GET_ALL_TEAM_FOR_FILTERS = "GET_ALL_TEAM_FOR_FILTERS";
 var GET_TEAMS_BY_BUDGET_YEAR_ID = "GET_TEAMS_BY_BUDGET_YEAR_ID";
 
+var service_name = "teamService";
+
 /** *************************************** */
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

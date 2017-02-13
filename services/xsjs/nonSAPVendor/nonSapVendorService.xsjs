@@ -10,10 +10,12 @@ var non_sap_vendor = mapper.getNonSapVendor();
 var GET_NON_SAP_VENDOR_BY_ID = "GET_NON_SAP_VENDOR_BY_ID";
 var GET_ALL_NON_SAP_VENDOR = "GET_ALL_NON_SAP_VENDOR";
 
+var service_name = "nonSapVendorService";
+
 /** *************************************** */
 
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

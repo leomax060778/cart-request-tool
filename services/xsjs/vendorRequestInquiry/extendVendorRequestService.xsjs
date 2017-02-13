@@ -7,8 +7,10 @@ var request = mapper.getExtendVendorRequest();
 
 var GET_ALL_EXTEND_VENDOR_REQUEST = "GET_ALL_EXTEND_VENDOR_REQUEST";
 
+var service_name = "extendVendorRequestService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

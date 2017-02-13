@@ -5,10 +5,11 @@ var http = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var dataProtection = mapper.getDataProtection();
 
+var service_name = "dataProtectionService";
 
 /******************************************/
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(reqObj, user_id) {

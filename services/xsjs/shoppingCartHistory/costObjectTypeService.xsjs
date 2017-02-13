@@ -7,9 +7,11 @@ var cost_object_type = mapper.getRequest();
 var GET_ALL_COST_OBJECT_TYPE = "GET_ALL_COST_OBJECT_TYPE";
 var GET_COST_OBJECT_TYPE_BY_ID = "GET_COST_OBJECT_TYPE_BY_ID";
 
+var service_name = "costObjectTypeService";
+
 /** *************************************** */
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(objReq, userId) {

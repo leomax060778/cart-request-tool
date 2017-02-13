@@ -7,8 +7,10 @@ var request = mapper.getRequestMessage();
 
 var GET_REQUEST_MESSAGE = "GET_REQUEST_MESSAGE";
 
+var service_name = "requestMessageService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

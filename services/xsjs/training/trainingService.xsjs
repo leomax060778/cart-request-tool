@@ -9,8 +9,10 @@ var GET_ALL_TRAINING = "GET_ALL_TRAINING";
 var GET_ALL_TRAINING_BY_PARENT = "GET_ALL_TRAINING_BY_PARENT";
 var GET_TRAINING_BY_ID = "GET_TRAINING_BY_ID";
 
+var service_name = "trainingService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters) {

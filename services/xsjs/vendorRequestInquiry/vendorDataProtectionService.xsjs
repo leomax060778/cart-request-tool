@@ -8,8 +8,10 @@ var protection = mapper.getVendorDataProtection();
 var GET_ALL_DATA_PROTECTION = "GET_ALL_DATA_PROTECTION";
 var GET_ANSWER_BY_VENDOR_REQUEST_ID = "GET_ANSWER_BY_VENDOR_REQUEST_ID";
 
+var service_name = "vendorDataProtectionService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

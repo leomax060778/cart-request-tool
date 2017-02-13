@@ -8,9 +8,11 @@ var special_request = mapper.getSpecialRequest();
 var GET_SPECIAL_REQUEST_BY_ID = "GET_SPECIAL_REQUEST_BY_ID";
 var GET_ALL_SPECIAL_REQUEST = "GET_ALL_SPECIAL_REQUEST";
 
+var service_name = "specialRequestService";
+
 /******************************************/
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 	}
 
 function handleGet(parameters, user_id) {

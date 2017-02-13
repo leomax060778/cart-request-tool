@@ -8,9 +8,11 @@ var config = mapper.getDataConfig();
 
 var GET_TEAM_BY_USER_ID_BUDGET_YEAR = "GET_TEAM_BY_USER_ID_BUDGET_YEAR";
 
+var service_name = "userTeamService";
+
 function processRequest() {
     //httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
-	httpUtil.processRequest2(handleGet, handlePost, handlePut, handleDelete,false, config.getResourceIdByName(config.administration()), false);
+	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

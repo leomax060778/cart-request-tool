@@ -3,8 +3,10 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var request = mapper.getNewCartRequest();
 
+var service_name = "ncr_requestService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

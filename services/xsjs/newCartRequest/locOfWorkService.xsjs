@@ -12,10 +12,12 @@ var INS_LOCATION = "INS_LOCATION";
 var UPD_LOCATION = "UPD_LOCATION";
 var DEL_LOCATION = "DEL_LOCATION";
 
+var service_name = "locOfWorkService";
+
 /******************************************/
 
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 	}
 
 function handleGet(parameters, user_id) {

@@ -8,8 +8,10 @@ var catalogType = mapper.getCatalogType();
 var GET_ALL_CATALOG_TYPE = "GET_ALL_CATALOG_TYPE";
 var GET_CATALOG_TYPE_BY_ID = "GET_CATALOG_TYPE_BY_ID";
 
+var service_name = "catalogTypeService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

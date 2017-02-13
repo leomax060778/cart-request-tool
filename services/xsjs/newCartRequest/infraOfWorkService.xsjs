@@ -12,10 +12,12 @@ var INS_INFRASTRUCTURE = "INS_INFRASTRUCTURE";
 var UPD_INFRASTRUCTURE = "UPD_INFRASTRUCTURE";
 var DEL_INFRASTRUCTURE = "DEL_INFRASTRUCTURE";
 
+var service_name = "infraOfWorkService";
+
 /******************************************/
 
 function processRequest(){
-	http.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 	}
 
 function handleGet(parameters, user_id) {

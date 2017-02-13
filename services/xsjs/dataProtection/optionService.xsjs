@@ -9,9 +9,11 @@ var GET_OPTION_BY_ID = "GET_OPTION_BY_ID";
 var GET_OPTION_BY_QUESTION_ID = "GET_OPTION_BY_QUESTION_ID";
 var GET_ALL_OPTION = "GET_ALL_OPTION";
 
+var service_name = "optionService";
+
 /** *************************************** */
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(reqObj, user_id) {

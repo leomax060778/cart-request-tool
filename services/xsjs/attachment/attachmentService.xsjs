@@ -8,8 +8,10 @@ var attachments = mapper.getAttachment();
 var GET_ATTACHMENT_BY_ID = "GET_ATTACHMENT_BY_ID";
 var GET_ATTACHMENTS_BY_ID = "GET_ATTACHMENTS_BY_ID";
 
+var service_name = "attachmentService";
+
 function processRequest() {
-	http.processRequest2(handleGet, handlePost, handlePut, handleDelete,true,"",true);
+	http.processRequest3(handleGet, handlePost, handlePut, handleDelete,true, service_name, true);
 }
 
 function handleGet(parameters, user_id) {

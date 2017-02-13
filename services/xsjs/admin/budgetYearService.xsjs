@@ -8,8 +8,10 @@ var budgetYear = mapper.getBudgetYear();
 var GET_ALL_BUDGET_YEAR = "GET_ALL_BUDGET_YEAR";
 var GET_DEFAULT_BUDGET_YEAR = "GET_DEFAULT_BUDGET_YEAR";
 
+var service_name = "budgetYearService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters) {

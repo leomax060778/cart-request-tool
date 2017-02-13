@@ -9,8 +9,10 @@ var GET_ALL_RETURN_TYPE = "GET_ALL_RETURN_TYPE";
 var GET_RETURN_TYPE_BY_ID = "GET_RETURN_TYPE_BY_ID";
 var GET_RETURN_TYPE_BY_CRT_ID = "GET_RETURN_TYPE_BY_CRT_ID";
 
+var service_name = "returnTypeService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

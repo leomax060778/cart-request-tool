@@ -8,8 +8,10 @@ var report = mapper.getReport();
 var GET_REPORT = "GET_REPORT";
 var GET_REPORT_TYPE = "GET_REPORT_TYPE";
 
+var service_name = "reportService";
+
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
+    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {
