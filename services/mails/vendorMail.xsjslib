@@ -47,8 +47,7 @@ function parseApproved(vendorObj, basicData, userName){
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>NV</b> is now <b>Approved.</b><br /><br />'+
 	'<b>Vendor ID # '+vendorObj.VENDOR_ID+'</b> has been issued on <b>'+getDateNow()+'</b><br /><br />The message '+
-	'is FYI Only, requiring no response.<br /><br />Log in to CRT, then copy and '+
-	'paste the following link if you would like to access this specific request: '+
+	'is FYI Only, requiring no response.<br /><br />Log in to CRT, then click the following link to process this specific request: '+
 	'<a href="' + completePath +'">' + vendorRequestId + '</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - New Vendor Approved - '+getDateNow()+'';
 	return mailObj;

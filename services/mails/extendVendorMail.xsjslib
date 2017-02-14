@@ -75,8 +75,7 @@ function parseInProcess(extendVendorObj, basicData, userName){
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> is now '+
 	'<b>In Process.</b><br /><br /><b>Cart # / YVC #: '+extendVendorObj.RECEIVER_YVC_REQUEST+'</b> '+
 	'has been submitted.<br /><br />The message is FYI Only, requiring no '+
-	'response.<br /><br />Log in to CRT, then copy and '+
-	'paste the following link if you would like to access this specific request: '+
+	'response.<br /><br />Log in to CRT, then click the following link to process this specific request: '+
 	'<a href="'+completePath+'">' + extendId + '</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+' - Extend Vendor is In Process - '+getDateNow()+'';
 	return mailObj;
