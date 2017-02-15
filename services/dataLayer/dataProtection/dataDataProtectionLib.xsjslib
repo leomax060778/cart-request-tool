@@ -108,7 +108,7 @@ function insertQuestion(objQuestion, user_id){
 	var param = {};
 	param.in_content = objQuestion.CONTENT;
 	param.in_description = objQuestion.DESCRIPTION;
-	param.in_short_description = objQuestion.SHORT_DESCRIPTION || null;
+	param.in_short_description = objQuestion.SHORT_DESCRIPTION;
 	param.in_crt_type_id = objQuestion.CRT_TYPE_ID;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
@@ -121,7 +121,7 @@ function insertQuestionManual(objQuestion, user_id){
 	var param = {};
 	param.in_content = objQuestion.CONTENT;
 	param.in_description = objQuestion.DESCRIPTION;
-	param.in_short_description = objQuestion.SHORT_DESCRIPTION || null;
+	param.in_short_description = objQuestion.SHORT_DESCRIPTION;
 	param.in_crt_type_id = objQuestion.CRT_TYPE_ID;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
@@ -135,7 +135,7 @@ function updateQuestion(objQuestion, user_id){
 	param.in_question_id = objQuestion.QUESTION_ID;
 	param.in_content = objQuestion.CONTENT;
 	param.in_description = objQuestion.DESCRIPTION;
-	param.in_short_description = objQuestion.SHORT_DESCRIPTION || null;
+	param.in_short_description = objQuestion.SHORT_DESCRIPTION;
 	param.in_crt_type_id = objQuestion.CRT_TYPE_ID;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
@@ -149,7 +149,7 @@ function updateQuestionManual(objQuestion, user_id){
 	param.in_question_id = objQuestion.QUESTION_ID;
 	param.in_content = objQuestion.CONTENT;
 	param.in_description = objQuestion.DESCRIPTION;
-	param.in_short_description = objQuestion.SHORT_DESCRIPTION || null;
+	param.in_short_description = objQuestion.SHORT_DESCRIPTION;
 	param.in_crt_type_id = objQuestion.CRT_TYPE_ID;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';

@@ -8,9 +8,15 @@ var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var pathName = "CRT_INQUIRY";
+
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
 
 //Insert inquiry
 function insertInquiry(objInquiry, userId) {
@@ -42,12 +48,17 @@ function insertInquiry(objInquiry, userId) {
 }
 
 //Get inquiry by id
-function getInquiryById(inquiryId) {
+function getInquiryById(inquiryId, userId) {
+	var roleData = userRole.getUserRoleByUserId(userId);
     var inquiry = dataInquiry.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
     
-    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
-    return inquiry;
+    if(validatePermissionByUserRole(roleData[0], inquiry)){
+	    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+	    return inquiry;
+    }else{
+		throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user hasn't permission to Read/View this CRT Inquiry.");
+	}
 }
 
 //Get last inquiry id

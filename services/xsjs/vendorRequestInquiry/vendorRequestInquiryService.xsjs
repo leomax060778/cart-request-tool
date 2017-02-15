@@ -83,7 +83,7 @@ function handleGet(parameters, userId) {
                 );
             } else {
             	var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                var resChange = change.getChangeVendorRequestById(parameters[0].value);
+                var resChange = change.getChangeVendorRequestById(parameters[0].value, userId);
                 res = {'changeVendor': resChange, 'selection': resSelection};
                 
             }

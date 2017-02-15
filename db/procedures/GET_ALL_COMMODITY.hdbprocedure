@@ -6,7 +6,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_COMMODIT
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT commodity_id, description
-					FROM "COMMODITY"
-						WHERE enabled = 1 AND deleted = 0;
+	out_result = SELECT COMM.commodity_id, COMM.description
+					FROM "COMMODITY" COMM
+						WHERE COMM.enabled = 1 AND COMM.deleted = 0
+					ORDER BY UPPER(COMM.DESCRIPTION);
 END;

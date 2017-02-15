@@ -6,7 +6,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INFRASTR
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT infrastructure_of_work_id, infrastructure_name
-					FROM "INFRASTRUCTURE_OF_WORK"
-							WHERE enabled = 1 AND deleted = 0;
+	out_result = SELECT IOW.infrastructure_of_work_id, IOW.infrastructure_name
+					FROM "INFRASTRUCTURE_OF_WORK" IOW
+							WHERE IOW.enabled = 1 AND IOW.deleted = 0
+					ORDER BY UPPER(IOW.INFRASTRUCTURE_NAME);
 END;

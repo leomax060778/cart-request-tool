@@ -12,5 +12,5 @@ BEGIN
 						WHERE "CATALOG".catalog_parent_id = 0
 						AND "CATALOG".enabled = 1 
 						AND "CATALOG".deleted = 0
-					ORDER BY "CATALOG".name ASC;
+					ORDER BY UPPER("CATALOG".name) ASC;
 END;

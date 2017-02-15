@@ -18,5 +18,6 @@ BEGIN
 						DPQ.CRT_TYPE_ID
 	FROM "DATA_PROTECTION_QUESTION" DPQ
 		WHERE deleted = 0
-		AND enabled = 1;
+		AND enabled = 1
+	ORDER BY UPPER(DPQ.CONTENT);
 END;

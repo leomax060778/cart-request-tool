@@ -14,6 +14,6 @@ VE.vendor_id, V.account, VAI.vendor_name as name, V.contact_name, V.contact_emai
          INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VE.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
          INNER JOIN "VENDOR_STATUS" ST ON V.STATUS_ID = ST.STATUS_ID AND ST.NAME = 'Approved'
          WHERE VE.entity_id = in_entity_id
-         AND VE.ENABLED = 1 AND VE.DELETED = 0;
+         AND VE.ENABLED = 1 AND VE.DELETED = 0 ORDER BY UPPER(VAI.VENDOR_NAME);
 END;
 

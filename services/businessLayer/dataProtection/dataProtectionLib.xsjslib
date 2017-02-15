@@ -352,7 +352,7 @@ function validateInsertQuestion(objQuestion, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'CONTENT', 'OPTIONS' ];
+	var keys = [ 'CONTENT', 'OPTIONS', 'SHORT_DESCRIPTION' ];
 
 	if (!objQuestion)
 		throw ErrorLib.getErrors().CustomError("",
@@ -396,7 +396,7 @@ function validateUpdateQuestion(objQuestion, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'QUESTION_ID', 'CONTENT', 'OPTIONS' ];
+	var keys = [ 'QUESTION_ID', 'CONTENT', 'OPTIONS', 'SHORT_DESCRIPTION' ];
 
 	if (!objQuestion)
 		throw ErrorLib.getErrors().CustomError("",
@@ -456,6 +456,9 @@ function validateType(key, value) {
 		break;
 	case 'OPTIONS':
 		valid = Array.isArray(value) && value.length > 0;
+		break;
+	case 'SHORT_DESCRIPTION':
+		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'ATTACHMENT_DATA_PROTECTION_ID':
 		valid = !isNaN(value) && value > 0;

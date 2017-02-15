@@ -6,7 +6,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_LOCATION
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT location_of_work_id, location_name
-					FROM "LOCATION_OF_WORK"
-						WHERE enabled = 1 AND deleted = 0;
+	out_result = SELECT LOW.location_of_work_id, LOW.location_name
+					FROM "LOCATION_OF_WORK" LOW
+						WHERE LOW.enabled = 1 AND LOW.deleted = 0
+					ORDER BY UPPER(LOW.location_name);
 END;

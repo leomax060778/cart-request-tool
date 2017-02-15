@@ -36,7 +36,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = inquiry.getInquiryById(parameters[0].value);
+                rdo = inquiry.getInquiryById(parameters[0].value, userId);
             }
         }  else if (parameters[0].name === GET_INQUIRY_LAST_ID) {
         	rdo = inquiry.getInquiryLastId();

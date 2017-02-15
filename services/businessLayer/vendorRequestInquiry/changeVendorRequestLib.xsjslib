@@ -9,11 +9,16 @@ var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1};
 var pathName = "CHANGE_VENDOR_REQUEST";
+
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
 
 //Insert change vendor request
 function insertChangeVendorRequest(objChangeVendorRequest, userId) {
@@ -54,21 +59,27 @@ function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
 }
 
 //Get change vendor request by ID
-function getChangeVendorRequestById(changeVendorRequestId) {
+function getChangeVendorRequestById(changeVendorRequestId, userId) {
     var objChange = {};
 	if (!changeVendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeVendorRequestId);
     }
-
+	
+	var roleData = userRole.getUserRoleByUserId(userId);
     var resChange = change.getChangeVendorRequestById(changeVendorRequestId);
     resChange = JSON.parse(JSON.stringify(resChange));
-    if(resChange){
-    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
-    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
-    	 resChange.ATTACHMENTS = attachments;
-    }
-    return resChange;
+    
+    if(validatePermissionByUserRole(roleData[0], resChange)){
+	    if(resChange){
+	    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
+	    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
+	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
+	    	 resChange.ATTACHMENTS = attachments;
+	    }
+	    return resChange;
+    }else{
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", "The user hasn't permission to Read/View this Change Vendor Request.");
+	}
 }
 
 //Get change vendor request by ID manually

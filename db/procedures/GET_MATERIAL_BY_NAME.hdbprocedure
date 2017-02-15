@@ -12,9 +12,9 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT material_id, catalog_id, description, popup as pop_up, code
-              FROM "CART_REQUEST_TOOL"."MATERIAL"
-               WHERE "MATERIAL".DESCRIPTION = in_material_name 
-                     AND ENABLED = 1 
-                     AND DELETED = 0;
+  out_result = SELECT MT.material_id, MT.catalog_id, MT.description, MT.popup as pop_up, MT.code
+              FROM "CART_REQUEST_TOOL"."MATERIAL" MT
+               WHERE UPPER(MT.DESCRIPTION) = UPPER(in_material_name)
+                     AND MT.ENABLED = 1 
+                     AND MT.DELETED = 0;
 END;
