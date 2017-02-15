@@ -14,6 +14,7 @@ var catalog = mapper.getCatalog();
 var special = mapper.getDataSpecialRequest();
 var budgetYear = mapper.getBudgetYear();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -45,62 +46,73 @@ function getAllCartRequest(userId) {
 	return request;
 }
 
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.REQUESTER_ID);
+}
+
 //Get request by id
 function getRequestById(requestId, userId) {
-	var resReqService = request.getRequestServiceByRequestId(requestId)[0];
- 	var resService = request.getServicesByRequestId(requestId);
-    var resNote = request.getNoteRequestByRequestId(requestId);
-    var resRequest = data.getRequestByIdManual(requestId);
-    var resDataProtection = request.getRequestDataProtection(requestId);
-    var resPurchase = purchase.getPurchaseOrderByIdManual(requestId);
-    var resCostObject = request.getCostObjectByRequestId(requestId)[0];
-    var resAttachment = request.getAttachmentRequest(requestId, userId);
-    var resMaterial = "";
-    var resSubCategory = "";
-    var resCategory = "";
-    var resCatalog = "";
-    var resSpecial = "";
-    if (Number(resRequest.MATERIAL_ID) > 0){
-    	resMaterial = material.getManualMaterialById(Number(resRequest.MATERIAL_ID), userId)[0];
-    	if (resMaterial){
-		    resSubCategory = catalog.getCatalogByIdManual(Number(resMaterial.CATALOG_ID))[0];
-		    resCategory = catalog.getCatalogByIdManual(resSubCategory.CATALOG_PARENT_ID)[0];
-		    if (resCategory.CATALOG_PARENT_ID > 0) {
-		    	resCatalog = catalog.getCatalogByIdManual(resCategory.CATALOG_PARENT_ID)[0];
-		    } else {
-		    	resCatalog = resCategory;
-		    	resCategory = resSubCategory;
-		    	resSubCategory = "";
-		    } 
-    	}
-    } else {
-    	resSpecial = special.getSpecialRequestByRequestId(requestId)[0];
-    }
-    var res = JSON.parse(JSON.stringify(resRequest));
-    res.NOTES = resNote;
-    res.REQUEST_SERVICE = resReqService;
-    res.SERVICE = resService;
-    resDataProtection = JSON.parse(JSON.stringify(resDataProtection));
-    resDataProtection.forEach(function (elem) {
-    	if (resDataProtection.indexOf(elem) % 2 === 0) {
-    		elem.INDEX_TYPE = 'odd';
-    	} else {
-    		elem.INDEX_TYPE = 'even';
-    	}
-    });
-    res.DATA_PROTECTION = resDataProtection;
-    res.PURCHASE = resPurchase;
-    res.COST_OBJECT = resCostObject;
-    res.ATTACHMENT = resAttachment;
-    if (res.MATERIAL_ID){
-    	res.MATERIAL = resMaterial || "";
-    	res.SUB_CATEGORY = resSubCategory;
-    	res.CATEGORY = resCategory;
-    	res.CATALOG = resCatalog;
-    } else {
-    	res.SPECIAL_REQUEST = resSpecial;
-    }
-    return res;
+	var resRequest = data.getRequestByIdManual(requestId);
+	var roleData = userRole.getUserRoleByUserId(userId);
+	
+	if(validatePermissionByUserRole(roleData[0], resRequest)){
+		var resReqService = request.getRequestServiceByRequestId(requestId)[0];
+		var resService = request.getServicesByRequestId(requestId);
+	    var resNote = request.getNoteRequestByRequestId(requestId);
+	    var resDataProtection = request.getRequestDataProtection(requestId);
+	    var resPurchase = purchase.getPurchaseOrderByIdManual(requestId);
+	    var resCostObject = request.getCostObjectByRequestId(requestId)[0];
+	    var resAttachment = request.getAttachmentRequest(requestId, userId);
+	    var resMaterial = "";
+	    var resSubCategory = "";
+	    var resCategory = "";
+	    var resCatalog = "";
+	    var resSpecial = "";
+	    if (Number(resRequest.MATERIAL_ID) > 0){
+	    	resMaterial = material.getManualMaterialById(Number(resRequest.MATERIAL_ID), userId)[0];
+	    	if (resMaterial){
+			    resSubCategory = catalog.getCatalogByIdManual(Number(resMaterial.CATALOG_ID))[0];
+			    resCategory = catalog.getCatalogByIdManual(resSubCategory.CATALOG_PARENT_ID)[0];
+			    if (resCategory.CATALOG_PARENT_ID > 0) {
+			    	resCatalog = catalog.getCatalogByIdManual(resCategory.CATALOG_PARENT_ID)[0];
+			    } else {
+			    	resCatalog = resCategory;
+			    	resCategory = resSubCategory;
+			    	resSubCategory = "";
+			    } 
+	    	}
+	    } else {
+	    	resSpecial = special.getSpecialRequestByRequestId(requestId)[0];
+	    }
+	    var res = JSON.parse(JSON.stringify(resRequest));
+	    res.NOTES = resNote;
+	    res.REQUEST_SERVICE = resReqService;
+	    res.SERVICE = resService;
+	    resDataProtection = JSON.parse(JSON.stringify(resDataProtection));
+	    resDataProtection.forEach(function (elem) {
+	    	if (resDataProtection.indexOf(elem) % 2 === 0) {
+	    		elem.INDEX_TYPE = 'odd';
+	    	} else {
+	    		elem.INDEX_TYPE = 'even';
+	    	}
+	    });
+	    res.DATA_PROTECTION = resDataProtection;
+	    res.PURCHASE = resPurchase;
+	    res.COST_OBJECT = resCostObject;
+	    res.ATTACHMENT = resAttachment;
+	    if (res.MATERIAL_ID){
+	    	res.MATERIAL = resMaterial || "";
+	    	res.SUB_CATEGORY = resSubCategory;
+	    	res.CATEGORY = resCategory;
+	    	res.CATALOG = resCatalog;
+	    } else {
+	    	res.SPECIAL_REQUEST = resSpecial;
+	    }
+	    return res;
+	} else{
+		throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user hasn't permission for this Cart Request.");
+	}
+ 	
 }
 
 //Get request data protection answer by request id

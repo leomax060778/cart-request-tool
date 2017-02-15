@@ -76,7 +76,7 @@ function handleGet(parameters, userId) {
                 );
             } else {
             	var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                var resChange = request.getChangeVendorRequestByIdManual(parameters[0].value);
+                var resChange = request.getChangeVendorRequestByIdManual(parameters[0].value, userId);
                     
                 res = {'changeVendor': resChange, 'selection': resSelection};
             }
@@ -104,7 +104,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	res = request.getExtendVendorRequestById(parameters[0].value);
+            	res = request.getExtendVendorRequestById(parameters[0].value, userId);
             }
         } 
         
@@ -130,7 +130,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	res = request.getVendorRequestById(parameters[0].value);
+            	res = request.getVendorRequestById(parameters[0].value, userId);
             }
         } 
         
@@ -156,7 +156,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	res = request.getVendorInquiryById(parameters[0].value);
+            	res = request.getVendorInquiryById(parameters[0].value, userId);
             }
         } 
         

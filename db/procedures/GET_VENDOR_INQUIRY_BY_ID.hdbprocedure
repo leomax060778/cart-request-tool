@@ -1,7 +1,9 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_BY_ID" (
 	IN in_vendor_inquiry_id bigint,
 	OUT out_result TABLE (vendor_inquiry_id bigint,
+								iso nvarchar(2),
 								created_date_tz nvarchar(15),
+								created_user_id bigint,
 								vendor_legal_name nvarchar (511),
 								name nvarchar(255),
 								vendor_id bigint,
@@ -19,7 +21,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 BEGIN
 	out_result = SELECT TOP 1
 						VI.VENDOR_INQUIRY_ID,
+						VT.ISO,
 						TO_NVARCHAR(VI.CREATED_DATE_TZ,'YYYY-MM-DD') AS CREATED_DATE_TZ,
+						VI.CREATED_USER_ID,
 						V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
 						ST.NAME,
 						VI.VENDOR_ID,
@@ -31,6 +35,7 @@ BEGIN
 	FROM "VENDOR_INQUIRY" VI
 	 LEFT JOIN "VENDOR" V ON V.VENDOR_ID = VI.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
 	 INNER JOIN "USER" US ON US.user_id = VI.user_id AND US.ENABLED = 1 AND US.DELETED = 0
+	 INNER JOIN "VENDOR_TYPE" VT ON VI.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 	 INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.status_id = VI.status_id AND ST.ENABLED = 1 AND ST.DELETED = 0
 	 LEFT JOIN "VENDOR_INQUIRY_MESSAGE" VIM ON VIM.VENDOR_INQUIRY_ID = in_vendor_inquiry_id 
 	  WHERE in_vendor_inquiry_id = VI.VENDOR_INQUIRY_ID

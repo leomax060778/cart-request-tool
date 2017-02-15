@@ -7,6 +7,7 @@ var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var mail = mapper.getMail();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
 
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
@@ -16,6 +17,10 @@ var dbHelper = mapper.getdbHelper();
 
 var vendorType = {"EXTEND_VENDOR_REQUEST": 2};
 var pathName = "EXTEND_VENDOR_REQUEST";
+
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
 
 //Insert extend vendor request
 function insertExtendVendorRequest(objExtendVendorRequest, userId) {
@@ -59,21 +64,26 @@ function deleteExtendVendorRequest(objExtendVendorRequest, userId) {
 }
 
 //Get extend vendor request by ID
-function getExtendVendorRequestById(extendVendorRequestId) {
+function getExtendVendorRequestById(extendVendorRequestId, userId) {
 	var objExtend = {};
 	if (!extendVendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "extendVendorRequestService/handleGet/getVendorRequestById", extendVendorRequestId);
     }
-    
+	var roleData = userRole.getUserRoleByUserId(userId);
     var resExtend = extend.getExtendVendorRequestById(extendVendorRequestId);
     resExtend = JSON.parse(JSON.stringify(resExtend));
-    if(resExtend){
-    	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
-    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
-    	 resExtend.ATTACHMENTS = attachments;
+    
+    if(validatePermissionByUserRole(roleData[0], resExtend)){
+	    if(resExtend){
+	    	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
+	    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
+	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
+	    	 resExtend.ATTACHMENTS = attachments;
+	    }
+	    return resExtend;
+    } else{
+    	throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", "The user hasn't permission to Read/View this Extend Vendor Request.");
     }
-    return resExtend;
 }
 
 //Get extend vendor request by ID manually

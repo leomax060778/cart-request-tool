@@ -33,7 +33,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	req = request.getRequestById(parameters[0].value);
+            	req = request.getRequestById(parameters[0].value, userId);
             }
 		} else if (parameters[0].name === GET_REQUEST_BY_FILTERS) {
 			var filtersArray = ["GOODS_RECIPIENT","BUDGET_YEAR_ID","TEAM_ID","REQUEST_DATE_FROM",

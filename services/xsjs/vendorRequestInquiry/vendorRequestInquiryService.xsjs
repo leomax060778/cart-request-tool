@@ -52,7 +52,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = inquiry.getVendorInquiryById(parameters[0].value);
+                res = inquiry.getVendorInquiryById(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -62,7 +62,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = request.getVendorRequestById(parameters[0].value);
+                res = request.getVendorRequestById(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_EXTEND_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -72,7 +72,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = extend.getExtendVendorRequestById(parameters[0].value);
+                res = extend.getExtendVendorRequestById(parameters[0].value, userId);
             }
         } else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {

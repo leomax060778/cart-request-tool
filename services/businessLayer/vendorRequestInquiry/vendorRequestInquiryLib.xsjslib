@@ -29,18 +29,39 @@ function getLastId(vendorRequestInquiryId) {
 		throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestInquiryId is not found", "vendorRequestInquiryService/handleGet/getLastId", vendorRequestInquiryId);
     }
 	var vendorRequestInquiry;
+	var newId;
 	switch (vendorRequestInquiryId) {
 	case "EXTEND":
-		vendorRequestInquiry = dataVendorRequestInquiry.getExtendVendorRequestLastId();
+		newId = dataVendorRequestInquiry.getExtendVendorRequestLastId();
+		if (newId) {
+			vendorRequestInquiry = newId;
+		} else {
+			vendorRequestInquiry = "EV1";
+		}
 		break;
 	case "CHANGE":
-		vendorRequestInquiry = dataVendorRequestInquiry.getChangeVendorRequestLastId();
+		newId = dataVendorRequestInquiry.getChangeVendorRequestLastId();
+		if (newId) {
+			vendorRequestInquiry = newId;
+		} else {
+			vendorRequestInquiry = "CV1";
+		}
 		break;
 	case "REQUEST":
-		vendorRequestInquiry = dataVendorRequestInquiry.getVendorRequestLastId();
+		newId = dataVendorRequestInquiry.getVendorRequestLastId();
+		if (newId) {
+			vendorRequestInquiry = newId;
+		} else {
+			vendorRequestInquiry = "NV1";
+		}
 		break;
 	case "INQUIRY":
-		vendorRequestInquiry = dataVendorRequestInquiry.getVendorInquiryLastId();
+		newId = dataVendorRequestInquiry.getVendorInquiryLastId();
+		if (newId) {
+			vendorRequestInquiry = newId;
+		} else {
+			vendorRequestInquiry = "VI1";
+		}
 		break;
 	default:
 		throw ErrorLib.getErrors().CustomError("vendorRequestInquiryService/handleGet/getLastId", "Invalid parameter " + vendorRequestInquiryId + " for vendorRequestInquiryId. It can be EXTEND, CHANGE, REQUEST or INQUIRY");

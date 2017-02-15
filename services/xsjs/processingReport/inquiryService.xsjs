@@ -46,7 +46,7 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	res = inquiry.getInquiryById(parameters[0].value);
+            	res = inquiry.getInquiryById(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(

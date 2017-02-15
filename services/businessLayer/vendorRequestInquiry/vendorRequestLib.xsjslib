@@ -12,6 +12,7 @@ var utilLib = mapper.getUtil();
 var dbHelper  = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -26,6 +27,10 @@ function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
 		reqBody.QUESTION_ID = Number(reqBody.QUESTION_ID);
 		return dataVRDataProtection.insertAnswerManual(reqBody, user_id);
 	}	
+}
+
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
 }
 
 //Insert vendor request
@@ -72,24 +77,29 @@ function deleteVendorRequest(objVendorRequest, userId) {
 }
 
 //Get vendor request by ID
-function getVendorRequestById(vendorRequestId) {
+function getVendorRequestById(vendorRequestId, userId) {
     var objRequest = {};
     if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
     }
+    var roleData = userRole.getUserRoleByUserId(userId);
     var resRequest = request.getVendorRequestById(vendorRequestId);
     
-    resRequest = JSON.parse(JSON.stringify(resRequest));
-    if(resRequest){
-    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
-    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
-    	 resRequest.ATTACHMENTS = attachments;
-    	 
-    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
-    	 resRequest.DATA_PROTECTION = data_protection;
-    }
-    return resRequest;
+    if(validatePermissionByUserRole(roleData[0], resRequest)){
+	    resRequest = JSON.parse(JSON.stringify(resRequest));
+	    if(resRequest){
+	    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+	    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
+	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
+	    	 resRequest.ATTACHMENTS = attachments;
+	    	 
+	    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
+	    	 resRequest.DATA_PROTECTION = data_protection;
+	    }
+	    return resRequest;
+    }else{
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorRequestById", "The user hasn't permission to Read/View this Vendor Request.");
+	}
 }
 
 //Get vendor request by ID manually

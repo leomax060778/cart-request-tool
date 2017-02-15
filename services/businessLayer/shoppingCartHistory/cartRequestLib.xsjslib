@@ -30,6 +30,7 @@ var utilLib = mapper.getUtil();
 var requestMail = mapper.getCartRequestMail();
 var config = mapper.getDataConfig();
 var mail = mapper.getMail();
+var userRole = mapper.getUserRole();
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var pathName = "CART_REQUEST";
@@ -116,6 +117,10 @@ function validateType(key, value) {
 
 
 /* ! VALIDATION KEYS FOR UPDATES */
+
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.REQUESTER_ID);
+}
 
 /*----- REQUEST SERVICE -----*/
 
@@ -286,7 +291,14 @@ function getAllRequest(userId) {
 }
 
 function getRequestLastId() {
-	return dataRequest.getRequestLastId();
+	var newId = dataRequest.getRequestLastId();
+	var request;
+	if (newId) {
+		request = newId;
+	} else {
+		request = "CR1";
+	}
+	return request;
 }
 
 function getRequestByFilters(objFilters, userId) {
@@ -333,24 +345,30 @@ function getRequestById(request_id, userId) {
 				"The Parameter request_id is not found",
 				"requestService/handleGet/getRequestById", request_id);
 	}
+	
+	var roleData = userRole.getUserRoleByUserId(userId);
+	var request = dataRequest.getRequestByIdManual(request_id);
+	if(validatePermissionByUserRole(roleData[0], request)){
 
-	try {
-		var request = dataRequest.getRequestByIdManual(request_id);
-		var req = {};
-		if (request.length > 0) {
-			req = JSON.parse(JSON.stringify(request));
-			completeRequest(req, userId);
+		try {
+			var req = {};
+			if (request.length > 0) {
+				req = JSON.parse(JSON.stringify(request));
+				completeRequest(req, userId);
+			}
+			dbHelper.commit();
+		} catch (e) {
+			dbHelper.rollback();
+			throw ErrorLib.getErrors().CustomError("", e.toString(),
+					"getRequestById");
+		} finally {
+			dbHelper.closeConnection();
 		}
-		dbHelper.commit();
-	} catch (e) {
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),
-				"getRequestById");
-	} finally {
-		dbHelper.closeConnection();
+	
+		return req;
+	}else{
+		throw ErrorLib.getErrors().Forbidden("", "requestService/handleGet/getRequestById", "The user hasn't permission to see this Cart Request.");
 	}
-
-	return req;
 }
 
 //----------------------- UPDATE NEW CART REQUEST -----------------------//

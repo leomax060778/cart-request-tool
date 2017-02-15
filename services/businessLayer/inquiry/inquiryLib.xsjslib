@@ -52,7 +52,14 @@ function getInquiryById(inquiryId) {
 
 //Get last inquiry id
 function getInquiryLastId() {
-	return dataInquiry.getInquiryLastId();
+	var newId = dataInquiry.getInquiryLastId();
+	var inquiry;
+	if (newId) {
+		inquiry = newId;
+	} else {
+		inquiry = "CI1";
+	}
+	return inquiry;
 }
 
 //Get inquiry by id manually

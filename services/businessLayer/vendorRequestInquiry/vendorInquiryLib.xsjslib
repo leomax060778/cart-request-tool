@@ -10,6 +10,7 @@ var config = mapper.getDataConfig();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+var userRole = mapper.getUserRole();
 
 var message = mapper.getVendorMessage();
 
@@ -19,22 +20,31 @@ var message = mapper.getVendorMessage();
 var vendorType = {"VENDOR_INQUIRY": 4};
 var pathName = "VENDOR_INQUIRY";
 
+function validatePermissionByUserRole(roleData, resRequest){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
+
 //Get vendor inquiry by ID
-function getVendorInquiryById(vendorInquiryId) {
+function getVendorInquiryById(vendorInquiryId, userId) {
 	var objInquiry = {};
     if (!vendorInquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", vendorInquiryId);
     }
+    var roleData = userRole.getUserRoleByUserId(userId);
     var resInquiry = inquiry.getVendorInquiryById(vendorInquiryId);
     
-    resInquiry = JSON.parse(JSON.stringify(resInquiry));
-    if(resInquiry){
-    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
-    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
-    	 resInquiry.ATTACHMENTS = attachments;
-    }
-    return resInquiry;
+    if(validatePermissionByUserRole(roleData[0], resInquiry)){
+	    resInquiry = JSON.parse(JSON.stringify(resInquiry));
+	    if(resInquiry){
+	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
+	    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
+	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
+	    	 resInquiry.ATTACHMENTS = attachments;
+	    }
+	    return resInquiry;
+    }else{
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorInquiryById", "The user hasn't permission to Read/View this Vendor Inquiry.");
+	}
 }
 
 //Get vendor inquiry by ID manually

@@ -8,6 +8,7 @@ var mail = mapper.getMail();
 var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
+var userRole = mapper.getUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -42,8 +43,12 @@ function getInquiryByStatusAdministrable(isAdministrable, userId) {
 	return inquiry;
 }
 
+function validatePermissionByUserRole(roleData, inquiry){
+	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === inquiry.CREATED_USER_ID);
+}
+
 //Get inquiry by id
-function getInquiryById(inquiryId) {
+function getInquiryById(inquiryId, userId) {
 	if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getInquiryById", inquiryId);
     }
@@ -51,9 +56,14 @@ function getInquiryById(inquiryId) {
 	var inquiry = inquiryStatus.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
     
-    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
-    return inquiry;
-
+    var roleData = userRole.getUserRoleByUserId(userId);
+	if(validatePermissionByUserRole(roleData[0], inquiry)){
+        inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
+        return inquiry;
+    }else{
+		throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user hasn't permission for this CRT Inquiry.");
+	}
+    
 }
 
 //Update inquiry status

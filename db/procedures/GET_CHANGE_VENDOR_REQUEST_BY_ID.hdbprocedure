@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_BY_ID" (	
 	IN in_change_vendor_request_id bigint,
 	OUT out_result TABLE (CHANGE_VENDOR_REQUEST_id integer, 
+							iso nvarchar(2),
 							user_name nvarchar(255),
 							first_name nvarchar(255),
 							last_name nvarchar(255),
@@ -25,6 +26,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 	READS SQL DATA AS
 BEGIN
 	out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID, 
+						VT.ISO,
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME,
@@ -43,6 +45,7 @@ BEGIN
 						CVR.vendor_id
 	FROM "CHANGE_VENDOR_REQUEST" CVR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = CVR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	INNER JOIN "VENDOR_TYPE" VT ON CVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 	INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID AND V.ENABLED = 1 AND V.DELETED = 0
 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
 		                 ON (CVR.VENDOR_ID = VAI.VENDOR_ID
