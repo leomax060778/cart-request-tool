@@ -3,7 +3,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NOTE_TYPE_BY
   OUT out_result TABLE (
 	note_type_id bigint, 
 	note_type_name nvarchar(255),
-	note_type_description nvarchar(1000)
+	note_type_description nvarchar(1000),
+	note_position integer
   )
 )
 LANGUAGE SQLSCRIPT
@@ -15,7 +16,8 @@ BEGIN
   		SELECT 
   		 	NOTE_TYPE_ID, 
   		 	NOTE_TYPE_NAME,
-  		 	NOTE_TYPE_DESCRIPTION
+  		 	NOTE_TYPE_DESCRIPTION,
+  		 	NOTE_POSITION
 	    FROM "CART_REQUEST_TOOL"."NOTE_TYPE"
        	WHERE "NOTE_TYPE".NOTE_TYPE_ID = in_note_type_id 
 	        AND ENABLED = 1 

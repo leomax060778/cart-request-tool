@@ -64,7 +64,6 @@ function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvali
 		
 		/**********here  - Validate User() -----***/
 		var userSessionID = null;
-		
 		if(!Notvalidate){
 			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
 	

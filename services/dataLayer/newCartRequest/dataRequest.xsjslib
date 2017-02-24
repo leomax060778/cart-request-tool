@@ -15,6 +15,7 @@ function insertRequest(objRequest, user_id){
 	parameters.in_team_id = objRequest.TEAM_ID; 
 	parameters.in_entity_id = objRequest.ENTITY_ID; 
 	parameters.in_vendor_id = objRequest.VENDOR_ID;
+	parameters.in_vendor_contact_information_id = objRequest.VENDOR_CONTACT_INFORMATION_ID || null;
 	parameters.in_non_sap_vendor_id = objRequest.NON_SAP_VENDOR_ID;
 	parameters.in_stage_id = 1;
 	parameters.in_status_id = 1;

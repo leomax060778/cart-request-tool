@@ -198,6 +198,6 @@ insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERV
 -- *************************************************************************************
 -- Update schema version
 INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT)
-VALUES('V5.0.0-19', 'Created PERMISSION_SERVICE and basic permissions', 'V201702130820__Created_permission_service.sql');
+VALUES('V2.0.0-19', 'Created PERMISSION_SERVICE and basic permissions', 'V201702130820__Created_permission_service.sql');
 
 COMMIT;

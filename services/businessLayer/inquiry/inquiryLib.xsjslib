@@ -68,7 +68,7 @@ function getInquiryLastId() {
 	if (newId) {
 		inquiry = newId;
 	} else {
-		inquiry = "CI1";
+		inquiry = {"CI_ID": "CI1"};
 	}
 	return inquiry;
 }

@@ -33,7 +33,10 @@ function handleGet(parameters, user_id) {
 }
 
 function handlePost(objAttachment, user_id) {
-	var res = attachments.insertAttachment(objAttachment, 1);
+	if(user_id == null || user_id == undefined)
+		user_id = 1;
+	
+	var res = attachments.insertAttachment(objAttachment, user_id);
 	return http.handleResponse(res, http.OK, http.AppJson);
 }
 

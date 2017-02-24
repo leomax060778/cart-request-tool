@@ -14,13 +14,13 @@ function getReport(userId) {
     		elem.MESSAGE_INFO = elem.MESSAGE_INFO + " / " + elem.RETURN_TYPE;
     	}
     	if(elem.STATUS !== 'In process'){
-    		elem.DAYS_OUTSTANDING = 'Not applicable';
+    		elem.DAYS_OUTSTANDING = 'N/A';
     	}
     	if(Number(elem.DAYS_OUTSTANDING) < 0){
-    		elem.DAYS_OUTSTANDING = 'Not Applicable';
+    		elem.DAYS_OUTSTANDING = 'N/A';
     	}
     	if(elem.STATUS !== 'Approved' ){
-    		elem.PURCHASE_TURN_AROUND_TIME = 'Not applicable';
+    		elem.PURCHASE_TURN_AROUND_TIME = 'N/A';
     	}
     });
 	return result;

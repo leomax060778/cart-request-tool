@@ -16,10 +16,14 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
 			alternative_vendor_name NVARCHAR(255),
 			alternative_vendor_phone NVARCHAR(255),
 			alternative_vendor_email NVARCHAR(255),
+			vendor_contact_information_id bigint,
 			non_sap_vendor_id BIGINT,
 			non_sap_contact_name NVARCHAR(255),
 			non_sap_contact_email NVARCHAR(255),
 			non_sap_contact_phone NVARCHAR(255),
+			vendor_contact_name NVARCHAR(255), 
+			vendor_contact_email NVARCHAR(255), 
+			vendor_contact_phone NVARCHAR(255),
 			stage_id BIGINT,
 			stage_name NVARCHAR(127),
 			status_id INTEGER,
@@ -59,10 +63,14 @@ BEGIN
 				RQ.ALTERNATIVE_VENDOR_NAME, 
 				RQ.ALTERNATIVE_VENDOR_PHONE, 
 				RQ.ALTERNATIVE_VENDOR_EMAIL, 
+				RQ.VENDOR_CONTACT_INFORMATION_ID,
 				NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
 				NSV.CONTACT_NAME AS non_sap_contact_name, 
 				NSV.CONTACT_EMAIL AS non_sap_contact_email, 
-				NSV.CONTACT_PHONE AS non_sap_contact_phone, 
+				NSV.CONTACT_PHONE AS non_sap_contact_phone,
+				VCI.NAME AS vendor_contact_name, 
+				VCI.EMAIL AS vendor_contact_email, 
+				VCI.PHONE AS vendor_contact_phone,
 				RQ.STAGE_ID, 
 				STG.NAME AS stage_name, 
 				RQ.STATUS_ID, 
@@ -99,6 +107,8 @@ BEGIN
 				ON RQ.VENDOR_ID = V.VENDOR_ID
 				LEFT OUTER JOIN "NON_SAP_VENDOR" AS NSV
 				ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
+				LEFT OUTER JOIN "VENDOR_CONTACT_INFORMATION" AS VCI
+				ON RQ.VENDOR_CONTACT_INFORMATION_ID = VCI.VENDOR_CONTACT_INFORMATION_ID
 				INNER JOIN "STAGE" AS STG
 				ON RQ.STAGE_ID = STG.STAGE_ID
 				INNER JOIN "REQUEST_STATUS" AS ST

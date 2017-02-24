@@ -177,9 +177,6 @@ function getAllVendorStatus(){
 //MAPPER
 function getParams(objVendor) {
 	var params = {};
-	params.in_contact_name = objVendor.CONTACT_NAME || null;
-	params.in_contact_email = objVendor.CONTACT_EMAIL || null;
-	params.in_contact_phone = objVendor.CONTACT_PHONE || null;
 	params.in_address_1 = objVendor.ADDRESS_1 || null;
 	params.in_address_2 = objVendor.ADDRESS_2 || null;
 	params.in_city = objVendor.CITY || null;

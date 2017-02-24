@@ -41,6 +41,7 @@ function insertNoteType(objNoteType, user_id){
 	var param = {};
 	param.in_note_type_name = objNoteType.NOTE_TYPE_NAME;
 	param.in_note_type_description = objNoteType.NOTE_TYPE_DESCRIPTION;
+	param.in_note_position = objNoteType.NOTE_POSITION;
 	param.in_created_user_id = user_id;
 	param.out_result = '?';
 	
@@ -52,6 +53,7 @@ function updateNoteType(objNoteType, user_id){
 	param.in_note_type_id = objNoteType.NOTE_TYPE_ID;
 	param.in_note_type_name = objNoteType.NOTE_TYPE_NAME;
 	param.in_note_type_description = objNoteType.NOTE_TYPE_DESCRIPTION;
+	param.in_note_position = objNoteType.NOTE_POSITION;
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
 	

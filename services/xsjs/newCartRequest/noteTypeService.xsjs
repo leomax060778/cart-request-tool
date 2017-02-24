@@ -25,14 +25,20 @@ function handleGet(parameters, user_id) {
         else if (parameters[0].name === GET_ALL_NOTE_TYPE) {
             rdo = note_type.getAllNoteType();
           
-        	}
+        	} else {
+                throw ErrorLib.getErrors().BadRequest(
+                        "",
+                        "newsService/handleGet",
+                        "invalid parameter name (can be: GET_NOTE_TYPE_BY_ID, GET_ALL_NOTE_TYPE, GET_ALL_NOTE_TYPE_BY_STATUS, GET_ALL_NOTE_TYPE_BY_YEAR or GET_ALL_NOTE_TYPE_BY_STATUS_YEAR)"
+                        );
+                }
         }
     else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "newsService/handleGet",
                 "invalid parameter name (can be: GET_NOTE_TYPE_BY_ID, GET_ALL_NOTE_TYPE, GET_ALL_NOTE_TYPE_BY_STATUS, GET_ALL_NOTE_TYPE_BY_YEAR or GET_ALL_NOTE_TYPE_BY_STATUS_YEAR)"
-                + parameters[0].name);
+                );
         }
 
     return http.handleResponse(rdo, http.OK, http.AppJson);

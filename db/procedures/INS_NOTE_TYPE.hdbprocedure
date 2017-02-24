@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NOTE_TYPE" (
  IN in_note_type_name nvarchar(255),
  IN in_note_type_description nvarchar(1000),
+ IN in_note_position integer,
  IN in_created_user_id bigint,
  OUT out_result bigint
  ) 
@@ -9,8 +10,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_NOTE_TYPE" (
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."NOTE_TYPE"(note_type_name, note_type_description, created_user_id) 
-  VALUES(in_note_type_name, in_note_type_description, in_created_user_id);
+  INSERT INTO "CART_REQUEST_TOOL"."NOTE_TYPE"(note_type_name, note_type_description, note_position, created_user_id) 
+  VALUES(in_note_type_name, in_note_type_description, in_note_position, in_created_user_id);
   
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."NOTE_TYPE";
 END;

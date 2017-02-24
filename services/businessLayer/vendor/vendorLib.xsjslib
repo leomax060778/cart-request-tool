@@ -279,9 +279,8 @@ function validateInsertVendor(objVendor, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'CONTACT_NAME', 'CONTACT_EMAIL',
-			'ADDRESS_1', 'ADDRESS_2', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'INFORMAL_NAME', 'VENDOR_ACCOUNT', 'STATUS_ID' ];
+	var keys = ['ADDRESS_1', 'ADDRESS_2', 'CITY', 'STATE', 'ZIP', 'PHONE',
+	            'FAX', 'LEGAL_NAME', 'INFORMAL_NAME', 'VENDOR_ACCOUNT', 'STATUS_ID' ];
 	
 	if(objVendor.VENDOR_ENTITY){
 		keys.push('VENDOR_ENTITY');
@@ -374,10 +373,8 @@ function validateUpdateVendor(objVendor, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = [ 'VENDOR_ID', 
-			'CONTACT_NAME', 'CONTACT_EMAIL',
-			'ADDRESS_1', 'CITY', 'STATE', 'ZIP', 'PHONE',
-			'FAX', 'LEGAL_NAME', 'CONTACT_PHONE', 'ADDRESS_2', 'INFORMAL_NAME'];
+	var keys = [ 'VENDOR_ID', 'ADDRESS_1', 'CITY', 'STATE', 'ZIP', 'PHONE',
+			'FAX', 'LEGAL_NAME', 'ADDRESS_2', 'INFORMAL_NAME'];
 	
 	if(objVendor.VENDOR_ENTITY){
 		keys.push('VENDOR_ENTITY');
@@ -467,15 +464,6 @@ function validateType(key, value) {
 	switch (key) {
 	case 'VENDOR_ID':
 		valid = !isNaN(value) && value > 0;
-		break;
-	case 'CONTACT_NAME':
-		valid = (!value) || (value.length > 0 && value.length <= 255);
-		break;
-	case 'CONTACT_EMAIL':
-		valid = (!value) || (value.length > 0 && value.length <= 255);
-		break;
-	case 'CONTACT_PHONE':
-		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	case 'ADDRESS_1':
 		valid = (!value) || (value.length > 0 && value.length <= 255);

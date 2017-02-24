@@ -97,6 +97,7 @@ function updateRequestManual(objRequest, userId){
     parameters.in_entity_id = objRequest.ENTITY_ID;
     parameters.in_material_id = objRequest.MATERIAL_ID;
     parameters.in_vendor_id = objRequest.VENDOR_ID;
+    parameters.in_vendor_contact_information_id = objRequest.VENDOR_CONTACT_INFORMATION_ID || null;
     parameters.in_non_sap_vendor_id = objRequest.NON_SAP_VENDOR_ID;
     parameters.in_goods_recipient_username = objRequest.GOODS_RECIPIENT_USERNAME;
     parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;

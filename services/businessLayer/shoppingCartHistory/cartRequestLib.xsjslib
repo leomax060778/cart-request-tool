@@ -296,7 +296,7 @@ function getRequestLastId() {
 	if (newId) {
 		request = newId;
 	} else {
-		request = "CR1";
+		request = {"CR_ID": "CR1"};
 	}
 	return request;
 }

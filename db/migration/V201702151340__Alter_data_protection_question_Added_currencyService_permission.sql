@@ -8,6 +8,6 @@ insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERV
 -- *************************************************************************************
 -- Update schema version
 INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT)
-VALUES('V5.0.0-20', 'Modified DATA_PROTECTION_QUESTION: SHORT_DESCRIPTION changed to NOT NULL - Added new Permision for the currencyService', 'V201702151340__Alter_data_protection_question_Added_currencyService_permission.sql');
+VALUES('V2.0.0-20', 'Modified DATA_PROTECTION_QUESTION: SHORT_DESCRIPTION changed to NOT NULL - Added new Permision for the currencyService', 'V201702151340__Alter_data_protection_question_Added_currencyService_permission.sql');
 
 COMMIT;

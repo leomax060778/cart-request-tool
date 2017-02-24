@@ -10,6 +10,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 							country_es nvarchar(255),
 							country_fr nvarchar(255),
 							name nvarchar(255),
+							legal_name nvarchar(511),
 							informal_name nvarchar(511),
 							contact_name nvarchar(511),
 							address_1 nvarchar(255),
@@ -17,6 +18,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 							city nvarchar(255),
 							state nvarchar(255),
 							zip nvarchar(255),
+							phone nvarchar(255),
 							contact_phone nvarchar(255),
 							fax nvarchar(255),
 							contact_email nvarchar(255),
@@ -51,16 +53,18 @@ BEGIN
                     	COU.country_name_es AS country_es,
                     	COU.country_name_fr AS country_fr,
                     	VAI.VENDOR_NAME AS NAME,
+                    	V.LEGAL_NAME,
                     	V.INFORMAL_NAME,
-                    	V.CONTACT_NAME,
+                    	VCI.NAME AS CONTACT_NAME,
                     	V.ADDRESS_1,
                     	V.ADDRESS_2,
                     	V.CITY,
                     	V.STATE,
                     	V.ZIP,
-                    	V.CONTACT_PHONE,
+                    	V.PHONE,
+                    	VCI.PHONE AS CONTACT_PHONE,
                     	V.FAX,
-                    	V.CONTACT_EMAIL,
+                    	VCI.EMAIL AS CONTACT_EMAIL,
                     	COM.description AS commodity,
                     	VR.NOT_USED_SAP_SUPPLIER,
                     	VR.SERVICE_SUPPLIER,
@@ -84,6 +88,8 @@ BEGIN
 				                          and VAI.MODIFIED_DATE_TZ >= VR.CREATED_DATE_TZ)
 				                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VR.RECEIVER_DATE_COMPLETED_TZ))
 				                 )
+				                 
+				        LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1 AND VCI.ENABLED = 1 AND VCI.DELETED = 0
 						INNER JOIN "ENTITY" ET ON VR.ENTITY_ID = ET.ENTITY_ID AND ET.ENABLED = 1 AND ET.DELETED = 0
 						INNER JOIN "CURRENCY" CUR ON VR.PURCHASE_CURRENCY_ID = CUR.CURRENCY_ID AND CUR.ENABLED = 1 AND CUR.DELETED = 0
 						INNER JOIN "COMMODITY" COM ON VR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0

@@ -36,7 +36,7 @@ function getLastId(vendorRequestInquiryId) {
 		if (newId) {
 			vendorRequestInquiry = newId;
 		} else {
-			vendorRequestInquiry = "EV1";
+			vendorRequestInquiry = {"EV_ID": "EV1"};
 		}
 		break;
 	case "CHANGE":
@@ -44,7 +44,7 @@ function getLastId(vendorRequestInquiryId) {
 		if (newId) {
 			vendorRequestInquiry = newId;
 		} else {
-			vendorRequestInquiry = "CV1";
+			vendorRequestInquiry = {"CV_ID": "CV1"};
 		}
 		break;
 	case "REQUEST":
@@ -52,7 +52,7 @@ function getLastId(vendorRequestInquiryId) {
 		if (newId) {
 			vendorRequestInquiry = newId;
 		} else {
-			vendorRequestInquiry = "NV1";
+			vendorRequestInquiry = {"NV_ID": "NV1"};
 		}
 		break;
 	case "INQUIRY":
@@ -60,7 +60,7 @@ function getLastId(vendorRequestInquiryId) {
 		if (newId) {
 			vendorRequestInquiry = newId;
 		} else {
-			vendorRequestInquiry = "VI1";
+			vendorRequestInquiry = {"VI_ID": "VI1"};
 		}
 		break;
 	default:

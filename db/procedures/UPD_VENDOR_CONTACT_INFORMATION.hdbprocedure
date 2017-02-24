@@ -1,0 +1,28 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_CONTACT_INFORMATION" (
+  IN in_vendor_contact_information_id bigint,
+  IN in_name nvarchar(255),
+  IN in_phone nvarchar(255),
+  IN in_email nvarchar(255),
+  IN in_vendor_id bigint,
+  IN in_default_contact_information tinyint,
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE vendorCI
+	SET vendorCI.name = in_name,
+		vendorCI.phone = in_phone,
+		vendorCI.email = in_email,
+		vendorCI.vendor_id = in_vendor_id,
+		vendorCI.default_contact_information = in_default_contact_information,
+		vendorCI.modified_date_tz = CURRENT_TIMESTAMP,
+		vendorCI.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION" vendorCI
+	WHERE vendorCI.vendor_contact_information_id = in_vendor_contact_information_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

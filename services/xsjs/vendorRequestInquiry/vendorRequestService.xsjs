@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getVendorRequest();
+var vendorContact = mapper.getVendorContactInformation();
 var vendor = mapper.getVendor();
 var protection = mapper.getVendorDataProtection();
 /** ***********END INCLUDE LIBRARIES*************** */
@@ -76,8 +77,23 @@ function handleGet(parameters) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
+	//Update data protection
 	protection.updateDataProtectionManual(reqBody.DATA_PROTECTION_ANSWERS, reqBody.VENDOR_REQUEST_ID, userId);
+	
+	//Update vendor
 	var resVendor = vendor.updateManualVendor(reqBody, userId);
+	
+	//Update vendor contact information
+	var vendorBody = {};
+	vendorBody.NAME = reqBody.CONTACT_NAME;
+	vendorBody.EMAIL = reqBody.CONTACT_EMAIL;
+	vendorBody.PHONE = reqBody.CONTACT_PHONE;
+	vendorBody.VENDOR_ID = reqBody.VENDOR_ID;
+	vendorBody.VENDOR_CONTACT_INFORMATION_ID = reqBody.VENDOR_CONTACT_INFORMATION_ID;
+	vendorBody.DEFAULT_CONTACT_INFORMATION = 1;
+	vendorContact.updateVendorContactInformationManual(vendorBody, userId);
+	
+	//Update vendor request
     var resRequest = request.updateVendorRequest(reqBody, userId);
     var res = {"vendorId": resVendor, "vendorRequestId": resRequest};
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
@@ -127,8 +143,20 @@ function handleDelete(reqBody, userId) {
  * @returns {object} id - Id of the new vendor request and the new vendor
  */
 function handlePost(reqBody, userId) {
+	//Insert vendor
 	var resVendor = vendor.insertManualVendor(reqBody, userId);
 	reqBody.VENDOR_ID = resVendor;
+	
+	//Insert vendor information
+	var vendorBody = {};
+	vendorBody.NAME = reqBody.CONTACT_NAME;
+	vendorBody.EMAIL = reqBody.CONTACT_EMAIL;
+	vendorBody.PHONE = reqBody.CONTACT_PHONE;
+	vendorBody.VENDOR_ID = resVendor;
+	vendorBody.DEFAULT_CONTACT_INFORMATION = 1;
+	vendorContact.insertVendorContactInformationManual(vendorBody, userId);
+	
+	//Insert vendor request
     var resRequest = request.insertVendorRequestManual(reqBody, userId);
     reqBody.VENDOR_REQUEST_ID = resRequest;
     //request.sendSubmitMail(resRequest, userId);

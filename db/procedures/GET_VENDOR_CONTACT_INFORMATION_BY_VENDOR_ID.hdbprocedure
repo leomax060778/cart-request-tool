@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_CONTACT_INFORMATION_BY_VENDOR_ID" (
+	IN in_vendor_id bigint,
+	OUT out_result TABLE ( vendor_contact_information_id bigint, vendor_id bigint, name nvarchar(255), phone nvarchar(255), email nvarchar(255), default_contact_information tinyint)
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT VCI.vendor_contact_information_id, VCI.vendor_id, VCI.name, VCI.phone, VCI.email, VCI.default_contact_information
+              FROM "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION" VCI
+				WHERE VCI.vendor_id = in_vendor_id
+					AND VCI.ENABLED = 1 
+					AND VCI.DELETED = 0
+					ORDER BY VCI.name ASC;
+END;

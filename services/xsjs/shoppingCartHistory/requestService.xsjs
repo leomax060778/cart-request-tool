@@ -65,14 +65,13 @@ function handlePost() {
 }
 
 function handlePut(reqBody, user_id) {
+	var res;
 	if(reqBody.ONLY_ATTACHMENTS){
-		var rdo =  request.updateAttachmentRequest(reqBody, user_id);
-		return httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
+		res =  request.updateAttachmentRequest(reqBody, user_id);
 	}else{
-		var rdo =  request.updateRequest(reqBody, user_id);
-		return httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
+		res =  request.updateRequest(reqBody, user_id);
 	}
-	
+	return httpUtil.handleResponse(res,httpUtil.OK,httpUtil.AppJson);
 }
 
 function handleDelete(reqBody, user_id) {

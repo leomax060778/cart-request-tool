@@ -5,20 +5,23 @@ var dataNoteType = mapper.getDataNoteType();
 var ErrorLib = mapper.getErrors();
 
 function getNoteTypeById(in_note_type_id, user_id){
-	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","noteTypeService/handleGet/getNoteTypeById",user_id);	
-	if(!in_note_type_id)	
-		throw ErrorLib.getErrors().BadRequest("The Parameter in_note_type_id is not found","noteTypeService/handleGet/getNoteTypeById",in_note_type_id);	
+	if(!user_id){
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","noteTypeService/handleGet/getNoteTypeById",user_id);
+	}
+	if(!in_note_type_id){	
+		throw ErrorLib.getErrors().BadRequest("The Parameter in_note_type_id is not found","noteTypeService/handleGet/getNoteTypeById",in_note_type_id);
+	}
 	
 	return dataNoteType.getNoteTypeById(in_note_type_id); 
 }
 
 function getManualNoteTypeById(in_note_type_id, user_id){
-	if(!user_id)
+	if(!user_id){
 		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","noteTypeService/handleGet/getNoteTypeById",user_id);	
-	if(!in_note_type_id)	
+	}
+	if(!in_note_type_id){	
 		throw ErrorLib.getErrors().BadRequest("The Parameter in_note_type_id is not found","noteTypeService/handleGet/getNoteTypeById",in_note_type_id);	
-	
+	}
 	return dataNoteType.getManualNoteTypeById(in_note_type_id); 
 }
 
@@ -29,6 +32,9 @@ function getAllNoteType(){
 function insertNoteType(objNoteType, user_id){
 	var note = {};
 	try{
+		if(!objNoteType.NOTE_POSITION){
+			objNoteType.NOTE_POSITION = 0;
+		}
 		if(validateInsertNoteType(objNoteType, user_id)){
 			note = dataNoteType.insertNoteType(objNoteType, user_id);
 		}
@@ -51,6 +57,9 @@ function existNoteType(note_type_id, user_id) {
 function updateNoteType(objNoteType, user_id){
 	var note = {};
 	try{
+		if(!objNoteType.NOTE_POSITION){
+			objNoteType.NOTE_POSITION = 0;
+		}
 		if(validateUpdateNoteType(objNoteType, user_id)){
 			if (!existNoteType(objNoteType.NOTE_TYPE_ID, user_id)) {
 				throw ErrorLib.getErrors().CustomError("",
@@ -106,7 +115,7 @@ function validateInsertNoteType(objNoteType, user_id) {
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
-	var keys = ['NOTE_TYPE_NAME'];
+	var keys = ['NOTE_TYPE_NAME', 'NOTE_POSITION'];
 	
 	if(!objNoteType)
 		throw ErrorLib.getErrors().CustomError("","noteTypeService/handlePost/insertNoteType","The object NoteType is not found");
@@ -144,7 +153,8 @@ function validateUpdateNoteType(objNoteType, user_id) {
 	var errors = {};
 	var BreakException = {};
 	var keys = ['NOTE_TYPE_ID',
-	            'NOTE_TYPE_NAME'];
+	            'NOTE_TYPE_NAME',
+	            'NOTE_POSITION'];
 	
 	if(!objNoteType)
 		throw ErrorLib.getErrors().CustomError("","noteTypeService/handlePut/updateNoteType","The object NoteType is not found");
@@ -183,6 +193,8 @@ function validateType(key, value) {
 	case 'NOTE_TYPE_NAME':
 		valid = value.length > 0 && value.length <= 255;
 		break;
+	case 'NOTE_POSITION':
+		valid = !isNaN(value);
 }
 	return valid;
 }

@@ -104,6 +104,11 @@ function getVendor(){
     return $.xscartrequesttool.services.businessLayer.vendor.vendorLib;
 }
 
+function getVendorContactInformation(){
+    $.import("xscartrequesttool.services.businessLayer.vendor","vendorContactInfoLib");
+    return $.xscartrequesttool.services.businessLayer.vendor.vendorContactInfoLib;
+}
+
 function getNonSapVendor(){
     $.import("xscartrequesttool.services.businessLayer.nonSAPVendor","nonSapVendorLib");
     return $.xscartrequesttool.services.businessLayer.nonSAPVendor.nonSapVendorLib;
@@ -375,6 +380,11 @@ function getReport(){
     return $.xscartrequesttool.services.businessLayer.report.reportLib;
 }
 
+function getApi(){
+	$.import("xscartrequesttool.services.businessLayer.api","apiLib");
+    return $.xscartrequesttool.services.businessLayer.api.apiLib;
+}
+
 /************Data Layer Mapper*****************/
 
 function getdbHelper(){
@@ -499,6 +509,10 @@ function getDataEntity(){
 function getDataVendor(){
     $.import("xscartrequesttool.services.dataLayer.vendor","dataVendor");
     return $.xscartrequesttool.services.dataLayer.vendor.dataVendor;
+}
+function getDataVendorContactInformation(){
+    $.import("xscartrequesttool.services.dataLayer.vendor","dataVendorContactInfo");
+    return $.xscartrequesttool.services.dataLayer.vendor.dataVendorContactInfo;
 }
 function getDataNonSapVendor(){
     $.import("xscartrequesttool.services.dataLayer.nonSAPVendor","dataNonSapVendor");
