@@ -2,6 +2,7 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var data = mapper.getDataVendor();
 var dataVE = mapper.getDataVendorEntity();
+var business_contact = mapper.getVendorContactInformation();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 
@@ -64,16 +65,28 @@ function insertVendor(objVendor, user_id) {
 	objVendor.CREATED_USER_ID = user_id;
 	var result = {};
 		try{
-			result = insertManualVendor(objVendor, user_id);
-			objVendor.VENDOR_ID = result;
-			insertVendorAdditionalInformation(objVendor, user_id);
-			if(objVendor.VENDOR_ENTITIES){
-				(objVendor.VENDOR_ENTITIES).forEach(function(entity){
-					dataVE.insertManualVendorEntity(result, entity, user_id);				
-				});
-			} else {
-				throw ErrorLib.getErrors().CustomError("", "vendorService/handlePost/inserVendor", "Vendor Entity not found");
-			}
+			result = insertManualVendor(objVendor, user_id);			
+			var contact_information = {};
+			
+			if(result){
+				objVendor.VENDOR_ID = result;
+				contact_information.VENDOR_ID = result;
+				contact_information.NAME = objVendor.CONTACT_NAME;
+				contact_information.PHONE = objVendor.CONTACT_PHONE;
+				contact_information.EMAIL = objVendor.CONTACT_EMAIL;
+				contact_information.DEFAULT_CONTACT_INFORMATION = 1; //The first contact is always the default.
+				
+				business_contact.insertVendorContactInformationManual(contact_information, user_id);
+				insertVendorAdditionalInformation(objVendor, user_id);
+				if(objVendor.VENDOR_ENTITIES){
+					(objVendor.VENDOR_ENTITIES).forEach(function(entity){
+						dataVE.insertManualVendorEntity(result, entity, user_id);				
+					});
+				} else {
+					throw ErrorLib.getErrors().CustomError("", "vendorService/handlePost/inserVendor", "Vendor Entity not found");
+				}
+			}			
+
 			dbHelper.commit();
 		}
 		catch(e){

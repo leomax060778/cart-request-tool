@@ -1,22 +1,24 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID" (
 	IN in_change_vendor_request_id bigint,
 	OUT out_result TABLE (crt_vendor_id nvarchar(255),
-							change_vendor_request_id bigint,
+							change_vendor_request_id integer,
 							created_user_id bigint,
 							request_date nvarchar(255),
 							requester nvarchar(255),
 							vendor_account nvarchar(255),
 							vendor_name nvarchar(255),
-							contact_name nvarchar(255),
-							contact_email nvarchar(255),
+							vendor_contact_name nvarchar(255),
+							vendor_contact_email nvarchar(255),
+							vendor_contact_phone nvarchar(255),
 							commodity nvarchar(255),
 							status_id bigint,
 							status_name nvarchar(255),
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
-							account nvarchar(255),
-							entity_name nvarchar(255)
+							additional_information nvarchar(1000),
+							entity_name nvarchar(255),
+							vendor_type nvarchar(2)
 						 )
  ) 
 	LANGUAGE SQLSCRIPT
@@ -29,29 +31,24 @@ BEGIN
 						CVR.CREATED_USER_ID,
                     	to_nvarchar(CVR.created_date_tz, 'YYYY-MM-DD') AS request_date,
                     	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
-                    	V.account AS vendor_account,
-                    	VAI.VENDOR_NAME,
-                    	V.contact_name,
-                    	V.contact_email,
+                    	CVR.VENDOR_ACCOUNT,
+                    	CVR.VENDOR_NAME,
+                    	CVR.VENDOR_CONTACT_NAME,
+                    	CVR.VENDOR_CONTACT_EMAIL,
+                    	CVR.VENDOR_CONTACT_PHONE,
                     	COM.description AS commodity,
                     	CVR.status_id,
                     	ST.name AS status_name,
                     	TO_NVARCHAR(CVR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
                     	TO_NVARCHAR(CVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	CVR.RECEIVER_YVC_REQUEST,
-                    	V.ACCOUNT,
-                    	ENT.ENTITY_NAME
+                    	CVR.ADDITIONAL_INFORMATION,
+                    	ENT.ENTITY_NAME,
+                    	VT.ISO AS vendor_type
                     FROM "CHANGE_VENDOR_REQUEST" CVR
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = CVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = CVR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-	                    LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-				                 ON (CVR.VENDOR_ID = VAI.VENDOR_ID
-				                     AND((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ
-				                          and VAI.MODIFIED_DATE_TZ >= CVR.CREATED_DATE_TZ)
-				                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ))
-				                 )
-				        INNER JOIN "VENDOR" V ON CVR.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
-				        INNER JOIN "COMMODITY" COM ON CVR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0
+	                    INNER JOIN "COMMODITY" COM ON CVR.COMMODITY_ID = COM.COMMODITY_ID AND COM.ENABLED = 1 AND COM.DELETED = 0
 				        INNER JOIN "CHANGE_VENDOR_REQUEST_STATUS" ST ON CVR.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
 				        INNER JOIN "ENTITY" ENT ON CVR.ENTITY_ID = ENT.ENTITY_ID AND ENT.ENABLED = 1 AND ENT.DELETED = 0
                     WHERE CVR.change_vendor_request_id = in_change_vendor_request_id AND CVR.ENABLED = 1 AND CVR.DELETED = 0;

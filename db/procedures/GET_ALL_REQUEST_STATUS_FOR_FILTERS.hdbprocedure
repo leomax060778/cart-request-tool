@@ -1,5 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_STATUS_FOR_FILTERS" (
-	OUT out_result TABLE (status_id bigint, name nvarchar(255))
+	OUT out_result TABLE (status_id integer, name nvarchar(255))
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 

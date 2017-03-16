@@ -15,6 +15,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 						    vendor_informal_name nvarchar(511),
 						    vendor_contact_name nvarchar(255),
 						    vendor_contact_email nvarchar(255),
+						    vendor_contact_phone nvarchar(255),
 						    commodity_id bigint,
 						    commodity_description nvarchar(255),
 						    not_used_sap_supplier nvarchar(1000),
@@ -64,8 +65,9 @@ BEGIN
 					    VR.ENTITY_ID,
 					    V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
 					    V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME,
-					    V.CONTACT_NAME AS VENDOR_CONTACT_NAME,
-					    V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL,
+					    VCI.NAME AS VENDOR_CONTACT_NAME,
+					    VCI.EMAIL AS VENDOR_CONTACT_EMAIL,
+					    VCI.PHONE AS VENDOR_CONTACT_PHONE,
 					    VR.COMMODITY_ID,
 					    COM.DESCRIPTION AS COMMODITY_DESCRIPTION,
 					    VR.NOT_USED_SAP_SUPPLIER,
@@ -98,6 +100,7 @@ BEGIN
 					    BUDGET_YEAR.BUDGET_YEAR
 	FROM "VENDOR_REQUEST" VR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
+	LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID
 	INNER JOIN "USER" US ON VR.USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 	INNER JOIN "VENDOR_TYPE" VT ON VR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 	INNER JOIN "COUNTRY" CO ON VR.COUNTRY_ID = CO.COUNTRY_ID

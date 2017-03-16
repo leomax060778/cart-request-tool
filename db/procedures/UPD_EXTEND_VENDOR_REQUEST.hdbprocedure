@@ -9,7 +9,11 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_EXTEND_VENDO
 	IN in_purchase_currency_id integer,
 	IN in_expected_currency_id integer,
 	IN in_additional_information nvarchar(1000),
-	IN in_vendor_id bigint,
+	IN in_vendor_legal_name nvarchar(255),
+	IN in_vendor_informal_name nvarchar(255),
+	IN in_contact_name nvarchar(255),
+	IN in_contact_email nvarchar(255),
+	IN in_contact_phone nvarchar(255),
 	IN in_modified_user_id bigint,
  OUT out_result bigint
  ) 
@@ -28,7 +32,11 @@ BEGIN
 		EVR.purchase_currency_id = in_purchase_currency_id,
 		EVR.expected_currency_id = in_expected_currency_id,
 		EVR.additional_information = in_additional_information,
-		EVR.vendor_id = in_vendor_id,
+		EVR.vendor_legal_name = in_vendor_legal_name,
+		EVR.vendor_informal_name = in_vendor_informal_name,
+		EVR.contact_name = in_contact_name,
+		EVR.contact_email = in_contact_email,
+		EVR.contact_phone = in_contact_phone,
 		EVR.modified_date_tz = CURRENT_TIMESTAMP,
 		EVR.modified_user_id = in_modified_user_id
         FROM "EXTEND_VENDOR_REQUEST" EVR

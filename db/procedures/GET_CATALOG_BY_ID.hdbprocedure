@@ -1,11 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CATALOG_BY_ID" (
 	IN in_catalog_id bigint,
-	OUT out_result TABLE (	catalog_id bigint, 
+	OUT out_result TABLE (	catalog_id integer, 
 						  	name nvarchar(255), 
 						  	pop_up nvarchar(512), 
 						  	catalog_type_id bigint, 
 						  	catalog_type_name nvarchar(255), 
-						  	catalog_parent_id bigint
+						  	catalog_parent_id integer
 						  )
  ) 
 	LANGUAGE SQLSCRIPT

@@ -8,7 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 	 IN in_user_id bigint,
 	 IN in_vendor_id bigint,
 	 IN in_status_id bigint,
-	 OUT out_result TABLE(REQUEST_ID BIGINT, 
+	 OUT out_result TABLE(REQUEST_ID integer, 
 	 					  ISO nvarchar(2),
 	 					  STATUS_ID integer,
 						  STATUS_NAME nvarchar(255), 
@@ -21,8 +21,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 						  LAST_NAME nvarchar(255),
 						  FIRST_NAME nvarchar(255),
 						  REQUEST_CREATED_DATE nvarchar(50),
-  						  message_read integer,						  
-  						  user_message bigint,
+  						  message_read integer,
   						  EDITABLE boolean
 						 )
 	 )
@@ -55,7 +54,6 @@ BEGIN
 						 US.FIRST_NAME AS FIRST_NAME,
 						 To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') AS REQUEST_CREATED_DATE,
                			 VAM.MESSAGE_READ,
-               			 VAM.CREATED_USER_ID AS USER_MESSAGE,
                			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) AND USR.ROLE_ID != 1 THEN FALSE ELSE TRUE END) AS EDITABLE
 				  FROM "REQUEST" RQ
 						  INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID
@@ -88,5 +86,6 @@ BEGIN
 							  AND (RQ.VENDOR_ID = in_vendor_id OR in_vendor_id IS NULL)
 							  AND (RQ.STATUS_ID = in_status_id OR in_status_id IS NULL)
 						  	  AND (RQ.ENABLED = 1)
-						  	  AND (RQ.DELETED = 0);
+						  	  AND (RQ.DELETED = 0)
+						  	  ORDER BY RQ.REQUEST_ID DESC;
 END;

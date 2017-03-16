@@ -2,7 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_INQUI
  IN in_user_id BIGINT,
  IN in_created_user_id BIGINT,
  IN in_vendor_type_id BIGINT,
- IN in_vendor_id BIGINT,
+ IN in_vendor_name NVARCHAR(255),
  OUT out_result BIGINT
  ) 
 	LANGUAGE SQLSCRIPT
@@ -10,8 +10,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_INQUI
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_INQUIRY" (user_id, vendor_type_id, vendor_id, created_user_id)
-   VALUES(in_user_id, in_vendor_type_id, in_vendor_id, in_created_user_id);
+  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_INQUIRY" (user_id, vendor_type_id, vendor_name, created_user_id)
+   VALUES(in_user_id, in_vendor_type_id, in_vendor_name, in_created_user_id);
    
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR_INQUIRY";
 END;

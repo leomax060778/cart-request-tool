@@ -35,7 +35,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
-							vendor_account nvarchar(255)
+							vendor_account nvarchar(255),
+							vendor_type nvarchar(2)
 							)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -78,7 +79,8 @@ BEGIN
                     	TO_NVARCHAR(VR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
                     	TO_NVARCHAR(VR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	VR.RECEIVER_YVC_REQUEST,
-                    	V.ACCOUNT AS VENDOR_ACCOUNT
+                    	V.ACCOUNT AS VENDOR_ACCOUNT,
+                    	VT.ISO AS vendor_type
                     FROM "VENDOR_REQUEST" VR
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = VR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0

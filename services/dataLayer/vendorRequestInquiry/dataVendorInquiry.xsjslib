@@ -17,7 +17,7 @@ function insertVendorInquiry(objVendorInquiry, userId) {
     parameters.in_user_id = userId;
     parameters.in_vendor_type_id = objVendorInquiry.VENDOR_TYPE_ID;
     parameters.in_created_user_id = userId;
-    parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
+    parameters.in_vendor_name = objVendorInquiry.VENDOR_NAME;
     parameters.out_result = '?';
     return db.executeScalar(INS_VENDOR_INQUIRY, parameters, 'out_result');
 }
@@ -28,7 +28,7 @@ function insertVendorInquiryManual(objVendorInquiry, userId) {
     parameters.in_user_id = userId;
     parameters.in_vendor_type_id = objVendorInquiry.VENDOR_TYPE_ID;
     parameters.in_created_user_id = userId;
-    parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
+    parameters.in_vendor_name = objVendorInquiry.VENDOR_NAME;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_VENDOR_INQUIRY, parameters, 'out_result');
 }
@@ -78,7 +78,7 @@ function deleteVendorInquiry(objVendorInquiry, userId) {
 function updateVendorInquiry(objVendorInquiry, userId) {
     var parameters = {};
     parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
-    parameters.in_vendor_id = objVendorInquiry.VENDOR_ID;
+    parameters.in_vendor_name = objVendorInquiry.VENDOR_NAME;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_INQUIRY, parameters, 'out_result');

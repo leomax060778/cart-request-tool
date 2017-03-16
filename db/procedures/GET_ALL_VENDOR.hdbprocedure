@@ -21,23 +21,25 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-out_result = SELECT 
-			V.vendor_id, 
-			V.account, 
-			V.contact_name, 
-			V.contact_email, 
-			V.contact_phone,  
-			V.address_1, 
-			V.address_2, 
-			V.city, 
-			V.state, 
-			V.zip, 
-			V.phone, 
-			V.fax, 
-			V.legal_name, 
-			V.informal_name,
-			VAI.vendor_name as name
-         FROM "VENDOR" V
-         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
-         WHERE V.ENABLED = 1 AND V.DELETED = 0 ORDER BY UPPER(VAI.VENDOR_NAME);
+out_result = SELECT DISTINCT V.vendor_id, 
+							V.account, 
+							VCI.name as contact_name, 
+							VCI.email as contact_email, 
+							VCI.phone as contact_phone,  
+							V.address_1, 
+							V.address_2, 
+							V.city, 
+							V.state, 
+							V.zip, 
+							V.phone, 
+							V.fax, 
+							V.legal_name, 
+							V.informal_name,
+							VAI.vendor_name as name
+		         FROM "VENDOR" V
+			         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
+			         LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
+		         WHERE V.ENABLED = 1
+		         	AND V.DELETED = 0 
+		         ORDER BY UPPER(VAI.VENDOR_NAME);
 END; 

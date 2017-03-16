@@ -1,0 +1,13 @@
+INSERT INTO "ISSUE_TYPE" (NAME, CREATED_USER_ID) VALUES('Responding To Requester/Inquiry', 1);
+INSERT INTO "CRT_ISSUE_TYPE" (ISSUE_TYPE_ID, CRT_TYPE_ID, CREATED_USER_ID) VALUES(9, 3, 1);
+INSERT INTO "CRT_ISSUE_TYPE" (ISSUE_TYPE_ID, CRT_TYPE_ID, CREATED_USER_ID) VALUES(9, 4, 1);
+INSERT INTO "CRT_ISSUE_TYPE" (ISSUE_TYPE_ID, CRT_TYPE_ID, CREATED_USER_ID) VALUES(9, 5, 1);
+INSERT INTO "CRT_ISSUE_TYPE" (ISSUE_TYPE_ID, CRT_TYPE_ID, CREATED_USER_ID) VALUES(9, 6, 1);
+
+-- *************************************************************************************
+-- Update schema version
+
+INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT) 
+VALUES('V2.0.0-25', 'Insert issue type Responding To Requester/Inquiry', 'V201703131600__Insert_issue_type.sql');
+
+COMMIT;

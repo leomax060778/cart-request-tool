@@ -1,7 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_BY_STATUS" (
   IN in_status_id bigint,
   OUT out_result TABLE (change_vendor_request_id bigint,
-                        vendor_id bigint,
+                        vendor_name nvarchar(255),
+                        vendor_account nvarchar(255),
+                        vendor_contact_name nvarchar(255), 
+                        vendor_contact_phone nvarchar(255), 
+						vendor_contact_email nvarchar(255),
                         user_id bigint,
                         status_id bigint)
 )
@@ -11,7 +15,11 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
 out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID,
-               CVR.VENDOR_ID,
+               CVR.VENDOR_NAME,
+               CVR.VENDOR_ACCOUNT,
+               CVR.VENDOR_CONTACT_NAME,
+               CVR.VENDOR_CONTACT_PHONE,
+               CVR.VENDOR_CONTACT_EMAIL,
                CVR.USER_ID,
                CVR.STATUS_ID
              FROM "CHANGE_VENDOR_REQUEST" CVR

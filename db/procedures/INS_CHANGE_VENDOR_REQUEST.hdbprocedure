@@ -5,7 +5,12 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CHANGE_VENDO
     IN in_commodity_id bigint,
 	IN in_vendor_type_id bigint,
 	IN in_created_user_id bigint,
-	IN in_vendor_id bigint,
+	IN in_vendor_name nvarchar(255),
+	IN in_vendor_account nvarchar(255),
+	IN in_vendor_contact_name nvarchar(255),
+	IN in_vendor_contact_phone nvarchar(255),
+	IN in_vendor_contact_email nvarchar(255),
+	IN in_additional_information nvarchar(1000),
 	OUT out_result bigint
 	)
 	
@@ -20,15 +25,25 @@ BEGIN
 	  	commodity_id,
 		vendor_type_id, 
 		created_user_id, 
-		vendor_id
+		vendor_name,
+		vendor_account,
+		vendor_contact_name,
+		vendor_contact_phone,
+		vendor_contact_email,
+		additional_information
 	) VALUES( 
 		in_user_id, 
 		in_entity_id, 
 		in_commodity_id, 
 		in_vendor_type_id, 
 		in_created_user_id, 
-		in_vendor_id
-	);
+		in_vendor_name,
+		in_vendor_account,
+		in_vendor_contact_name,
+		in_vendor_contact_phone,
+		in_vendor_contact_email,
+		in_additional_information
+		);
 	
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST";
 END;	

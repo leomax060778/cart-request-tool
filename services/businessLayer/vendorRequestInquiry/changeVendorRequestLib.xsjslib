@@ -214,7 +214,10 @@ function validateInsertChangeVendorRequest(objChangeVendorRequest, userId) {
     var keys = [
         'ENTITY_ID',
         'COMMODITY_ID',
-        'VENDOR_ID'
+        'VENDOR_NAME',
+        'VENDOR_ACCOUNT',
+        'VENDOR_CONTACT_NAME',
+        'VENDOR_CONTACT_EMAIL'
     ];
     
     if (!objChangeVendorRequest) {
@@ -294,6 +297,18 @@ function validateType(key, value) {
             break;
         case 'VENDOR_ID':
             valid = !isNaN(value) && value > 0;
+            break;
+        case 'VENDOR_NAME':
+            valid = (value.length >= 0 && value.length <= 255);
+            break;
+        case 'VENDOR_ACCOUNT':
+            valid = (value.length >= 0 && value.length <= 255);
+            break;
+        case 'VENDOR_CONTACT_NAME':
+            valid = (value.length >= 0 && value.length <= 255);
+            break;
+        case 'VENDOR_CONTACT_EMAIL':
+            valid = (value.length >= 0 && value.length <= 255);
             break;
     }
     return valid;

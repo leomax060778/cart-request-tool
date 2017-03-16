@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_INQUIRY" (
 	OUT out_result TABLE (vendor_inquiry_id bigint,
 								created_date_tz timestamp,
-								vendor_legal_name nvarchar (511),
+								vendor_legal_name nvarchar (255),
 								status_id bigint
 							  )
  ) 
@@ -12,12 +12,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_I
 BEGIN
 	out_result = SELECT "VENDOR_INQUIRY".VENDOR_INQUIRY_ID,
 						"VENDOR_INQUIRY".CREATED_DATE_TZ,
-						"VENDOR".LEGAL_NAME AS VENDOR_LEGAL_NAME,
+						"VENDOR_INQUIRY".VENDOR_NAME AS VENDOR_LEGAL_NAME,
 						
 						"VENDOR_INQUIRY".STATUS_ID
 				FROM "VENDOR_INQUIRY"
-				INNER JOIN "VENDOR" 
-					ON "VENDOR".VENDOR_ID = "VENDOR_INQUIRY".vendor_id AND "VENDOR".ENABLED = 1 AND "VENDOR".DELETED = 0
-				 WHERE "VENDOR_INQUIRY".ENABLED = 1
-				  AND "VENDOR_INQUIRY".DELETED = 0;
+					WHERE "VENDOR_INQUIRY".ENABLED = 1
+				  		AND "VENDOR_INQUIRY".DELETED = 0;
 END;

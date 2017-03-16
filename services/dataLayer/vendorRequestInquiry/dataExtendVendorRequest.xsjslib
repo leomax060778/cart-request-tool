@@ -25,7 +25,11 @@ function insertExtendVendorRequest(objExtendVendorRequest, userId) {
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
     parameters.in_created_user_id = userId;
-    parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
+    parameters.in_vendor_legal_name = objExtendVendorRequest.VENDOR_LEGAL_NAME;
+    parameters.in_vendor_informal_name = objExtendVendorRequest.VENDOR_INFORMAL_NAME || null;
+    parameters.in_contact_name = objExtendVendorRequest.VENDOR_CONTACT_NAME;
+    parameters.in_contact_email = objExtendVendorRequest.VENDOR_CONTACT_EMAIL;
+    parameters.in_contact_phone = objExtendVendorRequest.VENDOR_CONTACT_PHONE || null;
     parameters.out_result = '?';
     return db.executeScalar(INS_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -44,7 +48,11 @@ function insertExtendVendorRequestManual(objExtendVendorRequest, userId) {
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
     parameters.in_created_user_id = userId;
-    parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
+    parameters.in_vendor_legal_name = objExtendVendorRequest.VENDOR_LEGAL_NAME;
+    parameters.in_vendor_informal_name = objExtendVendorRequest.VENDOR_INFORMAL_NAME || null;
+    parameters.in_contact_name = objExtendVendorRequest.VENDOR_CONTACT_NAME;
+    parameters.in_contact_email = objExtendVendorRequest.VENDOR_CONTACT_EMAIL;
+    parameters.in_contact_phone = objExtendVendorRequest.VENDOR_CONTACT_PHONE || null;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -84,7 +92,7 @@ function getExtendVendorRequestByIdManual(extendVendorRequestId) {
 function deleteExtendVendorRequest(objExtendVendorRequest, userId) {
     var parameters = {};
     parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-    parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_EXTEND_VENDOR_REQUEST, parameters, 'out_result');
 }
@@ -102,7 +110,11 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     parameters.in_purchase_currency_id = objExtendVendorRequest.PURCHASE_CURRENCY_ID;
     parameters.in_expected_currency_id = objExtendVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_additional_information = objExtendVendorRequest.ADDITIONAL_INFORMATION || null;
-    parameters.in_vendor_id = objExtendVendorRequest.VENDOR_ID;
+    parameters.in_vendor_legal_name = objExtendVendorRequest.VENDOR_LEGAL_NAME;
+    parameters.in_vendor_informal_name = objExtendVendorRequest.VENDOR_INFORMAL_NAME || null;
+    parameters.in_contact_name = objExtendVendorRequest.VENDOR_CONTACT_NAME;
+    parameters.in_contact_email = objExtendVendorRequest.VENDOR_CONTACT_EMAIL;
+    parameters.in_contact_phone = objExtendVendorRequest.VENDOR_CONTACT_PHONE || null;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST, parameters, 'out_result');

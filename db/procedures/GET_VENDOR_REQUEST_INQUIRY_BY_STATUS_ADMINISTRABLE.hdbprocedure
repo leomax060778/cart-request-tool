@@ -37,37 +37,42 @@ BEGIN
 								 		WHERE EVRM.CREATED_USER_ID != in_user_id AND EVRM.ENABLED = 1 AND EVRM.DELETED = 0
 								 		GROUP BY EVRM.EXTEND_VENDOR_REQUEST_ID;
 				 		
-out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VENDOR_REQUEST_INQUIRY_ID, VI.VENDOR_INQUIRY_ID AS V_ID, VAM.MESSAGE_READ, VAI.VENDOR_NAME, ST.NAME AS STATUS_NAME, (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, VI.VENDOR_TYPE_ID, VI.CREATED_DATE_TZ AS ORDER_DATE, VI.CREATED_USER_ID
-             			FROM "VENDOR_INQUIRY" VI
-             			LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-			                 ON (VI.VENDOR_ID = VAI.VENDOR_ID
-			                     AND(
-			                     	((VI.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VI.MODIFIED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= VI.MODIFIED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VI.MODIFIED_DATE_TZ))))
-			                     	OR                     	
-			                     	(VI.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VI.CREATED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= VI.CREATED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VI.CREATED_DATE_TZ))))
-			                 )
-             			INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.STATUS_ID = VI.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
-             			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VI.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
-             			INNER JOIN "USER" US ON US.USER_ID = VI.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-             			LEFT JOIN :va_vendor_inquiry_message VAM ON VI.VENDOR_INQUIRY_ID = VAM.VENDOR_INQUIRY_ID
-             			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = VI.CREATED_USER_ID
-             			WHERE (USR.ROLE_ID = 1 AND VI.ENABLED = 1 AND VI.DELETED = 0)
-			              		OR (USR.ROLE_ID = 2
-			              			AND VI.CREATED_USER_ID = in_user_id
-			              		   )
-			              		OR (USR.ROLE_ID > 2 
-			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND VI.CREATED_USER_ID = in_user_id)) 
-			              			AND VI.ENABLED = 1 
-			              			AND VI.DELETED = 0
-			              		   )
-             	UNION
-             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(VR.VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, VR.VENDOR_REQUEST_ID AS V_ID, VAM.MESSAGE_READ, VAI.VENDOR_NAME, ST.NAME AS STATUS_NAME, (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, VR.VENDOR_TYPE_ID, VR.CREATED_DATE_TZ AS ORDER_DATE, VR.CREATED_USER_ID
+out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VENDOR_REQUEST_INQUIRY_ID,
+					VI.VENDOR_INQUIRY_ID AS V_ID, 
+					VAM.MESSAGE_READ, 
+					VI.VENDOR_NAME,
+					ST.NAME AS STATUS_NAME, 
+					(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
+					VI.VENDOR_TYPE_ID, 
+					VI.CREATED_DATE_TZ AS ORDER_DATE, 
+					VI.CREATED_USER_ID
+              FROM "VENDOR_INQUIRY" VI
+             	INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.STATUS_ID = VI.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
+             	INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VI.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+             	INNER JOIN "USER" US ON US.USER_ID = VI.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+             	LEFT JOIN :va_vendor_inquiry_message VAM ON VI.VENDOR_INQUIRY_ID = VAM.VENDOR_INQUIRY_ID
+             	INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
+				LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = VI.CREATED_USER_ID
+              WHERE (USR.ROLE_ID = 1 AND VI.ENABLED = 1 AND VI.DELETED = 0)
+			       		OR (USR.ROLE_ID = 2
+			      			AND VI.CREATED_USER_ID = in_user_id
+			       		   )
+			       		OR (USR.ROLE_ID > 2 
+			       			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND VI.CREATED_USER_ID = in_user_id)) 
+			       			AND VI.ENABLED = 1 
+			       			AND VI.DELETED = 0
+			      		   )
+             UNION
+             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(VR.VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, 
+             	 				VR.VENDOR_REQUEST_ID AS V_ID, 
+             	 				VAM.MESSAGE_READ, 
+             	 				VAI.VENDOR_NAME, 
+             	 				ST.NAME AS STATUS_NAME, 
+             	 				(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
+             	 				VR.VENDOR_TYPE_ID, 
+             	 				VR.CREATED_DATE_TZ AS ORDER_DATE, 
+             	 				VR.CREATED_USER_ID
              			FROM "VENDOR_REQUEST" VR
              			LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
 			                 ON (VR.VENDOR_ID = VAI.VENDOR_ID
@@ -98,26 +103,23 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
 			              		   )
 			  	 )
              	UNION
-             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(CVR.CHANGE_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, CVR.CHANGE_VENDOR_REQUEST_ID AS V_ID, VAM.MESSAGE_READ, VAI.VENDOR_NAME, ST.NAME AS STATUS_NAME, (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, CVR.VENDOR_TYPE_ID, CVR.CREATED_DATE_TZ AS ORDER_DATE, CVR.CREATED_USER_ID
+             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(CVR.CHANGE_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID,
+             	 				CVR.CHANGE_VENDOR_REQUEST_ID AS V_ID,
+             	 				VAM.MESSAGE_READ, 
+             	 				CVR.VENDOR_NAME, 
+             	 				ST.NAME AS STATUS_NAME, 
+             	 				(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
+             	 				CVR.VENDOR_TYPE_ID, 
+             	 				CVR.CREATED_DATE_TZ AS ORDER_DATE, 
+             	 				CVR.CREATED_USER_ID
              			FROM "CHANGE_VENDOR_REQUEST" CVR
-             			LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-			                 ON (CVR.VENDOR_ID = VAI.VENDOR_ID
-			                     AND(
-			                     	((CVR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.MODIFIED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= CVR.MODIFIED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.MODIFIED_DATE_TZ))))
-			                     	OR                     	
-			                     	(CVR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= CVR.CREATED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= CVR.CREATED_DATE_TZ))))
-			                 )
-             			INNER JOIN "CHANGE_VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = CVR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
-             			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = CVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
-             			INNER JOIN "USER" US ON US.USER_ID = CVR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-             			LEFT JOIN :va_change_vendor_request_message VAM ON CVR.CHANGE_VENDOR_REQUEST_ID = VAM.CHANGE_VENDOR_REQUEST_ID
-             			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = CVR.CREATED_USER_ID
+	             			INNER JOIN "CHANGE_VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = CVR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
+	             			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = CVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+	             			INNER JOIN "USER" US ON US.USER_ID = CVR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	             			LEFT JOIN :va_change_vendor_request_message VAM ON CVR.CHANGE_VENDOR_REQUEST_ID = VAM.CHANGE_VENDOR_REQUEST_ID
+	             			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+						    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
+						    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = CVR.CREATED_USER_ID
              			WHERE (USR.ROLE_ID = 1 AND CVR.ENABLED = 1 AND CVR.DELETED = 0)
 			              		OR (USR.ROLE_ID = 2
 			              			AND CVR.CREATED_USER_ID = in_user_id
@@ -129,26 +131,23 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
 			              		   )
 			     )
              	UNION
-             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, EVR.EXTEND_VENDOR_REQUEST_ID AS V_ID, VAM.MESSAGE_READ, VAI.VENDOR_NAME, ST.NAME AS STATUS_NAME, (US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, EVR.VENDOR_TYPE_ID, EVR.CREATED_DATE_TZ AS ORDER_DATE, EVR.CREATED_USER_ID
-             			FROM "EXTEND_VENDOR_REQUEST" EVR 
-             			LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-			                 ON (EVR.VENDOR_ID = VAI.VENDOR_ID
-			                     AND(
-			                     	((EVR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= EVR.MODIFIED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= EVR.MODIFIED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= EVR.MODIFIED_DATE_TZ))))
-			                     	OR                     	
-			                     	(EVR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= EVR.CREATED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= EVR.CREATED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= EVR.CREATED_DATE_TZ))))
-			                 )
-             			INNER JOIN "EXTEND_VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = EVR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
-             			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = EVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
-             			INNER JOIN "USER" US ON US.USER_ID = EVR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
-             			LEFT JOIN :va_extend_vendor_request_message VAM ON EVR.EXTEND_VENDOR_REQUEST_ID = VAM.EXTEND_VENDOR_REQUEST_ID
-             			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
-					    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = EVR.CREATED_USER_ID
+             	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, 
+             	 				EVR.EXTEND_VENDOR_REQUEST_ID AS V_ID,
+             	 				VAM.MESSAGE_READ,
+             	 				EVR.VENDOR_LEGAL_NAME AS VENDOR_NAME, 
+             	 				ST.NAME AS STATUS_NAME, 
+             	 				(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
+             	 				EVR.VENDOR_TYPE_ID, 
+             	 				EVR.CREATED_DATE_TZ AS ORDER_DATE, 
+             	 				EVR.CREATED_USER_ID
+             			FROM "EXTEND_VENDOR_REQUEST" EVR
+	             			INNER JOIN "EXTEND_VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = EVR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
+	             			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = EVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
+	             			INNER JOIN "USER" US ON US.USER_ID = EVR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	             			LEFT JOIN :va_extend_vendor_request_message VAM ON EVR.EXTEND_VENDOR_REQUEST_ID = VAM.EXTEND_VENDOR_REQUEST_ID
+	             			INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+						    LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
+						    LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = EVR.CREATED_USER_ID
              			WHERE (USR.ROLE_ID = 1 AND EVR.ENABLED = 1 AND EVR.DELETED = 0)
 			              		OR (USR.ROLE_ID = 2
 			              			AND EVR.CREATED_USER_ID = in_user_id

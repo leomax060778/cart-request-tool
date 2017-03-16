@@ -116,7 +116,7 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
         throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequest", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     }
     validateParams(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId);
-    var keys = ['EXTEND_VENDOR_REQUEST_ID', 'ENTITY_ID', 'COMMODITY_ID', 'SERVICE_SUPPLIER', 'PURCHASE_AMOUNT', 'PURCHASE_CURRENCY_ID', 'VENDOR_ID'];
+    var keys = ['EXTEND_VENDOR_REQUEST_ID', 'ENTITY_ID', 'COMMODITY_ID', 'SERVICE_SUPPLIER', 'PURCHASE_AMOUNT', 'PURCHASE_CURRENCY_ID', 'VENDOR_LEGAL_NAME', 'VENDOR_CONTACT_NAME', 'VENDOR_CONTACT_EMAIL'];
     var optionalKeys = ['EXPECTED_AMOUNT', 'EXPECTED_CURRENCY_ID', 'ADDITIONAL_INFORMATION'];
     var extendVendorRequestUrl = "vendorRequestInquiryService/handlePut/updateExtendVendorInquiry";
     utilLib.validateObjectAttributes(objExtendVendorRequest, userId, keys, extendVendorRequestUrl, validateType);
@@ -248,7 +248,9 @@ function validateInsertExtendVendorRequest(objExtendVendorRequest, userId) {
         'SERVICE_SUPPLIER',
         'PURCHASE_AMOUNT',
         'PURCHASE_CURRENCY_ID',
-        'VENDOR_ID'
+        'VENDOR_LEGAL_NAME', 
+        'VENDOR_CONTACT_NAME', 
+        'VENDOR_CONTACT_EMAIL'
     ];
 
     var optionalKeys = ['EXPECTED_AMOUNT',
@@ -346,9 +348,15 @@ function validateType(key, value) {
         case 'ADDITIONAL_INFORMATION':
             valid =  (!value) || (value.length >= 0 && value.length <= 1000);
             break;
-        case 'VENDOR_ID':
-            valid = !isNaN(value) && value > 0;
+        case 'VENDOR_LEGAL_NAME':
+            valid = (!value) || (value.length >= 0 && value.length <= 255);
             break;
+        case 'VENDOR_CONTACT_NAME':
+        	valid = (!value) || (value.length >= 0 && value.length <= 255);
+        	break;
+        case 'VENDOR_CONTACT_EMAIL':
+        	valid = (!value) || (value.length >= 0 && value.length <= 255);
+        	break;
     }
     return valid;
 }

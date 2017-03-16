@@ -131,7 +131,7 @@ function updateVendorInquiry(objVendorInquiry, userId) {
         throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorInquiry", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
     }
     validateParams(objVendorInquiry.VENDOR_INQUIRY_ID, userId);
-    var keys = ['VENDOR_ID', 'VENDOR_INQUIRY_ID'];
+    var keys = ['VENDOR_NAME', 'VENDOR_INQUIRY_ID'];
     var vendorInquiryUrl = "vendorRequestInquiryService/handlePut/updateVendorInquiry";
     utilLib.validateObjectAttributes(objVendorInquiry, userId, keys, vendorInquiryUrl, validateType);
     updateVendorInquiryAttachments(objVendorInquiry, userId);
@@ -231,7 +231,7 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
     var isValid = false;
     var errors = {};
     var BreakException = {};
-    var keys = ['VENDOR_ID'];
+    var keys = ['VENDOR_NAME'];
 
     if (!objVendorInquiry){
         throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/insertVendorInquiry", "The object Vendor Inquiry is not found");
@@ -287,6 +287,9 @@ function validateType(key, value) {
             break;
         case 'VENDOR_ID':
             valid = (!value) || !isNaN(value) && value > 0;
+            break;
+        case 'VENDOR_NAME':
+            valid = (value.length > 0 && value.length <= 255);
             break;
     }
     return valid;

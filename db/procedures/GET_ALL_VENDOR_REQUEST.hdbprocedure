@@ -9,6 +9,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_R
 						    vendor_informal_name nvarchar(511),
 						    vendor_contact_name nvarchar(255),
 						    vendor_contact_email nvarchar(255),
+						    vendor_contact_phone nvarchar(255),
 						    commodity_id bigint,
 						    not_used_sap_supplier nvarchar(1000),
 						    service_supplier nvarchar(1000),
@@ -48,8 +49,9 @@ BEGIN
 		VR.ENTITY_ID, 
 		V.LEGAL_NAME AS VENDOR_LEGAL_NAME, 
 		V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME, 
-	 	V.CONTACT_NAME AS VENDOR_CONTACT_NAME, 
-		V.CONTACT_EMAIL AS VENDOR_CONTACT_EMAIL, 
+	 	VCI.NAME AS VENDOR_CONTACT_NAME, 
+		VCI.EMAIL AS VENDOR_CONTACT_EMAIL, 
+		VCI.PHONE AS VENDOR_CONTACT_PHONE, 
 		VR.COMMODITY_ID, 
 		VR.NOT_USED_SAP_SUPPLIER,
 		VR.SERVICE_SUPPLIER, 
@@ -77,6 +79,7 @@ BEGIN
 		VR.VENDOR_ID
    FROM "VENDOR_REQUEST" VR
    INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.vendor_id AND V.ENABLED = 1 AND V.DELETED = 0
+   LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
    INNER JOIN "USER" US ON VR.USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 	WHERE VR.VENDOR_ID = V.VENDOR_ID 
 		AND VR.ENABLED = 1 

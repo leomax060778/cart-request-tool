@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_BY_STATUS" (
   IN in_status_id bigint,
   OUT out_result TABLE (vendor_inquiry_id bigint,
-                        vendor_id bigint,
+                        vendor_name nvarchar(255),
                         user_id bigint,
                         status_id bigint)
 )
@@ -11,7 +11,7 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
 out_result = SELECT VI.VENDOR_INQUIRY_ID,
-               VI.VENDOR_ID,
+               VI.VENDOR_NAME,
                VI.USER_ID,
                VI.STATUS_ID
              FROM "VENDOR_INQUIRY" VI
