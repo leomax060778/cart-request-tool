@@ -479,7 +479,8 @@ function validateUpdateChangeVendorRequest(objChangeVendorRequest, userId) {
     var keys = [
 		'CHANGE_VENDOR_REQUEST_ID',
 		'STATUS_ID',
-		'PREVIOUS_STATUS_ID'];
+		'PREVIOUS_STATUS_ID',
+		'VENDOR_ACCOUNT'];
     if(objChangeVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
     	keys.push('RECEIVER_YVC_REQUEST');
     }
@@ -640,6 +641,9 @@ function validateType(key, value) {
             break;
         case 'STATUS_ID':
             valid = !isNaN(value) && value > 0;
+            break;
+        case 'VENDOR_ACCOUNT':
+            valid = (value.length > 0 && value.length <= 255);
             break;
     }
     return valid;

@@ -14,7 +14,7 @@ function parseReturnToRequest(changeVendorObj, basicData,  userName){
 	return mailObj;
 }
 
-function parseCanceled(changeVendorObj, basicData,  userName){
+function parseCancelled(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;

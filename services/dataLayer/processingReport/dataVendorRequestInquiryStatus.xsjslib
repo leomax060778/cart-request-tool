@@ -171,6 +171,7 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
     parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
     parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
     parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
     parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
     parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
     parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
@@ -213,6 +214,7 @@ function updateChangeVendorRequestStatusCompleted(objChangeVendorRequest, userId
     parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
     parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
     parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
     parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
     parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
     parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
@@ -268,6 +270,7 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
   parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
   parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
   parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+  parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
   parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
   parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
   parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
@@ -278,6 +281,7 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
 //Update extend vendor request status manual
 function updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId) {
   var parameters = {};
+
   parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
   parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
   parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
@@ -310,6 +314,7 @@ function updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, 
   parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
   parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
   parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+  parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
   parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
   parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
   parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
