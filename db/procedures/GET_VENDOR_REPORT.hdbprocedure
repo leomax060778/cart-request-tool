@@ -1,0 +1,50 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPORT" (
+	OUT out_result TABLE (vendor_id bigint,
+							account nvarchar(255),
+							entity nvarchar(255),
+							name nvarchar(255),
+							legal_name nvarchar(511),
+							informal_name nvarchar(511),
+							default_contact_name nvarchar(255),
+							default_contact_email nvarchar(255),
+							default_contact_phone nvarchar(255),
+							address_1 nvarchar(255),
+							address_2 nvarchar(255),
+							city nvarchar(255),
+							state nvarchar(255),
+							zip nvarchar(255),
+							phone nvarchar(255),
+							fax nvarchar(255),
+							status nvarchar(255)
+	)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT DISTINCT V.VENDOR_ID,
+								 V.ACCOUNT,
+								 ET.ENTITY_NAME AS ENTITY,
+								 VAI.VENDOR_NAME AS NAME,
+								 V.LEGAL_NAME,
+								 V.INFORMAL_NAME,
+								 VCI.NAME AS DEFAULT_CONTACT_NAME,
+								 VCI.EMAIL AS DEFAULT_CONTACT_EMAIL,
+								 VCI.PHONE AS DEFAULT_CONTACT_PHONE,
+								 V.ADDRESS_1,
+								 V.ADDRESS_2,
+								 V.CITY,
+								 V.STATE,
+								 V.ZIP,
+								 V.PHONE,
+								 V.FAX,
+								 VS.NAME AS STATUS
+					FROM "VENDOR" V
+						LEFT JOIN "VENDOR_ENTITY" VET ON VET.VENDOR_ID = V.VENDOR_ID
+						LEFT JOIN "ENTITY" ET ON ET.ENTITY_ID = VET.ENTITY_ID
+						LEFT JOIN  "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
+						LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON V.VENDOR_ID = VCI.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
+						LEFT JOIN "VENDOR_STATUS" VS ON V.STATUS_ID = VS.STATUS_ID
+					ORDER BY V.VENDOR_ID;
+END;

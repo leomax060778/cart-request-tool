@@ -16,7 +16,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
 			alternative_vendor_name NVARCHAR(255),
 			alternative_vendor_phone NVARCHAR(255),
 			alternative_vendor_email NVARCHAR(255),
-			vendor_contact_information_id bigint,
+			vendor_contact_information_id integer,
 			non_sap_vendor_id BIGINT,
 			non_sap_contact_name NVARCHAR(255),
 			non_sap_contact_email NVARCHAR(255),

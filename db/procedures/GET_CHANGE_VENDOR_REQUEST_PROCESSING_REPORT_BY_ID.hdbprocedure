@@ -11,7 +11,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							vendor_contact_email nvarchar(255),
 							vendor_contact_phone nvarchar(255),
 							commodity nvarchar(255),
-							status_id bigint,
+							status_id integer,
 							status_name nvarchar(255),
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),

@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_COMMODITY_REPORT" (
+	OUT out_result TABLE (commodity_id bigint,
+							commodity_name nvarchar(255)
+						 )
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT DISTINCT COM.commodity_id,
+								 COM.description AS commodity_name
+					FROM "COMMODITY" COM
+					WHERE COM.ENABLED = 1 AND COM.DELETED = 0
+					ORDER BY COM.commodity_id;
+END;

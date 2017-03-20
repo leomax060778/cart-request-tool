@@ -9,14 +9,14 @@ function parseSubmit(vendorObj,basicData, userName){
 	' has created a NV'
 	+ vendorObj.REQUEST_ID +
 	'</b><br /><br />Log in to CRT, then click the following link to process this specific request: '+
-	'<a href="' + completePath +'">' + vendorRequestId + '</a><br /><br />';
+	'<a href="' + completePath +'">NV' + vendorRequestId + '</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.REQUEST_ID +' - New Vendor Created - '+getDateNow()+'';
 	return mailObj;
 }
 
 function parseCancelled(vendorObj,basicData, userName){
 	var mailObj = {};
-	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
+	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.VENDOR_REQUEST_ID;
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body =  'Dear '
 	+ userName +
@@ -24,7 +24,7 @@ function parseCancelled(vendorObj,basicData, userName){
 	+ vendorObj.VENDOR_REQUEST_ID +
 	'</b> has been <b>Cancelled.</b><br /><br />The reason for cancellation has been recorded in the Message History as FYI Only, requiring no response.<br />'+
 	'<br />Log in to CRT, then click the following link to process this specific request: '+
-	'<a href="' + completePath +'">' + vendorRequestId + '</a><br /><br />';
+	'<a href="' + completePath +'">' + vendorObj.VENDOR_REQUEST_ID + '</a><br /><br />';
 	mailObj.subject = basicData.ENVIRONMENT+'CRT Request ID: NV'+ vendorObj.VENDOR_REQUEST_ID +' - New Vendor - has been Cancelled - '+getDateNow()+'';
 	return mailObj;
 }

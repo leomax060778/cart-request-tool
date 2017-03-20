@@ -15,13 +15,14 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							purchase_amount decimal(19,2),
 							currency nvarchar(255),
 							expected_amount decimal(19,2),
-							status_id bigint,
+							status_id integer,
 							status_name nvarchar(255),
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
 							commodity_description nvarchar(255),
-							vendor_type nvarchar(2)
+							vendor_type nvarchar(2),
+							vendor_account nvarchar(255)
 							)
 ) 
 	LANGUAGE SQLSCRIPT
@@ -50,7 +51,8 @@ out_result = SELECT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS CRT_E
                     	TO_NVARCHAR(EVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	EVR.RECEIVER_YVC_REQUEST,
                     	COM.DESCRIPTION AS COMMODITY_DESCRIPTION,
-                    	VT.ISO AS VENDOR_TYPE
+                    	VT.ISO AS VENDOR_TYPE,
+                    	EVR.VENDOR_ACCOUNT
                     FROM "EXTEND_VENDOR_REQUEST" EVR
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = EVR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = EVR.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0

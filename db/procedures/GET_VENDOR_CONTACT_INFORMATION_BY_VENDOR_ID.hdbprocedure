@@ -1,6 +1,12 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_CONTACT_INFORMATION_BY_VENDOR_ID" (
 	IN in_vendor_id bigint,
-	OUT out_result TABLE ( vendor_contact_information_id bigint, vendor_id bigint, name nvarchar(255), phone nvarchar(255), email nvarchar(255), default_contact_information tinyint)
+	OUT out_result TABLE ( vendor_contact_information_id integer, 
+						   vendor_id bigint, 
+						   name nvarchar(255), 
+						   phone nvarchar(255), 
+						   email nvarchar(255), 
+						   default_contact_information tinyint
+						   )
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER

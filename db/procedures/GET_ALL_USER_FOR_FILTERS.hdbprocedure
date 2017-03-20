@@ -1,6 +1,10 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER_FOR_FILTERS" (
 IN in_user_id bigint,
- OUT out_result TABLE(USER_ID bigint, USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255))
+ OUT out_result TABLE(  USER_ID integer, 
+                        USER_NAME nvarchar(255), 
+                        FIRST_NAME nvarchar(255), 
+                        LAST_NAME nvarchar(255)
+                    )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -13,4 +17,3 @@ BEGIN
    							WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3 OR USR.ROLE_ID = 4 AND US.USER_ID = in_user_id)
 		       				OR (USR.ROLE_ID = 2 AND US.USER_ID = in_user_id );
 END;
-

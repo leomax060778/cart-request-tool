@@ -67,24 +67,14 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(VR.VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, 
              	 				VR.VENDOR_REQUEST_ID AS V_ID, 
              	 				VAM.MESSAGE_READ, 
-             	 				VAI.VENDOR_NAME, 
+             	 				V.LEGAL_NAME AS VENDOR_NAME, 
              	 				ST.NAME AS STATUS_NAME, 
              	 				(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
              	 				VR.VENDOR_TYPE_ID, 
              	 				VR.CREATED_DATE_TZ AS ORDER_DATE, 
              	 				VR.CREATED_USER_ID
              			FROM "VENDOR_REQUEST" VR
-             			LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
-			                 ON (VR.VENDOR_ID = VAI.VENDOR_ID
-			                     AND(
-			                     	((VR.MODIFIED_DATE_TZ is not null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VR.MODIFIED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= VR.MODIFIED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VR.MODIFIED_DATE_TZ))))
-			                     	OR                     	
-			                     	(VR.MODIFIED_DATE_TZ is null and ((VAI.MODIFIED_DATE_TZ is not null and VAI.CREATED_DATE_TZ <= VR.CREATED_DATE_TZ
-			                          and VAI.MODIFIED_DATE_TZ >= VR.CREATED_DATE_TZ)
-			                         OR (VAI.MODIFIED_DATE_TZ is null and VAI.CREATED_DATE_TZ <= VR.CREATED_DATE_TZ))))
-			                 )
+             			INNER JOIN "VENDOR" V ON VR.VENDOR_ID = V.VENDOR_ID
              			INNER JOIN "VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = VR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
              			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
              			INNER JOIN "USER" US ON US.USER_ID = VR.CREATED_USER_ID AND US.ENABLED = 1 AND US.DELETED = 0

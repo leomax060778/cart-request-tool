@@ -260,7 +260,7 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
     	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED){
     		return dataStatus.updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId);
     	} else {
     		return dataStatus.updateExtendVendorRequestStatus(objExtendVendorRequest, userId);
@@ -322,7 +322,7 @@ function updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId) {
     	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED){
     		return dataStatus.updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, userId);
     	} else {
     		return dataStatus.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
@@ -529,8 +529,12 @@ function validateUpdateExtendVendorRequest(objExtendVendorRequest, userId) {
         'STATUS_ID',
 		'PREVIOUS_STATUS_ID'];
     
-    if(objExtendVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objExtendVendorRequest.STATUS_ID === statusMap.APPROVED){
+    if(Number(objExtendVendorRequest.STATUS_ID) === statusMap.IN_PROCESS || (Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED)){
     	keys.push('RECEIVER_YVC_REQUEST');
+    }
+
+    if(Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED){
+    	keys.push('VENDOR_ACCOUNT');
     }
 
     if (!objExtendVendorRequest) {

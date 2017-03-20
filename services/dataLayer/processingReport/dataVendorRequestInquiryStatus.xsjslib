@@ -229,6 +229,7 @@ function updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId
     parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
     parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
     parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_vendor_account = objExtendVendorRequest.VENDOR_ACCOUNT || null;
     parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
     parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
     parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;
@@ -329,6 +330,7 @@ function updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, 
   parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
   parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
   parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
+  parameters.in_vendor_account = objExtendVendorRequest.VENDOR_REQUEST || null;
   parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
   parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
   parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;

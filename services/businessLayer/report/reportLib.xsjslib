@@ -26,6 +26,24 @@ function getReport(userId) {
 	return result;
 }
 
+//Get user report
+function getUserReport(userId) {
+    return data.getUserReport(userId);
+}
+
+//Get vendor report
+function getVendorReport(userId) {
+  return data.getVendorReport(userId);
+}
+
+function getCatalogReport(userId) {
+  return data.getCatalogReport(userId);
+}
+
+function getCommodityReport(userId) {
+	  return data.getCommodityReport(userId);
+	}
+
 //Get report type
 function getReportType(userId) {
     return data.getReportType(userId);
