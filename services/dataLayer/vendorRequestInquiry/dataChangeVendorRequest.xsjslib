@@ -8,6 +8,7 @@ var ErrorLib = mapper.getErrors();
 var INS_CHANGE_VENDOR_REQUEST = "INS_CHANGE_VENDOR_REQUEST";
 var GET_ALL_CHANGE_VENDOR_REQUEST = "GET_ALL_CHANGE_VENDOR_REQUEST";
 var GET_CHANGE_VENDOR_REQUEST_BY_ID = "GET_CHANGE_VENDOR_REQUEST_BY_ID";
+var GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID = "GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID";
 var DEL_CHANGE_VENDOR_REQUEST = "DEL_CHANGE_VENDOR_REQUEST";
 var UPD_CHANGE_VENDOR_REQUEST = "UPD_CHANGE_VENDOR_REQUEST";
 
@@ -23,7 +24,7 @@ function insertChangeVendorRequest(objChangeVendorRequest, userId) {
     parameters.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
     parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE;
     parameters.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
-    parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(INS_CHANGE_VENDOR_REQUEST, parameters, 'out_result'); 
@@ -41,7 +42,7 @@ function insertChangeRequestManual(objChangeVendorRequest, userId) {
     parameters.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
     parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE;
     parameters.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
-    parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalarManual(INS_CHANGE_VENDOR_REQUEST, parameters, 'out_result');
@@ -70,6 +71,17 @@ function getChangeVendorRequestById(changeVendorRequestId) {
 function getChangeVendorRequestByIdManual(changeVendorRequestId) {
     var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
     var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_BY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
+function getChangeVendorRequestStatusByCVRId(changeVendorRequestId) {
+    var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
+    var result = db.executeProcedure(GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
     	   return list[0];
@@ -108,7 +120,6 @@ function updateChangeVendorRequest(objChangeVendorRequest, userId) {
     parameters.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
     parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE;
     parameters.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
-    parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION || null;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CHANGE_VENDOR_REQUEST, parameters, 'out_result');

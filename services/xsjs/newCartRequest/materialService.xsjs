@@ -15,7 +15,7 @@ var GET_ALL_MATERIAL = "GET_ALL_MATERIAL";
 var service_name = "materialService";
 
 function processRequest(){
-	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
+	http.processRequest(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 	}
 
 function handleGet(objMat, user_id) {

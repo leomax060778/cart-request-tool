@@ -8,6 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INQUIRY"
   						status_name nvarchar(255),
   						administrable tinyint,
   						message_read integer,
+  						editable boolean,
   						created_user_id bigint
   						)
 )
@@ -29,6 +30,7 @@ BEGIN
 			  						ST.name AS status_name,
 			  						ST.ADMINISTRABLE,
 			  						VAM.MESSAGE_READ,
+			  						(CASE WHEN (ST.STATUS_ID = 3 OR ST.STATUS_ID = 4) AND USR.ROLE_ID != 1 THEN FALSE ELSE TRUE END) AS EDITABLE,
 			  						INQ.CREATED_USER_ID
 	             		FROM "INQUIRY" INQ
 					              INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id AND TP.enabled = 1 AND TP.deleted = 0

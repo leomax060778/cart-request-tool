@@ -10,7 +10,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CHANGE_VENDO
 	IN in_vendor_contact_name nvarchar(255),
 	IN in_vendor_contact_phone nvarchar(255),
 	IN in_vendor_contact_email nvarchar(255),
-	IN in_additional_information nvarchar(1000),
+	IN in_additional_information tinyint,
 	OUT out_result bigint
 	)
 	

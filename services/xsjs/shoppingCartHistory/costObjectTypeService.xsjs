@@ -11,7 +11,7 @@ var service_name = "costObjectTypeService";
 
 /** *************************************** */
 function processRequest() {
-	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(objReq, userId) {

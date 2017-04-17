@@ -29,7 +29,6 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 						    expected_currency_abbreviation nvarchar(255),
 						    accept_american_express tinyint,
 						    cost_center_owner nvarchar(511),
-						    additional_information nvarchar(1000),
 						    status_id bigint,
 						    address_1 nvarchar(255),
 						    address_2 nvarchar(255),
@@ -45,7 +44,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 						    receiver_yvc_request nvarchar(255),
 						    receiver_modified_date_tz nvarchar(15),
 						    vendor_id bigint,
-						    BUDGET_YEAR integer)
+						    BUDGET_YEAR integer,
+						    additional_information_flag tinyint)
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -81,7 +81,6 @@ BEGIN
 					    ECUR.ABBREVIATION AS EXPECTED_CURRENCY_ABBREVIATION,
 					    VR.ACCEPT_AMERICAN_EXPRESS,
 					    VR.COST_CENTER_OWNER,
-					    VR.ADDITIONAL_INFORMATION,
 					    VR.STATUS_ID,
 					    V.ADDRESS_1,
 					    V.ADDRESS_2,
@@ -97,7 +96,8 @@ BEGIN
 					    VR.RECEIVER_YVC_REQUEST,
 					    TO_NVARCHAR(VR.RECEIVER_MODIFIED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_MODIFIED_DATE_TZ,
 					    VR.VENDOR_ID,
-					    BUDGET_YEAR.BUDGET_YEAR
+					    BUDGET_YEAR.BUDGET_YEAR,
+					    VR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG
 	FROM "VENDOR_REQUEST" VR
 	INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.VENDOR_ID
 	LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID

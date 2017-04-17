@@ -13,7 +13,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_REQUE
 	IN in_expected_currency_id integer,
 	IN in_accept_american_express tinyint default 0,
 	IN in_cost_center_owner nvarchar(511),
-	IN in_additional_information nvarchar(1000),
+	IN in_additional_information tinyint,
 	IN in_created_user_id bigint,
 	IN in_vendor_id bigint,
 	OUT out_result bigint

@@ -11,7 +11,7 @@ var GET_MODAL_BY_ID = "GET_MODAL_BY_ID";
 var service_name = "modalService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

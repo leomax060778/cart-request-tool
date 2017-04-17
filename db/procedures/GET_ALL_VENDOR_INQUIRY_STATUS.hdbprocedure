@@ -8,9 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_I
 BEGIN
 	out_result = SELECT VIS.STATUS_ID, VIS.NAME
 					FROM "VENDOR_INQUIRY_STATUS" VIS
-				 WHERE VIS.status_id > 1 
-				 	AND VIS.name != 'Return to requester' 
-				 	AND VIS.ENABLED = 1 
+				 WHERE VIS.ENABLED = 1 
 				 	AND VIS.DELETED = 0
 				 ORDER BY VIS.STATUS_ID ASC;
 END;

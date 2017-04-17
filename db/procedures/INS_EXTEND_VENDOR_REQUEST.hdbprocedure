@@ -8,13 +8,13 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_EXTEND_VENDO
 	IN in_expected_amount decimal(19,2),
 	IN in_purchase_currency_id integer,
 	IN in_expected_currency_id integer,
-	IN in_additional_information nvarchar(1000),
 	IN in_created_user_id bigint,
 	IN in_vendor_legal_name nvarchar(255),
 	IN in_vendor_informal_name nvarchar(255),
 	IN in_contact_name nvarchar(255),
 	IN in_contact_email nvarchar(255),
 	IN in_contact_phone nvarchar(255),
+	IN in_additional_information tinyint,
 	OUT out_result bigint
 	)
 	LANGUAGE SQLSCRIPT
@@ -23,13 +23,12 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_EXTEND_VENDO
 	AS
 BEGIN
   INSERT INTO "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST"(user_id, entity_id, commodity_id,
-  service_supplier, vendor_type_id, purchase_amount, expected_amount, purchase_currency_id, expected_currency_id,
-  additional_information, created_user_id, vendor_legal_name, vendor_informal_name, contact_name,
-  contact_email, contact_phone) 
+  service_supplier, vendor_type_id, purchase_amount, expected_amount, purchase_currency_id, expected_currency_id, created_user_id, vendor_legal_name, vendor_informal_name, contact_name,
+  contact_email, contact_phone, additional_information) 
 	
   VALUES(in_user_id, in_entity_id, in_commodity_id,	in_service_supplier, in_vendor_type_id, in_purchase_amount,
-   in_expected_amount, in_purchase_currency_id, in_expected_currency_id, in_additional_information, in_created_user_id,  in_vendor_legal_name, in_vendor_informal_name, in_contact_name,
-   in_contact_email, in_contact_phone);
+   in_expected_amount, in_purchase_currency_id, in_expected_currency_id, in_created_user_id,  in_vendor_legal_name, in_vendor_informal_name, in_contact_name,
+   in_contact_email, in_contact_phone, in_additional_information);
 	
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST";
 END;

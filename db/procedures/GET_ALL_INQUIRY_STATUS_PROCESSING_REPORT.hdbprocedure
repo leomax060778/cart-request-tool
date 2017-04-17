@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT" (
+	OUT out_result TABLE (status_id bigint, name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT IST.STATUS_ID, IST.NAME
+					FROM "INQUIRY_STATUS" IST
+				 WHERE IST.status_id > 1 
+				 	AND IST.name != 'Return to requester' 
+				 	AND ENABLED = 1 
+				 	AND DELETED = 0
+				 ORDER BY IST.STATUS_ID ASC;
+END;

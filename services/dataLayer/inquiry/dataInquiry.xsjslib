@@ -9,6 +9,7 @@ var INS_INQUIRY = "INS_INQUIRY";
 var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
 var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
+var GET_INQUIRY_STATUS_BY_INQUIRY_ID = "GET_INQUIRY_STATUS_BY_INQUIRY_ID";
 var UPD_INQUIRY = "UPD_INQUIRY";
 var DEL_INQUIRY = "DEL_INQUIRY";
 
@@ -72,6 +73,17 @@ function getInquiryByIdManual(inquiryId){
 	   	return {};
   }
 }
+
+function getInquiryStatusByInquiryId(inquiryId){
+	  var parameters = {'in_inquiry_id': inquiryId};
+	  var result = db.executeProcedure(GET_INQUIRY_STATUS_BY_INQUIRY_ID, parameters);
+	  var list = db.extractArray(result.out_result);
+	  if(list.length){
+		   return list[0];
+	  } else {
+		   	return {};
+	  }
+	}
 
 //Update inquiry
 function updateInquiry(objInquiry, userId) {

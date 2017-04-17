@@ -10,7 +10,7 @@ var GET_ATTACHMENT_BY_ID = "GET_ATTACHMENT_BY_ID";
 var service_name = "attachmentStoreService";
 
 function processRequest() {
-	processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name, true);
+	http.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name, true);
 }
 
 function handleGet(parameters, user_id){

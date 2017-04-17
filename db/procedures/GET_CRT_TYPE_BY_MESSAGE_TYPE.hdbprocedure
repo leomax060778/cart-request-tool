@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CRT_TYPE_BY_MESSAGE_TYPE" (
+	IN in_message_type_id bigint,
+	OUT out_result TABLE (crt_type_id bigint, name nvarchar(255), status_id bigint)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CRT.crt_type_id, CRT.name, CRTRT.STATUS_ID
+					FROM "CRT_TYPE" CRT
+						INNER JOIN "CRT_MESSAGE_TYPE" CRTRT ON CRTRT.MESSAGE_TYPE_ID = in_message_type_id AND CRTRT.ENABLED = 1 AND CRTRT.DELETED = 0
+					WHERE CRT.crt_type_id = CRTRT.crt_type_id
+						 AND CRT.enabled = 1 
+						 AND CRT.deleted = 0;
+END;

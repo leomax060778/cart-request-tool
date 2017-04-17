@@ -15,27 +15,7 @@ function getAllPermission() {
 	return db.extractArray(result.out_result);
 }
 
-function isAuthorized(UserId, PermissionId, ResourceId){
-	
-	if(!(UserId && PermissionId && ResourceId) ){
-		throw ErrorLib.getErrors().CustomError("","","Insufficient permissions."); 
-	}
-	var params = {
-			"in_user_id":UserId,
-			"in_permission_id":PermissionId,
-			"in_resource_id":ResourceId
-		};
-	var result = db.executeProcedure(spGetAllRolePermissionByUserPermissionResource, params);
-	var partialRdo = db.extractArray(result.OUT_RESULT);
-	
-	if(partialRdo.length){
-		return true;
-	}else{
-		throw ErrorLib.getErrors().Forbidden("","","The user hasn't permission for this resource.");
-	}
-}
-
-function isAuthorized2(UserId, objPermission, serviceName){
+function isAuthorized(UserId, objPermission, serviceName){
 	
 	if(!(UserId && objPermission) ){
 		throw ErrorLib.getErrors().CustomError("","","Insufficient permissions."); 
@@ -74,7 +54,7 @@ function isAuthorized2(UserId, objPermission, serviceName){
 			return return_result;
 		}
 		
-		throw ErrorLib.getErrors().Forbidden("","","The user hasn't permission for this resource.");
+		throw ErrorLib.getErrors().Forbidden("","","The user does not have permission for this resource.");
 		
 	} else{
 		throw ErrorLib.getErrors().Forbidden("","","The service name provided doesn't exist.");

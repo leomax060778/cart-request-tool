@@ -175,14 +175,14 @@ function getVendorRequestInquiry(){
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorRequestInquiryLib;
 }
 
-function getIssueType(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","issueTypeLib");
-    return $.xscartrequesttool.services.businessLayer.processingReport.issueTypeLib;
+function getSubject(){
+    $.import("xscartrequesttool.services.businessLayer.subject","subjectLib");
+    return $.xscartrequesttool.services.businessLayer.subject.subjectLib;
 }
 
-function getReturnType(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","returnTypeLib");
-    return $.xscartrequesttool.services.businessLayer.processingReport.returnTypeLib;
+function getMessageType(){
+    $.import("xscartrequesttool.services.businessLayer.messageType","messageTypeLib");
+    return $.xscartrequesttool.services.businessLayer.messageType.messageTypeLib;
 }
 
 function getNews(){
@@ -594,14 +594,19 @@ function getDataShoppingNoteRequest(){
     return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataNoteRequest;
 }
 
-function getDataIssueType(){
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataIssueType");
-    return $.xscartrequesttool.services.dataLayer.processingReport.dataIssueType;
+function getDataSubject(){
+    $.import("xscartrequesttool.services.dataLayer.subject","dataSubject");
+    return $.xscartrequesttool.services.dataLayer.subject.dataSubject;
 }
 
-function getDataReturnType(){
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataReturnType");
-    return $.xscartrequesttool.services.dataLayer.processingReport.dataReturnType;
+function getDataMessageType(){
+    $.import("xscartrequesttool.services.dataLayer.messageType","dataMessageType");
+    return $.xscartrequesttool.services.dataLayer.messageType.dataMessageType;
+}
+
+function getDataCrtMessageType(){
+    $.import("xscartrequesttool.services.dataLayer.messageType","dataCrtMessageType");
+    return $.xscartrequesttool.services.dataLayer.messageType.dataCrtMessageType;
 }
 
 function getDataNews(){
@@ -639,14 +644,14 @@ function getDataModal(){
     return $.xscartrequesttool.services.dataLayer.modal.dataModal;
 }
 
-function getDataCrtIssueType() {
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataCrtIssueType");
-    return $.xscartrequesttool.services.dataLayer.processingReport.dataCrtIssueType;
+function getDataCrtSubject() {
+    $.import("xscartrequesttool.services.dataLayer.subject","dataCrtSubject");
+    return $.xscartrequesttool.services.dataLayer.subject.dataCrtSubject;
 }
 
 function getDataCrtReturnType() {
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataCrtReturnType");
-    return $.xscartrequesttool.services.dataLayer.processingReport.dataCrtReturnType;
+    $.import("xscartrequesttool.services.dataLayer.returnType","dataCrtReturnType");
+    return $.xscartrequesttool.services.dataLayer.returnType.dataCrtReturnType;
 }
 
 function getDataCrtType() {

@@ -13,7 +13,7 @@ var GET_ALL_VENDOR_REQUEST = "GET_ALL_VENDOR_REQUEST";
 var service_name = "vendorRequestService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

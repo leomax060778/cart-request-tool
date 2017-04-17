@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_ISSUE_TYPE" (
 	IN in_issue_type_id bigint,
 	IN in_name nvarchar(255),
+	IN in_additional_issue_type_information tinyint,
 	IN in_modified_user_id bigint,
 	OUT out_result bigint
  ) 
@@ -11,6 +12,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_ISSUE_TYPE" 
 BEGIN
 	UPDATE issue
 	SET issue.name = in_name,
+		issue.additional_issue_type_information = in_additional_issue_type_information,
 		issue.modified_date_tz = CURRENT_TIMESTAMP,
 		issue.modified_user_id = in_modified_user_id
 	FROM "CART_REQUEST_TOOL"."ISSUE_TYPE" issue

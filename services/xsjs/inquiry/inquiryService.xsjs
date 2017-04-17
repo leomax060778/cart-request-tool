@@ -8,11 +8,12 @@ var inquiry = mapper.getInquiry();
 var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
 var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
+var EDITION_MODE = "EDITION_MODE";
 
 var service_name = "inquiryService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -36,7 +37,12 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                rdo = inquiry.getInquiryById(parameters[0].value, userId);
+            	if (parameters[1] && parameters[1].name === EDITION_MODE) {
+            		rdo = inquiry.getInquiryById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		rdo = inquiry.getInquiryById(parameters[0].value, userId);
+            	}
+                
             }
         }  else if (parameters[0].name === GET_INQUIRY_LAST_ID) {
         	rdo = inquiry.getInquiryLastId();

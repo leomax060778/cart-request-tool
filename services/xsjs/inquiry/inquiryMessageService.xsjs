@@ -7,10 +7,10 @@ var inquiry = mapper.getInquiryMessage();
 
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE";
 
-var service_name = "inquiryMessageService";
+var service_name = "inquiryMessageService"; 
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 /**
  *
@@ -49,8 +49,8 @@ function handleGet(parameters, userId) {
 }
 
 function handlePut(reqBody, userId) {
-    var req = inquiry.updateMessageRead(reqBody.INQUIRY_ID, userId);
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+    var res = inquiry.updateMessageRead(reqBody, userId);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method

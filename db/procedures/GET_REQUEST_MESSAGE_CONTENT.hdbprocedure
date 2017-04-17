@@ -1,0 +1,19 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESSAGE_CONTENT" (
+	IN in_start_position integer,
+	IN in_string_length integer,
+	IN in_request_id bigint,
+	IN in_message_id bigint,
+	OUT out_result TABLE(message_content nvarchar(5000))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT substring(to_nvarchar(RM.message_content), in_start_position, in_string_length) as message_content
+	FROM "REQUEST_MESSAGE" RM
+	WHERE RM.REQUEST_ID = in_request_id 
+		AND RM.MESSAGE_ID = in_message_id
+		AND RM.ENABLED = 1 
+		AND RM.DELETED = 0;
+END;

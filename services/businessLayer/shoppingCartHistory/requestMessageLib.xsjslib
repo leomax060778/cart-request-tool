@@ -51,15 +51,28 @@ function getRequestMessage(requestId, userId) {
     }
     var result = [];
     var objRequest = {};
+    var messageContent;
+	var startPosition;
+	var requestMessageLength;
+	var i;
+	var splitNumber; 
     try{
 	    result = message.getRequestMessageManual(requestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objRequest.MESSAGE_READ = 1;
-			    	message.updateRequestMessageReadManual(objRequest, userId);
-			    }
+	    	messageContent = "";
+    		startPosition = 1;
+    		requestMessageLength = 5000;
+    		i = 0;
+    		splitNumber = 0;
+
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / requestMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(message.getRequestMessageContentManual(elem.REQUEST_ID, elem.MESSAGE_ID, startPosition, requestMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + requestMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     } catch(e){
 		dbHelper.rollback();
@@ -73,32 +86,41 @@ function getRequestMessage(requestId, userId) {
 }
 
 //Update message read
-function updateRequestMessage(requestId, userId) {
-    if (!requestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handlePut/updateRequestMessage", requestId);
-    }
+function updateRequestMessage(objRequestMessage, userId) {
     if (!userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
     }
     var result = [];
-    var objRequest = {};
+
     try{
-	    result = message.getRequestMessageManual(requestId);
-	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objRequest.MESSAGE_READ = 1;
-			    	message.updateRequestMessageReadManual(objRequest, userId);
-			    }
-	    	}
-	    });
+    	if(objRequestMessage.METHOD && objRequestMessage.METHOD === 'AllRead'){
+    		if (objRequestMessage.MESSAGES && objRequestMessage.MESSAGES.length > 0) {
+    		    objRequestMessage.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+    		//Mark message as read
+    		if (objRequestMessage.length > 0) {
+    		    objRequestMessage.forEach(function(elem){
+    		    	result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));
+    		    });
+        	}
+    	}    	
+    	
     } catch(e){
 		dbHelper.rollback();
 		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
 	}
 	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
+		if(result.length > 0){
+			dbHelper.commit();
+			dbHelper.closeConnection();
+		}
 	}
     return result;
 	
@@ -162,7 +184,7 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'MESSAGE_CONTENT':
-            valid = value.length > 0 && value.length <= 1000;
+            valid = value.length > 0;
             break;
     }
     return valid;

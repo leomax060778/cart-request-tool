@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_MESSAGE_TYPE" (
+	IN in_message_type_id bigint,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE MT
+	SET MT.enabled = 0,
+		MT.deleted = 1,
+		MT.modified_date_tz = CURRENT_TIMESTAMP,
+		MT.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."MESSAGE_TYPE" MT
+	WHERE MT.message_type_id = in_message_type_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

@@ -4,6 +4,7 @@ var db = mapper.getdbHelper();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 /** ***********PROCEDURES*************** */
+//GET ALL
 var GET_ALL_INQUIRY_STATUS = "GET_ALL_INQUIRY_STATUS";
 var GET_ALL_VENDOR_INQUIRY_STATUS = "GET_ALL_VENDOR_INQUIRY_STATUS";
 var GET_ALL_REQUEST_STATUS = "GET_ALL_REQUEST_STATUS";
@@ -11,18 +12,28 @@ var GET_ALL_VENDOR_REQUEST_STATUS = "GET_ALL_VENDOR_REQUEST_STATUS";
 var GET_ALL_CHANGE_VENDOR_REQUEST_STATUS = "GET_ALL_CHANGE_VENDOR_REQUEST_STATUS";
 var GET_ALL_EXTEND_VENDOR_REQUEST_STATUS = "GET_ALL_EXTEND_VENDOR_REQUEST_STATUS";
 var GET_ALL_REQUEST_STATUS_FOR_FILTERS = "GET_ALL_REQUEST_STATUS_FOR_FILTERS";
+//GET ALL PROCESSING REPORT
+var GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT = "GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT";
+var GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT = "GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT";
+var GET_ALL_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+//GET BY ID
 var GET_INQUIRY_STATUS_BY_ID = "GET_INQUIRY_STATUS_BY_ID";
 var GET_VENDOR_INQUIRY_STATUS_BY_ID = "GET_VENDOR_INQUIRY_STATUS_BY_ID";
 var GET_REQUEST_STATUS_BY_ID = "GET_REQUEST_STATUS_BY_ID";
 var GET_VENDOR_REQUEST_STATUS_BY_ID = "GET_VENDOR_REQUEST_STATUS_BY_ID";
 var GET_CHANGE_VENDOR_REQUEST_STATUS_BY_ID = "GET_CHANGE_VENDOR_REQUEST_STATUS_BY_ID";
 var GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID = "GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID";
+//INSERT
 var INS_INQUIRY_STATUS = "INS_STATUS_INQUIRY_STATUS";
 var INS_VENDOR_INQUIRY_STATUS = "INS_STATUS_VENDOR_INQUIRY_STATUS";
 var INS_REQUEST_STATUS = "INS_STATUS_REQUEST_STATUS";
 var INS_VENDOR_REQUEST_STATUS = "INS_STATUS_VENDOR_REQUEST_STATUS";
 var INS_CHANGE_VENDOR_REQUEST_STATUS = "INS_STATUS_CHANGE_VENDOR_REQUEST_STATUS";
 var INS_EXTEND_VENDOR_REQUEST_STATUS = "INS_STATUS_EXTEND_VENDOR_REQUEST_STATUS";
+//UPDATE
 var UPD_INQUIRY_STATUS = "UPD_INQUIRY_STATUS";
 var UPD_VENDOR_INQUIRY_STATUS = "UPD_VENDOR_INQUIRY_STATUS";
 var UPD_REQUEST_STATUS = "UPD_REQUEST_STATUS";
@@ -84,6 +95,49 @@ function getAllStatusForFilters(){
     var parameters = {};
     parameters.out_result = '?';
     var result = db.executeProcedure(GET_ALL_REQUEST_STATUS_FOR_FILTERS, parameters);
+    return db.extractArray(result.out_result);
+}
+
+/** ***********GET ALL PROCESSING REPORT*************** */
+function getAllInquiryStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllVendorInquiryStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllRequestStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_REQUEST_STATUS_PROCESSING_REPORT, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllVendorRequestStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllChangeVendorRequestStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT, parameters);
+    return db.extractArray(result.out_result);
+}
+
+function getAllExtendVendorRequestStatusProcessingReport(){
+    var parameters = {};
+    parameters.out_result = '?';
+    var result = db.executeProcedure(GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT, parameters);
     return db.extractArray(result.out_result);
 }
 

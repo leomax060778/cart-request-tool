@@ -1,0 +1,18 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_EMAIL" (
+	in_email NVARCHAR(255),
+	OUT out_result TABLE(USER_ID bigint, PASSWORD nvarchar(255), USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255), EMAIL nvarchar(255), PHONE nvarchar(255))
+)
+ 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN 
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+  out_result = SELECT USER_ID, PASSWORD, USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, PHONE
+ 		FROM "USER" 
+ 		WHERE upper(EMAIL) = upper(in_email) AND
+ 		ENABLED = 1 AND DELETED = 0;
+END;

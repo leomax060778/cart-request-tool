@@ -10,7 +10,7 @@ var GET_ALL_ENTITY = "GET_ALL_ENTITY";
 
 /** *************************************** */
 function processRequest() {
-	httpUtil.processRequest2(handleGet, handlePost, handlePut, handleDelete, true, "", true);
+	httpUtil.processPublicRequest(handleGet, handlePost, handlePut, handleDelete);
 }
 
 function handleGet(parameters, userId) {

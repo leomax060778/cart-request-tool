@@ -2,22 +2,37 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var change = mapper.getDataChangeVendorRequest();
 var changeVendorMail = mapper.getChangeVendorMail();
+var vendorMessage = mapper.getVendorMessage(); 
+
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var mail = mapper.getMail();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
-var config = mapper.getDataConfig();
+var config = mapper.getDataConfig(); 
 var userRole = mapper.getUserRole();
+var dataUserRole = mapper.getDataUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1};
 var pathName = "CHANGE_VENDOR_REQUEST";
 
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
+
+function validateAccess(change_vendor_request_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var change_vendor_request_status = change.getChangeVendorRequestStatusByCVRId(change_vendor_request_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(change_vendor_request_status.STATUS_NAME == 'Approved' || change_vendor_request_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
 }
 
 //Insert change vendor request
@@ -42,6 +57,15 @@ function insertChangeVendorRequestManual(objChangeVendorRequest, userId) {
     			businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
        		});    		
     	}
+    	
+    	if(result_id){
+			if(objChangeVendorRequest.ADDITIONAL_INFORMATION_FLAG && objChangeVendorRequest.ADDITIONAL_INFORMATION && objChangeVendorRequest.ADDITIONAL_INFORMATION.length > 0){
+				objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID = result_id;
+				objChangeVendorRequest.PREVIOUS_STATUS_ID = statusMap.TO_BE_CHECKED;
+				objChangeVendorRequest.MESSAGE_CONTENT = objChangeVendorRequest.ADDITIONAL_INFORMATION;
+    			vendorMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
+			}
+		}
         return result_id;
     }
 
@@ -59,11 +83,18 @@ function deleteChangeVendorRequest(objChangeVendorRequest, userId) {
 }
 
 //Get change vendor request by ID
-function getChangeVendorRequestById(changeVendorRequestId, userId) {
+function getChangeVendorRequestById(changeVendorRequestId, userId, edition_mode) {
     var objChange = {};
 	if (!changeVendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeVendorRequestId);
     }
+	
+	if(edition_mode && !validateAccess(changeVendorRequestId, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryService/handleGet/getChangeVendorRequestById", 
+				"This Change Vendor Request is not longer available for edition");
+	}
 	
 	var roleData = userRole.getUserRoleByUserId(userId);
     var resChange = change.getChangeVendorRequestById(changeVendorRequestId);
@@ -75,10 +106,17 @@ function getChangeVendorRequestById(changeVendorRequestId, userId) {
 	    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
 	    	 resChange.ATTACHMENTS = attachments;
+	    	 
+	    	 if(resChange.ADDITIONAL_INFORMATION_FLAG !== 0){
+		    	 var message = vendorMessage.getChangeVendorRequestMessage(resChange.CHANGE_VENDOR_REQUEST_ID, userId);
+		    	 resChange.ADDITIONAL_INFORMATION = (message.length > 0)? message[message.length - 1].MESSAGE_CONTENT : "";
+	    	 }else{
+	    		 resChange.ADDITIONAL_INFORMATION = ""; //Avoid 'undefined' in richTextEditor.
+	    	 }
 	    }
 	    return resChange;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", "The user hasn't permission to Read/View this Change Vendor Request.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", "The user does not have permission to Read/View this Change Vendor Request.");
 	}
 }
 

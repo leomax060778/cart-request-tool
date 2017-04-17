@@ -32,6 +32,31 @@ function getAllStatusForFilters(){
     return dataStatus.getAllStatusForFilters();
 }
 
+/** ***********GET ALL PROCESSING REPORT*************** */
+function getAllInquiryStatusProcessingReport(){
+    return dataStatus.getAllInquiryStatusProcessingReport();
+}
+
+function getAllVendorInquiryStatusProcessingReport(){
+    return dataStatus.getAllVendorInquiryStatusProcessingReport();
+}
+
+function getAllRequestStatusProcessingReport(){
+    return dataStatus.getAllRequestStatusProcessingReport();
+}
+
+function getAllVendorRequestStatusProcessingReport(){
+    return dataStatus.getAllVendorRequestStatusProcessingReport();
+}
+
+function getAllChangeVendorRequestStatusProcessingReport(){
+    return dataStatus.getAllChangeVendorRequestStatusProcessingReport();
+}
+
+function getAllExtendVendorRequestStatusProcessingReport(){
+    return dataStatus.getAllExtendVendorRequestStatusProcessingReport();
+}
+
 /** ***********GET BY ID*************** */
 function getInquiryStatusById(statusId) {
     return dataStatus.getInquiryStatusById(statusId);

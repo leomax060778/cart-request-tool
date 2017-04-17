@@ -16,7 +16,6 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							date_submitted nvarchar(32),
 							date_completed nvarchar(32),
 							receiver_yvc_request nvarchar(255),
-							additional_information nvarchar(1000),
 							entity_name nvarchar(255),
 							vendor_type nvarchar(2)
 						 )
@@ -42,7 +41,6 @@ BEGIN
                     	TO_NVARCHAR(CVR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS date_submitted,
                     	TO_NVARCHAR(CVR.RECEIVER_DATE_COMPLETED_TZ, 'YYYY-MM-DD') AS date_completed,
                     	CVR.RECEIVER_YVC_REQUEST,
-                    	CVR.ADDITIONAL_INFORMATION,
                     	ENT.ENTITY_NAME,
                     	VT.ISO AS vendor_type
                     FROM "CHANGE_VENDOR_REQUEST" CVR

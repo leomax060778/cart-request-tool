@@ -15,7 +15,7 @@ var confirmToken = "CONFIRM_TOKEN";
 // token
 function processRequest() {
 	//httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete);
-	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, true, "", true);
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, true, "", true);
 }
 
 function handleGet(parameters, userId) {

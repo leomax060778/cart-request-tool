@@ -2,6 +2,7 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var inquiryStatus = mapper.getDataInquiryStatus();
 var inquiry = mapper.getInquiry();
+var dataInquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
@@ -13,6 +14,17 @@ var userRole = mapper.getUserRole();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var pathName = "CRT_INQUIRY";
+
+//Access validation by Status
+function validateAccess(inquiry_id){
+	//In this case we validate against the Request Status only
+	var crt_inquiry_status = dataInquiry.getInquiryStatusByInquiryId(inquiry_id);
+	if(!crt_inquiry_status){
+		return false;
+	}
+	
+	return !(crt_inquiry_status.STATUS_NAME == 'Completed' || crt_inquiry_status.STATUS_NAME == 'Cancelled');
+}
 
 //Get inquiry by status
 function getInquiryByStatus(statusId) {
@@ -53,6 +65,12 @@ function getInquiryById(inquiryId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getInquiryById", inquiryId);
     }
 	
+	if(!validateAccess(inquiryId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"inquiryService/handleGet/getInquiryById", "This CRT Inquiry is not longer available in Processing Report");
+	}
+	
 	var inquiry = inquiryStatus.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
     
@@ -61,7 +79,7 @@ function getInquiryById(inquiryId, userId) {
         inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
         return inquiry;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user hasn't permission for this CRT Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user does not have permission for this CRT Inquiry.");
 	}
     
 }

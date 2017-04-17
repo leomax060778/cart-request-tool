@@ -7,10 +7,10 @@ var request = mapper.getProcessingReportMessage();
 
 var GET_REQUEST_MESSAGE = "GET_REQUEST_MESSAGE";
 
-var service_name = "requestMessageService";
+var service_name = "requestProcessinReportMessageService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -18,7 +18,7 @@ function processRequest() {
  * @param {object} parameters
  * @param {string} parameters.GET_REQUEST_MESSAGE - get by request id
  * @returns {VendorRequestMessage} VendorRequestMessage
- */
+ */ 
 function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
@@ -49,9 +49,9 @@ function handleGet(parameters, userId) {
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-function handlePut(reqBody, userId) {
-    var req = request.updateRequestMessage(reqBody.REQUEST_ID, userId);
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handlePut() {
+    return httpUtil.notImplementedMethod();
 }
 
 //Not Implemented Method

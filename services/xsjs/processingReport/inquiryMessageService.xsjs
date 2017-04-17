@@ -8,10 +8,10 @@ var status = mapper.getInquiryStatus();
 
 var GET_INQUIRY_MESSAGE = "GET_INQUIRY_MESSAGE";
 
-var service_name = "inquiryMessageService";
+var service_name = "inquiryProcessingReportMessageService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -21,14 +21,14 @@ function processRequest() {
  * @returns {InquiryMessage} InquiryMessage
  */
 function handleGet(parameters, userId) {
-    var rdo = {};
+    var rdo = {}; 
     if (parameters.length > 0) {
         if (parameters[0].name === GET_INQUIRY_MESSAGE) {
             if (parameters[0].value <= 0) {
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "vendorMessageService/handleGet",
-                    "invalid parameter value " + parameters[0].name + " (must be a valid inquiry id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid inquiry id)"
                 );
             } else {
                 rdo = request.getInquiryMessage(parameters[0].value, userId);
@@ -37,22 +37,22 @@ function handleGet(parameters, userId) {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "vendorMessageService/handleGet",
-                "invalid parameter (must be: GET_INQUIRY_MESSAGE)"
+                "invalid parameter (should be: GET_INQUIRY_MESSAGE)"
             );
         }
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "vendorMessageService/handleGet",
-            "invalid parameter (must be: GET_INQUIRY_MESSAGE)"
+            "invalid parameter (should be: GET_INQUIRY_MESSAGE)"
         );
     }
     return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
 }
 
-function handlePut(reqBody, userId) {
-    var req = request.updateInquiryMessage(reqBody.INQUIRY_ID, userId);
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handlePut() {
+	return httpUtil.notImplementedMethod();
 }
 
 //Not Implemented Method

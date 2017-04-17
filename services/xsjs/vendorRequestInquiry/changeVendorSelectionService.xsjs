@@ -10,7 +10,7 @@ var GET_CHANGE_VENDOR_SELECTION = "GET_CHANGE_VENDOR_SELECTION";
 var service_name = "changeVendorSelectionService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

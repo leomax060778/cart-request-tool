@@ -12,7 +12,7 @@ var GET_CATALOG_BY_PARENT_ID = "GET_CATALOG_BY_PARENT_ID";
 var service_name = "catalogService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

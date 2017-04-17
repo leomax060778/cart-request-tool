@@ -11,7 +11,7 @@ var GET_ANSWER_BY_VENDOR_REQUEST_ID = "GET_ANSWER_BY_VENDOR_REQUEST_ID";
 var service_name = "vendorDataProtectionService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

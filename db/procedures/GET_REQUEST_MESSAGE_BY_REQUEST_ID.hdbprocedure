@@ -1,18 +1,19 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESSAGE_BY_REQUEST_ID" (
 	IN in_request_id bigint,
-	OUT out_result TABLE (
-							request_id bigint, 
-							message_content nvarchar(1000), 
-							return_name nvarchar(255), 
-							issue_name nvarchar(255), 
-							other_issue_type nvarchar(255), 
+	OUT out_result TABLE (request_id bigint, 
+							message_id bigint, 
+							message_type_name nvarchar(255), 
+							subject_name nvarchar(255), 
+							ADDITIONAL_MESSAGE_TYPE_INFORMATION nvarchar(255),
+							ADDITIONAL_SUBJECT_INFORMATION nvarchar(255),
 							role_name nvarchar(127), 
 							user_name nvarchar(255), 
 							first_name nvarchar(255), 
 							last_name nvarchar(255),
 							created_user_id bigint,
 							message_read tinyint,
-							created_date nvarchar(32)
+							created_date nvarchar(32),
+							content_length integer
 						 )
  ) 
 	LANGUAGE SQLSCRIPT
@@ -21,20 +22,22 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESS
 	READS SQL DATA AS
 BEGIN
 	out_result = SELECT RM.request_id, 
-						RM.message_content, 
-						RT.NAME AS RETURN_NAME, 
-						IT.NAME AS ISSUE_NAME, 
-						RM.OTHER_ISSUE_TYPE, 
+						RM.message_id, 
+						MT.NAME AS MESSAGE_TYPE_NAME, 
+						SUBJ.NAME AS SUBJECT_NAME, 
+						RM.ADDITIONAL_MESSAGE_TYPE_INFORMATION,
+						RM.ADDITIONAL_SUBJECT_INFORMATION,
 						ROLE.NAME AS ROLE_NAME,
 						US.user_name, 
 						US.first_name, 
 						US.last_name,
 						RM.created_user_id,
 						RM.message_read,
-						TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh:mm') AS CREATED_DATE
+						TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh24:mi') AS CREATED_DATE,
+  						LENGTH (RM.MESSAGE_CONTENT) AS content_length
 		FROM "REQUEST_MESSAGE" RM
-                      LEFT JOIN "RETURN_TYPE" RT ON RM.return_type_id = RT.return_type_id AND RT.enabled = 1 AND RT.deleted = 0
-                      LEFT JOIN "ISSUE_TYPE" IT ON RM.issue_type_id = IT.issue_type_id AND IT.enabled = 1 AND IT.deleted = 0
+                      LEFT JOIN "MESSAGE_TYPE" MT ON RM.MESSAGE_TYPE_ID = MT.MESSAGE_TYPE_ID AND MT.ENABLED = 1 AND MT.DELETED = 0
+					  LEFT JOIN "SUBJECT" SUBJ ON RM.SUBJECT_ID = SUBJ.SUBJECT_ID AND SUBJ.ENABLED = 1 AND SUBJ.DELETED = 0
                       INNER JOIN "USER" US ON RM.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 					  INNER JOIN "USER_ROLE" USR ON RM.CREATED_USER_ID = USR.USER_ID 
 					  INNER JOIN "ROLE" ROLE ON RM.CREATED_USER_ID = USR.USER_ID AND ROLE.ROLE_ID = USR.ROLE_ID AND ROLE.ENABLED = 1 AND ROLE.DELETED = 0

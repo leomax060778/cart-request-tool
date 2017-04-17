@@ -86,31 +86,31 @@ function ExecutePermission() {
 
 /** ************************************************************************ */
 
-/** ************URLs******************* */
-var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html#";
-var UrlLogin = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
-var Environment = "Staging"; //Can be: Development - Staging - Production.
-
+/* **********URLs****************** */
+var AppUrl = "http://localhost:63342/crt/webapp/index.html#"; //"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
+var UrlLogin =  "http://localhost:63342/crt/webapp/index.html";//"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
+var Environment = "Development"; //Can be: Development - Staging - Production.
+	
 var complete_path = {
 		"HOME": "/home",
-		"CART_REQUEST": "/processingReport/CartRequest",
-		"CRT_INQUIRY": "/processingReport/CrtInquiry",
-		"EXTEND_VENDOR_REQUEST": "/processingReport/ExtendVendorRequest",
-		"CHANGE_VENDOR_REQUEST": "/processingReport/ChangeVendorRequest",
-		"VENDOR_REQUEST": "/processingReport/NewVendorRequest",
-		"VENDOR_INQUIRY": "/processingReport/VendorInquiry",
+		"CART_REQUEST": "/CartRequest",
+		"CRT_INQUIRY": "/crtInquiry/detail",
+		"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/detail",
+		"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/detail",
+		"VENDOR_REQUEST": "/newVendorRequest/detail",
+		"VENDOR_INQUIRY": "/vendorInquiry/detail",
 		"PROCESSING_REPORT": "/processingReport"
 };
 /** ******************************* */
 
 /** ************Email Accounts********************* */
-var SMTPAccount = "info_cartrequesttool@sap.com";//
+var SMTPAccount = "lpeccin@folderit.net";// "info_planningtool@sap.com";//
+											// //adderes configured - SMTP
 											// server
-var SupportAccount = "support_cartrequesttool@sap.com";
-var SiteAdministrator = "support_cartrequesttool@sap.com";
+var SupportAccount = "lpeccin@folderit.net";// "support_planningtool@sap.com";
+var SiteAdministrator = "lpeccin@folderit.net";// "support_planningtool@sap.com";
 
-var emailAccounts = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
-
+var emailAccounts = [{address: "iberon@folderit.net"}, {address: "carlosgomezil@outlook.com"}];
 /** ************************************** */
 
 // TODO: move this to configuration

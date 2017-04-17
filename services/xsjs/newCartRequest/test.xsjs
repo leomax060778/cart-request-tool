@@ -6,7 +6,7 @@ var http = mapper.getHttp();
 /** **************************************************** */
 
 function processRequest() {
-	httpUtil.processRequest(handleGet, handlePut, handleDelete, handlePost);
+	httpUtil.processPublicRequest(handleGet, handlePut, handleDelete, handlePost);
 }
 
 // Not Implemented Method

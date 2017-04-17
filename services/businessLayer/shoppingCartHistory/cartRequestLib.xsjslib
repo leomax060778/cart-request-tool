@@ -24,6 +24,8 @@ var dataAttachment = mapper.getDataAttachment();
 var dataNoteRequest = mapper.getDataShoppingNoteRequest();
 var dataRequestDataProtection = mapper.getDataRequestDataProtection();
 var dataRDataProtection = mapper.getDataRequestDataProtection();
+var dataUserRole = mapper.getDataUserRole();
+
 var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
 var utilLib = mapper.getUtil();
@@ -47,6 +49,16 @@ var noteKeys = ["NOTE_TYPE_ID", "NOTE_TEXT"];
 var attachmentKeys = ["REQUEST_ID", "ATTACHMENT_ID"];
 var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
 
+function validateAccess(request_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var request_status = dataRequest.getRequestStatusByRequestId(request_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
+}
 //Check data types
 function validateType(key, value) {
 	var valid = true;
@@ -339,11 +351,17 @@ function getRequestByFilters(objFilters, userId) {
 
 	return request;
 }
-function getRequestById(request_id, userId) {
+function getRequestById(request_id, userId, edition_mode) {
 	if (!request_id) {
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter request_id is not found",
 				"requestService/handleGet/getRequestById", request_id);
+	}
+	//Validates the status and the user role
+	if(edition_mode && !validateAccess(request_id, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"requestService/handleGet/getRequestById", "This Cart Request is not longer available for edition");
 	}
 	
 	var roleData = userRole.getUserRoleByUserId(userId);
@@ -367,7 +385,7 @@ function getRequestById(request_id, userId) {
 	
 		return req;
 	}else{
-		throw ErrorLib.getErrors().Forbidden("", "requestService/handleGet/getRequestById", "The user hasn't permission to see this Cart Request.");
+		throw ErrorLib.getErrors().Forbidden("", "requestService/handleGet/getRequestById", "The user does not have permission to see this Cart Request.");
 	}
 }
 

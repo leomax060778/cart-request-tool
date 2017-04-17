@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_INQUIRY_MESSAGE_READ_BY_MESSAGE_ID" (
+	IN in_message_id bigint,
+	IN in_message_read TINYINT,
+	IN in_user_id_read bigint,
+	OUT out_result integer
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE IM
+	SET IM.MESSAGE_READ = in_message_read,
+		IM.USER_ID_READ = in_user_id_read,
+		IM.DATE_READ_TZ = CURRENT_TIMESTAMP
+	FROM "INQUIRY_MESSAGE" IM
+		WHERE IM.MESSAGE_ID = in_message_id
+			AND IM.ENABLED = 1 
+			AND IM.DELETED = 0;
+	
+	SELECT ::ROWCOUNT into out_result FROM DUMMY; 
+END;

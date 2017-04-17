@@ -11,7 +11,7 @@ var ErrorLib = mapper.getErrors();
 
 
 function processRequest(){
-	httpUtil.processRequest(handleGet,handlePost,handlePut,handleDelete);
+	httpUtil.processPublicRequest(handleGet,handlePost,handlePut,handleDelete);
 }
 
 //Not Implemented Method

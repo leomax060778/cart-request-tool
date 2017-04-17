@@ -12,7 +12,7 @@ var GET_INQUIRY_BY_STATUS_ADMINISTRABLE = "GET_INQUIRY_BY_STATUS_ADMINISTRABLE";
 var service_name = "inquiryService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

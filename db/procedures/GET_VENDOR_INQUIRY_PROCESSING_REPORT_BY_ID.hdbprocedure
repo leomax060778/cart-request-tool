@@ -5,10 +5,11 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 							inquiry_date nvarchar(255),
 							requester nvarchar(255),
 							vendor_name nvarchar(255),
-							inquiry_text nvarchar(1000),
 							status_id integer,
 							status_name nvarchar(255),
-							vendor_type nvarchar(2)
+							vendor_type nvarchar(2),
+							created_user_id integer,
+							content_length integer
 							)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -21,10 +22,11 @@ out_result = SELECT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS CRT_VENDOR_IN
                     	to_nvarchar(VI.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
                     	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	VI.VENDOR_NAME,
-                    	VIM.message_content as inquiry_text,
                     	VI.status_id,
                     	ST.name AS status_name,
-                    	VT.ISO AS vendor_type
+                    	VT.ISO AS vendor_type,
+                    	VI.CREATED_USER_ID,
+                    	LENGTH (VIM.MESSAGE_CONTENT) AS content_length
                     FROM "VENDOR_INQUIRY" VI
 	                    INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VI.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
 	                    INNER JOIN "USER" US ON US.USER_ID = VI.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0

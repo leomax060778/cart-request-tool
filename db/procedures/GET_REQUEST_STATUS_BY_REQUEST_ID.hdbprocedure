@@ -1,0 +1,14 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_STATUS_BY_REQUEST_ID" (
+	IN in_request_id bigint,
+	OUT out_result TABLE (status_id integer, status_name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT RQ.status_id, RS.name as status_name
+		FROM "REQUEST_STATUS" RS
+		INNER JOIN "REQUEST" RQ ON RQ.REQUEST_ID = in_request_id
+		WHERE RQ.STATUS_ID = RS.STATUS_ID;
+END;

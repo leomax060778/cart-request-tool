@@ -10,7 +10,7 @@ var GET_REQUEST_MESSAGE = "GET_REQUEST_MESSAGE";
 var service_name = "requestMessageService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -64,7 +64,7 @@ function handleGet(parameters, userId) {
 }
 
 function handlePut(reqBody, userId) {
-	var res = request.updateRequestMessage(reqBody.REQUEST_ID, userId);
+	var res = request.updateRequestMessage(reqBody, userId);
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 

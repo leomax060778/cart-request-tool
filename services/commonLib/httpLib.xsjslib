@@ -53,17 +53,62 @@ function notImplementedMethod() {
 			"httpLib/processRequest", "");
 }
 
-function processRequest(getMethod, postMethod, putMethod, deleteMethod) {
-	processRequest2(getMethod, postMethod, putMethod, deleteMethod, false, "", true);
+function processPublicRequest(getMethod, postMethod, putMethod, deleteMethod) {
+	processUserRequest(getMethod, postMethod, putMethod, deleteMethod, true);
 }
 
-//TODO: the following function should be the default one once all services are updated with the new contract
 //This function choose method, between Get, Put, Post or Delete. Catch all error throwed across the entired app and validate the user per XS call.
-function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvalidate, ResourceID, WithOutPermission) {
+function processUserRequest(getMethod, postMethod, putMethod, deleteMethod, Notvalidate) {
 	try {
 		
 		/**********here  - Validate User() -----***/
 		var userSessionID = null;
+		if(!Notvalidate){
+			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
+	
+			if(!userSessionID)
+				throw ErrorLib.getErrors().Unauthorized(getHeaderByName("x-csrf-token"));		
+			
+		}		
+		/**************************************************/
+		
+		var reqBody = $.request.body ? JSON.parse($.request.body.asString()) : undefined;
+		
+		
+		    switch ($.request.method) {
+		        case $.net.http.GET:{
+		        	getMethod(getUrlParameters(),userSessionID);
+		            break;
+		        }		        	
+		        case $.net.http.PUT:{
+		        	putMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+	            case $.net.http.POST:{
+	            	postMethod(reqBody,userSessionID);
+		            break;
+	            }	            	
+		        case $.net.http.DEL:{
+		        	deleteMethod(reqBody,userSessionID);
+		            break;
+		        }		        	
+		        default:
+		        	notImplementedMethod();
+			    	break;
+		    }	    
+
+	} catch (e) {
+		handleErrorResponse(e);
+	}
+}
+
+//This is the Main function, it choose method, between Get, Put, Post or Delete. Catch all error throwed across the entired app and validate the user per XS call.
+function processRequest(getMethod, postMethod, putMethod, deleteMethod, Notvalidate, serviceName, WithOutPermission) {
+	try {
+		
+		/**********here  - Validate User() -----***/
+		var userSessionID = null;
+		
 		if(!Notvalidate){
 			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
 	
@@ -83,75 +128,6 @@ function processRequest2(getMethod, postMethod, putMethod, deleteMethod, Notvali
 			        	permissions.isAuthorized(
 		        			userSessionID,
 		        			config.getPermissionIdByName(config.ReadPermission()),
-		        			ResourceID
-	        			);	
-		        	}
-		        	getMethod(getUrlParameters(),userSessionID);
-		            break;
-		        }		        	
-		        case $.net.http.PUT:{
-		        	if(!WithOutPermission){
-		        	permissions.isAuthorized(userSessionID,
-       		    	config.getPermissionIdByName(config.CreatePermission()),
-         			ResourceID);
-		        	}
-		        	putMethod(reqBody,userSessionID);
-		            break;
-		        }		        	
-	            case $.net.http.POST:{
-	            	if(!WithOutPermission){
-		        	permissions.isAuthorized(userSessionID,
-        			config.getPermissionIdByName(config.CreatePermission()),
-        			ResourceID);
-	            	}
-	            	postMethod(reqBody,userSessionID);
-		            break;
-	            }	            	
-		        case $.net.http.DEL:{
-		        	if(!WithOutPermission){
-		        	permissions.isAuthorized(userSessionID,
-        			config.getPermissionIdByName(config.DeletePermission()),
-        			ResourceID);
-		        	}
-		        	deleteMethod(reqBody,userSessionID);
-		            break;
-		        }		        	
-		        default:
-		        	notImplementedMethod();
-			    	break;
-		    }	    
-
-	} catch (e) {
-		handleErrorResponse(e);
-	}
-}
-
-//Function intended to be the main one.
-function processRequest3(getMethod, postMethod, putMethod, deleteMethod, Notvalidate, serviceName, WithOutPermission) {
-	try {
-		
-		/**********here  - Validate User() -----***/
-		var userSessionID = null;
-		
-		if(!Notvalidate){
-			userSessionID = validateUser(getHeaderByName("x-csrf-token"));
-	
-			if(!userSessionID)
-				throw ErrorLib.getErrors().Unauthorized(getHeaderByName("x-csrf-token"));		
-			
-		}		
-		/**************************************************/
-		
-		var reqBody = $.request.body ? JSON.parse($.request.body.asString()) : undefined;
-		
-		
-		    switch ($.request.method) {
-		        case $.net.http.GET:{
-		        	//Check Read Permission
-		        	if(!WithOutPermission){
-			        	permissions.isAuthorized2(
-		        			userSessionID,
-		        			config.getPermissionIdByName(config.ReadPermission()),
 		        			serviceName
 	        			);	
 		        	}
@@ -160,7 +136,7 @@ function processRequest3(getMethod, postMethod, putMethod, deleteMethod, Notvali
 		        }		        	
 		        case $.net.http.PUT:{
 		        	if(!WithOutPermission){
-		        	permissions.isAuthorized2(userSessionID,
+		        	permissions.isAuthorized(userSessionID,
        		    	config.getPermissionIdByName(config.CreatePermission()),
        		    	serviceName);
 		        	}
@@ -169,7 +145,7 @@ function processRequest3(getMethod, postMethod, putMethod, deleteMethod, Notvali
 		        }		        	
 	            case $.net.http.POST:{
 	            	if(!WithOutPermission){
-		        	permissions.isAuthorized2(userSessionID,
+		        	permissions.isAuthorized(userSessionID,
         			config.getPermissionIdByName(config.CreatePermission()),
         			serviceName);
 	            	}
@@ -178,7 +154,7 @@ function processRequest3(getMethod, postMethod, putMethod, deleteMethod, Notvali
 	            }	            	
 		        case $.net.http.DEL:{
 		        	if(!WithOutPermission){
-		        	permissions.isAuthorized2(userSessionID,
+		        	permissions.isAuthorized(userSessionID,
         			config.getPermissionIdByName(config.DeletePermission()),
         			serviceName);
 		        	}

@@ -1,13 +1,13 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ISSUE_TYPE_BY_ID" (
-	IN in_issue_type_id bigint,
-	OUT out_result TABLE (name nvarchar(255))
+	IN in_issue_type_id integer,
+	OUT out_result TABLE (issue_type_id integer, name nvarchar(255), additional_issue_type_information tinyint)
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT name
+	out_result = SELECT issue_type_id, name, additional_issue_type_information
 					FROM "ISSUE_TYPE"
 						WHERE "ISSUE_TYPE".issue_type_id = in_issue_type_id
 							AND ENABLED = 1 AND DELETED = 0;

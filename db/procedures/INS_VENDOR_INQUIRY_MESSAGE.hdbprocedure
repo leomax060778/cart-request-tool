@@ -1,8 +1,10 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_INQUIRY_MESSAGE" (
 	IN in_vendor_inquiry_id bigint,
-	IN in_message_content nvarchar (1000),
-	IN in_return_type_id integer,
-	IN in_issue_type_id integer,
+	IN in_message_content nclob,
+	IN in_message_type_id integer,
+	IN in_subject_id integer,
+	IN in_additional_message_type_information nvarchar(255),
+	IN in_additional_subject_information nvarchar(255),
 	IN in_message_read TINYINT,
 	IN in_user_id bigint,
 	OUT out_result bigint
@@ -12,8 +14,24 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_INQUI
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "VENDOR_INQUIRY_MESSAGE" (vendor_inquiry_id, message_content,return_type_id, issue_type_id, message_read, created_user_id)
-   VALUES(in_vendor_inquiry_id, in_message_content, in_return_type_id, in_issue_type_id, in_message_read, in_user_id);
+  INSERT INTO "VENDOR_INQUIRY_MESSAGE" (	vendor_inquiry_id, 
+  											message_content,
+  											message_type_id, 
+  											subject_id,
+  											additional_message_type_information,
+											additional_subject_information, 
+  											message_read, 
+  											created_user_id
+  											)
+   VALUES(	in_vendor_inquiry_id, 
+   			in_message_content, 
+   			in_message_type_id, 
+   			in_subject_id,
+   			in_additional_message_type_information,
+  			in_additional_subject_information,
+   			in_message_read, 
+   			in_user_id
+   			);
    
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR_INQUIRY_MESSAGE";
 END;

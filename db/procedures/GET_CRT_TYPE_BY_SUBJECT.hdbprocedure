@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CRT_TYPE_BY_SUBJECT" (
+	IN in_subject_id bigint,
+	OUT out_result TABLE (crt_type_id bigint, name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CRT.crt_type_id, CRT.name
+					FROM "CRT_TYPE" CRT
+						INNER JOIN "CRT_SUBJECT" CRTS ON CRTS.SUBJECT_ID = in_subject_id AND CRTS.enabled = 1 AND CRTS.deleted = 0
+					WHERE CRT.crt_type_id = CRTS.crt_type_id
+						 AND CRT.enabled = 1 
+						 AND CRT.deleted = 0;
+END;

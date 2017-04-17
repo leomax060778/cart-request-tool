@@ -5,7 +5,7 @@ var dbUser = mapper.getDataUser();
 var ErrorLib = mapper.getErrors();
 var util = mapper.getUtil();
 var mail = mapper.getMail();
-var db = mapper.getdbHelper();
+var db = mapper.getdbHelper(); 
 var dbUserRole = mapper.getDataUserRole();
 var config = mapper.getDataConfig();
 /** ********************************************** */
@@ -34,6 +34,10 @@ function getUserByUserName(userName) {
 				"The Parameter userName is not found",
 				"userServices/handleGet/getUserByUserName", userName);
 	return dbUser.getUserByUserName(userName);
+}
+
+function getUserByEmail(email) {
+    return dbUser.getUserByEmail(email);
 }
 
 function getUserByHl2Id(hl2Id) {
@@ -80,6 +84,12 @@ function insertUser(user, createUser) {
 				throw ErrorLib.getErrors().CustomError("",
 						"userServices/handlePost/insertUser", "The User Name already exists"); 
 			}
+
+            var userByEmail = getUserByEmail(user.EMAIL);
+            if(userByEmail && userByEmail.USER_ID != user.USER_ID){
+                throw ErrorLib.getErrors().CustomError("",
+                    "userServices/handlePost/insertUser", "Another user with the same email already exists");
+            }
 			// Hash password
 			userPassword = !user.USE_DEFAULT_PASSWORD
 					&& validatePassword(user.PASSWORD) ? user.PASSWORD
@@ -136,6 +146,18 @@ function updateUser(user, updateUser) {
 	if (!util.validateIsNumber(user.USER_ID))
 		throw ErrorLib.getErrors().CustomError("",
 				"userServices/handlePost/updateUser", "The USER_ID is invalid");
+
+    var userByUserName = getUserByUserName(user.USER_NAME);
+    if (userByUserName && userByUserName.USER_ID != user.USER_ID) {
+        throw ErrorLib.getErrors().CustomError("",
+            "userServices/handlePost/insertUser", "The User Name already exists");
+    }
+
+    var userByEmail = getUserByEmail(user.EMAIL);
+    if(userByEmail && userByEmail.USER_ID != user.USER_ID){
+        throw ErrorLib.getErrors().CustomError("",
+            "userServices/handlePost/insertUser", "Another user with the same email already exists");
+    }
 
 	try {
 		var updUserId = null;

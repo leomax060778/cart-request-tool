@@ -1,0 +1,15 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SUBJECT_BY_CRT_ID" (
+	IN in_crt_type_id bigint,
+	OUT out_result TABLE (subject_id bigint, name nvarchar(255), additional_subject_information tinyint, position integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT CIT.subject_id, SUBJ.name, SUBJ.additional_subject_information, SUBJ.subject_position as position
+					FROM "CRT_SUBJECT" CIT
+					INNER JOIN "SUBJECT" SUBJ ON CIT.SUBJECT_ID = SUBJ.SUBJECT_ID AND SUBJ.ENABLED = 1 AND SUBJ.DELETED = 0
+						WHERE CIT.crt_type_id = in_crt_type_id
+							AND CIT.enabled = 1 AND CIT.deleted = 0 ORDER BY CIT.SUBJECT_ID ASC;
+END;

@@ -1,0 +1,24 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_MESSAGE_TYPE" (
+	IN in_message_type_id integer,
+	IN in_name nvarchar(255),
+	IN in_additional_message_type_information tinyint,
+	IN in_message_type_position integer,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE MT
+	SET MT.name = in_name,
+		MT.additional_message_type_information = in_additional_message_type_information,
+		MT.message_type_position = in_message_type_position,
+		MT.modified_date_tz = CURRENT_TIMESTAMP,
+		MT.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."MESSAGE_TYPE" MT
+	WHERE MT.message_type_id = in_message_type_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

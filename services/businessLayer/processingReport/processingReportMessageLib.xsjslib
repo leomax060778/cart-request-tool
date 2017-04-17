@@ -11,8 +11,8 @@ var vendorInquiry = mapper.getDataVendorInquiry();
 var businessUser = mapper.getUser();
 var inquiry = mapper.getDataInquiry();
 var getRequest = mapper.getDataRequest();
-var returnType = mapper.getReturnType();
-var issueType = mapper.getDataIssueType();
+var messageType = mapper.getMessageType();
+var subject = mapper.getDataSubject();
 var ErrorLib = mapper.getErrors();
 var statusRequest = mapper.getCartRequest();
 var statusVendor = mapper.getVendorRequestInquiryStatus();
@@ -31,10 +31,10 @@ var mail = mapper.getMail();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
-var issueTypeMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
+var subjectMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
-var returnTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
+var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 var pathName = {
 		"CHANGE_VENDOR_MAIL" : "CHANGE_VENDOR_REQUEST",
 		"EXTEND_VENDOR_MAIL" : "EXTEND_VENDOR_REQUEST",
@@ -51,12 +51,16 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	    if (!existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objChangeVendorRequest.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The return type with the id " + objChangeVendorRequest.RETURN_TYPE_ID + " does not exist");
+	    if (objChangeVendorRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objChangeVendorRequest.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The return type with the id " + objChangeVendorRequest.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (!existIssueType(objChangeVendorRequest.ISSUE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The issue type with the id " + objChangeVendorRequest.ISSUE_TYPE_ID + " does not exist");
+	    if (objChangeVendorRequest.SUBJECT_ID && !existSubject(objChangeVendorRequest.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The issue type with the id " + objChangeVendorRequest.SUBJECT_ID + " does not exist");
 	    }
+	    if (Number(objChangeVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+	    	objChangeVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
+		}
 	    var return_id = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
 	    sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
 	    
@@ -70,12 +74,16 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	    if (!existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objExtendVendorRequest.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The return type with the id " + objExtendVendorRequest.RETURN_TYPE_ID + " does not exist");
+	    if (objExtendVendorRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objExtendVendorRequest.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The return type with the id " + objExtendVendorRequest.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (!existIssueType(objExtendVendorRequest.ISSUE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The issue type with the id " + objExtendVendorRequest.ISSUE_TYPE_ID + " does not exist");
+	    if (objExtendVendorRequest.SUBJECT_ID && !existSubject(objExtendVendorRequest.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The issue type with the id " + objExtendVendorRequest.SUBJECT_ID + " does not exist");
 	    }
+	    if (Number(objExtendVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+	    	objExtendVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
+		}
         var return_id = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
         sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
         
@@ -89,12 +97,16 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 	    if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor Request with the id: " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objVendorRequest.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The return type with the id " + objVendorRequest.RETURN_TYPE_ID + " does not exist");
+	    if (objVendorRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objVendorRequest.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The return type with the id " + objVendorRequest.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (!existIssueType(objVendorRequest.ISSUE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorRequest.ISSUE_TYPE_ID + " does not exist");
+	    if (objVendorRequest.SUBJECT_ID && !existSubject(objVendorRequest.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorRequest.SUBJECT_ID + " does not exist");
 	    }
+	    if (Number(objVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+	    	objVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
+		}
         var return_id = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
         sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
         
@@ -108,12 +120,16 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 	    if (!existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor inquiry with the id: " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objVendorInquiry.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The return type with the id " + objVendorInquiry.RETURN_TYPE_ID + " does not exist");
+	    if (objVendorInquiry.MESSAGE_TYPE_ID && !messageType.existMessageType(objVendorInquiry.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The return type with the id " + objVendorInquiry.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (!existIssueType(objVendorInquiry.ISSUE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorInquiry.ISSUE_TYPE_ID + " does not exist");
+	    if (objVendorInquiry.SUBJECT_ID && !existSubject(objVendorInquiry.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorInquiry.SUBJECT_ID + " does not exist");
 	    }
+	    if (Number(objVendorInquiry.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+	    	objVendorInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
+		}
         var return_id = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
         sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
         
@@ -127,10 +143,14 @@ function insertInquiryMessage(objInquiry, userId) {
 		if (!existInquiry(objInquiry.INQUIRY_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objInquiry.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The return type with the id " + objInquiry.RETURN_TYPE_ID + " does not exist");
+	    if (objInquiry.MESSAGE_TYPE_ID && !messageType.existMessageType(objInquiry.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The Message type with the id " + objInquiry.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (Number(objInquiry.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    if (objInquiry.SUBJECT_ID && !messageType.existMessageType(objInquiry.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The Subject with the id " + objInquiry.MESSAGE_TYPE_ID + " does not exist");
+	    }
+	    
+	    if (Number(objInquiry.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    	objInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
 		}
@@ -147,13 +167,13 @@ function insertRequestMessage(objRequest, userId) {
 	    if (!existRequest(objRequest.REQUEST_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
 	    }
-	    if (!returnType.existReturnType(objRequest.RETURN_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The return type with the id " + objRequest.RETURN_TYPE_ID + " does not exist");
+	    if (objRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objRequest.MESSAGE_TYPE_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The return type with the id " + objRequest.MESSAGE_TYPE_ID + " does not exist");
 	    }
-	    if (!existIssueType(objRequest.ISSUE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The issue type with the id " + objRequest.ISSUE_TYPE_ID + " does not exist");
+	    if (objRequest.SUBJECT_ID && !existSubject(objRequest.SUBJECT_ID)) {
+	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The issue type with the id " + objRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objRequest.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    if (Number(objRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    	objRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
@@ -176,15 +196,27 @@ function getInquiryMessage(inquiryId, userId) {
     }
     var result = [];
     var objInquiry = {};
+    var messageContent;
+	var startPosition;
+	var inquiryMessageLength;
+	var i;
+	var splitNumber; 
     try{
 	    result = dataMessage.getInquiryMessageManual(inquiryId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objInquiry.MESSAGE_READ = 1;
-			    	dataInquiryReadMessage.updateInquiryMessageReadManual(objInquiry, userId);
-			    }
+	    	messageContent = "";
+    		startPosition = 1;
+    		inquiryMessageLength = 5000;
+    		i = 0;
+    		splitNumber = 0; 
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / inquiryMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataInquiryReadMessage.getInquiryMessageContentManual(elem.INQUIRY_ID, elem.MESSAGE_ID, startPosition, inquiryMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + inquiryMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -208,15 +240,27 @@ function getVendorRequestMessage(vendorRequestId, userId){
     }
     var result = [];
     var objVendorRequest = {};
+    var messageContent;
+	var startPosition;
+	var vendorRequestMessageLength;
+	var i;
+	var splitNumber; 
     try{
 	    result = dataMessage.getVendorRequestMessageManual(vendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorRequest.MESSAGE_READ = 1;
-			    	dataVendorReadMessage.updateVendorRequestMessageReadManual(objVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	vendorRequestMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / vendorRequestMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataVendorReadMessage.getVendorRequestMessageContentManual(elem.VENDOR_REQUEST_ID, elem.VENDOR_REQUEST_MESSAGE_ID, startPosition, vendorRequestMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + vendorRequestMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -240,15 +284,27 @@ function getChangeVendorRequestMessage(changeVendorRequestId, userId){
     }
     var result = [];
     var objChangeVendorRequest = {};
+    var messageContent;
+	var startPosition;
+	var changeMessageLength;
+	var i;
+	var splitNumber;
     try{
 	    result = dataMessage.getChangeVendorRequestMessageManual(changeVendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objChangeVendorRequest.MESSAGE_READ = 1;
-			    	dataVendorReadMessage.updateChangeVendorRequestMessageReadManual(objChangeVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	changeMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / changeMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataVendorReadMessage.getChangeVendorRequestMessageContentManual(elem.CHANGE_VENDOR_REQUEST_ID, elem.CHANGE_VENDOR_REQUEST_MESSAGE_ID, startPosition, changeMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + changeMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -272,15 +328,27 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId){
     }
     var result = [];
     var objExtendVendorRequest = {};
+    var messageContent;
+	var startPosition;
+	var extendMessageLength;
+	var i;
+	var splitNumber; 
     try{
 	    result = dataMessage.getExtendVendorRequestMessageManual(extendVendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objExtendVendorRequest.MESSAGE_READ = 1;
-			    	dataVendorReadMessage.updateExtendVendorRequestMessageReadManual(objExtendVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	extendMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / extendMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataVendorReadMessage.getExtendVendorRequestMessageContentManual(elem.EXTEND_VENDOR_REQUEST_ID, elem.EXTEND_VENDOR_REQUEST_MESSAGE_ID, startPosition, extendMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + extendMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -304,15 +372,27 @@ function getRequestMessage(requestId, userId){
     }
     var result = [];
     var objRequest = {};
+    var messageContent;
+	var startPosition;
+	var requestMessageLength;
+	var i;
+	var splitNumber; 
     try{
 	    result = dataMessage.getRequestMessageManual(requestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objRequest.MESSAGE_READ = 1;
-			    	dataRequestReadMessage.updateRequestMessageReadManual(objRequest, userId);
-			    }
+	    	messageContent = "";
+    		startPosition = 1;
+    		requestMessageLength = 5000;
+    		i = 0;
+    		splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / requestMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataRequestReadMessage.getRequestMessageContentManual(elem.REQUEST_ID, elem.MESSAGE_ID, startPosition, requestMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + requestMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -336,15 +416,27 @@ function getVendorInquiryMessage(vendorInquiryId, userId){
     }
     var result = [];
     var objVendorInquiry = {};
+    var messageContent = "";
+	var startPosition = 1;
+	var vendorInquiryMessageLength = 5000;
+	var i = 0;
+	var splitNumber = 0; 
     try{
 	    result = dataMessage.getVendorInquiryMessageManual(vendorInquiryId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorInquiry.MESSAGE_READ = 1;
-			    	dataVendorReadMessage.updateVendorInquiryMessageReadManual(objVendorInquiry, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	vendorInquiryMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / vendorInquiryMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataVendorReadMessage.getVendorInquiryMessageContentManual(elem.VENDOR_INQUIRY_ID, elem.VENDOR_INQUIRY_MESSAGE_ID, startPosition, vendorInquiryMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + vendorInquiryMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     }
 	catch(e){
@@ -358,188 +450,6 @@ function getVendorInquiryMessage(vendorInquiryId, userId){
 	return result;
 }
 /** ***********END GET*************** */
-
-/** ***********UPDATE*************** */
-//Inquiry Message read
-function updateInquiryMessage (inquiryId, userId){
-	if (!inquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryMessageService/handlePut/updateInquiryMessage", inquiryId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryMessageService/handlePut/updateInquiryMessage", userId);
-    }
-    var result = [];
-    var objInquiry = {};
-    try{
-	    result = dataMessage.getInquiryMessageManual(inquiryId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objInquiry.MESSAGE_READ = 1;
-		    	dataInquiryReadMessage.updateInquiryMessageReadManual(objInquiry, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePut/updateInquiryMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-
-//Vendor Request Message read
-function updateVendorRequestMessage(vendorRequestId, userId){
-	if (!vendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryMessageService/handlePut/updateVendorRequestMessage", vendorRequestId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handlePut/updateVendorRequestMessage", userId);
-    }
-    var result = [];
-    var objVendorRequest = {};
-    try{
-	    result = dataMessage.getVendorRequestMessageManual(vendorRequestId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objVendorRequest.MESSAGE_READ = 1;
-		    	dataVendorReadMessage.updateVendorRequestMessageReadManual(objVendorRequest, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePut/updateVendorRequestMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-
-//Change Vendor Request Message read
-function updateChangeVendorRequestMessage(changeVendorRequestId, userId){
-	if (!changeVendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryMessageService/handlePut/updateChangeVendorRequestMessage", changeVendorRequestId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handlePut/updateChangeVendorRequestMessage", userId);
-    }
-    var result = [];
-    var objChangeVendorRequest = {};
-    try{
-	    result = dataMessage.getChangeVendorRequestMessageManual(changeVendorRequestId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objChangeVendorRequest.MESSAGE_READ = 1;
-		    	dataVendorReadMessage.updateChangeVendorRequestMessageReadManual(objChangeVendorRequest, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePut/updateChangeVendorRequestMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-
-//Extend Vendor Request Message read
-function updateExtendVendorRequestMessage (extendVendorRequestId, userId){
-	if (!extendVendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "vendorRequestInquiryMessageService/handlePut/updateExtendVendorRequestMessage", extendVendorRequestId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handlePut/updateExtendVendorRequestMessage", userId);
-    }
-    var result = [];
-    var objExtendVendorRequest = {};
-    try{
-	    result = dataMessage.getExtendVendorRequestMessageManual(extendVendorRequestId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objExtendVendorRequest.MESSAGE_READ = 1;
-		    	dataVendorReadMessage.updateExtendVendorRequestMessageReadManual(objExtendVendorRequest, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePut/updateExtendVendorRequestMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-
-//Request Message read
-function updateRequestMessage (requestId, userId){
-	if (!requestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "cartRequestService/handlePut/updateRequestMessage", requestId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "cartRequestService/handlePut/updateRequestMessage", userId);
-    }
-    var result = [];
-    var objRequest = {};
-    try{
-	    result = dataMessage.getRequestMessageManual(requestId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objRequest.MESSAGE_READ = 1;
-		    	dataRequestReadMessage.updateRequestMessageReadManual(objRequest, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-
-//Vendor Inquiry Message read
-function updateVendorInquiryMessage(vendorInquiryId, userId){
-	if (!vendorInquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryMessageService/handlePut/updateVendorInquiryMessage", vendorInquiryId);
-    }
-	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handlePut/updateVendorInquiryMessage", userId);
-    }
-    var result = [];
-    var objVendorInquiry = {};
-    try{
-	    result = dataMessage.getVendorInquiryMessageManual(vendorInquiryId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objVendorInquiry.MESSAGE_READ = 1;
-		    	dataVendorReadMessage.updateVendorInquiryMessageReadManual(objVendorInquiry, userId);
-		    }
-	    });
-    }
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePut/updateVendorInquiryMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
-}
-/** ***********END UPDATE*************** */
 
 /** ***********CHECK IF EXISTS*************** */
 //Check if the vendor request exists
@@ -573,8 +483,8 @@ function existRequest(requestId) {
 }
 
 //Check if the issue type exists
-function existIssueType(issueTypeId) {
-    return issueType.getIssueTypeByIdManual(issueTypeId).length > 0;
+function existSubject(subjectId) {
+    return subject.getSubjectByIdManual(subjectId).length > 0;
 }
 /** ***********END CHECK*************** */
 
@@ -589,8 +499,15 @@ function validateInsertInquiryMessage(objInquiry, userId) {
     var BreakException = {};
     var keys = [
         'INQUIRY_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID'];
+        'MESSAGE_CONTENT'
+        ];
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
 
     if (!objInquiry) {
         throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiryMessage", "The object  Inquiry Message is not found");
@@ -610,6 +527,16 @@ function validateInsertInquiryMessage(objInquiry, userId) {
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objInquiry[key]);
+            if (!isValid) {
+            	errors[key] = objInquiry[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -632,13 +559,16 @@ function validateInsertRequestMessage(objRequest, userId) {
     var BreakException = {};
     var keys = [
         'REQUEST_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID',
-        'ISSUE_TYPE_ID'
+        'MESSAGE_CONTENT'
     ];
-    if (objRequest.ISSUE_TYPE_ID === issueTypeMap.OTHERS) {
-    	keys.push('OTHER_ISSUE_TYPE');
-    }
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
+    
     if (!objRequest) {
         throw ErrorLib.getErrors().CustomError("", "requestService/handlePost/insertRequestMessage", "The object Request Message is not found");
     }
@@ -657,6 +587,16 @@ function validateInsertRequestMessage(objRequest, userId) {
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objRequest[key]);
+            if (!isValid) {
+            	errors[key] = objRequest[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -679,10 +619,15 @@ function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId
     var BreakException = {};
     var keys = [
         'EXTEND_VENDOR_REQUEST_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID',
-        'ISSUE_TYPE_ID'
+        'MESSAGE_CONTENT'
     ];
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
 
     if (!objExtendVendorRequest) {
         throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The object Extend Vendor Request is not found");
@@ -702,6 +647,16 @@ function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objExtendVendorRequest[key]);
+            if (!isValid) {
+            	errors[key] = objExtendVendorRequest[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -724,10 +679,15 @@ function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId
     var BreakException = {};
     var keys = [
         'CHANGE_VENDOR_REQUEST_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID',
-        'ISSUE_TYPE_ID'
+        'MESSAGE_CONTENT'
     ];
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
 
     if (!objChangeVendorRequest) {
         throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequest", "The object Change Vendor Request is not found");
@@ -747,6 +707,16 @@ function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objChangeVendorRequest[key]);
+            if (!isValid) {
+            	errors[key] = objChangeVendorRequest[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -767,10 +737,17 @@ function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
     var isValid = false;
     var errors = {};
     var BreakException = {};
-    var keys = ['VENDOR_INQUIRY_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID',
-        'ISSUE_TYPE_ID'];
+    var keys = [
+                'VENDOR_INQUIRY_ID',
+                'MESSAGE_CONTENT'
+                ];
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
 
     if (!objVendorInquiry) {
         throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorInquiryMessage", "The object Vendor Inquiry Message is not found");
@@ -790,6 +767,16 @@ function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objVendorInquiry[key]);
+            if (!isValid) {
+            	errors[key] = objVendorInquiry[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -812,10 +799,15 @@ function validateInsertVendorRequestMessage(objVendorRequest, userId) {
     var BreakException = {};
     var keys = [
         'VENDOR_REQUEST_ID',
-        'MESSAGE_CONTENT',
-        'RETURN_TYPE_ID',
-        'ISSUE_TYPE_ID'
+        'MESSAGE_CONTENT'
     ];
+    
+    var optionalKeys = [
+                        'ADDITIONAL_MESSAGE_TYPE_INFORMATION',
+                        'ADDITIONAL_SUBJECT_INFORMATION',
+                        'MESSAGE_TYPE_ID',
+                        'SUBJECT_ID'
+                        ];
 
     if (!objVendorRequest) {
         throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequest", "The object Vendor Request is not found");
@@ -835,6 +827,16 @@ function validateInsertVendorRequestMessage(objVendorRequest, userId) {
                 }
             }
         });
+        
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objVendorRequest[key]);
+            if (!isValid) {
+            	errors[key] = objVendorRequest[key];
+                throw BreakException;
+            }   
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -865,15 +867,18 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'MESSAGE_CONTENT':
-            valid = value.length > 0 && value.length <= 1000;
+            valid = value.length > 0;
             break;
-        case 'RETURN_TYPE_ID':
-            valid = !isNaN(value) && value > 0;
+        case 'MESSAGE_TYPE_ID':
+            valid = (!value) || !isNaN(value) && value > 0;
             break;
-        case 'ISSUE_TYPE_ID':
-            valid = !isNaN(value) && value > 0;
+        case 'SUBJECT_ID':
+            valid = (!value) || !isNaN(value) && value > 0;
             break;
-        case 'OTHER_ISSUE_TYPE':
+        case 'ADDITIONAL_MESSAGE_TYPE_INFORMATION':
+            valid = (!value) || (value.length > 0 && value.length <= 255);
+            break;
+        case 'ADDITIONAL_SUBJECT_INFORMATION':
             valid = (!value) || (value.length > 0 && value.length <= 255);
             break;
     }
@@ -891,9 +896,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	switch(vendor_type) {
 	    case "CHANGE_VENDOR_REQUEST":
 	    	reqMailObj.CHANGE_VENDOR_REQUEST_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	    		mailObj = changeVendorMail.parseFYI(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = changeVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), requester);
 	    	} else {
 	    		mailObj = changeVendorMail.parseMessage(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), requester);
@@ -901,9 +906,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	        break;
 	    case "EXTEND_VENDOR_REQUEST":
 	    	reqMailObj.EXTEND_VENDOR_REQUEST_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	    		mailObj = extendVendorMail.parseFYI(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = extendVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), requester);
 	    	} else {
 	    		mailObj = extendVendorMail.parseMessage(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), requester);
@@ -911,9 +916,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	        break;
 	    case "VENDOR_INQUIRY":
 	    	reqMailObj.VENDOR_INQUIRY_ID = reqBody.VENDOR_INQUIRY_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	    		mailObj = vendorInquiryMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = vendorInquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), requester);
 	    	} else {
 	    		mailObj = vendorInquiryMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), requester);
@@ -921,9 +926,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	        break;
 	    case "VENDOR_REQUEST":
 	    	reqMailObj.REQUEST_ID = reqBody.VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	    		mailObj = vendorMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = vendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 	    	} else {
 	    		mailObj = vendorMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
@@ -931,9 +936,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	        break;
 	    case "CRT_INQUIRY":
 	    	reqMailObj.INQUIRY_ID = reqBody.INQUIRY_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	    		mailObj = inquiryMail.parseFYI(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = inquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL), requester);
 	    	} else {
 	    		mailObj = inquiryMail.parseMessage(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL), requester);
@@ -941,9 +946,9 @@ function sendMessageMail(reqBody, vendor_type, userId){
 			break;
 	    case "CART_REQUEST":
 	    	reqMailObj.REQUEST_ID = reqBody.REQUEST_ID;
-	    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.FYI_ONLY){
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
 	   	 		mailObj = requestMail.parseFYI(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL), requester);
-	    	} else if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
 	    		mailObj = requestMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL), requester);
 	    	} else {
 	    		mailObj = requestMail.parseNewMessage(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL), requester);

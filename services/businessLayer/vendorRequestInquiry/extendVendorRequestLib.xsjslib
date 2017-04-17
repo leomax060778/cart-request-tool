@@ -2,12 +2,15 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var extend = mapper.getDataExtendVendorRequest();
 var extendVendorMail = mapper.getExtendVendorMail();
+var vendorMessage = mapper.getVendorMessage(); 
+
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var mail = mapper.getMail();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
+var dataUserRole = mapper.getDataUserRole();
 
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
@@ -15,11 +18,23 @@ var dbHelper = mapper.getdbHelper();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var vendorType = {"EXTEND_VENDOR_REQUEST": 2};
 var pathName = "EXTEND_VENDOR_REQUEST";
 
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
+
+function validateAccess(extend_vendor_request_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var extend_vendor_request_status = extend.getExtendVendorRequestStatusByEVRId(extend_vendor_request_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(extend_vendor_request_status.STATUS_NAME == 'Approved' || extend_vendor_request_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
 }
 
 //Insert extend vendor request
@@ -38,6 +53,15 @@ function insertExtendVendorRequest(objExtendVendorRequest, userId) {
 		        			businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
 		           		});    		
 		        	}
+		        	if(result_id){
+		    			if(objExtendVendorRequest.ADDITIONAL_INFORMATION_FLAG && objExtendVendorRequest.ADDITIONAL_INFORMATION && objExtendVendorRequest.ADDITIONAL_INFORMATION.length > 0){
+		    				objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID = result_id;
+		    				objExtendVendorRequest.PREVIOUS_STATUS_ID = statusMap.TO_BE_CHECKED;
+		    				objExtendVendorRequest.MESSAGE_CONTENT = objExtendVendorRequest.ADDITIONAL_INFORMATION;
+		        			vendorMessage.insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId);
+		    			}
+		    		}
+		        	
 		        	dbHelper.commit();
     			} catch (e) {
 	    			dbHelper.rollback();
@@ -64,11 +88,19 @@ function deleteExtendVendorRequest(objExtendVendorRequest, userId) {
 }
 
 //Get extend vendor request by ID
-function getExtendVendorRequestById(extendVendorRequestId, userId) {
+function getExtendVendorRequestById(extendVendorRequestId, userId, edition_mode) {
 	var objExtend = {};
 	if (!extendVendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "extendVendorRequestService/handleGet/getVendorRequestById", extendVendorRequestId);
     }
+	
+	if(edition_mode && !validateAccess(extendVendorRequestId, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryService/handleGet/getExtendVendorRequestById", 
+				"This Extend Vendor Request is not longer available for edition");
+	}
+	
 	var roleData = userRole.getUserRoleByUserId(userId);
     var resExtend = extend.getExtendVendorRequestById(extendVendorRequestId);
     resExtend = JSON.parse(JSON.stringify(resExtend));
@@ -79,10 +111,18 @@ function getExtendVendorRequestById(extendVendorRequestId, userId) {
 	    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
 	    	 resExtend.ATTACHMENTS = attachments;
-	    }
+	    	 
+	    	 if(resExtend.ADDITIONAL_INFORMATION_FLAG !== 0){
+	    		 var message = vendorMessage.getExtendVendorRequestMessage(resExtend.EXTEND_VENDOR_REQUEST_ID, userId);
+	    		 resExtend.ADDITIONAL_INFORMATION = (message.length > 0)? message[message.length - 1].MESSAGE_CONTENT : "";
+	    	 }else{
+	    		 resExtend.ADDITIONAL_INFORMATION = ""; //Avoid 'undefined' in richTextEditor.
+	    	 }
+	    } 
+	 
 	    return resExtend;
     } else{
-    	throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", "The user hasn't permission to Read/View this Extend Vendor Request.");
+    	throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", "The user does not have permission to Read/View this Extend Vendor Request.");
     }
 }
 
@@ -117,7 +157,7 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     }
     validateParams(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId);
     var keys = ['EXTEND_VENDOR_REQUEST_ID', 'ENTITY_ID', 'COMMODITY_ID', 'SERVICE_SUPPLIER', 'PURCHASE_AMOUNT', 'PURCHASE_CURRENCY_ID', 'VENDOR_LEGAL_NAME', 'VENDOR_CONTACT_NAME', 'VENDOR_CONTACT_EMAIL'];
-    var optionalKeys = ['EXPECTED_AMOUNT', 'EXPECTED_CURRENCY_ID', 'ADDITIONAL_INFORMATION'];
+    var optionalKeys = ['EXPECTED_AMOUNT', 'EXPECTED_CURRENCY_ID'];
     var extendVendorRequestUrl = "vendorRequestInquiryService/handlePut/updateExtendVendorInquiry";
     utilLib.validateObjectAttributes(objExtendVendorRequest, userId, keys, extendVendorRequestUrl, validateType);
     validateOptionalExtendVendorRequestKeys(optionalKeys, objExtendVendorRequest);
@@ -254,8 +294,7 @@ function validateInsertExtendVendorRequest(objExtendVendorRequest, userId) {
     ];
 
     var optionalKeys = ['EXPECTED_AMOUNT',
-        'EXPECTED_CURRENCY_ID',
-        'ADDITIONAL_INFORMATION'
+        'EXPECTED_CURRENCY_ID'
     ];
 
     if (!objExtendVendorRequest) {

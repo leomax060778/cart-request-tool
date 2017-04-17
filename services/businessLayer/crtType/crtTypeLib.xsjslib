@@ -19,6 +19,22 @@ function getCrtTypeById(crtTypeId) {
     return dataCrtType.getCrtTypeById(crtTypeId);
 }
 
+//Get crt type by Return Type ID
+function getCrtTypeByReturnType(returnTypeId) {
+    if (!returnTypeId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter returnTypeId is not found", "crtTypeService/handleGet/getCrtTypeByReturnType", returnTypeId);
+    }
+    return dataCrtType.getCrtTypeByReturnType(returnTypeId);
+}
+
+//Get crt type by Issue Type ID
+function getCrtTypeByIssueType(issueTypeId) {
+    if (!issueTypeId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter issueTypeId is not found", "crtTypeService/handleGet/getCrtTypeByIssueType", issueTypeId);
+    }
+    return dataCrtType.getCrtTypeByIssueType(issueTypeId);
+}
+
 //Get crt type by ID manually
 function getCrtTypeByIdManual(crtTypeId) {
     if (!crtTypeId) {

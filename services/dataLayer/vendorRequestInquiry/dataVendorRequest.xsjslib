@@ -10,6 +10,7 @@ var DEL_VENDOR_REQUEST = "DEL_VENDOR_REQUEST";
 var GET_ALL_VENDOR_REQUEST = "GET_ALL_VENDOR_REQUEST";
 var GET_VENDOR_REQUEST_BY_ID = "GET_VENDOR_REQUEST_BY_ID";
 var UPD_VENDOR_REQUEST = "UPD_VENDOR_REQUEST";
+var GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID = "GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID";
 
 //Insert vendor request
 function insertVendorRequest(objVendorRequest, userId) {
@@ -27,7 +28,7 @@ function insertVendorRequest(objVendorRequest, userId) {
     parameters.in_expected_currency_id = objVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_accept_american_express = objVendorRequest.ACCEPT_AMERICAN_EXPRESS;
     parameters.in_cost_center_owner = objVendorRequest.COST_CENTER_OWNER;
-    parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objVendorRequest.VENDOR_ID;
     parameters.out_result = '?';
@@ -50,7 +51,7 @@ function insertVendorRequestManual(objVendorRequest, userId) {
     parameters.in_expected_currency_id = objVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_accept_american_express = objVendorRequest.ACCEPT_AMERICAN_EXPRESS;
     parameters.in_cost_center_owner = objVendorRequest.COST_CENTER_OWNER;
-    parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION || null;
+    parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objVendorRequest.VENDOR_ID;
     parameters.out_result = '?';
@@ -97,6 +98,18 @@ function getVendorRequestByIdManual(vendorRequestId) {
     }
 }
 
+//Get Vendor Request status by request id
+function getVendorRequestStatusByVendorRequestId(vendorRequestId) {
+    var parameters = {'in_vendor_request_id': vendorRequestId};
+    var result = db.executeProcedure(GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
 //Update
 function updateVendorRequest(objVendorRequest, userId) {
     var parameters = {};
@@ -113,7 +126,6 @@ function updateVendorRequest(objVendorRequest, userId) {
     parameters.in_expected_currency_id = objVendorRequest.EXPECTED_CURRENCY_ID || null;
     parameters.in_accept_american_express = objVendorRequest.ACCEPT_AMERICAN_EXPRESS;
     parameters.in_cost_center_owner = objVendorRequest.COST_CENTER_OWNER;
-    parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION || null;
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_REQUEST, parameters, 'out_result');

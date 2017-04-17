@@ -8,6 +8,8 @@ var ErrorLib = mapper.getErrors();
 var GET_ALL_CRT_TYPE = "GET_ALL_CRT_TYPE";
 var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID"; 
 var GET_CRT_TYPE_WITH_DATA_PROTECTION = "GET_CRT_TYPE_WITH_DATA_PROTECTION"; 
+var GET_CRT_TYPE_BY_MESSAGE_TYPE = "GET_CRT_TYPE_BY_MESSAGE_TYPE";
+var GET_CRT_TYPE_BY_SUBJECT = "GET_CRT_TYPE_BY_SUBJECT";
 var DEL_CRT_TYPE = "DEL_CRT_TYPE";
 var INS_CRT_TYPE = "INS_CRT_TYPE";
 var UPD_CRT_TYPE = "UPD_CRT_TYPE";
@@ -23,6 +25,20 @@ function getAllCrtType() {
 function getCrtTypeById(crtTypeId) {
     var parameters = {'in_crt_type_id': crtTypeId};
     var result = db.executeProcedure(GET_CRT_TYPE_BY_ID, parameters);
+    return db.extractArray(result.out_result);
+}
+
+//Get crt type by message type id
+function getCrtTypeByMessageType(returnTypeId) {
+    var parameters = {'in_message_type_id': returnTypeId};
+    var result = db.executeProcedure(GET_CRT_TYPE_BY_MESSAGE_TYPE, parameters);
+    return db.extractArray(result.out_result);
+}
+
+//Get crt type by Subject id
+function getCrtTypeBySubject(issueTypeId) {
+    var parameters = {'in_subject_id': issueTypeId};
+    var result = db.executeProcedure(GET_CRT_TYPE_BY_SUBJECT, parameters);
     return db.extractArray(result.out_result);
 }
 

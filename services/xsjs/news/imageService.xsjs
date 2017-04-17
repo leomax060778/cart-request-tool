@@ -12,7 +12,7 @@ var service_name = "imageService";
 
 /******************************************/
 function processRequest(){
-    http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
+    http.processRequest(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 /**

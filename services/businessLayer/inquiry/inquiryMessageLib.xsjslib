@@ -14,6 +14,7 @@ var config = mapper.getDataConfig();
 
 var statusMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
 var pathName = "CRT_INQUIRY";
+
 //Insert message
 function insertInquiryMessage(objInquiry, userId) {
 	if (validateInsertInquiryMessage(objInquiry, userId)) {
@@ -37,19 +38,30 @@ function getInquiryMessage(inquiryId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
     }
     var result = {};
-    var objInquiry = {};
     var inquiryText;
     var inquiryMessage;
+    var messageContent;
+	var startPosition;
+	var inquiryMessageLength;
+	var i;
+	var splitNumber; 
     try {
     	inquiryText = inquiry.getInquiryByIdManual(inquiryId).INQUIRY_TEXT;
     	inquiryMessage = message.getInquiryMessageManual(inquiryId);
+    	inquiryMessage = JSON.parse(JSON.stringify(inquiryMessage));
     	inquiryMessage.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objInquiry.MESSAGE_READ = 1;
-			    	message.updateInquiryMessageReadManual(objInquiry, userId);
-			    }
+    		messageContent = "";
+    		startPosition = 1;
+    		inquiryMessageLength = 5000;
+    		i = 0;
+    		splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / inquiryMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(message.getInquiryMessageContentManual(elem.INQUIRY_ID, elem.MESSAGE_ID, startPosition, inquiryMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + inquiryMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
     	result.INQUIRY_TEXT = inquiryText;
     	result.INQUIRY_MESSAGES = inquiryMessage;
@@ -65,31 +77,41 @@ function getInquiryMessage(inquiryId, userId) {
 }
 
 //Message read
-function updateMessageRead(inquiryId, userId){
-	if (!inquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handlePut/updateMessage", inquiryId);
-    }
+function updateMessageRead(objInquiryMessage, userId){
     if (!userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/updateInquiryMessage", userId);
     }
     var result = [];
-    var objInquiry = {};
+
     try {
-    	result = message.getInquiryMessageManual(inquiryId);
-	    result.forEach(function (elem) {
-		    if(elem.MESSAGE_READ === 0) {
-		    	objInquiry.MESSAGE_READ = 1;
-		    	message.updateInquiryMessageReadManual(objInquiry, userId);
-		    }
-	    });
+    	if(objInquiryMessage.METHOD && objInquiryMessage.METHOD === 'AllRead'){
+    		if (objInquiryMessage.MESSAGES && objInquiryMessage.MESSAGES.length > 0) {
+    			objInquiryMessage.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+	    	if (objInquiryMessage.MESSAGES.length > 0) {
+		    	objInquiryMessage.MESSAGES.forEach(function(elem){
+		    		result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));
+		    	});
+	    	}
+    	}
     } catch (e) {
     	dbHelper.rollback();
 		throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiryMessage", e.toString());
     }
     finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
+    	if(result.length > 0){
+			dbHelper.commit();
+			dbHelper.closeConnection();
+    	}
 	}
+    return result;
 }
 
 //Check if the inquiry exists
@@ -146,7 +168,7 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'MESSAGE_CONTENT':
-            valid = value.length > 0 && value.length <= 1000;
+            valid = value.length > 0;
             break;
     }
     return valid;

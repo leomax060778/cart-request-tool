@@ -13,7 +13,7 @@ var GET_ALL_TEMPLATE_BY_PARENT_SECTION = "GET_ALL_TEMPLATE_BY_PARENT_SECTION";
 var service_name = "templateService";
 
 function processRequest() {
-	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {

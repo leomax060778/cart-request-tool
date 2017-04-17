@@ -8,8 +8,9 @@ var ErrorLib = mapper.getErrors();
 var INS_VENDOR_INQUIRY = "INS_VENDOR_INQUIRY";
 var GET_ALL_VENDOR_INQUIRY = "GET_ALL_VENDOR_INQUIRY";
 var GET_VENDOR_INQUIRY_BY_ID = "GET_VENDOR_INQUIRY_BY_ID";
+var GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID = "GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID";
 var DEL_VENDOR_INQUIRY = "DEL_VENDOR_INQUIRY";
-var UPD_VENDOR_INQUIRY = "UPD_VENDOR_INQUIRY";
+var UPD_VENDOR_INQUIRY = "UPD_VENDOR_INQUIRY"; 
 
 //Insert new Vendor inquiry data
 function insertVendorInquiry(objVendorInquiry, userId) {
@@ -56,6 +57,18 @@ function getVendorInquiryById(vendorInquiryId) {
 function getVendorInquiryByIdManual(vendorInquiryId) {
     var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
     var result = db.executeProcedureManual(GET_VENDOR_INQUIRY_BY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
+function getVendorInquiryStatusByVendorInquiryId(vendorInquiryId) {
+    var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
+    var result = db.executeProcedure(GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID, parameters);
     var list = db.extractArray(result.out_result);
 
     if(list.length){

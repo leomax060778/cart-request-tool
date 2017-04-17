@@ -15,7 +15,7 @@ var service_name = "nonSapVendorService";
 /** *************************************** */
 
 function processRequest() {
-	http.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+	http.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, user_id) {

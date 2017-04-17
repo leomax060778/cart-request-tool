@@ -9,6 +9,7 @@ var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
+var dataUserRole = mapper.getDataUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -16,6 +17,17 @@ var pathName = "CRT_INQUIRY";
 
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+}
+
+function validateAccess(inquiry_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var inquiry_status = dataInquiry.getInquiryStatusByInquiryId(inquiry_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(inquiry_status.STATUS_NAME == 'Completed' || inquiry_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
 }
 
 //Insert inquiry
@@ -48,7 +60,15 @@ function insertInquiry(objInquiry, userId) {
 }
 
 //Get inquiry by id
-function getInquiryById(inquiryId, userId) {
+function getInquiryById(inquiryId, userId, edition_mode) {
+	
+	if(edition_mode && !validateAccess(inquiryId, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"inquiryService/handleGet/getInquiryById", 
+				"This CRT Inquiry is not longer available for edition");
+	}
+	
 	var roleData = userRole.getUserRoleByUserId(userId);
     var inquiry = dataInquiry.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
@@ -57,7 +77,7 @@ function getInquiryById(inquiryId, userId) {
 	    inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
 	    return inquiry;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user hasn't permission to Read/View this CRT Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user does not have permission to Read/View this CRT Inquiry.");
 	}
 }
 

@@ -1,0 +1,24 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SUBJECT" (
+	IN in_subject_id bigint,
+	IN in_name nvarchar(255),
+	IN in_additional_subject_information tinyint,
+	IN in_subject_position integer,
+	IN in_modified_user_id bigint,
+	OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE subj
+	SET subj.name = in_name,
+		subj.additional_subject_information = in_additional_subject_information,
+		subj.subject_position = in_subject_position,
+		subj.modified_date_tz = CURRENT_TIMESTAMP,
+		subj.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."SUBJECT" subj
+	WHERE subj.subject_id = in_subject_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

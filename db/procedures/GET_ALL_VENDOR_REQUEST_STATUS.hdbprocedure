@@ -8,9 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_R
 BEGIN
 	out_result = SELECT VRS.STATUS_ID, VRS.NAME
 					FROM "VENDOR_REQUEST_STATUS" VRS
-				 WHERE VRS.status_id > 1 
-				 	AND VRS.name != 'Return to requester' 
-				 	AND VRS.ENABLED = 1
+				 WHERE VRS.ENABLED = 1
 				 	AND VRS.DELETED = 0
 				 ORDER BY VRS.STATUS_ID ASC;
 END;

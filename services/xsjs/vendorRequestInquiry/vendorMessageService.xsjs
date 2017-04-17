@@ -17,7 +17,7 @@ var GET_CHANGE_VENDOR_REQUEST_MESSAGE = "GET_CHANGE_VENDOR_REQUEST_MESSAGE";
 var service_name = "vendorMessageService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -89,9 +89,24 @@ function handleGet(parameters, userId) {
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-//Not Implemented Method
-function handlePut() {
-    return httpUtil.notImplementedMethod();
+function handlePut(reqBody, userId) {
+	var res;
+    if (reqBody.VENDOR_INQUIRY_ID){
+        res = request.updateVendorInquiryMessage(reqBody, userId);
+    } else if (reqBody.VENDOR_REQUEST_ID) {
+        res = request.updateVendorRequestMessage(reqBody, userId);
+    } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
+        res = request.updateChangeVendorRequestMessage(reqBody, userId);
+    } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
+        res = request.updateExtendVendorRequestMessage(reqBody, userId);
+    } else {
+    	throw ErrorLib.getErrors().BadRequest(
+                "",
+                "vendorMessageService/handlePut",
+                "invalid Body. Should have one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID"
+            );
+    }
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method

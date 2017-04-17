@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_STATUS_BY_INQUIRY_ID" (
+	IN in_inquiry_id bigint,
+	OUT out_result TABLE (status_id bigint, status_name nvarchar(255))
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT INQ.status_id, INQ_S.name AS status_name
+		FROM "INQUIRY" INQ
+		INNER JOIN "INQUIRY_STATUS" INQ_S ON INQ.STATUS_ID = INQ_S.STATUS_ID 
+		WHERE inquiry_id = in_inquiry_id 
+			AND INQ.ENABLED = 1 
+			AND INQ.DELETED = 0;
+END;

@@ -9,7 +9,7 @@ var service_name = "dataProtectionService";
 
 /******************************************/
 function processRequest(){
-	http.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
+	http.processRequest(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 function handleGet(reqObj, user_id) {

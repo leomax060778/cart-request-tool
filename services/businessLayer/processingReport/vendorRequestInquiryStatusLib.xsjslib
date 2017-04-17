@@ -1,10 +1,12 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
+var dataRequest = mapper.getDataVendorRequest();
 var dataStatus = mapper.getDataVendorRequestInquiryStatus();
 var dataExtendVendor = mapper.getDataExtendVendorRequest();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessVendorDP = mapper.getVendorDataProtection();
+var businessVendorInquiryMessage =  mapper.getVendorMessage();
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
@@ -34,7 +36,32 @@ var pathName = {
 };
 
 function validatePermissionByUserRole(roleData, resRequest){
-	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+	return (roleData.ROLE_ID !== "2")? true : (Number(roleData.USER_ID) === Number(resRequest.CREATED_USER_ID));
+}
+
+//Access validation by Status
+function validateAccess(request_type, request_id){
+	var request_status;
+	
+	switch(request_type){
+	case "VENDOR_REQUEST":
+		request_status = dataStatus.getVendorRequestStatusByVendorRequestId(request_id);
+		break;
+	case "VENDOR_INQUIRY":
+		request_status = dataStatus.getVendorInquiryStatusByVendorInquiryId(request_id);
+		break;
+	case "EXTEND_VENDOR_REQUEST":
+		request_status = dataStatus.getExtendVendorRequestStatusByEVRId(request_id);
+		break;
+	case "CHANGE_VENDOR_REQUEST":
+		request_status = dataStatus.getChangeVendorRequestStatusByCVRId(request_id);
+		break;
+	}
+	
+	if(!request_status){
+		return false;
+	}
+	return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled' || request_status.STATUS_NAME == 'Completed');
 }
 
 //Get vendor request inquiry by status
@@ -80,20 +107,30 @@ function getVendorInquiryById(inquiryId, userId) {
     if (!inquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", inquiryId);
     }
+    
+	if(!validateAccess(pathName.VENDOR_INQUIRY_MAIL, inquiryId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "This Vendor Inquiry is not longer available in Processing Report");
+	}
+	
     var roleData = userRole.getUserRoleByUserId(userId);
     var resInquiry = dataStatus.getVendorInquiryById(inquiryId);
     
     if(validatePermissionByUserRole(roleData[0], resInquiry)){
 	    resInquiry = JSON.parse(JSON.stringify(resInquiry));
+	    var vendorInquiryText = businessVendorInquiryMessage.getVendorInquiryMessage(inquiryId, userId);
+	    var lastVendorInquiryMessage = vendorInquiryText.length - 1;
 	    if(resInquiry){
 	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
 	    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
 	    	 resInquiry.ATTACHMENTS = attachments;
 	    }
+	    resInquiry.INQUIRY_TEXT = vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT;
 	    return resInquiry;
 	}else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "The user hasn't permission to see this Vendor Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "The user does not have permission to see this Vendor Inquiry.");
 	}
 }
 
@@ -112,6 +149,12 @@ function getChangeVendorRequestById(changeId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeId);
     }
     
+	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "This Change Vendor Request is not longer available in Processing Report");
+	}
+    
     var resChange = dataStatus.getChangeVendorRequestById(changeId);
     resChange = JSON.parse(JSON.stringify(resChange));
     if(resChange){
@@ -129,6 +172,13 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
     if (!changeId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter changeId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeId);
     }
+    
+	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "This Change Vendor Request is not longer available in Processing Report");
+	}
+	
     var roleData = userRole.getUserRoleByUserId(userId);
     var resChange = dataStatus.getChangeVendorRequestByIdManual(changeId);
     resChange = JSON.parse(JSON.stringify(resChange));
@@ -143,7 +193,7 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
 	    }
 	    return resChange;
 	}else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestByIdManual", "The user hasn't permission to see this Change Vendor Request.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestByIdManual", "The user does not have permission to see this Change Vendor Request.");
 	}
 }
 
@@ -161,6 +211,13 @@ function getExtendVendorRequestById(extendId, userId) {
     if (!extendId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter extendId is not found", "vendorRequestInquiryService/handleGet/getExtendVendorRequestById", extendId);
     }
+    
+	if(!validateAccess(pathName.EXTEND_VENDOR_MAIL, extendId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "This Extend Vendor Request is not longer available in Processing Report");
+	}
+	
     var roleData = userRole.getUserRoleByUserId(userId);
     var resExtend = dataStatus.getExtendVendorRequestById(extendId);
     resExtend = JSON.parse(JSON.stringify(resExtend));
@@ -174,7 +231,7 @@ function getExtendVendorRequestById(extendId, userId) {
 	    }
 	    return resExtend;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "The user hasn't permission to see this Extend Vendor Request.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "The user does not have permission to see this Extend Vendor Request.");
 	}
 }
 
@@ -199,6 +256,12 @@ function getVendorRequestById(requestId, userId) {
     if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", requestId);
     }
+    
+	if(!validateAccess(pathName.VENDOR_REQUEST_MAIL, requestId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "This Vendor Request is not longer available in Processing Report");
+	}
     
     var resRequest = dataStatus.getVendorRequestById(requestId);
     resRequest = JSON.parse(JSON.stringify(resRequest));
@@ -226,7 +289,7 @@ function getVendorRequestById(requestId, userId) {
 	    
 	    return resRequest;
 	} else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "The user hasn't permission to see this Vendor Request.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "The user does not have permission to see this Vendor Request.");
 	}
 }
 
@@ -471,7 +534,7 @@ function validateUpdateVendorInquiryStatus(objVendorInquiry, userId) {
 //Validate update change vendor request status
 function validateUpdateChangeVendorRequest(objChangeVendorRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestService/handlePut/updateChangeVendorRequest", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestService/handlePut/updateChangeVendorRequestStatus", userId);
     }
     var isValid = false;
     var errors = {};
@@ -479,14 +542,13 @@ function validateUpdateChangeVendorRequest(objChangeVendorRequest, userId) {
     var keys = [
 		'CHANGE_VENDOR_REQUEST_ID',
 		'STATUS_ID',
-		'PREVIOUS_STATUS_ID',
-		'VENDOR_ACCOUNT'];
+		'PREVIOUS_STATUS_ID'];
     if(objChangeVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
-    	keys.push('RECEIVER_YVC_REQUEST');
+    	keys.push('RECEIVER_YVC_REQUEST', 'VENDOR_ACCOUNT');
     }
 
     if (!objChangeVendorRequest) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePut/updateChangeVendorRequest", "The object Vendor Request is not found");
+        throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePut/updateChangeVendorRequestStatus", "The object Vendor Request is not found");
     }
 
     try {

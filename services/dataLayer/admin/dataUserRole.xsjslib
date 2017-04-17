@@ -10,6 +10,7 @@ var spInsertUserRole = "INS_USER_ROLE";
 var spUpdateUserRole = "UPD_USER_ROLE";
 var spUpdateUserRoleByUserId = "UPD_USER_ROLE_BY_USER_ID";
 var spDeleteUserRole = "DEL_USER_ROLE";
+var spGetRoleNameByUserId = "GET_ROLE_NAME_BY_USER_ID";
 
 /** *************************************************** */
 
@@ -24,6 +25,19 @@ function getUserRoleByUserId(userId) {
 		return db.extractArray(result.USER_ROLE);
 	}
 	return [];
+}
+
+function getRoleNameByUserId(userId){
+	var parameters = {};
+	parameters.in_user_id = userId;
+    parameters.out_result = '?';
+    var result = db.executeProcedureManual(spGetRoleNameByUserId, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function insertUserRole(userId, roleId, createUser) {

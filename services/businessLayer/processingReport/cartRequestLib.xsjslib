@@ -15,12 +15,24 @@ var special = mapper.getDataSpecialRequest();
 var budgetYear = mapper.getBudgetYear();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
+var dataRequest = mapper.getDataRequest();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var stageMap = {'STAGE_B': 2, 'STAGE_C': 3, 'STAGE_D': 4, 'STAGE_E': 5, 'STAGE_F': 6};
 var pathName = "CART_REQUEST";
+
+//Access validation by Status
+function validateAccess(request_id){
+	//In this case we validate against the Request Status only
+	var request_status = dataRequest.getRequestStatusByRequestId(request_id);
+	if(!request_status){
+		return false;
+	}
+	
+	return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
+}
 
 //Get request by status
 function getAllCartRequest(userId) {
@@ -47,13 +59,19 @@ function getAllCartRequest(userId) {
 }
 
 function validatePermissionByUserRole(roleData, resRequest){
-	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.REQUESTER_ID);
+	return (roleData.ROLE_ID !== "2")? true : (Number(roleData.USER_ID) === Number(resRequest.REQUESTER_ID));
 }
 
 //Get request by id
 function getRequestById(requestId, userId) {
 	var resRequest = data.getRequestByIdManual(requestId);
 	var roleData = userRole.getUserRoleByUserId(userId);
+	
+	if(!validateAccess(requestId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"cartRequestService/handleGet/getRequestById", "This Cart Request is not longer available in Processing Report");
+	}
 	
 	if(validatePermissionByUserRole(roleData[0], resRequest)){
 		var resReqService = request.getRequestServiceByRequestId(requestId)[0];
@@ -110,7 +128,7 @@ function getRequestById(requestId, userId) {
 	    }
 	    return res;
 	} else{
-		throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user hasn't permission for this Cart Request.");
+		throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user does not have permission for this Cart Request.");
 	}
  	
 }

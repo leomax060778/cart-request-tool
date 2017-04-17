@@ -23,6 +23,10 @@ var UPD_CHANGE_VENDOR_REQUEST_STATUS_COMPLETED = "UPD_CHANGE_VENDOR_REQUEST_STAT
 var UPD_EXTEND_VENDOR_REQUEST_STATUS_COMPLETED = "UPD_EXTEND_VENDOR_REQUEST_STATUS_COMPLETED";
 var UPD_VENDOR_REQUEST_STATUS_COMPLETED = "UPD_VENDOR_REQUEST_STATUS_COMPLETED";
 
+var GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID = "GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID";
+var GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID = "GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID";
+var GET_EXTEND_VENDOR_REQUEST_STATUS_BY_EVR_ID = "GET_EXTEND_VENDOR_REQUEST_STATUS_BY_EVR_ID";
+var GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID = "GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID";
 
 /** ***********GET*************** */
 //Get vendor request and vendor inquiries by status
@@ -151,6 +155,55 @@ function getVendorRequestById(requestId) {
     }
 }
 
+//Get Vendor Request status by request id
+function getVendorRequestStatusByVendorRequestId(vendorRequestId) {
+    var parameters = {'in_vendor_request_id': vendorRequestId};
+    var result = db.executeProcedure(GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
+//Get Vendor Inquiry status by request id
+function getVendorInquiryStatusByVendorInquiryId(vendorInquiryId) {
+    var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
+    var result = db.executeProcedure(GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID, parameters);
+    var list = db.extractArray(result.out_result);
+
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
+//Get Extend Vendor Request status by request id
+function getExtendVendorRequestStatusByEVRId(extendVendorRequestId) {
+    var parameters = {'in_extend_vendor_request_id': extendVendorRequestId};
+    var result = db.executeProcedure(GET_EXTEND_VENDOR_REQUEST_STATUS_BY_EVR_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
+//Get Change Vendor Request status by request id
+function getChangeVendorRequestStatusByCVRId(changeVendorRequestId) {
+    var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
+    var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID, parameters);
+    var list = db.extractArray(result.out_result);
+    if(list.length){
+    	   return list[0];
+    } else {
+    	   return {};
+    }
+}
+
 /** ***********UPDATE*************** */
 //Update vendor inquiry status
 function updateVendorInquiryStatus(objVendorInquiry, userId) {
@@ -171,7 +224,6 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
     parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
     parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
     parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
-    parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
     parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
     parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
     parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
@@ -271,7 +323,6 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
   parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
   parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
   parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
   parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
   parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
   parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;

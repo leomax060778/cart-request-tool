@@ -11,7 +11,7 @@ var GET_DEFAULT_BUDGET_YEAR = "GET_DEFAULT_BUDGET_YEAR";
 var service_name = "budgetYearService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters) {

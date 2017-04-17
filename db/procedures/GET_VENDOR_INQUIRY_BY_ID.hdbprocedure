@@ -5,9 +5,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 								created_date_tz nvarchar(15),
 								created_user_id bigint,
 								name nvarchar(255),
+								status_id bigint,
 								vendor_name nvarchar(255),
 								vendor_type_id bigint,
-								MESSAGE_CONTENT nvarchar(1000),
 								USER_NAME nvarchar(255),
 								FIRST_NAME nvarchar(255),
 								LAST_NAME nvarchar(255)
@@ -24,9 +24,9 @@ BEGIN
 						TO_NVARCHAR(VI.CREATED_DATE_TZ,'YYYY-MM-DD') AS CREATED_DATE_TZ,
 						VI.CREATED_USER_ID,
 						ST.NAME,
+						VI.STATUS_ID,
 						VI.VENDOR_NAME,
 						VI.VENDOR_TYPE_ID,
-						VIM.MESSAGE_CONTENT,
 						US.USER_NAME,
 						US.FIRST_NAME,
 						US.LAST_NAME

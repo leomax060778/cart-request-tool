@@ -1,0 +1,21 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST_MATERIAL" (
+ IN in_request_id bigint,
+ IN in_level_1_id bigint,
+ IN in_level_2_id bigint,
+ IN in_level_3_id bigint,
+ IN in_level_4_id bigint,
+ IN in_special_description nvarchar(255),
+ IN in_special_number nvarchar(255),
+ IN in_user_id bigint,
+ OUT out_result bigint
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+  INSERT INTO "CART_REQUEST_TOOL"."REQUEST_MATERIAL"(request_id, level_1_id, level_2_id, level_3_id, level_4_id, special_description, special_number, created_user_id) 
+  VALUES(in_request_id, in_level_1_id, in_level_2_id, in_level_3_id, in_level_4_id, in_special_description, in_special_number, in_user_id);
+ 
+  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST_MATERIAL";
+END;

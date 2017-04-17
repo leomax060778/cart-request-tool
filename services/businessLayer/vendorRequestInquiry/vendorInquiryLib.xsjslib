@@ -5,12 +5,14 @@ var vendorInquiryMail = mapper.getVendorInquiryMail();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
+var businessVendorInquiryMessage =  mapper.getVendorMessage();
 var mail = mapper.getMail();
 var config = mapper.getDataConfig();
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var userRole = mapper.getUserRole();
+var dataUserRole = mapper.getDataUserRole();
 
 var message = mapper.getVendorMessage();
 
@@ -24,15 +26,35 @@ function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
 }
 
+function validateAccess(vendor_inquiry_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var vendor_inquiry_status = inquiry.getVendorInquiryStatusByVendorInquiryId(vendor_inquiry_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(vendor_inquiry_status.STATUS_NAME == 'Completed' || vendor_inquiry_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
+}
+
 //Get vendor inquiry by ID
-function getVendorInquiryById(vendorInquiryId, userId) {
+function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	var objInquiry = {};
     if (!vendorInquiryId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", vendorInquiryId);
     }
+    
+	if(edition_mode && !validateAccess(vendorInquiryId, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryService/handleGet/getVendorInquiryById", 
+				"This Vendor Inquiry is not longer available for edition");
+	}
+    
     var roleData = userRole.getUserRoleByUserId(userId);
     var resInquiry = inquiry.getVendorInquiryById(vendorInquiryId);
-    
+    var vendorInquiryText = businessVendorInquiryMessage.getVendorInquiryMessage(vendorInquiryId, userId);
+    var lastVendorInquiryMessage = vendorInquiryText.length - 1;
     if(validatePermissionByUserRole(roleData[0], resInquiry)){
 	    resInquiry = JSON.parse(JSON.stringify(resInquiry));
 	    if(resInquiry){
@@ -41,9 +63,11 @@ function getVendorInquiryById(vendorInquiryId, userId) {
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
 	    	 resInquiry.ATTACHMENTS = attachments;
 	    }
+	   
+	    resInquiry.MESSAGE_CONTENT = vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT;
 	    return resInquiry;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorInquiryById", "The user hasn't permission to Read/View this Vendor Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorInquiryById", "The user does not have permission to Read/View this Vendor Inquiry.");
 	}
 }
 

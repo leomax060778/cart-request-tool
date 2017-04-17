@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_MATERIAL" (
+ OUT out_result TABLE (request_material_id bigint, request_id bigint, level_1_id bigint, level_2_id bigint, level_3_id bigint,
+	level_4_id bigint, special_description nvarchar(255), special_number nvarchar(255)) 
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT "REQUEST_MATERIAL".REQUEST_MATERIAL_ID, "REQUEST_MATERIAL".REQUEST_ID, "REQUEST_MATERIAL".LEVEL_1_ID, "REQUEST_MATERIAL".LEVEL_2_ID, 
+								  "REQUEST_MATERIAL".LEVEL_3_ID, "REQUEST_MATERIAL".LEVEL_4_ID, "REQUEST_MATERIAL".SPECIAL_DESCRIPTION, "REQUEST_MATERIAL".SPECIAL_NUMBER
+	 FROM "REQUEST_MATERIAL" 
+	    WHERE enabled = 1
+		AND deleted = 0;
+
+END;

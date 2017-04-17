@@ -12,7 +12,7 @@ var GET_ALL_PERMISSIONS = "ALL";
 var service_name = "rolePermission";
 
 function processRequest(){
-	httpUtil.processRequest3(handleGet,handlePost,handlePut,handleDelete, false, service_name);
+	httpUtil.processRequest(handleGet,handlePost,handlePut,handleDelete, false, service_name);
 }
 
 //Implementation of GET call -- Get Role Permission

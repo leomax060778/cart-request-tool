@@ -4,6 +4,7 @@ var statusLib = mapper.getStatus();
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 
+/** ***********GET ALL*************** */
 var GET_ALL_INQUIRY_STATUS = "GET_ALL_INQUIRY_STATUS";
 var GET_ALL_VENDOR_INQUIRY_STATUS = "GET_ALL_VENDOR_INQUIRY_STATUS";
 var GET_ALL_REQUEST_STATUS = "GET_ALL_REQUEST_STATUS";
@@ -11,6 +12,14 @@ var GET_ALL_VENDOR_REQUEST_STATUS = "GET_ALL_VENDOR_REQUEST_STATUS";
 var GET_ALL_CHANGE_VENDOR_REQUEST_STATUS = "GET_ALL_CHANGE_VENDOR_REQUEST_STATUS";
 var GET_ALL_EXTEND_VENDOR_REQUEST_STATUS = "GET_ALL_EXTEND_VENDOR_REQUEST_STATUS";
 var GET_ALL_REQUEST_STATUS_FOR_FILTERS = "GET_ALL_REQUEST_STATUS_FOR_FILTERS";
+/** ***********GET ALL PROCESSING REPORT*************** */
+var GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT = "GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT";
+var GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT = "GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT";
+var GET_ALL_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+var GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT = "GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT";
+/** ***********GET BY ID*************** */
 var GET_INQUIRY_STATUS_BY_ID = "GET_INQUIRY_STATUS_BY_ID";
 var GET_VENDOR_INQUIRY_STATUS_BY_ID = "GET_VENDOR_INQUIRY_STATUS_BY_ID";
 var GET_REQUEST_STATUS_BY_ID = "GET_REQUEST_STATUS_BY_ID";
@@ -21,27 +30,44 @@ var GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID = "GET_EXTEND_VENDOR_REQUEST_STATUS_B
 var service_name = "statusService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
-function handleGet(params, userId) {
+function handleGet(parameters, userId) {
     var res = {};
-    if (params.length > 0) {
-        if (params[0].name === GET_ALL_INQUIRY_STATUS) {
+    if (parameters.length > 0) {
+    	/** ***********GET ALL*************** */
+        if (parameters[0].name === GET_ALL_INQUIRY_STATUS) {
             res = statusLib.getAllInquiryStatus();
-        } else if (params[0].name === GET_ALL_VENDOR_INQUIRY_STATUS) {
+        } else if (parameters[0].name === GET_ALL_VENDOR_INQUIRY_STATUS) {
             res = statusLib.getAllVendorInquiryStatus();
-        } else if (params[0].name === GET_ALL_REQUEST_STATUS) {
+        } else if (parameters[0].name === GET_ALL_REQUEST_STATUS) {
             res = statusLib.getAllRequestStatus();
-        } else if (params[0].name === GET_ALL_VENDOR_REQUEST_STATUS) {
+        } else if (parameters[0].name === GET_ALL_VENDOR_REQUEST_STATUS) {
             res = statusLib.getAllVendorRequestStatus();
-        } else if (params[0].name === GET_ALL_CHANGE_VENDOR_REQUEST_STATUS) {
+        } else if (parameters[0].name === GET_ALL_CHANGE_VENDOR_REQUEST_STATUS) {
             res = statusLib.getAllChangeVendorRequestStatus();
-        } else if (params[0].name === GET_ALL_EXTEND_VENDOR_REQUEST_STATUS) {
+        } else if (parameters[0].name === GET_ALL_EXTEND_VENDOR_REQUEST_STATUS) {
             res = statusLib.getAllExtendVendorRequestStatus();
-        } else if (params[0].name === GET_ALL_REQUEST_STATUS_FOR_FILTERS) {
+        } else if (parameters[0].name === GET_ALL_REQUEST_STATUS_FOR_FILTERS) {
             res = statusLib.getAllStatusForFilters();
-        } else if (params[0].name === GET_INQUIRY_STATUS_BY_ID) {
+        } 
+        /** ***********GET ALL PROCESSING REPORT*************** */
+        else if (parameters[0].name === GET_ALL_INQUIRY_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllInquiryStatusProcessingReport();
+        } else if (parameters[0].name === GET_ALL_VENDOR_INQUIRY_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllVendorInquiryStatusProcessingReport();
+        } else if (parameters[0].name === GET_ALL_REQUEST_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllRequestStatusProcessingReport();
+        } else if (parameters[0].name === GET_ALL_VENDOR_REQUEST_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllVendorRequestStatusProcessingReport();
+        } else if (parameters[0].name === GET_ALL_CHANGE_VENDOR_REQUEST_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllChangeVendorRequestStatusProcessingReport();
+        } else if (parameters[0].name === GET_ALL_EXTEND_VENDOR_REQUEST_STATUS_PROCESSING_REPORT) {
+            res = statusLib.getAllExtendVendorRequestStatusProcessingReport();
+        }
+        /** ***********GET BY ID*************** */
+        else if (parameters[0].name === GET_INQUIRY_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -49,9 +75,9 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getInquiryStatusById(params[0].value, userId);
+                res = statusLib.getInquiryStatusById(parameters[0].value, userId);
             }
-        } else if (params[0].name === GET_VENDOR_INQUIRY_STATUS_BY_ID) {
+        } else if (parameters[0].name === GET_VENDOR_INQUIRY_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -59,9 +85,9 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getVendorInquiryStatusById(params[0].value, userId);
+                res = statusLib.getVendorInquiryStatusById(parameters[0].value, userId);
             }
-        } else if (params[0].name === GET_REQUEST_STATUS_BY_ID) {
+        } else if (parameters[0].name === GET_REQUEST_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -69,9 +95,9 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getRequestStatusById(params[0].value, userId);
+                res = statusLib.getRequestStatusById(parameters[0].value, userId);
             }
-        } else if (params[0].name === GET_VENDOR_REQUEST_STATUS_BY_ID) {
+        } else if (parameters[0].name === GET_VENDOR_REQUEST_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -79,9 +105,9 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getVendorRequestStatusById(params[0].value, userId);
+                res = statusLib.getVendorRequestStatusById(parameters[0].value, userId);
             }
-        } else if (params[0].name === GET_CHANGE_VENDOR_REQUEST_STATUS_BY_ID) {
+        } else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -89,9 +115,9 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getChangeVendorRequestStatusById(params[0].value, userIdparams[0].value, userId);
+                res = statusLib.getChangeVendorRequestStatusById(parameters[0].value, userId);
             }
-        } else if (params[0].name === GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID) {
+        } else if (parameters[0].name === GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
@@ -99,13 +125,13 @@ function handleGet(params, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-                res = statusLib.getExtendVendorRequestStatusById(params[0].value, userId);
+                res = statusLib.getExtendVendorRequestStatusById(parameters[0].value, userId);
             }
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "statusServices/handleGet",
-                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_INQUIRY_STATUS, GET_ALL_VENDOR_INQUIRY_STATUS, GET_ALL_REQUEST_STATUS, GET_ALL_VENDOR_REQUEST_STATUS, GET_ALL_CHANGE_VENDOR_REQUEST_STATUS, GET_ALL_EXTEND_VENDOR_REQUEST_STATUS, GET_ALL_STATUS_FOR_FILTERS, GET_INQUIRY_STATUS_BY_ID, GET_VENDOR_INQUIRY_STATUS_BY_ID, GET_REQUEST_STATUS_BY_ID, GET_VENDOR_REQUEST_STATUS_BY_ID, GET_EXTEND_VENDOR_REQUEST_STATUS_BY_ID or GET_CHANGE_VENDOR_REQUEST_STATUS_BY_ID)"
+                "invalid parameter name " + parameters[0].name
                 );
         }
     } else {

@@ -16,11 +16,12 @@ var GET_VENDOR_REQUEST_BY_ID = "GET_VENDOR_REQUEST_BY_ID";
 var GET_EXTEND_VENDOR_REQUEST_BY_ID = "GET_EXTEND_VENDOR_REQUEST_BY_ID";
 var GET_CHANGE_VENDOR_REQUEST_BY_ID = "GET_CHANGE_VENDOR_REQUEST_BY_ID";
 var GET_LAST_ID = "GET_LAST_ID";
+var EDITION_MODE = "EDITION_MODE";
 
 var service_name = "vendorRequestInquiryService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 
@@ -52,7 +53,11 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = inquiry.getVendorInquiryById(parameters[0].value, userId);
+            	if (parameters[1] && parameters[1].name === EDITION_MODE) {
+            		res = inquiry.getVendorInquiryById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		res = inquiry.getVendorInquiryById(parameters[0].value, userId);
+                }
             }
         } else if (parameters[0].name === GET_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -62,7 +67,11 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = request.getVendorRequestById(parameters[0].value, userId);
+            	if (parameters[1] && parameters[1].name === EDITION_MODE) {
+            		res = request.getVendorRequestById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		res = request.getVendorRequestById(parameters[0].value, userId);
+                }
             }
         } else if (parameters[0].name === GET_EXTEND_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -72,7 +81,11 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-                res = extend.getExtendVendorRequestById(parameters[0].value, userId);
+            	if (parameters[1] && parameters[1].name === EDITION_MODE) {
+            		res = extend.getExtendVendorRequestById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		res = extend.getExtendVendorRequestById(parameters[0].value, userId);
+                }
             }
         } else if (parameters[0].name === GET_CHANGE_VENDOR_REQUEST_BY_ID) {
             if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -82,10 +95,14 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                var resChange = change.getChangeVendorRequestById(parameters[0].value, userId);
-                res = {'changeVendor': resChange, 'selection': resSelection};
-                
+            	if (parameters[1] && parameters[1].name === EDITION_MODE) {
+            		var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
+                    var resChange = change.getChangeVendorRequestById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
+                    var resChange = change.getChangeVendorRequestById(parameters[0].value, userId);           
+                }
+            	res = {'changeVendor': resChange, 'selection': resSelection};
             }
         }
 

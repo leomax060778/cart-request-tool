@@ -46,6 +46,22 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
     }
 }
 
+//Insert new extend vendor request message manual
+function insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId) {
+    if (validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId)) {
+    	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
+    		if(Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
+    			objExtendVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
+    			status.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
+    		}
+    		return dataMessage.insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId);
+    	} else {
+            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequesMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
+        }
+    }
+}
+
+
 //Insert new vendor request message
 function insertVendorRequestMessage(objVendorRequest, userId) {
     if (validateInsertVendorRequestMessage(objVendorRequest, userId)) {
@@ -87,16 +103,27 @@ function getVendorRequestMessage(vendorRequestId, userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getVendorRequestMessage", userId);
 	}
 	var result = [];
-	var objVendorRequest = {};
+	var messageContent;
+	var startPosition;
+	var vendorRequestMessageLength;
+	var i;
+	var splitNumber; 
 	try{
 	    result = dataMessage.getVendorRequestMessageManual(vendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateVendorRequestMessageReadManual(objVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	vendorRequestMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / vendorRequestMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataMessage.getVendorRequestMessageContentManual(elem.VENDOR_REQUEST_ID, elem.VENDOR_REQUEST_MESSAGE_ID, startPosition, vendorRequestMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + vendorRequestMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
 	}
 		catch(e){
@@ -119,16 +146,27 @@ function getVendorInquiryMessage(vendorInquiryId, userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getVendorInquiryMessage", userId);
 	}
 	var result = [];
-	var objVendorInquiry = {};
+	var messageContent = "";
+	var startPosition = 1;
+	var vendorInquiryMessageLength = 5000;
+	var i = 0;
+	var splitNumber = 0; 
 	try{
 	    result = dataMessage.getVendorInquiryMessageManual(vendorInquiryId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorInquiry.MESSAGE_READ = 1;
-			    	dataMessage.updateVendorInquiryMessageReadManual(objVendorInquiry, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	vendorInquiryMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / vendorInquiryMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataMessage.getVendorInquiryMessageContentManual(elem.VENDOR_INQUIRY_ID, elem.VENDOR_INQUIRY_MESSAGE_ID, startPosition, vendorInquiryMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + vendorInquiryMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
 	}
 		catch(e){
@@ -151,16 +189,27 @@ function getChangeVendorRequestMessage(changeVendorRequestId, userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getChangeVendorRequestMessage", userId);
 	}
 	var result = [];
-	var objChangeVendorRequest = {};
+	var messageContent;
+	var startPosition;
+	var changeMessageLength;
+	var i;
+	var splitNumber; 
 	try{
 	    result = dataMessage.getChangeVendorRequestMessageManual(changeVendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objChangeVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateChangeVendorRequestMessageReadManual(objChangeVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	changeMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / changeMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataMessage.getChangeVendorRequestMessageContentManual(elem.CHANGE_VENDOR_REQUEST_ID, elem.CHANGE_VENDOR_REQUEST_MESSAGE_ID, startPosition, changeMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + changeMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
 	}
 		catch(e){
@@ -183,16 +232,27 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getExtendVendorRequestMessage", userId);
 	}
 	var result = [];
-	var objExtendVendorRequest = {};
+	var messageContent;
+	var startPosition;
+	var extendMessageLength;
+	var i;
+	var splitNumber; 
 	try{
 	    result = dataMessage.getExtendVendorRequestMessageManual(extendVendorRequestId);
+	    result = JSON.parse(JSON.stringify(result));
 	    result.forEach(function (elem) {
-	    	if(elem.CREATED_USER_ID !== userId){
-			    if(elem.MESSAGE_READ === 0) {
-			    	objExtendVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateExtendVendorRequestMessageReadManual(objExtendVendorRequest, userId);
-			    }
+	    	messageContent = "";
+	    	startPosition = 1;
+	    	extendMessageLength = 5000;
+	    	i = 0;
+	    	splitNumber = 0;
+	    	//Join message content
+	    	splitNumber = elem.CONTENT_LENGTH / extendMessageLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		messageContent = messageContent.concat(dataMessage.getExtendVendorRequestMessageContentManual(elem.EXTEND_VENDOR_REQUEST_ID, elem.EXTEND_VENDOR_REQUEST_MESSAGE_ID, startPosition, extendMessageLength).MESSAGE_CONTENT);
+	    		startPosition = startPosition + extendMessageLength;	
 	    	}
+	    	elem.MESSAGE_CONTENT = messageContent;
 	    });
 	}
 		catch(e){
@@ -209,121 +269,154 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
 
 /** ***********UPDATE*************** */
 //Update vendor request messages read
-function updateVendorRequestMessage(vendorRequestId, userId) {
-	if (!vendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorMessageService/handlePut/updateVendorMessage", vendorRequestId);
-	}
+function updateVendorRequestMessage(objVendorRequest, userId) {
 	if (!userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateVendorRequestMessage", userId);
 	}
 	var result = [];
-	var objVendorRequest = {};
 	try{
-		    result = dataMessage.getVendorRequestMessageManual(vendorRequestId);
-		    result.forEach(function (elem) {
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateVendorRequestMessageReadManual(objVendorRequest, userId);
-			    }
-		    });
+		if(objVendorRequest.METHOD && objVendorRequest.METHOD === 'AllRead'){
+    		if (objVendorRequest.MESSAGES && objVendorRequest.MESSAGES.length > 0) {
+    			objVendorRequest.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(dataMessage.updateVendorRequestMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+    		if (objVendorRequest.MESSAGES.length > 0) {
+				objVendorRequest.MESSAGES.forEach(function(elem){
+			    	result.push(dataMessage.updateVendorRequestMessageReadByMessageIdManual(elem, userId));
+			    });
+    		}
+    	}
 	}
 		catch(e){
 			dbHelper.rollback();
 			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
 		}
 		finally{
-			dbHelper.commit();
-			dbHelper.closeConnection();
+			if(result.length > 0){
+				dbHelper.commit();
+				dbHelper.closeConnection();
+			}
 		}
 	return result;
 }
 
 //Update vendor inquiry messages read
-function updateVendorInquiryMessage(vendorInquiryId, userId) {
-	if (!vendorInquiryId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorMessageService/handlePut/updateVendorMessage", vendorInquiryId);
-	}
+function updateVendorInquiryMessage(objVendorInquiry, userId) {
 	if (!userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateVendorInquiryMessage", userId);
 	}
 	var result = [];
-	var objVendorInquiry = {};
 	try{
-		    result = dataMessage.getVendorInquiryMessageManual(vendorInquiryId);
-		    result.forEach(function (elem) {
-			    if(elem.MESSAGE_READ === 0) {
-			    	objVendorInquiry.MESSAGE_READ = 1;
-			    	dataMessage.updateVendorInquiryMessageReadManual(objVendorInquiry, userId);
-			    }
-		    });
+		if(objVendorInquiry.METHOD && objVendorInquiry.METHOD === 'AllRead'){
+    		if (objVendorInquiry.MESSAGES && objVendorInquiry.MESSAGES.length > 0) {
+    			objVendorInquiry.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(dataMessage.updateVendorInquiryMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+    		if (objVendorInquiry.MESSAGES.length > 0) {
+				objVendorInquiry.MESSAGES.forEach(function(elem){
+					result.push(dataMessage.updateVendorInquiryMessageReadByMessageIdManual(elem, userId));
+			    });
+    		}
+    	}
 	}
 		catch(e){
 			dbHelper.rollback();
 			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateVendorInquiryMessage", e.toString());
 		}
 		finally{
-			dbHelper.commit();
-			dbHelper.closeConnection();
+			if(result.length > 0){
+				dbHelper.commit();
+				dbHelper.closeConnection();
+			}
 		}
 	return result;
 }
 
 //Update change vendor request messages read
-function updateChangeVendorRequestMessage(changeVendorRequestId, userId) {
-	if (!changeVendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorMessageService/handlePut/updateChangeVendorMessage", changeVendorRequestId);
-	}
+function updateChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	if (!userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateChangeVendorRequestMessage", userId);
 	}
 	var result = [];
-	var objChangeVendorRequest = {};
 	try{
-		    result = dataMessage.getChangeVendorRequestMessageManual(changeVendorRequestId);
-		    result.forEach(function (elem) {
-			    if(elem.MESSAGE_READ === 0) {
-			    	objChangeVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateChangeVendorRequestMessageReadManual(objChangeVendorRequest, userId);
-			    }
-		    });
+		if(objChangeVendorRequest.METHOD && objChangeVendorRequest.METHOD === 'AllRead'){
+    		if (objChangeVendorRequest.MESSAGES && objChangeVendorRequest.MESSAGES.length > 0) {
+    			objChangeVendorRequest.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(dataMessage.updateChangeVendorRequestMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+    		if (objChangeVendorRequest.MESSAGES.length > 0) {
+				objChangeVendorRequest.MESSAGES.forEach(function(elem){
+					result.push(dataMessage.updateChangeVendorRequestMessageReadByMessageIdManual(elem, userId));
+			    });
+			}
+    	}
 	}
 		catch(e){
 			dbHelper.rollback();
 			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateChangeVendorRequestMessage", e.toString());
 		}
 		finally{
-			dbHelper.commit();
-			dbHelper.closeConnection();
+			if(result.length > 0){
+				dbHelper.commit();
+				dbHelper.closeConnection();
+			}
 		}
 	return result;
 }
 
 //Update extend vendor request messages read
-function updateExtendVendorRequestMessage(extendVendorRequestId, userId) {
-	if (!extendVendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "vendorMessageService/handlePut/updateExtendVendorMessage", extendVendorRequestId);
-	}
+function updateExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	if (!userId) {
 	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateExtendVendorRequestMessage", userId);
 	}
+
 	var result = [];
-	var objExtendVendorRequest = {};
 	try{
-		    result = dataMessage.getExtendVendorRequestMessageManual(extendVendorRequestId);
-		    result.forEach(function (elem) {
-			    if(elem.MESSAGE_READ === 0) {
-			    	objExtendVendorRequest.MESSAGE_READ = 1;
-			    	dataMessage.updateExtendVendorRequestMessageReadManual(objExtendVendorRequest, userId);
-			    }
-		    });
+		if(objExtendVendorRequest.METHOD && objExtendVendorRequest.METHOD === 'AllRead'){
+    		if (objExtendVendorRequest.MESSAGES && objExtendVendorRequest.MESSAGES.length > 0) {
+    			objExtendVendorRequest.MESSAGES.forEach(function(elem){
+    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
+    		    			elem.MESSAGE_READ = 1;
+    	    		    	result.push(dataMessage.updateExtendVendorRequestMessageReadByMessageIdManual(elem, userId));    
+    	        	}
+    		    });
+        	}
+    		        	
+    	}else{
+    		if (objExtendVendorRequest.MESSAGES.length > 0) {
+				objExtendVendorRequest.MESSAGES.forEach(function(elem){
+					result.push(dataMessage.updateExtendVendorRequestMessageReadByMessageIdManual(elem, userId));
+			    });
+			}
+    	}
 	}
 		catch(e){
 			dbHelper.rollback();
 			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateExtendVendorRequestMessage", e.toString());
 		}
 		finally{
-			dbHelper.commit();
-			dbHelper.closeConnection();
+			if(result.length > 0){
+				dbHelper.commit();
+				dbHelper.closeConnection();
+			}
 		}
 	return result;
 }
@@ -543,7 +636,7 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'MESSAGE_CONTENT':
-            valid = value.length > 0 && value.length <= 1000;
+            valid = value.length > 0;
             break;
     }
     return valid;

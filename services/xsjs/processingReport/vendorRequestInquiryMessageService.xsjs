@@ -19,7 +19,7 @@ var returnTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 var service_name = "vendorRequestInquiryMessageService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -91,23 +91,9 @@ function handleGet(parameters, userId) {
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-function handlePut(reqBody, userId) {
-	var res = {};
-	if (reqBody.VENDOR_INQUIRY_ID){
-        res = request.updateVendorInquiryMessage(reqBody.VENDOR_INQUIRY_ID, userId);
-    } else if (reqBody.VENDOR_REQUEST_ID) {
-        res = request.updateVendorRequestMessage(reqBody.VENDOR_REQUEST_ID, userId);
-    } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-        res = request.updateChangeVendorRequestMessage(reqBody.CHANGE_VENDOR_REQUEST_ID, userId);
-    } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-        res = request.updateExtendVendorRequestMessage(reqBody.EXTEND_VENDOR_REQUEST_ID, userId);
-    } else {
-    	throw ErrorLib.getErrors().CustomError("", 
-    			"processingReport/handlePut", 
-    			"The object reqBody is invalid. Should be included one of the following ids: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, CHANGE_VENDOR_REQUEST_ID or EXTEND_VENDOR_REQUEST_ID"
-    			);
-    }
-    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handlePut() {
+    return httpUtil.notImplementedMethod();
 }
 
 //Not Implemented Method

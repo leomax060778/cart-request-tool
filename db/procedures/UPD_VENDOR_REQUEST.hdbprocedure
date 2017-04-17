@@ -12,7 +12,6 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_REQUE
 	IN in_expected_currency_id integer,
 	IN in_accept_american_express tinyint default 0,
 	IN in_cost_center_owner nvarchar(511),
-	IN in_additional_information nvarchar(1000),
 	IN in_modified_user_id bigint,
  OUT out_result bigint
  ) 
@@ -34,7 +33,6 @@ BEGIN
 			VENDOR_REQUEST.expected_currency_id = in_expected_currency_id,
 			VENDOR_REQUEST.accept_american_express = in_accept_american_express,
 			VENDOR_REQUEST.cost_center_owner = in_cost_center_owner,
-			VENDOR_REQUEST.additional_information = in_additional_information,
 			VENDOR_REQUEST.modified_date_tz = CURRENT_TIMESTAMP,
 			VENDOR_REQUEST.modified_user_id = in_modified_user_id
 	FROM "VENDOR_REQUEST" VENDOR_REQUEST

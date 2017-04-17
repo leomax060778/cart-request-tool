@@ -1,0 +1,13 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_SUBJECT" (
+	OUT out_result TABLE (subject_id bigint, name nvarchar(255), additional_subject_information tinyint, position integer)
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT subject_id, name, additional_subject_information, subject_position as position
+					FROM "SUBJECT"
+						WHERE ENABLED = 1 AND DELETED = 0
+					ORDER BY subject_position ASC;
+END;

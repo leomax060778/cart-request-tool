@@ -1,6 +1,7 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var request = mapper.getDataVendorRequest();
+var vendorMessage = mapper.getVendorMessage(); 
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessVendorDP = mapper.getVendorDataProtection();
@@ -13,11 +14,24 @@ var dbHelper  = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
+var dataUserRole = mapper.getDataUserRole();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var vendorType = {"VENDOR_REQUEST": 3};
 var pathName = "VENDOR_REQUEST";
+
+function validateAccess(vendor_request_id, user_id){
+	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var vendor_request_status = request.getVendorRequestStatusByVendorRequestId(vendor_request_id);
+	
+	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+		return !(vendor_request_status.STATUS_NAME == 'Approved' || vendor_request_status.STATUS_NAME == 'Cancelled');
+	}else{
+		return true;
+	}
+}
 
 //Insert Vendor Request Data Protection
 function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
@@ -36,9 +50,13 @@ function validatePermissionByUserRole(roleData, resRequest){
 //Insert vendor request
 function insertVendorRequest(objVendorRequest, userId) {
     if (validateInsertVendorRequest(objVendorRequest, userId)) {
-    	var result_id = request.insertVendorRequest(objVendorRequest, userId);
-    	sendSubmitMail(result_id, userId);
-    	return result_id;
+    		var result_id = request.insertVendorRequestManual(objVendorRequest, userId);
+        	if(result_id){
+        		vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
+        		sendSubmitMail(result_id, userId);
+        		}
+
+        	return result_id;
     }
 }
 
@@ -60,7 +78,17 @@ function insertVendorRequestManual(objVendorRequest, userId) {
     		(objVendorRequest.DATA_PROTECTION_ANSWERS).forEach(function(item){
     			insertDataProtectionAnswer(item, result_id, userId);
     		});
-    		sendSubmitMail(result_id, userId);
+    		if(result_id){
+    			if(objVendorRequest.ADDITIONAL_INFORMATION_FLAG && objVendorRequest.ADDITIONAL_INFORMATION && objVendorRequest.ADDITIONAL_INFORMATION.length > 0){
+    				objVendorRequest.VENDOR_REQUEST_ID = result_id;
+        			objVendorRequest.PREVIOUS_STATUS_ID = statusMap.TO_BE_CHECKED;
+        			objVendorRequest.MESSAGE_CONTENT = objVendorRequest.ADDITIONAL_INFORMATION;
+        			vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
+    			}
+    			
+        		sendSubmitMail(result_id, userId);
+    		}
+    		
         return result_id;
     }
 }
@@ -77,16 +105,25 @@ function deleteVendorRequest(objVendorRequest, userId) {
 }
 
 //Get vendor request by ID
-function getVendorRequestById(vendorRequestId, userId) {
+function getVendorRequestById(vendorRequestId, userId, edition_mode) {
     var objRequest = {};
     if (!vendorRequestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
     }
+    
+	if(edition_mode && !validateAccess(vendorRequestId, userId)){
+		throw ErrorLib.getErrors().BadRequest(
+				"Unauthorized request.",
+				"vendorRequestInquiryService/handleGet/getVendorRequestById", 
+				"This Vendor Request is not longer available for edition");
+	}
+	
     var roleData = userRole.getUserRoleByUserId(userId);
     var resRequest = request.getVendorRequestById(vendorRequestId);
     
     if(validatePermissionByUserRole(roleData[0], resRequest)){
 	    resRequest = JSON.parse(JSON.stringify(resRequest));
+	    
 	    if(resRequest){
 	    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
 	    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
@@ -95,10 +132,18 @@ function getVendorRequestById(vendorRequestId, userId) {
 	    	 
 	    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
 	    	 resRequest.DATA_PROTECTION = data_protection;
+	    	 
+	    	 if(resRequest.ADDITIONAL_INFORMATION_FLAG !== 0){
+	    		 var message = vendorMessage.getVendorRequestMessage(resRequest.VENDOR_REQUEST_ID, userId);
+		    	 resRequest.ADDITIONAL_INFORMATION = (message.length > 0)? message[message.length - 1].MESSAGE_CONTENT : "";
+		    
+	    	 }else{
+	    		 resRequest.ADDITIONAL_INFORMATION = ""; //Avoid 'undefined' in richTextEditor.
+	    	 }
 	    }
 	    return resRequest;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorRequestById", "The user hasn't permission to Read/View this Vendor Request.");
+		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorRequestById", "The user does not have permission to Read/View this Vendor Request.");
 	}
 }
 

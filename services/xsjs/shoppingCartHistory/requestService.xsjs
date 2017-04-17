@@ -8,12 +8,13 @@ var GET_ALL_REQUEST = "GET_ALL_REQUEST";
 var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
 var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
 var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
+var EDITION_MODE = "EDITION_MODE"; 
 
 var service_name = "sch_requestService";
 
 /** *************************************** */
 function processRequest() {
-	httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters, userId) {
@@ -33,7 +34,12 @@ function handleGet(parameters, userId) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (should be a valid id)"
                 );
             } else {
-            	req = request.getRequestById(parameters[0].value, userId);
+            	if(parameters[1] && parameters[1].name === EDITION_MODE){
+            		req = request.getRequestById(parameters[0].value, userId, parameters[1].value);
+            	}else{
+            		req = request.getRequestById(parameters[0].value, userId);
+            	}
+            	
             }
 		} else if (parameters[0].name === GET_REQUEST_BY_FILTERS) {
 			var filtersArray = ["GOODS_RECIPIENT","BUDGET_YEAR_ID","TEAM_ID","REQUEST_DATE_FROM",

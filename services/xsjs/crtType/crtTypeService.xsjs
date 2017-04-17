@@ -8,11 +8,13 @@ var crtType = mapper.getCrtType();
 var GET_ALL_CRT_TYPE = "GET_ALL_CRT_TYPE";
 var GET_CRT_TYPE_BY_ID = "GET_CRT_TYPE_BY_ID";
 var GET_CRT_TYPE_WITH_DATA_PROTECTION = "GET_CRT_TYPE_WITH_DATA_PROTECTION";
+var GET_CRT_TYPE_BY_RETURN_TYPE = "GET_CRT_TYPE_BY_RETURN_TYPE";
+var GET_CRT_TYPE_BY_ISSUE_TYPE = "GET_CRT_TYPE_BY_ISSUE_TYPE";
 
 var service_name = "crtTypeService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**
@@ -20,41 +22,63 @@ function processRequest() {
  * @param {object} parameters
  * @param {void} [parameters.GET_ALL_CRT_TYPE] - get all
  * @param {string} [parameters.GET_CRT_TYPE_BY_ID] - get by id
- *  * @param {string} [GET_CRT_TYPE_WITH_DATA_PROTECTION] - get crt types that use Data Protection
+ * @param {string} [GET_CRT_TYPE_WITH_DATA_PROTECTION] - get crt types that use Data Protection
+ * @param {string} [GET_CRT_TYPE_BY_RETURN_TYPE] - get crt types that use Data Protection
+ * @param {string} [GET_CRT_TYPE_BY_ISSUE_TYPE] - get crt types that use Data Protection
  * @returns {CrtType} CrtType - one or more CrtTypes
  */
 function handleGet(parameters) {
-    var rdo = {};
+    var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_CRT_TYPE) {
-            rdo = crtType.getAllCrtType(parameters[0].value);
+            res = crtType.getAllCrtType(parameters[0].value);
         } else if (parameters[0].name === GET_CRT_TYPE_BY_ID) {
             if (parameters[0].value <= 0){
                 throw ErrorLib.getErrors().BadRequest(
                     "",
                     "crtTypeService/handleGet",
-                    "invalid parameter value " + parameters[0].name + " (must be a valid id)"
+                    "invalid value \'" + parameters[0].value + "\' for parameter \'" + parameters[0].name + "\' (should be a valid id)"
                 );
             } else {
-                rdo = crtType.getCrtTypeById(parameters[0].value);
+                res = crtType.getCrtTypeById(parameters[0].value);
+            }
+        } else if (parameters[0].name === GET_CRT_TYPE_BY_RETURN_TYPE) {
+            if (parameters[0].value <= 0){
+                throw ErrorLib.getErrors().BadRequest(
+                    "",
+                    "crtTypeService/handleGet",
+                    "invalid value \'" + parameters[0].value + "\' for parameter \'" + parameters[0].name + "\' (should be a valid id)"
+                );
+            } else {
+                res = crtType.getCrtTypeByReturnType(parameters[0].value);
+            }
+        } else if (parameters[0].name === GET_CRT_TYPE_BY_ISSUE_TYPE) {
+            if (parameters[0].value <= 0){
+                throw ErrorLib.getErrors().BadRequest(
+                    "",
+                    "crtTypeService/handleGet",
+                    "invalid value \'" + parameters[0].value + "\' for parameter \'" + parameters[0].name + "\' (should be a valid id)"
+                );
+            } else {
+                res = crtType.getCrtTypeByIssueType(parameters[0].value);
             }
         } else if (parameters[0].name === GET_CRT_TYPE_WITH_DATA_PROTECTION) {
-                rdo = crtType.getCrtTypeWithDataProtection();
+                res = crtType.getCrtTypeWithDataProtection();
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "crtTypeServices/handleGet",
-                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_CRT_TYPE or GET_CRT_TYPE_BY_ID)"
+                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_CRT_TYPE, GET_CRT_TYPE_BY_ID, GET_CRT_TYPE_BY_RETURN_TYPE, GET_CRT_TYPE_BY_ISSUE_TYPE or GET_CRT_TYPE_WITH_DATA_PROTECTION)"
             );
         }
     } else {
         throw ErrorLib.getErrors().BadRequest(
             "",
             "inquiryServices/handleGet",
-            "invalid parameter (can be: GET_ALL_CRT_TYPE or GET_CRT_TYPE_BY_ID)"
+            "invalid parameter (can be: GET_ALL_CRT_TYPE, GET_CRT_TYPE_BY_ID, GET_CRT_TYPE_BY_RETURN_TYPE, GET_CRT_TYPE_BY_ISSUE_TYPE or GET_CRT_TYPE_WITH_DATA_PROTECTION)"
         );
     }
-    return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 /**
