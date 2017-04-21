@@ -64,7 +64,8 @@ function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	    	 resInquiry.ATTACHMENTS = attachments;
 	    }
 	   
-	    resInquiry.MESSAGE_CONTENT = vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT;
+	    resInquiry.MESSAGE_CONTENT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
+	    
 	    return resInquiry;
     }else{
 		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorInquiryById", "The user does not have permission to Read/View this Vendor Inquiry.");

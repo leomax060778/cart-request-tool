@@ -1,7 +1,7 @@
 /** **** libs *********** */
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
-var httpUtil = mapper.getHttp();
+
 var ErrorLib = mapper.getErrors();
 var login = mapper.getLogin();
 var permissions = mapper.getDataPermission();

@@ -12,7 +12,7 @@ var GET_ISSUE_TYPE_BY_CRT_ID = "GET_ISSUE_TYPE_BY_CRT_ID";
 var service_name = "issueTypeService";
 
 function processRequest() {
-    httpUtil.processRequest3(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

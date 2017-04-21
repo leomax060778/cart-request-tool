@@ -120,6 +120,7 @@ function getVendorInquiryById(inquiryId, userId) {
     if(validatePermissionByUserRole(roleData[0], resInquiry)){
 	    resInquiry = JSON.parse(JSON.stringify(resInquiry));
 	    var vendorInquiryText = businessVendorInquiryMessage.getVendorInquiryMessage(inquiryId, userId);
+	    
 	    var lastVendorInquiryMessage = vendorInquiryText.length - 1;
 	    if(resInquiry){
 	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
@@ -127,7 +128,8 @@ function getVendorInquiryById(inquiryId, userId) {
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
 	    	 resInquiry.ATTACHMENTS = attachments;
 	    }
-	    resInquiry.INQUIRY_TEXT = vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT;
+	    resInquiry.INQUIRY_TEXT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
+	    
 	    return resInquiry;
 	}else{
 		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "The user does not have permission to see this Vendor Inquiry.");

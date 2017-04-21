@@ -495,7 +495,6 @@ function validateInsertNoteRequest(objReq, userId) {
     var BreakException = {};
     var keys = [
         'REQUEST_ID',
-        'NOTE_TEXT',
         'NOTE_TYPE_ID'];
 
     if (!objReq){
@@ -724,9 +723,6 @@ function validateType(key, value) {
 		break;
 	case 'MATERIAL_CODE':
 		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'NOTE_TEXT':
-		valid = value.length > 0 && value.length <= 1000;
 		break;
 	case 'NOTE_TYPE_ID':
 		valid = !isNaN(value) && value > 0;
