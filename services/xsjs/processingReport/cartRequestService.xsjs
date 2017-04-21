@@ -3,13 +3,11 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
 var request = mapper.getCartRequest();
-var service = mapper.getService();
 var purchase = mapper.getPurchaseOrderService();
+var service = mapper.getService();
 var requestService = mapper.getRequest();
 var material = mapper.getMaterial();
 var catalog = mapper.getCatalog();
-var special = mapper.getDataSpecialRequest();
-var requestService = mapper.getRequest();
 var budgetYear = mapper.getBudgetYear();
 /** ***********END INCLUDE LIBRARIES*************** */
 

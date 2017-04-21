@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NOTE_REQUEST_CONTENT" (
+	IN in_start_position integer,
+	IN in_string_length integer,
+	IN in_note_request_id bigint,
+	IN in_request_id bigint,
+	OUT out_result TABLE(note_text nvarchar(5000))
+)
+	
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT substring(to_nvarchar(NR.note_text), in_start_position, in_string_length) as NOTE_TEXT
+	FROM "CART_REQUEST_TOOL"."NOTE_REQUEST" NR
+	WHERE NR.REQUEST_ID = in_request_id 
+		AND NR.NOTE_REQUEST_ID = in_note_request_id
+		AND NR.ENABLED = 1 
+		AND NR.DELETED = 0;
+END;

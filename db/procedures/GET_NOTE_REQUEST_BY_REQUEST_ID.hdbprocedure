@@ -1,6 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NOTE_REQUEST_BY_REQUEST_ID" (
  IN in_request_id bigint,
- OUT out_result TABLE ( note_request_id bigint, request_id bigint, note_text nvarchar(1000), note_type_id bigint, note_type_name nvarchar(255)) 
+ OUT out_result TABLE ( note_request_id bigint,
+ 						request_id bigint, 
+ 						note_type_id bigint, 
+ 						note_type_name nvarchar(255),
+ 						NOTE_TEXT_LENGTH integer
+ 						) 
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -8,10 +13,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NOTE_REQUEST
 	READS SQL DATA AS
 BEGIN
 	out_result = SELECT NR.NOTE_REQUEST_ID, 
-						NR.REQUEST_ID, 
-						NR.NOTE_TEXT, 
+						NR.REQUEST_ID,
 						NR.NOTE_TYPE_ID, 
-						NT.NOTE_TYPE_NAME AS note_type_name 
+						NT.NOTE_TYPE_NAME AS note_type_name,
+  						LENGTH (NR.NOTE_TEXT) AS NOTE_TEXT_LENGTH
  	 			FROM "NOTE_REQUEST" NR
  	 				LEFT JOIN "NOTE_TYPE" NT ON NR.NOTE_TYPE_ID = NT.NOTE_TYPE_ID 
 	    		WHERE NR.REQUEST_ID = in_request_id

@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NOTE_REQUEST" (
 	IN in_note_request_id bigint,
-	IN in_note_text nvarchar(1000),
+	IN in_note_text nclob,
 	IN in_note_type_id bigint,
 	IN in_modified_user_id bigint,
   	OUT out_result bigint

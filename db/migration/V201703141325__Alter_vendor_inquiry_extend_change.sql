@@ -41,21 +41,18 @@ ALTER TABLE "EXTEND_VENDOR_REQUEST" ADD ("CONTACT_PHONE" NVARCHAR(255) NULL);
 -- *************************************************************************************
 -- Add mock data to not null columns
 
---UPDATE table
---set table.VENDOR_NAME = 'Vendor Name'
---from "CART_REQUEST_TOOL"."VENDOR_INQUIRY" table;
+UPDATE "CART_REQUEST_TOOL"."VENDOR_INQUIRY"
+SET VENDOR_NAME = 'Vendor Name';
 
---UPDATE table
---set table.VENDOR_ACCOUNT = 'Vendor Account',
---table.VENDOR_CONTACT_NAME = 'Contact Name',
---table.VENDOR_CONTACT_EMAIL = 'contact@email.com'
---from "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST" table;
+UPDATE "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST"
+SET VENDOR_ACCOUNT = 'Vendor Account',
+VENDOR_CONTACT_NAME = 'Contact Name',
+VENDOR_CONTACT_EMAIL = 'contact@email.com';
 
---UPDATE table
---set table.VENDOR_LEGAL_NAME = 'Vendor Legal Name',
---table.CONTACT_NAME = 'Contact Name',
---table.CONTACT_EMAIL = 'contact@email.com'
---from "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST" table;
+UPDATE "CART_REQUEST_TOOL"."EXTEND_VENDOR_REQUEST"
+SET VENDOR_LEGAL_NAME = 'Vendor Legal Name',
+CONTACT_NAME = 'Contact Name',
+CONTACT_EMAIL = 'contact@email.com';
 
 -- *************************************************************************************
 -- Alter columns to make them not null

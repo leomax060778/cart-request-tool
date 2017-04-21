@@ -15,7 +15,7 @@ create column table "CART_REQUEST_TOOL".VENDOR_CONTACT_INFORMATION
     enabled tinyint default 1, 
 	deleted tinyint default 0,
 	
-	FOREIGN KEY (vendor_id) REFERENCES VENDOR(vendor_id),
+	FOREIGN KEY (vendor_id) REFERENCES VENDOR(vendor_id)
 );
 
 /* Add permissions to Create/Edit & Delete */
