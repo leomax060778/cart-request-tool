@@ -9,7 +9,5 @@ READS SQL DATA AS
 BEGIN
   out_result = SELECT material_id, catalog_id, description, popup as pop_up, code
               FROM "CART_REQUEST_TOOL"."MATERIAL"
-               WHERE "MATERIAL".MATERIAL_ID = in_material_id 
-                     AND ENABLED = 1 
-                     AND DELETED = 0;
+               WHERE "MATERIAL".MATERIAL_ID = in_material_id;
 END;

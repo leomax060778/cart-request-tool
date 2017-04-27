@@ -51,10 +51,12 @@ function insertServices(services, requestId, conversion_rate, userId){
 		itemService.REQUEST_ID = requestId;
 		amount += Number(itemService.AMOUNT);
 		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
+		itemService.BUDGET = (itemService.BUDGET).toFixed(2);
 		insertService(itemService, userId);
 	});
+
 	return amount;
-}
+} 
 
 
 function insertCostObject(reqBody, user_id){

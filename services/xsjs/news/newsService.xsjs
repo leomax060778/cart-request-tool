@@ -22,7 +22,7 @@ var service_name = "newsService";
 
 /******************************************/
 function processRequest() {
-    http.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name, true);
+    http.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 /**

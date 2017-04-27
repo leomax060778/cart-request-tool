@@ -45,7 +45,7 @@ var RequestServiceOptKeys = ["PURCHASE_ORDER_AMOUNT", "PURCHASE_ORDER_TO_UPLIFT"
 var CostObjectKeys = ["REQUEST_COST_OBJECT_ID", "REQUEST_ID", "ENTITY_ID", "COST_OBJECT_TYPE_ID", "COST_VALUE"];
 var ServiceKeys = ["REQUEST_ID", "START_DATE", "END_DATE", "DESCRIPTION", "AMOUNT", "CURRENCY_ID", "BUDGET", "ITEM"];
 var dpAnswersKeys = ["REQUEST_ID", "QUESTION_ID", "OPTION_ID"];
-var noteKeys = ["NOTE_TYPE_ID", "NOTE_TEXT"];
+var noteKeys = ["NOTE_TYPE_ID"];
 var attachmentKeys = ["REQUEST_ID", "ATTACHMENT_ID"];
 var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
 
@@ -119,9 +119,6 @@ function validateType(key, value) {
 		break;
 	case 'CONTACT_EMAIL':
 		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'NOTE_TEXT':
-		valid = value.length > 0 && value.length <= 1000;
 		break;
 	}
 	return valid;
@@ -224,8 +221,44 @@ function getCatalogByParentId(catalog_id){
 	return dataCatalog.getCatalogByIdManual(catalog_id);
 }
 
-function getNoteRequestByRequestId(request_id){
-	return dataNoteRequest.getNoteRequestByRequestId(request_id);
+function getNoteRequestByRequestId(requestId){
+   if (!requestId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "cartRequestService/handleGet/getNoteRequestByRequestId", requestId);
+    }
+    var result = [];
+    var objRequest = {};
+    var noteText;
+	var startPosition;
+	var requestNoteLength;
+	var i;
+	var splitNumber; 
+    try{
+    	result = dataNoteRequest.getNoteRequestByRequestId(requestId);
+    	result = JSON.parse(JSON.stringify(result));
+    	result.forEach(function (elem) {
+	    	noteText = "";
+    		startPosition = 1;
+    		requestNoteLength = 5000;
+    		i = 0;
+    		splitNumber = 0;
+
+	    	//Join message content
+	    	splitNumber = elem.NOTE_TEXT_LENGTH / requestNoteLength;
+	    	for (i = 0; i < splitNumber; i++){
+	    		noteText = noteText.concat(dataNoteRequest.getNoteRequestContentManual(elem.REQUEST_ID, elem.NOTE_REQUEST_ID, startPosition, requestNoteLength).NOTE_TEXT);
+	    		startPosition = startPosition + requestNoteLength;	
+	    	}
+	    	elem.NOTE_TEXT = noteText;
+	    });
+    } catch(e){
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", "cartRequestService/handleGet/getNoteRequestByRequestId", e.toString());
+	}
+	finally{
+		dbHelper.commit();
+		dbHelper.closeConnection();
+	}
+	return result;
 }
 
 function completeRequest(item, user_id) {
@@ -665,6 +698,7 @@ function insertServices(services, requestId, conversion_rate, userId){
 		itemService.REQUEST_ID = requestId;
 		amount += Number(itemService.AMOUNT);
 		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+		itemService.BUDGET = itemService.BUDGET.toFixed(2);
 		insertService(itemService, userId);
 	});
 	return amount;

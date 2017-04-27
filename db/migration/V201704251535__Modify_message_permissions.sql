@@ -1,0 +1,19 @@
+/* Modify permissions to be consistent with the resources */
+
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(198,'requestMessageService',9,13,1);
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(199,'requestMessageService',10,13,1);
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(200,'vendorMessageService',9,13,1);
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(201,'vendorMessageService',10,13,1);
+
+DELETE FROM "CART_REQUEST_TOOL"."PERMISSION_SERVICE" WHERE SERVICE_NAME = 'inquiryService' AND RESOURCE_ID = 13
+
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(202,'processingReportInquiryService',9,13,1);
+insert into "CART_REQUEST_TOOL"."PERMISSION_SERVICE"(PERMISSION_SERVICE_ID, SERVICE_NAME, PERMISSION_ID, RESOURCE_ID,CREATED_USER_ID) values(203,'processingReportInquiryService',10,13,1);
+
+
+-- *************************************************************************************
+-- Update schema version
+INSERT INTO SCHEMA_VERSION(VERSION, DESCRIPTION, SCRIPT) 
+VALUES('V2.0.0-39', 'Modify permissions to be consistent with the resources', 'V201704251535__Modify_message_permissions.sql');
+
+COMMIT;

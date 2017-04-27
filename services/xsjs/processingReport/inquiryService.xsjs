@@ -9,7 +9,7 @@ var GET_INQUIRY_BY_STATUS = 'GET_INQUIRY_BY_STATUS';
 var GET_INQUIRY_PROCESSING_REPORT_BY_ID = "GET_INQUIRY_PROCESSING_REPORT_BY_ID";
 var GET_INQUIRY_BY_STATUS_ADMINISTRABLE = "GET_INQUIRY_BY_STATUS_ADMINISTRABLE";
 
-var service_name = "inquiryService";
+var service_name = "processingReportInquiryService";
 
 function processRequest() {
     httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
