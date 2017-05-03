@@ -22,8 +22,17 @@ function getAllRequest(userId){
     var param = {};
     param.in_user_id = userId;
     param.out_result = '?';
+    param.out_service_table = '?';
+    param.out_attachment_table = '?';
+    
     var result = db.executeProcedureManual(GET_ALL_REQUEST, param);
-    return db.extractArray(result.out_result);
+    var results = {};
+    
+    results.requests = db.extractArray(result.out_result);
+    results.services = db.extractArray(result.out_service_table);
+    results.attachments = db.extractArray(result.out_attachment_table);
+    
+    return results;
 }
 
 function getRequestLastId(){
@@ -45,8 +54,17 @@ function getRequestByFilters(objFilters, userId){
     parameters.in_vendor_id = objFilters.VENDOR_ID;
     parameters.in_status_id = objFilters.STATUS_ID;
     parameters.out_result = '?';
+    parameters.out_service_table = '?';
+    parameters.out_attachment_table = '?';
+    
     var result = db.executeProcedureManual(GET_REQUEST_BY_FILTERS, parameters);
-    return db.extractArray(result.out_result);
+    var results = {};
+    
+    results.requests = db.extractArray(result.out_result);
+    results.services = db.extractArray(result.out_service_table);
+    results.attachments = db.extractArray(result.out_attachment_table);
+    
+    return results;
 }
 
 function getRequestById(requestId){

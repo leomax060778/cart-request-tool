@@ -22,7 +22,7 @@ function insertChangeVendorRequest(objChangeVendorRequest, userId) {
     parameters.in_vendor_name = objChangeVendorRequest.VENDOR_NAME;
     parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
     parameters.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
-    parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE;
+    parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE || null;
     parameters.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
     parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;
@@ -40,7 +40,7 @@ function insertChangeRequestManual(objChangeVendorRequest, userId) {
     parameters.in_vendor_name = objChangeVendorRequest.VENDOR_NAME;
     parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
     parameters.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
-    parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE;
+    parameters.in_vendor_contact_phone = objChangeVendorRequest.VENDOR_CONTACT_PHONE || null;
     parameters.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
     parameters.in_additional_information = objChangeVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
     parameters.in_created_user_id = userId;

@@ -293,17 +293,6 @@ function completeRequest(item, user_id) {
 	
 }
 
-function completeAllRequest(request, user_id) {
-	request.SERVICES = getServicesByRequestId(request.REQUEST_ID, user_id);
-	var purchase_order_service = businessPOService.getPurchaseOrderByIdManual(request.REQUEST_ID);
-	request.SERVICES = JSON.parse(JSON.stringify(request.SERVICES));
-	request.SERVICES.forEach(function(service){
-		service.PURCHASE_ORDER_SERVICE = purchase_order_service;
-	});
-	request.ATTACHMENTS = getAttachmentRequest(request.REQUEST_ID, user_id);
-	request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
-}
-
 /*----- REQUEST -----*/
 
 function getAllRequest(userId) {
@@ -314,15 +303,9 @@ function getAllRequest(userId) {
 	try {
 		request = dataRequest.getAllRequest(userId);
 		request = JSON.parse(JSON.stringify(request));
-		request.forEach(function(elem){
-	    	if(elem.MESSAGE_READ > 0){
-	    		elem.SHOW_MESSAGE_READ = 1;
-	    	} else {
-	    		elem.SHOW_MESSAGE_READ = 0;
-	    	}
-	    	completeAllRequest(elem, userId);
-	    });
-
+		
+		var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
+		
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
@@ -332,7 +315,40 @@ function getAllRequest(userId) {
 		dbHelper.closeConnection();
 	}
 
-	return request;
+	return complete_request;
+}
+
+function mergeData(requests, services, attachments, userId) {
+	
+	var attachment_request = {};
+	var service_request = {};
+	
+	var loop_length = (attachments.length > services.length)? attachments.length : services.length;
+	
+	for(var i = 0; i<loop_length; i++){
+		if(services[i]){
+			if(!service_request[services[i].REQUEST_ID]){
+				service_request[services[i].REQUEST_ID] = [];
+			}
+			service_request[services[i].REQUEST_ID].push(services[i]);
+		}
+		if(attachments[i]){
+			if(!attachment_request[attachments[i].REQUEST_ID]){
+				attachment_request[attachments[i].REQUEST_ID] = [];
+			}
+			attachment_request[attachments[i].REQUEST_ID].push(attachments[i]);
+		}
+	}
+
+	requests.forEach(function(request){
+		request.SERVICES = service_request[request.REQUEST_ID] || [];;
+		request.ATTACHMENTS = attachment_request[request.REQUEST_ID] || [];
+		request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
+		
+	});
+	
+	return requests;
+	
 }
 
 function getRequestLastId() {
@@ -365,14 +381,8 @@ function getRequestByFilters(objFilters, userId) {
 		}
 		var request = dataRequest.getRequestByFilters(objFilters, userId);
 		request = JSON.parse(JSON.stringify(request));
-		(request).forEach(function(item) {
-			if(item.MESSAGE_READ > 0){
-				item.SHOW_MESSAGE_READ = 1;
-	    	} else {
-	    		item.SHOW_MESSAGE_READ = 0;
-	    	}
-			completeAllRequest(item, userId);
-		});
+		
+		var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
@@ -382,7 +392,7 @@ function getRequestByFilters(objFilters, userId) {
 		dbHelper.closeConnection();
 	}
 
-	return request;
+	return complete_request;
 }
 function getRequestById(request_id, userId, edition_mode) {
 	if (!request_id) {

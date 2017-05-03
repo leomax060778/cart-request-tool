@@ -140,13 +140,15 @@ function validateUpdateTraining(objTraining, userId) {
     var BreakException = {};
     var keys = [
         'TRAINING_ID',
-        'TRAINING_TYPE_ID',
-        'PARENT_ID',
-        'LINK',
-        'NAME',
-        'DESCRIPTION',
-        'TRAINING_ORDER'];
-
+        'TRAINING_TYPE_ID'
+        ];
+    var optionalKeys = ['PARENT_ID',
+                        'LINK',
+                        'NAME',
+                        'DESCRIPTION',
+                        'TRAINING_ORDER'
+                        ];
+    
     if (!objTraining) {
         throw ErrorLib.getErrors().CustomError("", "trainingService/handlePut/updateTraining", "The object Training is not found");    
     }
@@ -165,6 +167,16 @@ function validateUpdateTraining(objTraining, userId) {
                 }
             }
         });
+        optionalKeys.forEach(function (key) {
+        	// validate attribute type
+            isValid = validateType(key, objTraining[key]);
+            if (!isValid) {
+            	errors[key] = objTraining[key];
+                throw BreakException;
+            }
+            
+        });
+        
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
@@ -188,13 +200,13 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'LINK':
-        	valid = (value.length >= 0 && value.length <= 1000) || (!value);
+        	valid = (!value) || (value.length >= 0 && value.length <= 1000);
             break;
         case 'NAME':
-            valid = (value.length >= 0 && value.length <= 1000) || (!value);
+            valid = (!value) || (value.length >= 0 && value.length <= 1000);
             break;
         case 'DESCRIPTION':
-            valid = (value.length >= 0 && value.length <= 1000) || (!value);
+            valid = (!value) || (value.length >= 0 && value.length <= 1000);
             break;
         case 'TRAINING_ORDER':
             valid = !isNaN(value) && value > 0;
@@ -203,7 +215,7 @@ function validateType(key, value) {
             valid = !isNaN(value) && value > 0;
             break;
         case 'PARENT_ID':
-            valid = (!isNaN(value) && value >= 0) || (!value);
+            valid = (!value) || (!isNaN(value) && value >= 0);
             break;
     }
     return valid;

@@ -23,13 +23,54 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 						  REQUEST_CREATED_DATE nvarchar(50),
   						  message_read integer,
   						  EDITABLE boolean
-						 )
+						 ),
+	 OUT out_service_table TABLE(
+	 					REQUEST_ID integer,
+	 					service_id bigint,
+                      	start_date nvarchar(32),
+                      	end_date nvarchar(32),
+                      	description nvarchar (255),
+                      	amount decimal (19,2),
+                      	currency_id bigint,
+                      	currency_abbreviation nvarchar (255),
+                      	budget decimal (19,2),
+                      	item integer,
+                     	line_number nvarchar(255),
+  						shopping_cart nvarchar (255), 
+  						cart_date nvarchar(32), 
+  						purchase_order_number nvarchar (127),
+  						approval_date nvarchar(32), 
+  						user_id bigint ),
+  	OUT out_attachment_table TABLE(	request_id bigint,
+  									attachment_id bigint, 
+									user_id bigint, 
+									original_name nvarchar(255), 
+									saved_name nvarchar(255), 
+									attachment_size integer
+									)
 	 )
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
+	va_purchase_order = SELECT 	VPO.request_id, 
+								VPO.shopping_cart, 
+								VPO.cart_date,
+								VPO.purchase_order_number,
+								VPO.approval_date,
+								VPO.user_id
+							FROM
+								(SELECT POS.request_id, 
+  										POS.shopping_cart,
+  										TO_NVARCHAR(POS.cart_date, 'YYYY-MM-DD') AS cart_date,
+  										POS.purchase_order_number,
+  										TO_NVARCHAR(POS.approval_date, 'YYYY-MM-DD') AS approval_date,
+  										POS.user_id
+                    	FROM "PURCHASE_ORDER_SERVICE" POS
+                      		WHERE POS.ENABLED = 1 
+                           		AND POS.DELETED = 0) VPO;
+                           		
 	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ, RM.CREATED_USER_ID
 				 	FROM "REQUEST_MESSAGE" RM
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.DELETED = 0 AND RM.ENABLED = 1
@@ -88,4 +129,39 @@ BEGIN
 						  	  AND (RQ.ENABLED = 1)
 						  	  AND (RQ.DELETED = 0)
 						  	  ORDER BY RQ.REQUEST_ID DESC;
+	
+	out_service_table = SELECT 
+  				SER.request_id,
+  				SER.service_id, 
+  				TO_NVARCHAR(SER.start_date, 'YYYY-MM-DD') AS start_date, 
+  				TO_NVARCHAR(SER.end_date, 'YYYY-MM-DD') AS end_date, 
+  				SER.description, 
+  				SER.amount, 
+  				SER.currency_id, 
+  				CU.ABBREVIATION AS currency_abbreviation,
+  				SER.budget, 
+  				SER.item,
+  				SER.line_number,
+  				POS.shopping_cart, 
+  				POS.cart_date, 
+  				POS.purchase_order_number,
+  				POS.approval_date,
+  				POS.user_id
+            FROM "SERVICE" SER
+            INNER JOIN "CURRENCY" CU ON SER.CURRENCY_ID = CU.CURRENCY_ID
+            LEFT JOIN :va_purchase_order POS ON SER.REQUEST_ID = POS.REQUEST_ID
+            WHERE SER.ENABLED = 1 AND SER.DELETED = 0
+            ORDER BY SER.ITEM;
+            
+     out_attachment_table = SELECT
+     							"ATTACHMENT_REQUEST".REQUEST_ID,
+								"ATTACHMENT".ATTACHMENT_ID, 
+								"ATTACHMENT".USER_ID, 
+								"ATTACHMENT".ORIGINAL_NAME, 
+								"ATTACHMENT".SAVED_NAME, 
+								"ATTACHMENT".ATTACHMENT_SIZE
+							FROM "ATTACHMENT_REQUEST"
+								INNER JOIN "ATTACHMENT" AS ATTACHMENT ON "ATTACHMENT_REQUEST".attachment_id = ATTACHMENT.attachment_id
+								WHERE "ATTACHMENT".deleted = 0
+								AND "ATTACHMENT".enabled = 1;
 END;

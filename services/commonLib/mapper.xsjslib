@@ -649,11 +649,6 @@ function getDataCrtSubject() {
     return $.xscartrequesttool.services.dataLayer.subject.dataCrtSubject;
 }
 
-function getDataCrtReturnType() {
-    $.import("xscartrequesttool.services.dataLayer.returnType","dataCrtReturnType");
-    return $.xscartrequesttool.services.dataLayer.returnType.dataCrtReturnType;
-}
-
 function getDataCrtType() {
     $.import("xscartrequesttool.services.dataLayer.crtType","dataCrtType");
     return $.xscartrequesttool.services.dataLayer.crtType.dataCrtType;
