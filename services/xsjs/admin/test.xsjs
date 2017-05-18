@@ -261,6 +261,34 @@ function insertUserRole(){
 	}
 }
 
+/********************************************* POST EMAIL DATA *************************************************/
+function postEmailData() {
+
+   	var body = JSON.stringify({"addressTo": "lhildt@folderit.net",
+  							  "addressBcc": "leonardohildt@gmail.com",
+ 							  "subject": "sent from HCP",
+  							  "message": "test from Postman via servlet" });
+
+   
+     $.ajax({
+        type: "POST",
+        url: "https://mailsendwebappp1942151816trial.hanatrial.ondemand.com/EmailSendingWebApp",
+        data: JSON.stringify({"addressTo": "lhildt@folderit.net",
+  							  "addressBcc": "leonardohildt@gmail.com",
+ 							  "subject": "sent from HCP",
+  							  "message": "test from Postman via servlet" }),
+        success: function () {
+        	alert("Thanks!"); 
+        },
+        dataType: "json",
+        contentType : "application/json"
+    });
+    
+        $.response.setBody(body);
+    $.response.status = $.net.http.OK;
+    
+}
+
 /********************************************* UPDATE USER ROLE *************************************************/
 
 function updateUserRole(){
@@ -382,6 +410,9 @@ switch (aCmd) {
     	break;
     case "updateUserRole":
     	updateUserRole();
+    	break;
+    case "sendEmail":
+    	postEmailData();
     	break;
     default:
     	$.response.status = $.net.http.BAD_REQUEST;

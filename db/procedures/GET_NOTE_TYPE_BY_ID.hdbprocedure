@@ -4,7 +4,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NOTE_TYPE_BY
 	note_type_id bigint, 
 	note_type_name nvarchar(255),
 	note_type_description nvarchar(1000),
-	note_position integer
+	note_position integer,
+	used integer
   )
 )
 LANGUAGE SQLSCRIPT
@@ -14,12 +15,18 @@ READS SQL DATA AS
 BEGIN
   out_result = 
   		SELECT 
-  		 	NOTE_TYPE_ID, 
-  		 	NOTE_TYPE_NAME,
-  		 	NOTE_TYPE_DESCRIPTION,
-  		 	NOTE_POSITION
-	    FROM "CART_REQUEST_TOOL"."NOTE_TYPE"
-       	WHERE "NOTE_TYPE".NOTE_TYPE_ID = in_note_type_id 
-	        AND ENABLED = 1 
-	        AND DELETED = 0;
+  		 	NT.NOTE_TYPE_ID, 
+  		 	NT.NOTE_TYPE_NAME,
+  		 	NT.NOTE_TYPE_DESCRIPTION,
+  		 	NT.NOTE_POSITION,
+  		 	COUNT(DISTINCT NRQ.REQUEST_ID) as USED
+	    FROM "CART_REQUEST_TOOL"."NOTE_TYPE" NT
+	    LEFT JOIN "NOTE_REQUEST" NRQ ON NT.NOTE_TYPE_ID = NRQ.NOTE_TYPE_ID
+       	WHERE NT.NOTE_TYPE_ID = in_note_type_id 
+	        AND NT.ENABLED = 1 
+	        AND NT.DELETED = 0
+	    GROUP BY NT.NOTE_TYPE_ID, 
+  		 	NT.NOTE_TYPE_NAME,
+  		 	NT.NOTE_TYPE_DESCRIPTION,
+  		 	NT.NOTE_POSITION;
 END;

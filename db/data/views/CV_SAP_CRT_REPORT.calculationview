@@ -44,8 +44,8 @@
         <viewAttribute datatype="NVARCHAR" id="DAYS_OUTSTANDING" length="127"/>
         <viewAttribute datatype="NVARCHAR" id="PURCHASE_TURN_AROUND_TIME" length="127"/>
         <viewAttribute datatype="NVARCHAR" id="MESSAGE_INFO" length="255"/>
-        <viewAttribute datatype="NVARCHAR" id="RETURN_TYPE" length="255"/>
-        <viewAttribute datatype="NVARCHAR" id="LAST_MESSAGE" length="1000"/>
+        <viewAttribute datatype="NVARCHAR" id="MESSAGE_TYPE" length="255"/>
+        <viewAttribute datatype="TEXT" id="LAST_MESSAGE"/>
         <viewAttribute datatype="BIGINT" id="CREATED_USER_ID"/>
       </viewAttributes>
       <calculatedViewAttributes/>
@@ -66,7 +66,7 @@
  						RT.NAME
  					FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_REQUEST_MESSAGE&quot; RM
  						INNER JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_USER&quot; MUS ON RM.CREATED_USER_ID = MUS.USER_ID
- 						LEFT JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_RETURN_TYPE&quot; RT ON RM.RETURN_TYPE_ID = RT.RETURN_TYPE_ID
+ 						LEFT JOIN &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_MESSAGE_TYPE&quot; RT ON RM.MESSAGE_TYPE_ID = RT.MESSAGE_TYPE_ID
  						INNER JOIN :va_last_message LRM ON RM.CREATED_DATE_TZ = LRM.LAST_MESSAGE;
 
 	va_requester = SELECT US.USER_ID,
@@ -193,7 +193,7 @@
 	                    DAYS_BETWEEN(POS.CART_DATE, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
 	                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, POS.PURCHASE_DATE) AS PURCHASE_TURN_AROUND_TIME,
 	                    RM.MESSAGE_INFO,
-	                    RM.NAME AS RETURN_TYPE,
+	                    RM.NAME AS MESSAGE_TYPE,
 	                    RM.MESSAGE_CONTENT AS LAST_MESSAGE,
 	                    RQ.CREATED_USER_ID
 					FROM :va_request RQ
@@ -251,7 +251,7 @@
  	 				  RQR.DAYS_OUTSTANDING,
  	 				  RQR.PURCHASE_TURN_AROUND_TIME,
  	 				  RQR.MESSAGE_INFO,
- 	 				  RQR.RETURN_TYPE,
+ 	 				  RQR.MESSAGE_TYPE,
  	 				  RQR.LAST_MESSAGE,
  	 				  RQR.CREATED_USER_ID
  				FROM :va_sub_out RQR;
@@ -387,9 +387,9 @@ END /********* End Procedure Script ************/</definition>
         <descriptions defaultDescription="MESSAGE_INFO"/>
         <keyMapping columnObjectName="Script_View" columnName="MESSAGE_INFO"/>
       </attribute>
-      <attribute id="RETURN_TYPE" order="36">
-        <descriptions defaultDescription="RETURN_TYPE"/>
-        <keyMapping columnObjectName="Script_View" columnName="RETURN_TYPE"/>
+      <attribute id="MESSAGE_TYPE" order="36">
+        <descriptions defaultDescription="MESSAGE_TYPE"/>
+        <keyMapping columnObjectName="Script_View" columnName="MESSAGE_TYPE"/>
       </attribute>
       <attribute id="LAST_MESSAGE" order="37">
         <descriptions defaultDescription="LAST_MESSAGE"/>

@@ -11,10 +11,10 @@ var GET_ATTACHMENTS_BY_ID = "GET_ATTACHMENTS_BY_ID";
 var service_name = "attachmentService";
 
 function processRequest() {
-	http.processRequest(handleGet, handlePost, handlePut, handleDelete,true, service_name, true);
+	http.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
-function handleGet(parameters, user_id) {
+function handleGet(parameters, user_id) { 
 	var res = {};
 	if (parameters.length > 0) {
 		if (parameters[0].name === GET_ATTACHMENTS_BY_ID) {
@@ -33,7 +33,7 @@ function handleGet(parameters, user_id) {
 }
 
 function handlePost(objAttachment, user_id) {
-	var res = attachments.insertAttachment(objAttachment, 1);
+	var res = attachments.insertAttachments(objAttachment, user_id);
 	return http.handleResponse(res, http.OK, http.AppJson);
 }
 

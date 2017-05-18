@@ -1,15 +1,22 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_COMMODITY_BY_ID" (
 	IN in_commodity_id bigint,
-	OUT out_result TABLE (commodity_id bigint, description nvarchar(255))
+	OUT out_result TABLE (commodity_id bigint, description nvarchar(255), used integer)
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT com.commodity_id, com.description
+	out_result = SELECT com.commodity_id, 
+						com.description,
+						(count(DISTINCT NVR.VENDOR_REQUEST_ID) + count(DISTINCT EVR.EXTEND_VENDOR_REQUEST_ID) + count(DISTINCT CVR.CHANGE_VENDOR_REQUEST_ID)) AS used
 					FROM "COMMODITY" com
+					LEFT JOIN "VENDOR_REQUEST" NVR ON NVR.COMMODITY_ID = com.COMMODITY_ID
+					LEFT JOIN "EXTEND_VENDOR_REQUEST" EVR ON EVR.COMMODITY_ID = com.COMMODITY_ID
+					LEFT JOIN "CHANGE_VENDOR_REQUEST" CVR ON CVR.COMMODITY_ID = com.COMMODITY_ID
 						WHERE com.commodity_id = in_commodity_id 
 							AND com.enabled = 1 
-							AND com.deleted = 0;
+							AND com.deleted = 0
+							GROUP BY 	com.commodity_id, 
+										com.description;
 END;

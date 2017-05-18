@@ -15,7 +15,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_ID
 						fax nvarchar(255),
 						legal_name nvarchar(511),
 						informal_name nvarchar(511),
-						status_id bigint
+						status_id bigint,
+						used integer
 						)
 )
 LANGUAGE SQLSCRIPT
@@ -39,11 +40,29 @@ BEGIN
 				V.fax, 
 				V.legal_name, 
 				V.informal_name,
-				V.status_id
+				V.status_id,
+				count(DISTINCT RQ.REQUEST_ID) as used
             FROM "VENDOR" V
             LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
             LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
+            LEFT JOIN "REQUEST" RQ ON RQ.VENDOR_ID = V.VENDOR_ID
             WHERE V.vendor_id = in_vendor_id
             AND V.ENABLED = 1 
-            AND V.DELETED = 0;
+            AND V.DELETED = 0
+            GROUP BY 	V.vendor_id,
+						V.account, 
+						VAI.VENDOR_NAME, 
+						VCI.name, 
+						VCI.email, 
+						VCI.phone, 
+						V.address_1, 
+						V.address_2, 
+						V.city, 
+						V.state, 
+						V.zip, 
+						V.phone, 
+						V.fax, 
+						V.legal_name, 
+						V.informal_name,
+						V.status_id;
 END;

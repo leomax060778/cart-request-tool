@@ -1,7 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_VENDOR_BY_ID" (
 	IN in_vendor_type_id bigint,
 	IN in_vendor_id bigint,
-	OUT out_result TABLE (attachment_id bigint, original_name nvarchar(255), attachment_size bigint)
+	OUT out_result TABLE (	attachment_id bigint, 
+							original_name nvarchar(255),
+							saved_name nvarchar(255),
+							attachment_size bigint
+							)
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -11,6 +15,7 @@ BEGIN
 	out_result = SELECT 
 					ATTV.ATTACHMENT_ID,
 					ATT.ORIGINAL_NAME AS original_name,
+					ATT.SAVED_NAME AS saved_name,
 					ATT.ATTACHMENT_SIZE	AS attachment_size			
 	FROM "ATTACHMENT_VENDOR" ATTV
 	INNER JOIN "ATTACHMENT" ATT ON ATTV.ATTACHMENT_ID = ATT.ATTACHMENT_ID

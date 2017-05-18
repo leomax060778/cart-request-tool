@@ -4,7 +4,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_DATA_PROTECT
 							content nvarchar (512),
 							description nvarchar (1000),
 							short_description nvarchar(255),
-							crt_type_id bigint)
+							crt_type_id bigint,
+							used integer)
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -15,9 +16,18 @@ BEGIN
 						DPQ.CONTENT,
 						DPQ.DESCRIPTION,
 						DPQ.SHORT_DESCRIPTION,
-						DPQ.CRT_TYPE_ID
+						DPQ.CRT_TYPE_ID,
+						(COUNT(DISTINCT RQDP.REQUEST_ID) + COUNT(DISTINCT VDP.VENDOR_REQUEST_ID)) as USED
 	FROM "DATA_PROTECTION_QUESTION" DPQ
+	LEFT JOIN "REQUEST_DATA_PROTECTION_ANSWER" RQDP ON RQDP.QUESTION_ID = DPQ.QUESTION_ID
+	LEFT JOIN "VENDOR_DATA_PROTECTION_ANSWER" VDP ON VDP.QUESTION_ID = DPQ.QUESTION_ID
 		WHERE  DPQ.question_id = in_question_id
-		and deleted = 0
-		AND enabled = 1;
+		and DPQ.deleted = 0
+		AND DPQ.enabled = 1
+		GROUP BY 	DPQ.QUESTION_ID,
+					DPQ.CONTENT,
+					DPQ.DESCRIPTION,
+					DPQ.SHORT_DESCRIPTION,
+					DPQ.CRT_TYPE_ID
+		ORDER BY DPQ.QUESTION_ID;
 END;

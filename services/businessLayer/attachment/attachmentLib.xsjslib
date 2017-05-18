@@ -84,6 +84,34 @@ function insertAttachment(objAttachment, userId) {
 
 }
 
+//Insert attachment manual
+function insertAttachmentManual(objAttachment, userId) {
+	
+			var result = dataAttachment.insertAttachment(objAttachment, userId);
+			return result;
+	
+}
+
+//Insert several attachments
+function insertAttachments(objAttachments, userId){
+	var resultArray = [];
+	try{
+		if(objAttachments.length > 0){
+			objAttachments.forEach(function(attachment){
+				resultArray.push(insertAttachmentManual(attachment, userId));
+			});
+		}
+		dbHelper.commit();
+		
+	} catch (e) {
+		dbHelper.rollback();
+		throw ErrorLib.getErrors().CustomError("", e.toString(), "insertAttachments");
+	} finally {
+		dbHelper.closeConnection();
+	}
+	return resultArray;
+}
+
 // Update attachment
 function updateAttachment(objAttachment, userId) {
 	try {

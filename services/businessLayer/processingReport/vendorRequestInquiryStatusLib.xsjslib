@@ -311,7 +311,7 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
     	if(!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateChangeVendorRequestStatus", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objChangeVendorRequest.STATUS_ID) === statusMap.APPROVED){
     		return dataStatus.updateChangeVendorRequestStatusCompleted(objChangeVendorRequest, userId);
     	} else {
     		return dataStatus.updateChangeVendorRequestStatus(objChangeVendorRequest, userId);
@@ -325,7 +325,7 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
     	if(!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateExtendVendorRequestStatus", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED){
+    	if(Number(Number(objExtendVendorRequest.STATUS_ID)) === statusMap.APPROVED){
     		return dataStatus.updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId);
     	} else {
     		return dataStatus.updateExtendVendorRequestStatus(objExtendVendorRequest, userId);
@@ -373,7 +373,7 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
     	if(!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateChangeVendorRequestStatus", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objChangeVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objChangeVendorRequest.STATUS_ID) === statusMap.APPROVED){
     		return dataStatus.updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, userId);
     	} else {
     		return dataStatus.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
@@ -401,7 +401,7 @@ function updateVendorRequestStatusManual(objVendorRequest, userId) {
     	if(!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequestStatus", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     	}
-    	if(objVendorRequest.STATUS_ID === statusMap.APPROVED){
+    	if(Number(objVendorRequest.STATUS_ID) === statusMap.APPROVED){
     		return dataStatus.updateVendorRequestStatusCompletedManual(objVendorRequest, userId);
     	} else {
     		return dataStatus.updateVendorRequestStatusManual(objVendorRequest, userId);

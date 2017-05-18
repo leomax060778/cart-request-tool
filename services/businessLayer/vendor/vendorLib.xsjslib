@@ -12,9 +12,6 @@ function getAllVendor() {
 		var vendor_result = data.getManualAllVendor();
 		if (vendor_result.length > 0) {
 			ven = JSON.parse(JSON.stringify(vendor_result));
-			(ven).forEach(function(vendor){
-				completeVendor(vendor);
-			});
 		}
 		dbHelper.commit();
 	}

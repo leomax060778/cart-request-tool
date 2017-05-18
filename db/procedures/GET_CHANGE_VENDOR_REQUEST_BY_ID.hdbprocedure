@@ -7,9 +7,12 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							last_name nvarchar(255),
 							created_user_id bigint, 
 							entity_id integer, 
+							entity_name nvarchar(255),
+						    entity_deleted tinyint,
 							commodity_id integer,
-							status_id bigint,
 							COMMODITY_DESCRIPTION nvarchar(255),
+						    commodity_deleted tinyint,
+							status_id bigint,
 							vendor_name nvarchar(511),
 							vendor_contact_name nvarchar(255), 
 							vendor_contact_email nvarchar(255),
@@ -35,9 +38,12 @@ BEGIN
 						US.LAST_NAME,
 						CVR.CREATED_USER_ID,
 						CVR.ENTITY_ID, 
+						ET.ENTITY_NAME,
+						ET.DELETED AS entity_deleted,
 						CVR.COMMODITY_ID,
-						CVR.STATUS_ID,
 						COMMODITY.DESCRIPTION as COMMODITY_DESCRIPTION,
+					    COMMODITY.DELETED AS commodity_deleted,
+						CVR.STATUS_ID,
 						CVR.VENDOR_NAME,
 						CVR.VENDOR_CONTACT_NAME, 
 						CVR.VENDOR_CONTACT_EMAIL,
@@ -50,10 +56,11 @@ BEGIN
 						CVR.RECEIVER_YVC_REQUEST, 
 						TO_NVARCHAR(CVR.RECEIVER_MODIFIED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_MODIFIED_DATE_TZ
 	FROM "CHANGE_VENDOR_REQUEST" CVR
-	INNER JOIN "VENDOR_TYPE" VT ON CVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
-	INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
-	INNER JOIN "USER" US ON US.user_id = CVR.user_id AND US.ENABLED = 1 AND US.DELETED = 0
-		WHERE in_change_vendor_request_id = CVR.CHANGE_VENDOR_REQUEST_ID
+		INNER JOIN "VENDOR_TYPE" VT ON CVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
+		INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
+		INNER JOIN "ENTITY" ET ON CVR.ENTITY_ID = ET.ENTITY_ID
+		INNER JOIN "USER" US ON US.user_id = CVR.user_id AND US.ENABLED = 1 AND US.DELETED = 0
+	WHERE in_change_vendor_request_id = CVR.CHANGE_VENDOR_REQUEST_ID
 		AND CVR.deleted = 0
 		AND CVR.enabled = 1;
 END;

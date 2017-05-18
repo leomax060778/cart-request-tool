@@ -1,15 +1,36 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ENTITY_BY_ID" (
   IN in_entity_id bigint,
-  OUT out_result TABLE ( entity_id bigint, entity_name nvarchar(255), sales_org nvarchar(255), cost_center nvarchar(255), entity_position integer, non_sap_help_message nvarchar(1000))
+  OUT out_result TABLE( entity_id bigint,
+  						entity_name nvarchar(255),
+  						sales_org nvarchar(255),
+  						cost_center nvarchar(255),
+  						entity_position integer,
+  						non_sap_help_message nvarchar(1000),
+  						used integer
+  						)
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT entity_id, entity_name, sales_org, cost_center, entity_position, non_sap_help_message
-              FROM "CART_REQUEST_TOOL"."ENTITY" 
-			  WHERE "ENTITY".ENTITY_ID = in_entity_id 
-                     AND ENABLED = 1 
-                     AND DELETED = 0;
+  out_result = SELECT 	EN.entity_id, 
+  						EN.entity_name, 
+  						EN.sales_org, 
+  						EN.cost_center, 
+  						EN.entity_position, 
+  						EN.non_sap_help_message,
+  						(count(DISTINCT RQ.REQUEST_ID) + count(DISTINCT NVR.VENDOR_REQUEST_ID)) as used 
+              FROM "CART_REQUEST_TOOL"."ENTITY" EN
+              LEFT JOIN "REQUEST" RQ ON RQ.ENTITY_ID = EN.ENTITY_ID
+              LEFT JOIN "VENDOR_REQUEST" NVR ON NVR.ENTITY_ID = EN.ENTITY_ID
+			  WHERE EN.ENTITY_ID = in_entity_id 
+                     AND EN.ENABLED = 1 
+                     AND EN.DELETED = 0
+              GROUP BY 	EN.entity_id, 
+  						EN.entity_name, 
+  						EN.sales_org, 
+  						EN.cost_center, 
+  						EN.entity_position, 
+  						EN.non_sap_help_message;
 END;

@@ -359,7 +359,7 @@ function sendSubmitMail(changeVendorRequestId, userId){
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
 	var mailObj = changeVendorMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	mail.sendEventMail(emailObj,true,null);
 }
 
 function sendResubmitMail(changeVendorRequestId, userId){

@@ -13,9 +13,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CATALOG_BY_P
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN 
-	out_result = SELECT "CATALOG".catalog_id, "CATALOG".name, "CATALOG".pop_up, "CATALOG".catalog_type_id, "CATALOG_TYPE".name AS catalog_type_name, "CATALOG".catalog_parent_id 
-					FROM "CATALOG"
-					INNER JOIN "CATALOG_TYPE" ON "CATALOG".CATALOG_TYPE_ID = "CATALOG_TYPE".CATALOG_TYPE_ID
-						WHERE "CATALOG".catalog_parent_id = in_catalog_parent_id
-						ORDER BY "CATALOG".name ASC;
+	out_result = SELECT CLG.catalog_id, 
+						CLG.name, 
+						CLG.pop_up, 
+						CLG.catalog_type_id, 
+						CTP.name AS catalog_type_name, 
+						CLG.catalog_parent_id
+					FROM "CATALOG" CLG
+					INNER JOIN "CATALOG_TYPE" CTP ON CLG.CATALOG_TYPE_ID = CTP.CATALOG_TYPE_ID
+						WHERE CLG.catalog_parent_id = in_catalog_parent_id
+							AND CLG.ENABLED = 1
+							AND CLG.DELETED = 0
+						ORDER BY CLG.name ASC;
 END;

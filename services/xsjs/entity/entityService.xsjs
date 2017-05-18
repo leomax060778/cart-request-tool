@@ -18,22 +18,32 @@ function processRequest(){
 }
 
 function handleGet(parameters, user_id) {
-	var rdo = {};
+	var res = {};
 	if (parameters.length > 0) {
 		if (parameters[0].name === GET_ENTITY_BY_ID) {
-			rdo = entity.getEntityById(parameters[0].value, user_id);
+			if (!parameters[0].value || isNaN(parameters[0].value)) {
+				throw ErrorLib.getErrors().BadRequest(
+						"",
+						"entityService/handleGet",
+						"invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (it should be a valid id)");
+			}
+			res = entity.getEntityById(parameters[0].value, user_id);
 		} else if (parameters[0].name === GET_ALL_ENTITY) {
-			rdo = entity.getEntity();
+			res = entity.getEntity();
+		} else {
+			throw ErrorLib.getErrors().BadRequest(
+					"",
+					"entityService/handleGet",
+					"invalid parameter name \'" + parameters[0].name + "\' (it can be: GET_ENTITY_BY_ID or GET_ALL_ENTITY)");
 		}
 	} else {
 		throw ErrorLib.getErrors().BadRequest(
 				"",
 				"entityService/handleGet",
-				"invalid parameter name (can be: GET_ENTITY_BY_ID)"
-						+ parameters[0].name);
+				"invalid parameter (it can be: GET_ENTITY_BY_ID or GET_ALL_ENTITY)");
 	}
 
-	return http.handleResponse(rdo, http.OK, http.AppJson);
+	return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 function handlePost(reqBody, user_id) {

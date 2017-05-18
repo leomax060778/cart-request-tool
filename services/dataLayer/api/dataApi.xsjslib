@@ -4,27 +4,16 @@ var db = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
-function getL6ById(l6_id){
-	var parameters = {};
-	//Mockdata
-	parameters = {
-		"GOODS_RECIPIENT": "Marylin Scott2, admin",
-		"WBS_PATH": "CRM-XM16-GIC-GVGMVID01",
-		"ENTITY_ID": 1		
-	};
-	
-	return parameters;
-	
-}
+var GET_REQUEST_BY_WBS_PATH = "GET_REQUEST_BY_WBS_PATH";
+/** ***********END STORED PROCEDURES*************** */
 
-function getL6ByWBSPath(wbs_path){
+var costObjectType = {"WBS_ID": 1, "COST_OBJECT": 2, "IO": 3};
+
+function getRequestByWBSPath(wbsPath) {
 	var parameters = {};
-	//Mockdata
-	parameters = {
-		"VALID": 1,
-		"ENTITY_ID": 3 
-	};
-	
-	return parameters;
-	
+	parameters.in_wbs_path = wbsPath;
+	parameters.in_cost_object_type_id = costObjectType.WBS_ID;
+	parameters.out_result = '?';
+	var result =  db.executeProcedure(GET_REQUEST_BY_WBS_PATH, parameters);
+	return db.extractArray(result.out_result);
 }

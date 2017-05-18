@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_ENTITY" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+<Dimension:dimension xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_ENTITY" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
   <descriptions defaultDescription="Attribute view to get entity data"/>
   <informationModelLayout relativeWidthScenario="27"/>
   <attributes>
@@ -17,12 +17,6 @@
     <tableProxies>
       <tableProxy>
         <table schemaName="CART_REQUEST_TOOL" columnObjectName="ENTITY"/>
-        <columnFilter columnName="ENABLED">
-          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="1"/>
-        </columnFilter>
-        <columnFilter columnName="DELETED">
-          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
-        </columnFilter>
       </tableProxy>
     </tableProxies>
     <joins/>

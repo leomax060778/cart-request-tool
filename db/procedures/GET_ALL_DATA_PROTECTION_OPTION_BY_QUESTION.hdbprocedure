@@ -7,12 +7,13 @@ OUT out_result TABLE (option_id integer, option_content nvarchar(512) )
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT "DATA_PROTECTION_QUESTION_OPTION".option_id, "DATA_PROTECTION_OPTION".content AS option_content
-						FROM "DATA_PROTECTION_QUESTION_OPTION" 
-						INNER JOIN "DATA_PROTECTION_OPTION" 
-							ON "DATA_PROTECTION_OPTION".option_id = "DATA_PROTECTION_QUESTION_OPTION".option_id
-						WHERE "DATA_PROTECTION_QUESTION_OPTION".question_id = in_question_id
-						AND "DATA_PROTECTION_QUESTION_OPTION".ENABLED = 1
-						AND "DATA_PROTECTION_QUESTION_OPTION".DELETED = 0;
+	out_result = SELECT DPQO.option_id, DPO.content AS option_content
+						FROM "DATA_PROTECTION_QUESTION_OPTION" DPQO
+						INNER JOIN "DATA_PROTECTION_OPTION" DPO
+							ON DPO.option_id = DPQO.option_id and DPO.ENABLED = 1 AND DPO.DELETED = 0
+						WHERE DPQO.question_id = in_question_id
+						AND DPQO.ENABLED = 1
+						AND DPQO.DELETED = 0
+						ORDER BY DPQO.option_id;
 						
 END;

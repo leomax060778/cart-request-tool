@@ -240,10 +240,10 @@ function getQuestionById(question_id, user_id) {
 	try {
 		var question = data.getManualQuestionById(question_id);
 		var questionElement = [];
-		(question).forEach(function(element) {
-			var questionAux = cloneObject(element);
-			questionAux.OPTIONS = data.getAllOptionsByQuestionId(element.QUESTION_ID);
-			questionElement.push(questionAux);
+		question = JSON.parse(JSON.stringify(question)); 
+		question.forEach(function (element) {
+			element.OPTIONS = data.getAllOptionsByQuestionId(element.QUESTION_ID);
+			questionElement.push(element);
 		});
 		return questionElement;
 	} catch (e) {

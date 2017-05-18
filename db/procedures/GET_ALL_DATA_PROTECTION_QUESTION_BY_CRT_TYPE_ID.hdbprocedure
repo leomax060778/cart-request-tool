@@ -11,5 +11,6 @@ BEGIN
 	FROM "DATA_PROTECTION_QUESTION"
 		WHERE crt_type_id = in_crt_type_id
 		AND deleted = 0
-		AND enabled = 1;
+		AND enabled = 1
+		ORDER BY "DATA_PROTECTION_QUESTION".QUESTION_ID;
 END;

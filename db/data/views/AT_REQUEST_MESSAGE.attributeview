@@ -7,21 +7,21 @@
       <descriptions defaultDescription="REQUEST_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="REQUEST_ID"/>
     </attribute>
-    <attribute id="MESSAGE_CONTENT" order="2" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="MESSAGE_CONTENT"/>
-      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="MESSAGE_CONTENT"/>
+    <attribute id="MESSAGE_TYPE_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MESSAGE_TYPE_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="MESSAGE_TYPE_ID"/>
     </attribute>
     <attribute id="CREATED_USER_ID" order="3" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="CREATED_USER_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="CREATED_USER_ID"/>
     </attribute>
-    <attribute id="RETURN_TYPE_ID" order="4" attributeHierarchyActive="false" displayAttribute="false">
-      <descriptions defaultDescription="RETURN_TYPE_ID"/>
-      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="RETURN_TYPE_ID"/>
-    </attribute>
-    <attribute id="CREATED_DATE_TZ" order="5" attributeHierarchyActive="false" displayAttribute="false">
+    <attribute id="CREATED_DATE_TZ" order="4" attributeHierarchyActive="false" displayAttribute="false">
       <descriptions defaultDescription="CREATED_DATE_TZ"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="CREATED_DATE_TZ"/>
+    </attribute>
+    <attribute id="MESSAGE_CONTENT" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MESSAGE_CONTENT"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST_MESSAGE" columnName="MESSAGE_CONTENT"/>
     </attribute>
   </attributes>
   <calculatedAttributes/>

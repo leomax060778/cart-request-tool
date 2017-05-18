@@ -5,7 +5,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_CONTA
 						   name nvarchar(255), 
 						   phone nvarchar(255), 
 						   email nvarchar(255), 
-						   default_contact_information tinyint
+						   default_contact_information tinyint,
+						   used integer
 						   )
 )
 LANGUAGE SQLSCRIPT
@@ -13,10 +14,23 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT VCI.vendor_contact_information_id, VCI.vendor_id, VCI.name, VCI.phone, VCI.email, VCI.default_contact_information
+  out_result = SELECT 	VCI.vendor_contact_information_id, 
+  						VCI.vendor_id, 
+  						VCI.name, 
+  						VCI.phone, 
+  						VCI.email, 
+  						VCI.default_contact_information,
+  						count(DISTINCT RQ.REQUEST_ID) as used
               FROM "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION" VCI
+              LEFT JOIN "REQUEST" RQ ON RQ.VENDOR_CONTACT_INFORMATION_ID = VCI.VENDOR_CONTACT_INFORMATION_ID 
 				WHERE VCI.vendor_id = in_vendor_id
 					AND VCI.ENABLED = 1 
 					AND VCI.DELETED = 0
+					GROUP BY	VCI.vendor_contact_information_id, 
+		  						VCI.vendor_id, 
+		  						VCI.name, 
+		  						VCI.phone, 
+		  						VCI.email, 
+		  						VCI.default_contact_information	
 					ORDER BY VCI.name ASC;
 END;

@@ -9,7 +9,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING
 	 training_order integer,
 	 training_type_name nvarchar (255),
 	 training_id bigint,
-	 attachment_id integer)
+	 attachment_id integer,
+	 original_name nvarchar(255),
+	 saved_name nvarchar(255)
+	 )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -25,7 +28,9 @@ BEGIN
 			 TRAINING.training_order,
 			 (CASE WHEN (TRAINING.ATTACHMENT_ID is not null) THEN ATTACHMENT.ATTACHMENT_TYPE ELSE TRAINING_TYPE.name END) as training_type_name,
 			 TRAINING.TRAINING_ID,
-			 TRAINING.ATTACHMENT_ID
+			 TRAINING.ATTACHMENT_ID,
+			 ATTACHMENT.ORIGINAL_NAME,
+			 ATTACHMENT.SAVED_NAME
  			FROM "TRAINING" as TRAINING
  			INNER JOIN "TRAINING_TYPE" as TRAINING_TYPE ON TRAINING.training_type_id = TRAINING_TYPE.training_type_id
  			LEFT JOIN "ATTACHMENT" as ATTACHMENT ON TRAINING.ATTACHMENT_ID = ATTACHMENT.ATTACHMENT_ID

@@ -344,7 +344,7 @@ function mergeData(requests, services, attachments, userId) {
 		request.SERVICES = service_request[request.REQUEST_ID] || [];;
 		request.ATTACHMENTS = attachment_request[request.REQUEST_ID] || [];
 		request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
-		
+		request.SHOW_MESSAGE_READ = (request.MESSAGE_READ > 0)?1:0;
 	});
 	
 	return requests;
@@ -969,8 +969,23 @@ function updateRequest(reqBody, user_id){
 		//REQUEST UPDATE
 		request = dataRequest.updateRequestManual(reqBody, user_id);
 		//DATA PROTECTION ANSWERS UPDATE
+		var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
+		var newQuestion;
+		var i;
 		(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
-			updateDataProtectionAnswer(item, user_id);
+			newQuestion = true;
+			i = 0;
+			for (i = 0; i < dataProtectionAnswer.length; i++) {
+				if (Number(item.QUESTION_ID) === Number(dataProtectionAnswer[i].QUESTION_ID)) {
+					newQuestion = false;
+					break;
+				}
+			};
+			if (newQuestion) {
+				dataRDataProtection.insertDataProtectionAnswer(item, user_id);
+			} else {
+				updateDataProtectionAnswer(item, user_id);
+			}
 		});
 		
 		//ATTACHMENTS UPDATE

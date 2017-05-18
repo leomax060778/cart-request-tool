@@ -392,6 +392,11 @@ function getdbHelper(){
     return $.xscartrequesttool.services.dataLayer.util.dbHelper;
 }
 
+function getDataApi(){
+	$.import("xscartrequesttool.services.dataLayer.api","dataApi");
+    return $.xscartrequesttool.services.dataLayer.api.dataApi;
+}
+
 function getDataPopUp(){
     $.import("xscartrequesttool.services.dataLayer.util","dataPopUp");
     return $.xscartrequesttool.services.dataLayer.util.dataPopUp;

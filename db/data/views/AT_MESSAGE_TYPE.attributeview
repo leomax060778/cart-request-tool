@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_MESSAGE_TYPE" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_MESSAGE_TYPE"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="NAME" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="MESSAGE_TYPE" columnName="NAME"/>
+    </attribute>
+    <attribute id="MESSAGE_TYPE_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MESSAGE_TYPE_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="MESSAGE_TYPE" columnName="MESSAGE_TYPE_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="MESSAGE_TYPE"/>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="MESSAGE_TYPE" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

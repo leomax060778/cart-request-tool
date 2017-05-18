@@ -111,6 +111,7 @@ var SupportAccount = "support_cartrequesttool@sap.com";
 var SiteAdministrator = "support_cartrequesttool@sap.com";
 
 var emailAccounts = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
+var sendEmailType = "servlet"; //can be: servlet or smpt
 /** ************************************** */
 
 // TODO: move this to configuration
@@ -193,4 +194,8 @@ function getBasicData(stringPathName){
 	}
 	
 	return parameters;
+}
+
+function getSendMailType(){
+	return sendEmailType;
 }

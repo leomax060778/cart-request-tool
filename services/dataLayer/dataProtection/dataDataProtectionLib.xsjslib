@@ -184,14 +184,6 @@ function getQuestionById(questionId){
 	return db.extractArray(questions.out_result);
 }
 
-function getManualQuestionById(questionId){
-	var param = {};
-	param.in_question_id = questionId;
-	param.out_result = '?';
-	var questions = db.executeProcedureManual(GET_DATA_PROTECTION_QUESTION_BY_ID, param);
-	return db.extractArray(questions.out_result);
-}
-
 //QUESTION - OPTION
 function insertQuestionOption(questionId, optionId, userId){
 	var params = {};
