@@ -56,7 +56,7 @@ function insertServices(services, requestId, conversion_rate, userId){
 	});
 
 	return amount;
-} 
+}
 
 
 function insertCostObject(reqBody, user_id){
@@ -789,7 +789,7 @@ function sendSubmitMail(newCartRequestId, userId){
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
 	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

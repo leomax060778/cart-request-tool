@@ -126,19 +126,19 @@ function handleDelete() {
  * @returns {string} id - Id of the new message
  */
 function handlePost(reqBody, userId) {
-    var res;
+    var res = {};
     if (reqBody.VENDOR_INQUIRY_ID){
-        res = request.insertVendorInquiryMessage(reqBody, userId);
-        vendorInquiry.sendMessageMail(reqBody, userId);
+        res.id = request.insertVendorInquiryMessage(reqBody, userId);
+        res.mail = vendorInquiry.sendMessageMail(reqBody, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-        res = request.insertVendorRequestMessage(reqBody, userId);
-        vendorRequest.sendMessageMail(reqBody, userId);
+    	res.id = request.insertVendorRequestMessage(reqBody, userId);
+    	res.mail = vendorRequest.sendMessageMail(reqBody, userId);
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-        res = request.insertChangeVendorRequestMessage(reqBody, userId);
-        changeVendorRequest.sendMessageMail(reqBody, userId);
+    	res.id = request.insertChangeVendorRequestMessage(reqBody, userId);
+    	res.mail = changeVendorRequest.sendMessageMail(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-        res = request.insertExtendVendorRequestMessage(reqBody, userId);
-        extendVendorRequest.sendMessageMail(reqBody, userId);
+    	res.id = request.insertExtendVendorRequestMessage(reqBody, userId);
+    	res.mail = extendVendorRequest.sendMessageMail(reqBody, userId);
     } else {
     	throw ErrorLib.getErrors().BadRequest(
                 "",

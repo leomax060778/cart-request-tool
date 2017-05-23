@@ -3,6 +3,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_MESS
   OUT out_result TABLE (inquiry_id bigint, 
   						message_id bigint, 
   						message_type_name nvarchar(255),
+  						SUBJECT_NAME nvarchar(255),
 						ADDITIONAL_MESSAGE_TYPE_INFORMATION nvarchar(255),
   						role_name nvarchar(127), 
   						user_name nvarchar(255), 
@@ -22,6 +23,7 @@ BEGIN
   out_result = SELECT IM.inquiry_id, 
   						IM.message_id, 
   						MT.NAME AS MESSAGE_TYPE_NAME, 
+  						SJ.NAME AS SUBJECT_NAME,
 						IM.ADDITIONAL_MESSAGE_TYPE_INFORMATION,
   						ROLE.NAME AS ROLE_NAME,
   						US.user_name, 
@@ -32,7 +34,8 @@ BEGIN
   						TO_NVARCHAR(IM.created_date_tz, 'YYYY-MM-DD hh24:mi') as created_date,
   						LENGTH (IM.MESSAGE_CONTENT) AS content_length
                       FROM "INQUIRY_MESSAGE" IM
-                      LEFT JOIN "MESSAGE_TYPE" MT ON IM.MESSAGE_TYPE_ID = MT.MESSAGE_TYPE_ID AND MT.enabled = 1 AND MT.deleted = 0
+                      LEFT JOIN "MESSAGE_TYPE" MT ON IM.MESSAGE_TYPE_ID = MT.MESSAGE_TYPE_ID
+                      LEFT JOIN "SUBJECT" SJ ON IM.SUBJECT_ID = SJ.SUBJECT_ID
                       INNER JOIN "USER" US ON IM.CREATED_USER_ID = US.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
 					  INNER JOIN "USER_ROLE" USR ON IM.CREATED_USER_ID = USR.USER_ID 
 					  INNER JOIN "ROLE" ROLE ON IM.CREATED_USER_ID = USR.USER_ID AND ROLE.ROLE_ID = USR.ROLE_ID AND ROLE.ENABLED = 1 AND ROLE.DELETED = 0

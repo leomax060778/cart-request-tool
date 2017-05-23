@@ -72,8 +72,10 @@ function handleGet(parameters, userId) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
-    var req = inquiry.updateInquiry(reqBody, userId);
-    inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
+	var req = {};
+    req.id = inquiry.updateInquiry(reqBody, userId);
+    req.mail = inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
+    
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 
@@ -98,8 +100,9 @@ function handleDelete(reqBody, userId) {
  * @returns {string} id - Id of the new inquiry
  */
 function handlePost(reqBody, userId) {
-    var req = inquiry.insertInquiry(reqBody, userId);
-    inquiry.sendSubmitMail(req, userId);
+	var req = {};
+    req.id = inquiry.insertInquiry(reqBody, userId);
+    req.mail = inquiry.sendSubmitMail(req.id, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

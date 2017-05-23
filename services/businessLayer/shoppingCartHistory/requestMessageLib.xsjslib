@@ -20,9 +20,8 @@ function parseNewMessage(requestId, requester, userId){
 	 requestMailObj.REQUEST_ID = requestId;
 	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName), "Colleague");
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	 mail.sendMail(emailObj,true,null);
+	 return mail.sendMail(emailObj,true,null);
 }
-
 
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
@@ -34,10 +33,12 @@ function insertRequestMessage(objRequest, userId) {
 			objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
 			status.updateRequestStatusManual(objRequest, userId);
 		}
-        var return_id = message.insertRequestMessage(objRequest, userId);
-        parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
+		
+		var result = {};
+		result.id = message.insertRequestMessage(objRequest, userId);
+		result.mail = parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
         
-        return return_id;
+        return result;
     }
 }
 

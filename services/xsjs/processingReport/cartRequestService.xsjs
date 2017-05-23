@@ -87,8 +87,10 @@ function handlePut(reqBody, userId) {
                 );
 		}
 	var mailData = request.getRequestMailDataByRequestId(reqBody, userId);
-    var res = request.updateRequestStatus(reqBody, userId);
-    request.sendMailByStatus(reqBody,mailData, userId);
+	
+	var res = {};
+    res.id = request.updateRequestStatus(reqBody, userId);
+    res.mail = request.sendMailByStatus(reqBody,mailData, userId);
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 

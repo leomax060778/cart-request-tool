@@ -61,10 +61,12 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	    	objChangeVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
 		}
-	    var return_id = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
-	    sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
 	    
-	    return return_id;
+	    var result = {};
+	    result.id = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
+	    result.mail = sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
+	    
+	    return result;
     }
 }
 
@@ -84,10 +86,12 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	    	objExtendVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
 		}
-        var return_id = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
-        sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
+	    
+	    var result = {};
+        result.id = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
+        result.mail = sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
         
-        return return_id;
+        return result;
     }
 }
 
@@ -107,10 +111,12 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 	    	objVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
 		}
-        var return_id = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
-        sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
+	    
+	    var result = {};
+	    result.id = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
+	    result.mail = sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
         
-        return return_id;
+        return result;
     }
 }
 
@@ -130,10 +136,12 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 	    	objVendorInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
 		}
-        var return_id = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
-        sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
+	    
+	    var result = {};
+        result.id = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
+        result.mail = sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
         
-        return return_id;
+        return result;
     }
 }
 
@@ -154,10 +162,12 @@ function insertInquiryMessage(objInquiry, userId) {
 	    	objInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
 			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
 		}
-        var return_id = dataMessage.insertInquiryMessage(objInquiry, userId);
-        sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
+	    
+	    var result = {};
+	    result.id = dataMessage.insertInquiryMessage(objInquiry, userId);
+	    result.mail = sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
         
-        return return_id;
+        return result;
     }
 }
 
@@ -177,10 +187,12 @@ function insertRequestMessage(objRequest, userId) {
 	    	objRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
-        var return_id = dataMessage.insertRequestMessage(objRequest, userId);
-        sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
+	    
+	    var result = {};
+	    result.id = dataMessage.insertRequestMessage(objRequest, userId);
+	    result.mail = sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
         
-        return return_id;
+        return result;
     }
 }
 /** ***********END INSERT*************** */
@@ -956,8 +968,7 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	    	break;
 	}
 	emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	mail.sendMail(emailObj,true,null);
-
+	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

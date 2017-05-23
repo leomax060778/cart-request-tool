@@ -860,7 +860,7 @@ function sendResubmitMail(requestId, requester, userId){
 	 requestMailObj.REQUEST_ID = requestId;
 	 var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	 mail.sendMail(emailObj,true,null);
+	 return mail.sendMail(emailObj,true,null);
 }
 
 //REQUEST
@@ -968,6 +968,7 @@ function updateRequest(reqBody, user_id){
 		}
 		//REQUEST UPDATE
 		request = dataRequest.updateRequestManual(reqBody, user_id);
+		var mail = sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
 		//DATA PROTECTION ANSWERS UPDATE
 		var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
 		var newQuestion;
@@ -994,8 +995,6 @@ function updateRequest(reqBody, user_id){
 		}
 		
 		dbHelper.commit();
-		
-		sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
 	}
 	catch(e){
 		dbHelper.rollback();
@@ -1004,7 +1003,11 @@ function updateRequest(reqBody, user_id){
 	finally{
 		dbHelper.closeConnection();
 	}
-	return request;
+	
+	var result = {};
+	result.id = request;
+	result.mail = mail;
+	return result;
 }
 
 

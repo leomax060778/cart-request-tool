@@ -74,8 +74,9 @@ function handleDelete(reqBody, userId) {
  * @returns {string} id - Id of the new extend vendor request
  */
 function handlePost(reqBody, userId) {
-    var req = request.insertExtendVendorRequest(reqBody, userId);
-    request.sendSubmitMail(req,userId);
+	var req = {};
+    req.id = request.insertExtendVendorRequest(reqBody, userId);
+    req.mail = request.sendSubmitMail(req.id,userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

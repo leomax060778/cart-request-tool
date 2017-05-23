@@ -53,10 +53,13 @@ function insertVendorRequest(objVendorRequest, userId) {
     		var result_id = request.insertVendorRequestManual(objVendorRequest, userId);
         	if(result_id){
         		vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
-        		sendSubmitMail(result_id, userId);
+        		var mail = sendSubmitMail(result_id, userId);
         		}
-
-        	return result_id;
+        	
+        	var result = {};
+        	result.id = result_id;
+        	result.mail = mail;
+        	return result;
     }
 }
 
@@ -86,10 +89,14 @@ function insertVendorRequestManual(objVendorRequest, userId) {
         			vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
     			}
     			
-        		sendSubmitMail(result_id, userId);
+    			var mail = sendSubmitMail(result_id, userId);
+    			var result = {};
+            	result.id = result_id;
+            	result.mail = mail;
+            	        		
     		}
     		
-        return result_id;
+        return result;
     }
 }
 
@@ -279,11 +286,12 @@ function updateVendorRequest(objVendorRequest, userId) {
     	});
     }
 	
-        
-    var return_id = request.updateVendorRequest(objVendorRequest, userId);
+    var result = {};
     
-    sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId)
-
+    result.id = request.updateVendorRequest(objVendorRequest, userId);
+    result.mail = sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId);
+    
+    return result;
 }
 
 //Check if the request exists
@@ -529,7 +537,7 @@ function sendSubmitMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
 	var mailObj = vendorMail.parseSubmit(vendorMailObj, getBasicData(pathName),requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(newVendorRequestId, userId){
@@ -539,7 +547,7 @@ function sendResubmitMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
 	var mailObj = vendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(newVendorRequestId, userId){
@@ -549,7 +557,7 @@ function sendMessageMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId.VENDOR_REQUEST_ID;
 	var mailObj = vendorMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

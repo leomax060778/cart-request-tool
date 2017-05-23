@@ -66,8 +66,9 @@ function handleGet(parameters, userId) {
 }
 
 function handlePut(reqBody, userId) {
-    var req = inquiry.updateInquiryStatus(reqBody, userId);
-    inquiry.sendMailByStatus(reqBody.INQUIRY_ID, reqBody.STATUS_ID, userId);
+	var req = {};
+    req.id = inquiry.updateInquiryStatus(reqBody, userId);
+    req.mail = inquiry.sendMailByStatus(reqBody.INQUIRY_ID, reqBody.STATUS_ID, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

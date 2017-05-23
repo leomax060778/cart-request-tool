@@ -45,9 +45,9 @@ function handleDelete(reqBody, userId) {
 }
 
 function handlePost(reqBody, userId) {
-
-    var req = request.insertRequest(reqBody, userId);
-    request.sendSubmitMail(req, userId);
+    var req = {};
+    req.id = request.insertRequest(reqBody, userId);
+    req.mail = request.sendSubmitMail(req.id, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

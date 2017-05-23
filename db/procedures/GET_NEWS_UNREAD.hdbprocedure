@@ -6,12 +6,14 @@ OUT out_result TABLE(
 	description nvarchar(2000), 
 	author_id bigint, 
 	published_date nvarchar(15), 
-	attachment_id bigint, 
+	attachment_id bigint,
+	original_name nvarchar(255),
+	saved_name nvarchar(255),
 	author_name nvarchar(255),
 	budget_year_id bigint,
 	budget_year bigint,
 	content_length integer
-)) 
+))
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
@@ -23,7 +25,9 @@ BEGIN
 	NW.DESCRIPTION, 
 	NW.AUTHOR_ID, 
 	TO_NVARCHAR(NW.PUBLISHED_DATE, 'YYYY/MM/DD') AS PUBLISHED_DATE, 
-	NW.ATTACHMENT_ID, 
+	NW.ATTACHMENT_ID,
+	ATT.ORIGINAL_NAME,
+	ATT.SAVED_NAME,
 	author.USER_NAME AS author_name,
 	NW.BUDGET_YEAR_ID,
 	BUDGET_YEAR.BUDGET_YEAR,
@@ -32,6 +36,7 @@ BEGIN
 	INNER JOIN "USER" author ON author.USER_ID = NW.AUTHOR_ID
 	INNER JOIN "NEWS_STATUS" news_st ON news_st.NEWS_STATUS_ID = NW.STATUS_ID
 	INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR_ID = NW.BUDGET_YEAR_ID
+	LEFT JOIN "ATTACHMENT" ATT ON ATT.ATTACHMENT_ID = NW.ATTACHMENT_ID
 	WHERE NW.ENABLED = 1 
 		AND NW.DELETED = 0
 		AND NW.STATUS_ID = 3

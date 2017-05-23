@@ -182,20 +182,20 @@ function handleGet(parameters, userId) {
 }
 
 function handlePut(reqBody, userId) {
-    var res;
+    var res = {};
     if (reqBody.VENDOR_INQUIRY_ID) {
-        res = request.updateVendorInquiryStatus(reqBody, userId);
-        request.sendVendorInquiryMailByStatus(reqBody, userId);
+        res.id = request.updateVendorInquiryStatus(reqBody, userId);
+        res.mail = request.sendVendorInquiryMailByStatus(reqBody, userId);
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-        res = request.updateChangeVendorRequestStatus(reqBody, userId);
-        request.sendChangeVendorMailByStatus(reqBody, userId);
+    	res.id = request.updateChangeVendorRequestStatus(reqBody, userId);
+    	res.mail = request.sendChangeVendorMailByStatus(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
     	var extendsVendorData = request.getManualExtendVendorRequestById(reqBody.EXTEND_VENDOR_REQUEST_ID);
-        res = request.updateExtendVendorRequestStatus(reqBody, userId);
-        request.sendExtendVendorMailByStatus(reqBody,extendsVendorData, userId);
+    	res.id = request.updateExtendVendorRequestStatus(reqBody, userId);
+    	res.mail = request.sendExtendVendorMailByStatus(reqBody,extendsVendorData, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-        res = request.updateVendorRequestStatus(reqBody, userId);
-        request.sendVendorRequestMailByStatus(reqBody, userId);
+    	res.id = request.updateVendorRequestStatus(reqBody, userId);
+    	res.mail = request.sendVendorRequestMailByStatus(reqBody, userId);
     } else {
     	throw ErrorLib.getErrors().BadRequest("", "vendorRequestServices/handlePut", 
     			"The object reqBody is invalid. Must be included one of the following id: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID or CHANGE_VENDOR_REQUEST_ID"

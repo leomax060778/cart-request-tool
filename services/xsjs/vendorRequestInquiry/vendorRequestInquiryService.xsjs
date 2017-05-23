@@ -130,20 +130,20 @@ function handleGet(parameters, userId) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
-    var res;
+    var res = {};
     if (reqBody.VENDOR_INQUIRY_ID) {
-        res = inquiry.updateVendorInquiry(reqBody, userId);
-        inquiry.sendResubmitMail(reqBody.VENDOR_INQUIRY_ID,userId);
+        res.id = inquiry.updateVendorInquiry(reqBody, userId);
+        res.mail = inquiry.sendResubmitMail(reqBody.VENDOR_INQUIRY_ID,userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-        res = request.updateVendorRequest(reqBody, userId);
-        request.sendResubmitMail(reqBody.VENDOR_REQUEST_ID,userId);
+    	res.id = request.updateVendorRequest(reqBody, userId);
+    	res.mail = request.sendResubmitMail(reqBody.VENDOR_REQUEST_ID,userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-        res = extend.updateExtendVendorRequest(reqBody, userId);
-        extend.sendResubmitMail(reqBody.EXTEND_VENDOR_REQUEST_ID,userId);
+    	res.id = extend.updateExtendVendorRequest(reqBody, userId);
+    	res.mail = extend.sendResubmitMail(reqBody.EXTEND_VENDOR_REQUEST_ID,userId);
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
     	selection.updateChangeSelectionManual(reqBody, userId);
-        res = change.updateChangeVendorRequest(reqBody, userId);
-        change.sendResubmitMail(reqBody.CHANGE_VENDOR_REQUEST_ID,userId);
+    	res.id = change.updateChangeVendorRequest(reqBody, userId);
+    	res.mail = change.sendResubmitMail(reqBody.CHANGE_VENDOR_REQUEST_ID,userId);
     } else {
         throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService",
             "The object reqBody is invalid. Must be included one of the following id: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID or CHANGE_VENDOR_REQUEST_ID");

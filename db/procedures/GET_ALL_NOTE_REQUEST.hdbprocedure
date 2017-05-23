@@ -1,5 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_NOTE_REQUEST" (
- OUT out_result TABLE ( note_request_id bigint, request_id bigint, note_text nvarchar(1000), note_type_id bigint) 
+ OUT out_result TABLE ( note_request_id bigint, request_id bigint, note_text text, note_type_id bigint) 
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 

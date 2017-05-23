@@ -739,7 +739,7 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		mail.sendMail(emailObj,true,null);
+		return mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -767,7 +767,7 @@ function sendExtendVendorMailByStatus(objRequest,extendVendorData, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		mail.sendMail(emailObj,true,null);
+		return mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -790,7 +790,7 @@ function sendVendorInquiryMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		mail.sendMail(emailObj,true,null);
+		return mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -820,7 +820,7 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		mail.sendMail(emailObj,true,null);
+		return mail.sendMail(emailObj,true,null);
 	}
 }
 

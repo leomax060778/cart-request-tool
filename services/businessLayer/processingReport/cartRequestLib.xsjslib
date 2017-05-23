@@ -272,7 +272,7 @@ function sendMailByStatus(objRequest, mailData, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		mail.sendMail(emailObj,true,null);
+		return mail.sendMail(emailObj,true,null);
 	}
 }
 

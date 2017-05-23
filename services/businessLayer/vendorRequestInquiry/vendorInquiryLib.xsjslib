@@ -122,8 +122,8 @@ function insertVendorInquiryManual(objVendorInquiry, userId) {
         	
         		objVendorInquiry.VENDOR_INQUIRY_ID = result_id;
         	    var resMessage = message.insertVendorInquiryMessage(objVendorInquiry, userId);
-        	    sendSubmitMail(result_id, userId);
-        	    var resVendorInquiry = {'inquiry': result_id, 'message': resMessage};
+        	    var mail = sendSubmitMail(result_id, userId);
+        	    var resVendorInquiry = {'inquiry': result_id, 'message': resMessage, 'mail': mail};
         	
 //        	dbHelper.commit();
 //    	}
@@ -327,7 +327,7 @@ function sendSubmitMail(vendorInquiryRequestId, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
 	var mailObj = vendorInquiryMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(vendorInquiryRequestId, userId){
@@ -337,7 +337,7 @@ function sendResubmitMail(vendorInquiryRequestId, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
 	var mailObj = vendorInquiryMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(vendorInquiryRequest, userId){
@@ -347,7 +347,7 @@ function sendMessageMail(vendorInquiryRequest, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequest.VENDOR_INQUIRY_ID;
 	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

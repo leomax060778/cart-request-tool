@@ -13,6 +13,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE
 		description nvarchar(1000), 
 		section_id bigint,
 		attachment_id integer,
+		original_name nvarchar(255),
+		saved_name nvarchar(255),
 		template_type_name nvarchar (255)
 	)
  ) 
@@ -33,6 +35,8 @@ BEGIN
 		"TEMPLATE".DESCRIPTION, 
 		"TEMPLATE".SECTION_ID,
 		"TEMPLATE".ATTACHMENT_ID,
+		ATTACHMENT.ORIGINAL_NAME,
+		ATTACHMENT.SAVED_NAME,
 		(CASE WHEN (TEMPLATE.ATTACHMENT_ID is not null) THEN ATTACHMENT.ATTACHMENT_TYPE ELSE TEMPLATE_TYPE.name END) as template_type_name
 	FROM "TEMPLATE"
 		INNER JOIN "TEMPLATE_TYPE" as TEMPLATE_TYPE ON TEMPLATE.template_type_id = TEMPLATE_TYPE.template_type_id

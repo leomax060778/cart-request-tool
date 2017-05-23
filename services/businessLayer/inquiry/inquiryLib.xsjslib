@@ -349,7 +349,7 @@ function sendSubmitMail(inquiryId, userId){
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	var mailObj = inquiryMail.parseSubmit(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(inquiryId, userId){
@@ -359,7 +359,7 @@ function sendResubmitMail(inquiryId, userId){
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	var mailObj = inquiryMail.parseResubmitted(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

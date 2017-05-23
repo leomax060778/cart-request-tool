@@ -77,8 +77,8 @@ function handlePost(reqBody, userId) {
 		var resRequest = request.insertChangeVendorRequestManual(reqBody, userId);
 		reqBody.CHANGE_VENDOR_REQUEST_ID = resRequest;
 		var resSelection = selection.insertChangeSelectionManual(reqBody, userId);
-		request.sendSubmitMail(resRequest, userId);
-		var res = {'changeVendorId': resRequest, "selection": resSelection};
+		var mail = request.sendSubmitMail(resRequest, userId);
+		var res = {'changeVendorId': resRequest, "selection": resSelection, "mail": mail};
 		return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 	} catch(e){
 		db.rollback();		

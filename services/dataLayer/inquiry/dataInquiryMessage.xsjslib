@@ -18,7 +18,7 @@ function insertInquiryMessage(objInquiry, userId) {
     parameters.in_inquiry_id = objInquiry.INQUIRY_ID;
     parameters.in_message_content = objInquiry.MESSAGE_CONTENT;
     parameters.in_message_type_id = objInquiry.MESSAGE_TYPE_ID || 0;
-    parameters.in_subject_id = objInquiry.SUBJECT || 0;
+    parameters.in_subject_id = objInquiry.SUBJECT_ID || 0;
     parameters.in_additional_message_type_information = null;
     parameters.in_additional_subject_information = null;
     parameters.in_message_read = 0;
