@@ -71,10 +71,10 @@ BEGIN
                       		WHERE POS.ENABLED = 1 
                            		AND POS.DELETED = 0) VPO;
                            		
-	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ, RM.CREATED_USER_ID
+	va_message = SELECT RM.REQUEST_ID, sum(case when RM.MESSAGE_READ = 0 then 1 else 0 end) AS MESSAGE_READ
 				 	FROM "REQUEST_MESSAGE" RM
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.DELETED = 0 AND RM.ENABLED = 1
-				 		GROUP BY RM.REQUEST_ID, RM.CREATED_USER_ID;
+				 		GROUP BY RM.REQUEST_ID;
 				 		
 	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
 						FROM "USER_ROLE" USR
@@ -128,7 +128,7 @@ BEGIN
 							  AND (RQ.STATUS_ID = in_status_id OR in_status_id IS NULL)
 						  	  AND (RQ.ENABLED = 1)
 						  	  AND (RQ.DELETED = 0)
-						  	  ORDER BY RQ.REQUEST_ID DESC;
+					ORDER BY RQ.REQUEST_ID DESC;
 	
 	out_service_table = SELECT 
   				SER.request_id,
