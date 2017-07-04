@@ -1,8 +1,0 @@
-sap\java\email\EmailResponse.class
-sap\java\email\EmailDeserializer.class
-sap\java\email\EmailUtility.class
-sap\java\email\EmailSendingServlet.class
-sap\java\email\EmailAddress.class
-sap\java\email\CORSFilter.class
-sap\java\email\SMTPAuthenticator.class
-sap\java\email\EmailCompose.class
