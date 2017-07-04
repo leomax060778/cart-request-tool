@@ -67,8 +67,8 @@ function getInquiryById(inquiryId, userId) {
 	
 	if(!validateAccess(inquiryId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"inquiryService/handleGet/getInquiryById", "This CRT Inquiry is not longer available in Processing Report");
+				"",
+				"inquiryService/handleGet/getInquiryById", "Unauthorized request");
 	}
 	
 	var inquiry = inquiryStatus.getInquiryById(inquiryId);
@@ -185,7 +185,7 @@ function sendMailByStatus(inquiryId, statusId, userId){
 	}
 	
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

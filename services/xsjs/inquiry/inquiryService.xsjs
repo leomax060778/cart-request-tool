@@ -72,23 +72,16 @@ function handleGet(parameters, userId) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
-	var req = {};
-    req.id = inquiry.updateInquiry(reqBody, userId);
-    req.mail = inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
+	var req;
+    req = inquiry.updateInquiry(reqBody, userId);
+    inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
     
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 
-/**
-*
-* @param {object} reqBody
-* @param {string} reqBody.INQUIRY_ID - id of the inquiry to delete
-* @param userId
-* @returns {int} count - Modified rows count
-*/
-function handleDelete(reqBody, userId) {
-   var req = inquiry.deleteInquiry(reqBody, userId);
-   return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handleDelete() {
+   return httpUtil.notImplementedMethod();
 }
 
 /**
@@ -100,9 +93,9 @@ function handleDelete(reqBody, userId) {
  * @returns {string} id - Id of the new inquiry
  */
 function handlePost(reqBody, userId) {
-	var req = {};
-    req.id = inquiry.insertInquiry(reqBody, userId);
-    req.mail = inquiry.sendSubmitMail(req.id, userId);
+	var req;
+    req = inquiry.insertInquiry(reqBody, userId);
+    inquiry.sendSubmitMail(req, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

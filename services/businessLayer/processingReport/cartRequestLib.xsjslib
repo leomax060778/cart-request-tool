@@ -69,8 +69,8 @@ function getRequestById(requestId, userId) {
 	
 	if(!validateAccess(requestId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"cartRequestService/handleGet/getRequestById", "This Cart Request is not longer available in Processing Report");
+				"",
+				"cartRequestService/handleGet/getRequestById", "Unauthorized request");
 	}
 	
 	if(validatePermissionByUserRole(roleData[0], resRequest)){
@@ -100,7 +100,7 @@ function getRequestById(requestId, userId) {
 			    } 
 	    	}
 	    } else {
-	    	resSpecial = special.getSpecialRequestByRequestId(requestId)[0];
+	    	resSpecial = special.getSpecialRequestByRequestId(requestId, userId);
 	    }
 	    var res = JSON.parse(JSON.stringify(resRequest));
 	    res.NOTES = resNote;
@@ -142,7 +142,16 @@ function getRequestDataProtection(requestId) {
 function updateRequestStatus(objRequest, userId) {
     if (validateUpdateRequestStatus(objRequest, userId)) {
     	if(Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED){
-    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    		switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
+    		case statusMap.APPROVED:
+    			objRequest.STAGE_ID = stageMap.STAGE_E;
+    			break;
+    		case statusMap.CANCELLED:
+    			objRequest.STAGE_ID = stageMap.STAGE_F;
+    			break;
+    		default:
+    			objRequest.STAGE_ID = stageMap.STAGE_C;
+    		}
     	} else if(Number(objRequest.STATUS_ID) === statusMap.CHECKED){
     		objRequest.STAGE_ID = stageMap.STAGE_C;
     	} else if(Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS){
@@ -164,7 +173,16 @@ function updateRequestStatus(objRequest, userId) {
 function updateRequestStatusManual(objRequest, userId) {
     if (validateUpdateRequestStatus(objRequest, userId)) {
     	if(Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED){
-    		objRequest.STAGE_ID = stageMap.STAGE_C;
+    		switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
+    		case statusMap.APPROVED:
+    			objRequest.STAGE_ID = stageMap.STAGE_E;
+    			break;
+    		case statusMap.CANCELLED:
+    			objRequest.STAGE_ID = stageMap.STAGE_F;
+    			break;
+    		default:
+    			objRequest.STAGE_ID = stageMap.STAGE_C;
+    		}
     	} else if(Number(objRequest.STATUS_ID) === statusMap.CHECKED){
     		objRequest.STAGE_ID = stageMap.STAGE_C;
     	} else if(Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS){
@@ -272,7 +290,7 @@ function sendMailByStatus(objRequest, mailData, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		return mail.sendMail(emailObj,true,null);
+		mail.sendMail(emailObj,true,null);
 	}
 }
 

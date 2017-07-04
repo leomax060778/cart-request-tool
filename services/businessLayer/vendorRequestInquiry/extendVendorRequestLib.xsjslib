@@ -106,7 +106,7 @@ function getExtendVendorRequestById(extendVendorRequestId, userId, edition_mode)
     resExtend = JSON.parse(JSON.stringify(resExtend));
     
     if(validatePermissionByUserRole(roleData[0], resExtend)){
-	    if(resExtend){
+	    if(resExtend && resExtend.EXTEND_VENDOR_REQUEST_ID){
 	    	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
 	    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
@@ -135,7 +135,7 @@ function getExtendVendorRequestByIdManual(extendVendorRequestId) {
     
     var resExtend = extend.getExtendVendorRequestByIdManual(extendVendorRequestId);
     resExtend = JSON.parse(JSON.stringify(resExtend));
-    if(resExtend){
+    if(resExtend && resExtend.EXTEND_VENDOR_REQUEST_ID){
     	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
     	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
@@ -407,7 +407,7 @@ function sendSubmitMail(extendVendorRequestId, userId){
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
 	var mailObj = extendVendorMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(extendVendorRequestId, userId){
@@ -417,7 +417,7 @@ function sendResubmitMail(extendVendorRequestId, userId){
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
 	var mailObj = extendVendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(extendVendorRequest, userId){
@@ -427,7 +427,7 @@ function sendMessageMail(extendVendorRequest, userId){
 	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
 	var mailObj = extendVendorMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

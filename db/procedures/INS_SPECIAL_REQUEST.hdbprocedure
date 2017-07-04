@@ -2,6 +2,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_SPECIAL_REQU
   IN in_request_id bigint,
   IN in_material_description nvarchar(500),
   IN in_material_code nvarchar(255),
+  IN in_item integer,
+  IN in_start_date timestamp,
+  IN in_end_date timestamp,
+  IN in_unit_price decimal(19,2),
+  IN in_quantity decimal(19,3),
+  IN in_currency_id bigint,
+  IN in_vendor_text nvarchar(1000),
+  IN in_unit nvarchar(255),
+  IN in_amount decimal(19,2),
+  IN in_budget decimal(19,2),
   IN in_created_user_id bigint,
   OUT out_result bigint
 )
@@ -10,7 +20,34 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-    INSERT INTO "CART_REQUEST_TOOL"."SPECIAL_REQUEST"(request_id ,material_description, material_code, created_user_id)
-      VALUES(in_request_id, in_material_description, in_material_code, in_created_user_id);
+    INSERT INTO "CART_REQUEST_TOOL"."SPECIAL_REQUEST"(request_id,
+    													material_description,
+    													material_code,
+    													item,
+    													START_DATE,
+   					   									END_DATE,
+   					   									UNIT_PRICE,
+   					   									QUANTITY,
+   					   									CURRENCY_ID,
+   					   									VENDOR_TEXT,
+													   	UNIT,
+													   	AMOUNT,
+													   	BUDGET,
+   					   									created_user_id)
+      								VALUES(in_request_id,
+											in_material_description,
+											in_material_code,
+											in_item,
+											in_start_date,
+											in_end_date,
+											in_unit_price,
+											in_quantity,
+											in_currency_id,
+											in_vendor_text,
+											in_unit,
+  											in_amount,
+  											in_budget,
+											in_created_user_id);
+											
     SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST";
 END;

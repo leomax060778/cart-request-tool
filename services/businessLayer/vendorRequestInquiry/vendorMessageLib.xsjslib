@@ -18,10 +18,6 @@ var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED
 function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
     if (validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId)) {
     	if (existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)) {
-    		if(Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-    			objChangeVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-    			status.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
-    		}
     		return dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
     	} else {
             throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequesMessage", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
@@ -35,10 +31,6 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
     if (validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId)) {
     	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
-    		if(Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-    			objExtendVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-    			status.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
-    		}
     		return dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
     	} else {
             throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequesMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
@@ -50,10 +42,6 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 function insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId) {
     if (validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId)) {
     	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
-    		if(Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-    			objExtendVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-    			status.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
-    		}
     		return dataMessage.insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId);
     	} else {
             throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequesMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
@@ -66,10 +54,6 @@ function insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId) 
 function insertVendorRequestMessage(objVendorRequest, userId) {
     if (validateInsertVendorRequestMessage(objVendorRequest, userId)) {
         if (existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
-        	if(Number(objVendorRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objVendorRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objVendorRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-        		objVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-    			status.updateVendorRequestStatusManual(objVendorRequest, userId);
-    		}
             return dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
         } else {
             throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor Request with the id: " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
@@ -81,10 +65,6 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 function insertVendorInquiryMessage(objVendorInquiry, userId) {
     if (validateInsertVendorInquiryMessage(objVendorInquiry, userId)) {
     	if (existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)) {
-    		if(Number(objVendorInquiry.PREVIOUS_STATUS_ID) === statusInquiryMap.RETURN_TO_REQUESTER || Number(objVendorInquiry.PREVIOUS_STATUS_ID) === statusInquiryMap.CANCELLED){
-    			objVendorInquiry.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
-    			status.updateVendorInquiryStatusManual(objVendorInquiry, userId);
-    		}
     		return dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
     	} else {
             throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor inquiry with the id: " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");

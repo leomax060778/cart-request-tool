@@ -60,11 +60,14 @@ function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	    if(resInquiry){
 	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
 	    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
-	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
-	    	 resInquiry.ATTACHMENTS = attachments;
+	    	if (objInquiry.VENDOR_ID) {
+	    		var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
+	    	 	resInquiry.ATTACHMENTS = attachments;
+	    	}
 	    }
-	   
-	    resInquiry.MESSAGE_CONTENT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
+	    if (resInquiry.VENDOR_INQUIRY_ID) {
+	    	resInquiry.MESSAGE_CONTENT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
+	    }
 	    
 	    return resInquiry;
     }else{
@@ -84,8 +87,10 @@ function getVendorInquiryByIdManual(vendorInquiryId) {
     if(resInquiry){
     	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
     	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
-    	 resInquiry.ATTACHMENTS = attachments;
+    	if (objInquiry.VENDOR_ID) {
+    		var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
+    		resInquiry.ATTACHMENTS = attachments;
+    	}
     }
     return resInquiry;
 }
@@ -327,7 +332,7 @@ function sendSubmitMail(vendorInquiryRequestId, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
 	var mailObj = vendorInquiryMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(vendorInquiryRequestId, userId){
@@ -337,7 +342,7 @@ function sendResubmitMail(vendorInquiryRequestId, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequestId;
 	var mailObj = vendorInquiryMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(vendorInquiryRequest, userId){
@@ -347,7 +352,7 @@ function sendMessageMail(vendorInquiryRequest, userId){
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequest.VENDOR_INQUIRY_ID;
 	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

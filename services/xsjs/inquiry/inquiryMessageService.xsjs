@@ -67,9 +67,9 @@ function handleDelete(){
  * @returns {string} id - Id of the new inquiry message
  */
 function handlePost(reqBody, userId) {
-	var req = {};
-    req.id = inquiry.insertInquiryMessage(reqBody, userId);
-    req.mail = inquiry.sendMessageMail(req.id, userId);
+	var req;
+    req = inquiry.insertInquiryMessage(reqBody, userId);
+    inquiry.sendMessageMail(req, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

@@ -46,16 +46,9 @@ function handlePut(){
     return httpUtil.notImplementedMethod();
 }
 
-/**
- *
- * @param {object} reqBody
- * @param {string} reqBody.EXTEND_VENDOR_REQUEST_ID - id of the extend vendor request
- * @param userId
- * @returns {int} count - Modified rows count
- */
-function handleDelete(reqBody, userId) {
-    var req = request.deleteExtendVendorRequest(reqBody, userId);
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handleDelete() {
+   return httpUtil.notImplementedMethod();
 }
 
 /**
@@ -74,9 +67,9 @@ function handleDelete(reqBody, userId) {
  * @returns {string} id - Id of the new extend vendor request
  */
 function handlePost(reqBody, userId) {
-	var req = {};
-    req.id = request.insertExtendVendorRequest(reqBody, userId);
-    req.mail = request.sendSubmitMail(req.id,userId);
+	var req;
+    req = request.insertExtendVendorRequest(reqBody, userId);
+    request.sendSubmitMail(req,userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

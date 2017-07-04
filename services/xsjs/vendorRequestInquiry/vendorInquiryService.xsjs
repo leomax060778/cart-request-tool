@@ -48,16 +48,9 @@ function handlePut(){
     return httpUtil.notImplementedMethod();
 }
 
-/**
- *
- * @param {object} reqBody
- * @param {string} reqBody.VENDOR_INQUIRY_ID - id of the vendor inquiry to delete
- * @param userId
- * @returns {int} count - Modified rows count
- */
-function handleDelete(reqBody, userId) {
-    var res = inquiry.deleteVendorInquiry(reqBody, userId);
-    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handleDelete() {
+   return httpUtil.notImplementedMethod();
 }
 
 /**

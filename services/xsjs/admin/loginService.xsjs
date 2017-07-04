@@ -33,8 +33,8 @@ function handlePost(reqBody, userId) {
 	}else{
 		if(typeMethod && typeMethod === recovery){	
 			//if(loginLib.validateCurrentPassword(username,currentPassword)){
-				var token = loginLib.recoveryPassword(username,password, userId);
-				return httpUtil.handleResponse(token,httpUtil.OK,httpUtil.AppJson);
+			var data = loginLib.recoveryPassword(username,password, userId);
+			return httpUtil.handleResponse(data,httpUtil.OK,httpUtil.AppJson);
 			//}
 		}else{		
 			var login = loginLib.login(username,password);			

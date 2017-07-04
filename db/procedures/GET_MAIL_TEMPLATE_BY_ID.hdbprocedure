@@ -1,0 +1,16 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_MAIL_TEMPLATE_BY_ID" ( 
+	IN in_start_position integer,
+	IN in_string_length integer,
+	IN in_mail_template_id bigint,
+	OUT out_result TABLE (CONTENT nvarchar(5000), MAIL_TEMPLATE_LENGTH integer)
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+	out_result = SELECT substring(to_nvarchar(CONTENT), in_start_position, in_string_length) as CONTENT,
+						LENGTH (CONTENT) AS MAIL_TEMPLATE_LENGTH
+					FROM "CART_REQUEST_TOOL"."MAIL_TEMPLATE" 
+					WHERE MAIL_TEMPLATE_ID = in_mail_template_id;
+END;

@@ -52,7 +52,7 @@ var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
 function validateAccess(request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var request_status = dataRequest.getRequestStatusByRequestId(request_id);
-	
+
 	if(user_role.ROLE_NAME !== 'SuperAdmin'){
 		return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
 	}else{
@@ -179,7 +179,7 @@ function getSpecialRequestByRequestId(request_id, user_id){
 				"The Parameter request_id is not found",
 				"requestService/handleGet/getSpecialRequestByRequestId", request_id);
 	}
-	return dataSpecialRequest.getSpecialRequestByRequestId(request_id);	
+	return dataSpecialRequest.getSpecialRequestByRequestId(request_id);
 }
 
 
@@ -231,7 +231,7 @@ function getNoteRequestByRequestId(requestId){
 	var startPosition;
 	var requestNoteLength;
 	var i;
-	var splitNumber; 
+	var splitNumber;
     try{
     	result = dataNoteRequest.getNoteRequestByRequestId(requestId);
     	result = JSON.parse(JSON.stringify(result));
@@ -246,7 +246,7 @@ function getNoteRequestByRequestId(requestId){
 	    	splitNumber = elem.NOTE_TEXT_LENGTH / requestNoteLength;
 	    	for (i = 0; i < splitNumber; i++){
 	    		noteText = noteText.concat(dataNoteRequest.getNoteRequestContentManual(elem.REQUEST_ID, elem.NOTE_REQUEST_ID, startPosition, requestNoteLength).NOTE_TEXT);
-	    		startPosition = startPosition + requestNoteLength;	
+	    		startPosition = startPosition + requestNoteLength;
 	    	}
 	    	elem.NOTE_TEXT = noteText;
 	    });
@@ -267,9 +267,9 @@ function completeRequest(item, user_id) {
 		var result = {};
 		var catalogs = [];
 		item.CATALOGS = dataCatalog.getManualCatalogById(item.MATERIAL_PARENT_ID);
-		
+
 		catalog = item.CATALOGS[0].CATALOG_PARENT_ID;
-		if(catalog){		
+		if(catalog){
 			while(catalog != "0"){
 				result = getCatalogByParentId(catalog);
 				catalog = result[0].CATALOG_PARENT_ID;
@@ -279,7 +279,7 @@ function completeRequest(item, user_id) {
 				}
 			}
 		}
-		
+
 	}
 
 	item.SERVICES = getServicesByRequestId(item.REQUEST_ID, user_id);
@@ -290,7 +290,7 @@ function completeRequest(item, user_id) {
 	item.NOTES = getNoteRequestByRequestId(item.REQUEST_ID);
 	item.DATA_PROTECTION = getRequestDataProtection(item.REQUEST_ID, user_id);
 	item.ATTACHMENTS = getAttachmentRequest(item.REQUEST_ID, user_id);
-	
+
 }
 
 /*----- REQUEST -----*/
@@ -303,9 +303,9 @@ function getAllRequest(userId) {
 	try {
 		request = dataRequest.getAllRequest(userId);
 		request = JSON.parse(JSON.stringify(request));
-		
+
 		var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
-		
+
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
@@ -318,13 +318,15 @@ function getAllRequest(userId) {
 	return complete_request;
 }
 
-function mergeData(requests, services, attachments, userId) {
-	
+function mergeData(requests, services, specialRequest, attachments, userId) {
+
 	var attachment_request = {};
 	var service_request = {};
-	
+	var special_request = {};
+
 	var loop_length = (attachments.length > services.length)? attachments.length : services.length;
-	
+	loop_length = (loop_length > specialRequest.length)? loop_length : specialRequest.length;
+
 	for(var i = 0; i<loop_length; i++){
 		if(services[i]){
 			if(!service_request[services[i].REQUEST_ID]){
@@ -336,19 +338,27 @@ function mergeData(requests, services, attachments, userId) {
 			if(!attachment_request[attachments[i].REQUEST_ID]){
 				attachment_request[attachments[i].REQUEST_ID] = [];
 			}
+			attachments[i].ATTACHMENT_SIZE = (parseFloat(Number(attachments[i].ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
 			attachment_request[attachments[i].REQUEST_ID].push(attachments[i]);
+		}
+		if (specialRequest[i]) {
+			if(!special_request[specialRequest[i].REQUEST_ID]){
+				special_request[specialRequest[i].REQUEST_ID] = [];
+			}
+			special_request[specialRequest[i].REQUEST_ID].push(specialRequest[i]);
 		}
 	}
 
 	requests.forEach(function(request){
-		request.SERVICES = service_request[request.REQUEST_ID] || [];;
+		request.SERVICES = service_request[request.REQUEST_ID] || [];
 		request.ATTACHMENTS = attachment_request[request.REQUEST_ID] || [];
+		request.SPECIAL_REQUEST = special_request[request.REQUEST_ID] || [];
 		request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
 		request.SHOW_MESSAGE_READ = (request.MESSAGE_READ > 0)?1:0;
 	});
-	
+
 	return requests;
-	
+
 }
 
 function getRequestLastId() {
@@ -381,8 +391,8 @@ function getRequestByFilters(objFilters, userId) {
 		}
 		var request = dataRequest.getRequestByFilters(objFilters, userId);
 		request = JSON.parse(JSON.stringify(request));
-		
-		var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
+
+		var complete_request = mergeData(request.requests, request.services, request.special_request, request.attachments, userId);
 		dbHelper.commit();
 	} catch (e) {
 		dbHelper.rollback();
@@ -406,7 +416,7 @@ function getRequestById(request_id, userId, edition_mode) {
 				"Unauthorized request.",
 				"requestService/handleGet/getRequestById", "This Cart Request is not longer available for edition");
 	}
-	
+
 	var roleData = userRole.getUserRoleByUserId(userId);
 	var request = dataRequest.getRequestByIdManual(request_id);
 	if(validatePermissionByUserRole(roleData[0], request)){
@@ -425,7 +435,7 @@ function getRequestById(request_id, userId, edition_mode) {
 		} finally {
 			dbHelper.closeConnection();
 		}
-	
+
 		return req;
 	}else{
 		throw ErrorLib.getErrors().Forbidden("", "requestService/handleGet/getRequestById", "The user does not have permission to see this Cart Request.");
@@ -444,7 +454,7 @@ function insertManualNoteRequest(objNoteReq, request_id, user_id){
 	objNoteReq.REQUEST_ID = request_id;
 	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNoteRequest";
 	if(utilLib.validateObjectAttributes(objNoteReq, user_id, noteKeys, serviceUrl, validateType)){
-		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
+		dataNoteReq.insertNoteRequest(objNoteReq, user_id);
 	}
 }
 
@@ -452,7 +462,7 @@ function insertManualNoteRequest(objNoteReq, request_id, user_id){
 function insertAttachmentRequest(attachment, in_request_id, userId){
 	attachment.REQUEST_ID = in_request_id;
 	var serviceUrl = "requestService/handleUpdate/updateRequest/insertAttachmentRequest";
-	
+
 	if(utilLib.validateObjectAttributes(attachment, userId, attachmentKeys, serviceUrl, validateType)){
 		return dataAttachmentR.insertAttachmentRequest(attachment, userId);
 	}
@@ -472,7 +482,7 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
 
     var insertOriginalAttachments = [];
     var deleteOriginalAttachments = [];
-    
+
     //DELETE
     original_attachments_local.forEach(function (o_attachment) {
         var result = true;
@@ -490,7 +500,7 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
         	deleteOriginalAttachments.push(o_attachment);
         }
     });
-    
+
     //INSERT
     originalAttachmentsToUpdate.forEach(function (newAttach) {
         var result = true;
@@ -508,7 +518,7 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
         	insertOriginalAttachments.push(newAttach);
         }
     });
-         
+
     //ACTIONS
     if(insertOriginalAttachments.length > 0){
     	insertOriginalAttachments.forEach(function(attachment){
@@ -520,16 +530,16 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
     		deleteAttachment(attachment, request_id, user_id);
     	});
     }
-	return 1; 
+	return 1;
 }
 
 function deleteManualNoteRequest(note_request_id, user_id){
-	dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id); 
+	dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id);
 }
 
 
 function updateManualNoteRequest(objNoteReq, user_id){
-	dataNoteReq.updateManualNoteRequest(objNoteReq, user_id); 	
+	dataNoteReq.updateManualNoteRequest(objNoteReq, user_id);
 }
 
 function deleteNotes(notes, user_id){
@@ -542,16 +552,16 @@ function deleteNotes(notes, user_id){
 
 //SPECIAL REQUEST
 function updateSpecialRequest(special_request, user_id){
-	return businessSpecialRequest.updateSpecialRequest(special_request, user_id);
+    return businessSpecialRequest.updateSpecialRequest(special_request, user_id);
 }
 
 function insertSpecialRequest(special_request, request_id, user_id){
 	special_request.REQUEST_ID = request_id;
-	return businessSpecialRequest.insertSpecialRequest(special_request, user_id);
+    return businessSpecialRequest.insertSpecialRequest(special_request, user_id);
 }
 
 function deleteSpecialRequest(special_request_id, user_id){
-	return businessSpecialRequest.deleteSpecialRequest(special_request_id, user_id);
+    return businessSpecialRequest.deleteSpecialRequest(special_request_id, user_id);
 }
 
 //RISK FUNDED
@@ -561,8 +571,8 @@ function updateRiskFunded(risk_funded, user_id){
 	updateRiskFundedKeys.push("REQUEST_RISK_FUNDED_ID");
 	if(utilLib.validateObjectAttributes(risk_funded, user_id, updateRiskFundedKeys, serviceUrl, validateType)){
 		return dataRRiskFunded.updateManualRiskFunded(risk_funded, user_id);
-	}	
-	
+	}
+
 }
 
 function deleteRiskFunded(risk_funded, user_id){
@@ -573,7 +583,7 @@ function insertRiskFunded(reqBody, user_id){
 	var serviceUrl = "requestService/handleUpdate/updateRequest/insertRiskFunded";
 	if(utilLib.validateObjectAttributes(reqBody, user_id, riskFundedKeys, serviceUrl, validateType)){
 		return dataNewCartRiskFunded.insertRiskFunded(reqBody, user_id);
-	}	
+	}
 }
 
 //COST OBJECT
@@ -585,7 +595,7 @@ function updateCostObject(cost_object, user_id){
 function insertManualNonSapVendor(non_sap_vendor, user_id){
 	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNonSapVendor";
 	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, nonSapVendorKeys, serviceUrl, validateType)){
-		return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);	
+		return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);
 	}
 }
 
@@ -594,14 +604,14 @@ function updateManualNonSapVendor(non_sap_vendor, user_id){
 	var updateNonSapVendorKeys = nonSapVendorKeys;
 	updateNonSapVendorKeys.push("NON_SAP_VENDOR_ID");
 	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, updateNonSapVendorKeys, serviceUrl, validateType)){
-		return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);	
+		return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);
 	}
 }
 
 function deleteManualNonSapVendor(non_sap_vendor_id, user_id){
 	non_sap_vendor_id = Number(non_sap_vendor_id);
-	
-	return businessNonSap.deleteManualNonSapVendor(non_sap_vendor_id, user_id);	
+
+	return businessNonSap.deleteManualNonSapVendor(non_sap_vendor_id, user_id);
 }
 
 //NOTES
@@ -611,7 +621,7 @@ function updateNotes(original_notes, notes, request_id, userId){
     var insertOriginalNotes = [];
     var updateNotesArray = [];
     var deleteOriginalNotes = [];
-    
+
     if( original_notes_local.length > 0){
     	//DELETE
         original_notes_local.forEach(function (o_note) {
@@ -623,7 +633,7 @@ function updateNotes(original_notes, notes, request_id, userId){
             updateOriginalNotes.forEach(function (updateNote) {
             	updateNote.NOTE_REQUEST_ID = Number(updateNote.NOTE_REQUEST_ID);
                 if (updateNote.NOTE_TEXT !== null && (updateNote.NOTE_TEXT).length > 0 && o_note_id === updateNote.NOTE_REQUEST_ID) {
-       
+
                 	result = false;
                 }
             });
@@ -631,7 +641,7 @@ function updateNotes(original_notes, notes, request_id, userId){
                 deleteOriginalNotes.push(o_note_id);
             }
         });
-        
+
         //UPDATE
         updateOriginalNotes.forEach(function (newNote) {
             var result = false;
@@ -648,8 +658,8 @@ function updateNotes(original_notes, notes, request_id, userId){
             if (result) {
             	updateNotes.push(newNote);
             }
-        }); 
-        
+        });
+
         //INSERT
         updateOriginalNotes.forEach(function (newNote) {
             var result = true;
@@ -685,20 +695,20 @@ function updateNotes(original_notes, notes, request_id, userId){
     deleteOriginalNotes.forEach(function (deleteNote) {
         deleteManualNoteRequest(deleteNote, userId);
     });
-    
+
 }
 
 //SERVICES
 
 function updateRequestService(reqBody, user_id){
 	dataRUpdateService.updateManualRequestService(reqBody, user_id);
-} 
+}
 
 function insertService(reqBody, user_id){
 	var serviceUrl = "requestService/handleUpdate/updateRequest/insertService";
 	if(utilLib.validateObjectAttributes(reqBody, user_id, ServiceKeys, serviceUrl, validateType)){
 		return dataService.insertService(reqBody, user_id);
-	}	
+	}
 }
 
 //Return the total amount to be used in Request Service
@@ -707,7 +717,7 @@ function insertServices(services, requestId, conversion_rate, userId){
 	(services).forEach(function(itemService){
 		itemService.REQUEST_ID = requestId;
 		amount += Number(itemService.AMOUNT);
-		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
 		itemService.BUDGET = itemService.BUDGET.toFixed(2);
 		insertService(itemService, userId);
 	});
@@ -729,14 +739,14 @@ function updateService(reqBody, user_id){
 	var serviceUrl = "requestService/handleUpdate/updateRequest/updateService";
 	if(utilLib.validateObjectAttributes(reqBody, user_id, updateServiceKeys, serviceUrl, validateType)){
 		return dataUpdateService.updateService(reqBody, user_id);
-	}	
+	}
 }
 
 function deleteService(service_id, user_id){
 		return dataService.deleteManualServiceById(service_id, user_id);
 }
 
-function deleteServices(services, user_id){ 
+function deleteServices(services, user_id){
 	services.forEach(function(service){
 		deleteService(service, user_id);
 	});
@@ -748,7 +758,7 @@ function updateEachService(services, userId){
 	});
 }
 
-//Return the total amount to be used in Request Service
+//Return the total amount of Services to be used in Request Service
 function updateServices(original_services, services, request_id, conversion_rate, userId){
 	var amount = 0;
 
@@ -757,7 +767,7 @@ function updateServices(original_services, services, request_id, conversion_rate
     var updateOriginalServices = [];
     var insertOriginalServices = [];
     var deleteOriginalServices = [];
-    
+
     //DELETE
     original_services_local.forEach(function (o_service) {
         var result = true;
@@ -775,7 +785,7 @@ function updateServices(original_services, services, request_id, conversion_rate
             deleteOriginalServices.push(o_service_id);
         }
     });
-    
+
     //INSERT
     originalServicesToUpdate.forEach(function (newService) {
         var result = true;
@@ -793,7 +803,7 @@ function updateServices(original_services, services, request_id, conversion_rate
             insertOriginalServices.push(newService);
         }
     });
-    
+
     //UPDATE
     originalServicesToUpdate.forEach(function (newService) {
         var result = false;
@@ -811,7 +821,7 @@ function updateServices(original_services, services, request_id, conversion_rate
             updateOriginalServices.push(newService);
         }
     });
-     
+
     //ACTIONS
     if(insertOriginalServices.length > 0){
     	 insertEditServices(insertOriginalServices, request_id, userId);
@@ -822,24 +832,114 @@ function updateServices(original_services, services, request_id, conversion_rate
     if(deleteOriginalServices.length > 0){
     	deleteServices(deleteOriginalServices, userId);
     }
-    
+
     //Obtain total amount to be used in REQUEST_SERVICE
 	(services).forEach(function(itemService){
 		amount += Number(itemService.AMOUNT);
-		itemService.BUDGET = itemService.AMOUNT * conversion_rate;
+		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
 	});
-	
+
+	return amount;
+}
+
+//Return the total amount of Special Requests to be used in Request Service
+function updateSpecialRequests(originalSpecialRequest, specialRequest, request_id, userId){
+	var amount = 0;
+
+	var originalSpecialRequest_local = originalSpecialRequest;
+    var originalSpecialRequestToUpdate = specialRequest;
+    var updateOriginalSpecialRequest = [];
+    var insertOriginalSpecialRequest = [];
+    var deleteOriginalSpecialRequest = [];
+
+    //DELETE
+    originalSpecialRequest_local.forEach(function (o_service) {
+        var result = true;
+        var o_special_request_id = o_service.SPECIAL_REQUEST_ID;
+        if (typeof o_special_request_id === 'string') {
+            o_special_request_id = Number(o_special_request_id);
+        }
+        originalSpecialRequestToUpdate.forEach(function (updateService) {
+            updateService.SPECIAL_REQUEST_ID = Number(updateService.SPECIAL_REQUEST_ID);
+            if (o_special_request_id === updateService.SPECIAL_REQUEST_ID) {
+                result = false;
+            }
+        });
+        if (result) {
+            deleteOriginalSpecialRequest.push(o_special_request_id);
+        }
+    });
+
+    //INSERT
+    originalSpecialRequestToUpdate.forEach(function (newService) {
+        var result = true;
+        newService.SPECIAL_REQUEST_ID = Number(newService.SPECIAL_REQUEST_ID);
+        originalSpecialRequest_local.forEach(function (service) {
+            var o_special_request_id = service.SPECIAL_REQUEST_ID;
+            if (typeof o_special_request_id === 'string') {
+                o_special_request_id = Number(o_special_request_id);
+            }
+            if (newService.SPECIAL_REQUEST_ID === o_special_request_id) {
+                result = false;
+            }
+        });
+        if (result) {
+            insertOriginalSpecialRequest.push(newService);
+        }
+    });
+
+    //UPDATE
+    originalSpecialRequestToUpdate.forEach(function (newService) {
+        var result = false;
+        newService.SPECIAL_REQUEST_ID = Number(newService.SPECIAL_REQUEST_ID);
+        originalSpecialRequest_local.forEach(function (service) {
+            var o_special_request_id = service.SPECIAL_REQUEST_ID;
+            if (typeof o_special_request_id === 'string') {
+                o_special_request_id = Number(o_special_request_id);
+            }
+            if (newService.SPECIAL_REQUEST_ID === o_special_request_id) {
+                result = true;
+            }
+        });
+        if (result) {
+            updateOriginalSpecialRequest.push(newService);
+        }
+    });
+
+    //ACTIONS
+    if(insertOriginalSpecialRequest.length > 0){
+    	insertOriginalSpecialRequest.forEach(function(specialRequest){
+    		insertSpecialRequest(specialRequest, request_id, userId);
+    	});
+    }
+    
+    if(updateOriginalSpecialRequest.length > 0){
+    	updateOriginalSpecialRequest.forEach(function(specialRequest){
+    		updateSpecialRequest(specialRequest, userId);
+    	});
+    }
+    if(deleteOriginalSpecialRequest.length > 0){
+        deleteOriginalSpecialRequest.forEach(function(specialRequest){
+            deleteSpecialRequest(specialRequest, userId);
+        });
+    }
+
+    //Obtain total amount to be used in REQUEST_SERVICE
+    specialRequest.forEach(function(elem){
+		amount += (Number(elem.UNIT_PRICE) * elem.QUANTITY);
+	});
+
 	return amount;
 }
 
 function updateAttachmentRequest(objRequest, user_id){
 	var request;
 	try{
-		var atachmentList = dataRequest.getAttachmentByRequestId(objRequest.REQUEST_ID, user_id);
-		
+		var attachmentList = dataRequest.getAttachmentByRequestId(objRequest.REQUEST_ID, user_id);
+
 		//ATTACHMENTS UPDATE
-		if(atachmentList){
-			request = updateAttachments(atachmentList, objRequest.ATTACHMENTS, objRequest.REQUEST_ID, user_id);
+		if(attachmentList){
+			request = updateAttachments(attachmentList, objRequest.ATTACHMENTS, objRequest.REQUEST_ID, user_id);
 		}
 		dbHelper.commit();
 	}
@@ -851,7 +951,7 @@ function updateAttachmentRequest(objRequest, user_id){
 		dbHelper.closeConnection();
 	}
 	return request;
-	
+
 }
 
 //Send Mail
@@ -859,14 +959,14 @@ function sendResubmitMail(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
 	 var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
-	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	 return mail.sendMail(emailObj,true,null);
+	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
+	 mail.sendMail(emailObj,true,null);
 }
 
 //REQUEST
 function updateRequest(reqBody, user_id){
 	var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
-	var atachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
+	var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
 	var request;
 	try{
 		//Infrastructure & location of work logic
@@ -880,74 +980,66 @@ function updateRequest(reqBody, user_id){
 			reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
 			status.updateRequestStatusManual(reqBody, user_id);
 		}
-	
+
 		//NON-SAP VENDOR UPDATE
+		var non_sap_id;
 		if(original_request.NON_SAP_VENDOR_ID == null && reqBody.NON_SAP_VENDOR !== null){
 			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = nonsap;
-		
+
 		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
-			var non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
+			non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
 			updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 			reqBody.NON_SAP_VENDOR_ID = reqBody.NON_SAP_VENDOR.NON_SAP_VENDOR_ID;
 
 		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR == null){
-			var non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
+			non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
 			deleteManualNonSapVendor(non_sap_id, user_id);
 			reqBody.NON_SAP_VENDOR_ID = null;
 		} else{
 			reqBody.NON_SAP_VENDOR_ID = null;
 		}
-		
+
 		//MATERIAL_ID LOGIC
-		//SPECIAL REQUEST UPDATE
-		if((original_request.SPECIAL_REQUEST.length > 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0)){
-			updateSpecialRequest(reqBody.SPECIAL_REQUEST, original_request.REQUEST_ID ,user_id);
-			reqBody.MATERIAL_ID = null;
-		
-		} else if((original_request.SPECIAL_REQUEST.length == 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0)){
-			insertSpecialRequest(reqBody.SPECIAL_REQUEST, original_request.REQUEST_ID ,user_id);
-			reqBody.MATERIAL_ID = null;
-		} else if((original_request.SPECIAL_REQUEST.length > 0) && (reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length == 0)){
-			deleteSpecialRequest(original_request.SPECIAL_REQUEST[0].SPECIAL_REQUEST_ID, original_request.REQUEST_ID ,user_id);
-		}
-		
+
 		//NOTES UPDATE
 		if(reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0){
 			updateNotes(original_request.NOTES, reqBody.NOTES, original_request.REQUEST_ID, user_id);
-		
+
 		} else if(original_request.NOTES.length > 0){
 			deleteNotes(reqBody.NOTES, user_id);
 		}
-		
+
 		//COST OBJECT UPDATE
 		if(reqBody.COST_OBJECT !== null){
 			updateCostObject(reqBody.COST_OBJECT, user_id);
 		}
-		
+
 		//RISK_FUNDED UPDATE
+        var risk_conversion_rate_table;
+        var risk_conversion_rate;
 		if(Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
-			var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
-			var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+			risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+			risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 			reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
 			reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
 			updateRiskFunded(reqBody.RISK_FUNDED, user_id);
-		
+
 		} else if((original_request.RISK_FUNDED).length == 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
-			var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
-			var risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
-			
+			risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+			risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+
 			reqBody.RISK_FUNDED.REQUEST_ID = original_request.REQUEST_ID;
 			reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-			reqBody.RISK_FUNDED.AMOUNT_KEUR = Number(reqBody.RISK_FUNDED.AMOUNT) * risk_conversion_rate;
-			
+			reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
+
 			insertRiskFunded(reqBody.RISK_FUNDED, user_id);
-		
+
 		} else if((original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length == 0){
 			deleteRiskFunded(original_request.RISK_FUNDED[0], user_id);
-		
+
 		}
-		 
+
 		//REQUEST SERVICE & SERVICES UPDATES
 		if(reqBody.REQUEST_SERVICE !== undefined){
 			if((reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT) == ""){
@@ -960,15 +1052,24 @@ function updateRequest(reqBody, user_id){
 			}
 			var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
 			var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
-			var cart_amount = updateServices(original_request.SERVICES, reqBody.SERVICES, reqBody.REQUEST_ID, conversion_rate, user_id);
+			var cart_amount;
+            if (reqBody.SERVICES && reqBody.SERVICES.length > 0) {
+                cart_amount = updateServices(original_request.SERVICES, reqBody.SERVICES, reqBody.REQUEST_ID, conversion_rate, user_id);
+                dataSpecialRequest.deleteSpecialRequestByRequestId(reqBody.REQUEST_ID, user_id);
+            } else if (reqBody.SPECIAL_REQUEST && reqBody.SPECIAL_REQUEST.length > 0) {
+                cart_amount = updateSpecialRequests(original_request.SPECIAL_REQUEST, reqBody.SPECIAL_REQUEST, reqBody.REQUEST_ID, user_id);
+                dataService.deleteServiceByRequestId(reqBody.REQUEST_ID, user_id);
+                reqBody.MATERIAL_ID = 0;
+            }
 			reqBody.CART_AMOUNT = cart_amount;
-			reqBody.TOTAL_BUDGET = cart_amount * conversion_rate;
+			reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
 
 			updateRequestService(reqBody.REQUEST_SERVICE, user_id);
 		}
 		//REQUEST UPDATE
 		request = dataRequest.updateRequestManual(reqBody, user_id);
-		var mail = sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
+		//Send MAIL
+		sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
 		//DATA PROTECTION ANSWERS UPDATE
 		var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
 		var newQuestion;
@@ -981,19 +1082,19 @@ function updateRequest(reqBody, user_id){
 					newQuestion = false;
 					break;
 				}
-			};
+			}
 			if (newQuestion) {
 				dataRDataProtection.insertDataProtectionAnswer(item, user_id);
 			} else {
 				updateDataProtectionAnswer(item, user_id);
 			}
 		});
-		
+
 		//ATTACHMENTS UPDATE
-		if(atachmentList){
-			updateAttachments(atachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
+		if(attachmentList){
+			updateAttachments(attachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
 		}
-		
+
 		dbHelper.commit();
 	}
 	catch(e){
@@ -1003,11 +1104,8 @@ function updateRequest(reqBody, user_id){
 	finally{
 		dbHelper.closeConnection();
 	}
-	
-	var result = {};
-	result.id = request;
-	result.mail = mail;
-	return result;
+
+	return request;
 }
 
 
@@ -1029,8 +1127,8 @@ function deleteRequest(request_id, user_id) {
 		dataSpecialRequest.deleteSpecialRequestByRequestId(request_id, user_id);
 		dataRService.deleteRequestServiceByRequestId(request_id, user_id);
 		dataRequest.deleteRequestDataProtectionAnswersByRequestId(request_id, user_id);
-		var atachmentList = dataRequest.getAttachmentByRequestId(request_id, user_id);
-		atachmentList.forEach(function(attachmentRequest) {
+		var attachmentList = dataRequest.getAttachmentByRequestId(request_id, user_id);
+		attachmentList.forEach(function(attachmentRequest) {
 			dataAttachment.deleteAttachment(attachmentRequest, user_id);
 		});
 		dataRequest.deleteAttachmentRequest(request_id, user_id);
@@ -1048,8 +1146,7 @@ function deleteRequest(request_id, user_id) {
 }
 
 function validateDateStringFormat(dateString) {
-	return ((new Date(dateString)).toString() !== "Invalid Date") ? true
-			: false;
+	return ((new Date(dateString)).toString() !== "Invalid Date");
 }
 
 function validateFilterParameters(objFilter, filters) {
@@ -1070,7 +1167,7 @@ function getAttachmentRequest(requestId, user_id){
 	result.forEach(function(attach){
 		attach.ATTACHMENT_SIZE = (parseFloat(Number(attach.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
 	});
-	
+
 	return result;
 }
 

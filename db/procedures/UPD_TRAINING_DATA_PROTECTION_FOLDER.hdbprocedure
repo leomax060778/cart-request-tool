@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_TRAINING_DATA_PROTECTION_FOLDER" (
+	IN in_training_id bigint,
+	IN in_modified_user_id bigint,
+  	OUT out_result bigint
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE TR
+	SET TR.data_protection_folder = 0,
+		TR.modified_date_tz = CURRENT_TIMESTAMP,
+		TR.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."TRAINING" TR
+	WHERE TR.data_protection_folder = 1;
+	
+	UPDATE TR2
+	SET TR2.data_protection_folder = 1,
+		TR2.modified_date_tz = CURRENT_TIMESTAMP,
+		TR2.modified_user_id = in_modified_user_id
+	FROM "CART_REQUEST_TOOL"."TRAINING" TR2
+	WHERE TR2.training_id = in_training_id;
+			
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

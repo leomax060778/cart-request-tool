@@ -16,14 +16,14 @@ function processRequest() {
 }
 
 function handleGet(parameters) {
-    var rdo = {};
+    var res = {};
     if (parameters.length > 0) {
     	if (parameters[0].name === GET_ALL_TRAINING_BY_PARENT) {
-            rdo = training.getAllTrainingByParent(parameters[0].value);
+            res = training.getAllTrainingByParent(parameters[0].value);
         } else if (parameters[0].name === GET_ALL_TRAINING) {
-            rdo = training.getAllTraining();
+            res = training.getAllTraining();
         } else if (parameters[0].name === GET_TRAINING_BY_ID) {
-            rdo = training.getTrainingById(parameters[0].value);
+            res = training.getTrainingById(parameters[0].value);
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
@@ -32,11 +32,17 @@ function handleGet(parameters) {
                 + parameters[0].name);
         }
     }
-    return httpUtil.handleResponse(rdo, httpUtil.OK, httpUtil.AppJson);
+    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 function handlePut(reqBody, userId) {
-    var req = training.updateTraining(reqBody, userId);
+	var req;
+	if (reqBody.METHOD) {
+		req = training.updateTrainingFolderId(reqBody, userId);
+	} else {
+		req = training.updateTraining(reqBody, userId);
+	}
+	
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

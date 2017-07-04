@@ -62,9 +62,8 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
 		}
 	    
-	    var result = {};
-	    result.id = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
-	    result.mail = sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
+	    var result = dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
+	    sendMessageMail(objChangeVendorRequest, pathName.CHANGE_VENDOR_MAIL, userId);
 	    
 	    return result;
     }
@@ -87,9 +86,8 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
 		}
 	    
-	    var result = {};
-        result.id = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
-        result.mail = sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
+	    var result = dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
+        sendMessageMail(objExtendVendorRequest, pathName.EXTEND_VENDOR_MAIL, userId);
         
         return result;
     }
@@ -112,9 +110,8 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
 		}
 	    
-	    var result = {};
-	    result.id = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
-	    result.mail = sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
+	    var result = dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
+	    sendMessageMail(objVendorRequest, pathName.VENDOR_REQUEST_MAIL, userId);
         
         return result;
     }
@@ -137,9 +134,8 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
 		}
 	    
-	    var result = {};
-        result.id = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
-        result.mail = sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
+	    var result = dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
+        sendMessageMail(objVendorInquiry, pathName.VENDOR_INQUIRY_MAIL, userId);
         
         return result;
     }
@@ -163,9 +159,8 @@ function insertInquiryMessage(objInquiry, userId) {
 			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
 		}
 	    
-	    var result = {};
-	    result.id = dataMessage.insertInquiryMessage(objInquiry, userId);
-	    result.mail = sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
+	    var result = dataMessage.insertInquiryMessage(objInquiry, userId);
+	    sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
         
         return result;
     }
@@ -188,9 +183,8 @@ function insertRequestMessage(objRequest, userId) {
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
 	    
-	    var result = {};
-	    result.id = dataMessage.insertRequestMessage(objRequest, userId);
-	    result.mail = sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
+	    var result = dataMessage.insertRequestMessage(objRequest, userId);
+	    sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
         
         return result;
     }

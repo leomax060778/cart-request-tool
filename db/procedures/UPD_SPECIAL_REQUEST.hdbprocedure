@@ -2,6 +2,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SPECIAL_REQU
   IN in_special_request_id bigint,
   IN in_material_description nvarchar(500),
   IN in_material_code nvarchar(255),
+  IN in_item integer,
+  IN in_start_date timestamp,
+  IN in_end_date timestamp,
+  IN in_unit_price decimal(19,2),
+  IN in_quantity decimal(19,3),
+  IN in_currency_id bigint,
+  IN in_vendor_text nvarchar(1000),
+  IN in_unit nvarchar(255),
+  IN in_amount decimal(19,2),
+  IN in_budget decimal(19,2),
   IN in_modified_user_id bigint,
   OUT out_result bigint
 )
@@ -13,6 +23,16 @@ BEGIN
 	UPDATE special_request
 	SET special_request.material_description = in_material_description,
 		special_request.material_code = in_material_code,
+		special_request.item = in_item,
+		special_request.start_date = in_start_date,
+		special_request.end_date = in_end_date,
+		special_request.unit_price = in_unit_price,
+		special_request.quantity = in_quantity,
+		special_request.currency_id = in_currency_id,
+		special_request.vendor_text = in_vendor_text,
+		special_request.unit = in_unit,
+  		special_request.amount = in_amount,
+  		special_request.budget = in_budget,
 		special_request.modified_date_tz = CURRENT_TIMESTAMP,
 		special_request.modified_user_id = in_modified_user_id
 	FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST" special_request

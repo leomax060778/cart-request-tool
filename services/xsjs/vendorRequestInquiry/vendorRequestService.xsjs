@@ -99,16 +99,9 @@ function handlePut(reqBody, userId) {
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
-/**
- *
- * @param {object} reqBody
- * @param {string} reqBody.VENDOR_REQUEST_ID - id of the vendor request to delete
- * @param userId
- * @returns {int} count - Modified rows count
- */
-function handleDelete(reqBody, userId) {
-    var res = request.deleteVendorRequest(reqBody, userId);
-    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handleDelete() {
+   return httpUtil.notImplementedMethod();
 }
 
 /**
@@ -160,7 +153,7 @@ function handlePost(reqBody, userId) {
     var resRequest = request.insertVendorRequestManual(reqBody, userId);
     reqBody.VENDOR_REQUEST_ID = resRequest;
     //request.sendSubmitMail(resRequest, userId);
-    var res = {"vendorId": resVendor, "newVendorRequestId": resRequest.id, "mail": resRequest.mail};
+    var res = {"vendorId": resVendor, "newVendorRequestId": resRequest};
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 

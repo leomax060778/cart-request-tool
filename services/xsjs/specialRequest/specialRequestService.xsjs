@@ -16,15 +16,15 @@ function processRequest(){
 	}
 
 function handleGet(parameters, user_id) {
-    var rdo = {};
+    var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_SPECIAL_REQUEST_BY_ID) {
-            rdo = special_request.getSpecialRequestById(parameters[0].value, user_id);
-            
-        	} 
+            res = special_request.getSpecialRequestById(parameters[0].value, user_id);
+
+        	}
         else if (parameters[0].name === GET_ALL_SPECIAL_REQUEST) {
-            rdo = special_request.getAllSpecialRequest(user_id);
-          
+            res = special_request.getAllSpecialRequest(user_id);
+
         	}
         }
     else {
@@ -35,7 +35,7 @@ function handleGet(parameters, user_id) {
                 + parameters[0].name);
         }
 
-    return http.handleResponse(rdo, http.OK, http.AppJson);
+    return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 function handlePost(specialReqBody, user_id) {
@@ -44,14 +44,13 @@ function handlePost(specialReqBody, user_id) {
 }
 
 function handlePut(specialReqBody, user_id) {
-    var rdo = {};
-        rdo = special_request.updateSpecialRequest(specialReqBody, user_id);
-    return http.handleResponse(rdo, http.OK, http.AppJson);
+    var res = special_request.updateSpecialRequest(specialReqBody, user_id);
+    return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 function handleDelete(specialReqBody, user_id) {
-	var rdo =  special_request.deleteSpecialRequest(specialReqBody.SPECIAL_REQUEST_ID, user_id);
-	return http.handleResponse(rdo,http.OK,http.AppJson);
+	var res =  special_request.deleteSpecialRequest(specialReqBody.SPECIAL_REQUEST_ID, user_id);
+	return http.handleResponse(res,http.OK,http.AppJson);
 	
 }
 

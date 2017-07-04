@@ -41,7 +41,7 @@ function confirmToken(token,userId){
 		//get token sended for this user
 		var userRecovery = dbLogin.getTokenRecovery(token);
 		if(!userRecovery){
-			throw ErrorLib.getErrors().CustomError("",
+			throw ErrorLib.getErrors().LoginError("",
 					"LoginLib/confirmToken", "Invalid credentials. The Token doesn't exists"); 
 		}
 		
@@ -58,7 +58,7 @@ function confirmToken(token,userId){
 			  return true;
 		}
 	else{
-		throw ErrorLib.getErrors().CustomError("",
+		throw ErrorLib.getErrors().LoginError("",
 				"LoginLib/confirmToken", "Invalid credentials. User doesn't exists"); 
 	}
 }
@@ -78,6 +78,7 @@ function recoveryPassword(username,password, userId){
 		
 		notifyInsertByEmail(email, username, token); //notify with a new token.
 		return token;
+
 	}
 }
 

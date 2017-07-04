@@ -91,7 +91,15 @@ function validateInsertSpecialRequest(objSpecialRequest, user_id) {
 	var BreakException = {};
 	var keys = ["REQUEST_ID",
 	            "MATERIAL_DESCRIPTION", 
-	            "MATERIAL_CODE"];
+	            "MATERIAL_CODE",
+				"ITEM",
+				"UNIT_PRICE",
+				"QUANTITY",
+				"CURRENCY_ID",
+				"VENDOR_TEXT",
+				"UNIT",
+				"AMOUNT",
+				"BUDGET"];
 
 	if (!objSpecialRequest)
 		throw ErrorLib.getErrors().CustomError("",
@@ -105,7 +113,7 @@ function validateInsertSpecialRequest(objSpecialRequest, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, objSpecialRequest[key])
+				isValid = validateType(key, objSpecialRequest[key]);
 				if (!isValid) {
 					errors[key] = objSpecialRequest[key];
 					throw BreakException;
@@ -137,7 +145,15 @@ function validateUpdateSpecialRequest(objSpecialRequest, user_id) {
 	var BreakException = {};
 	var keys = ["SPECIAL_REQUEST_ID", 
 				"MATERIAL_DESCRIPTION", 
-	            "MATERIAL_CODE"];
+	            "MATERIAL_CODE",
+				"ITEM",
+				"UNIT_PRICE",
+				"QUANTITY",
+				"CURRENCY_ID",
+				"VENDOR_TEXT",
+				"UNIT",
+				"AMOUNT",
+				"BUDGET"];
 
 	if (!objSpecialRequest)
 		throw ErrorLib.getErrors().CustomError("",
@@ -151,7 +167,7 @@ function validateUpdateSpecialRequest(objSpecialRequest, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, objSpecialRequest[key])
+				isValid = validateType(key, objSpecialRequest[key]);
 				if (!isValid) {
 					errors[key] = objSpecialRequest[key];
 					throw BreakException;
@@ -182,10 +198,34 @@ function validateType(key, value) {
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'MATERIAL_DESCRIPTION':
-		valid = value.length > 0 && value.length <= 500;
+		valid = value.length > 0 && value.length <= 40;
 		break;
 	case 'MATERIAL_CODE':
 		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'ITEM':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'UNIT_PRICE':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'QUANTITY':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'CURRENCY_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'VENDOR_TEXT':
+		valid = value.length > 0 && value.length <= 1000;
+		break;
+	case 'UNIT':
+		valid = value.length > 0 && value.length <= 255;
+		break;
+	case 'AMOUNT':
+		valid = !isNaN(value) && value > 0;
+		break;
+	case 'BUDGET':
+		valid = !isNaN(value) && value > 0;
 		break;
 	}
 	return valid;

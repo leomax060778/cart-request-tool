@@ -397,6 +397,11 @@ function getDataApi(){
     return $.xscartrequesttool.services.dataLayer.api.dataApi;
 }
 
+function getDataMailTemplate(){
+    $.import("xscartrequesttool.services.dataLayer.util","dataMailTemplate");
+    return $.xscartrequesttool.services.dataLayer.util.dataMailTemplate;
+}
+
 function getDataPopUp(){
     $.import("xscartrequesttool.services.dataLayer.util","dataPopUp");
     return $.xscartrequesttool.services.dataLayer.util.dataPopUp;
@@ -741,8 +746,8 @@ function getDataResource(){
 }
 
 function getDataConfig(){
-    $.import("xscartrequesttool.services.dataLayer.util","dataConfig");
-    return $.xscartrequesttool.services.dataLayer.util.dataConfig;
+    $.import("xscartrequesttool.services.dataLayer.util","dataConfiguration");
+    return $.xscartrequesttool.services.dataLayer.util.dataConfiguration;
 }
 
 function getDataRequestRiskFunded() {

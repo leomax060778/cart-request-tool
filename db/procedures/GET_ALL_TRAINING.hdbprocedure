@@ -10,7 +10,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING
 	 training_id bigint,
 	 attachment_id bigint,
 	 original_name nvarchar(255),
-	 saved_name nvarchar(255)
+	 saved_name nvarchar(255),
+	 data_protection_folder tinyint,
+	 CREATED_DATE nvarchar(32)
 	 ) 
  ) 
 	LANGUAGE SQLSCRIPT
@@ -18,22 +20,23 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
- out_result = SELECT 
- 			 TRAINING.training_type_id, 
-			 TRAINING.parent_id, 
-			 TRAINING.link, 
-			 TRAINING.name, 
-			 TRAINING.description,
-			 TRAINING.training_order,
-			 TRAINING_TYPE.name as training_type_name,
-			 TRAINING.TRAINING_ID,
-			 TRAINING.ATTACHMENT_ID,
-			 ATTACHMENT.ORIGINAL_NAME,
-			 ATTACHMENT.SAVED_NAME
- 			FROM "TRAINING" as TRAINING
- 			INNER JOIN "TRAINING_TYPE" as TRAINING_TYPE ON TRAINING.training_type_id = TRAINING_TYPE.training_type_id
- 			LEFT JOIN "ATTACHMENT" ATTACHMENT ON TRAINING.ATTACHMENT_ID = ATTACHMENT.ATTACHMENT_ID
- 			WHERE TRAINING.ENABLED = 1
- 			AND TRAINING.DELETED = 0
- 			AND TRAINING.PARENT_ID = 0;
+ out_result = SELECT TR.training_type_id, 
+					 TR.parent_id, 
+					 TR.link, 
+					 TR.name, 
+					 TR.description,
+					 TR.training_order,
+					 TTY.name as training_type_name,
+					 TR.TRAINING_ID,
+					 TR.ATTACHMENT_ID,
+					 ATT.ORIGINAL_NAME,
+					 ATT.SAVED_NAME,
+					 TR.data_protection_folder,
+					 TO_NVARCHAR(ATT.CREATED_DATE_TZ, 'YYYY-MM-DD') AS CREATED_DATE
+ 			FROM "TRAINING" TR
+ 			INNER JOIN "TRAINING_TYPE" TTY ON TR.training_type_id = TTY.training_type_id
+ 			LEFT JOIN "ATTACHMENT" ATT ON TR.ATTACHMENT_ID = ATT.ATTACHMENT_ID
+ 			WHERE TR.ENABLED = 1
+ 			AND TR.DELETED = 0
+ 			AND TR.PARENT_ID = 0;
 END;

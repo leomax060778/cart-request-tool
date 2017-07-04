@@ -35,7 +35,7 @@ BEGIN
                       				WHERE POS.REQUEST_ID = in_request_id
                            				AND POS.ENABLED = 1 
                            				AND POS.DELETED = 0;
-  out_result = SELECT 
+  out_result = SELECT DISTINCT
   				SER.request_id,
   				SER.service_id, 
   				TO_NVARCHAR(SER.start_date, 'YYYY-MM-DD') AS start_date, 

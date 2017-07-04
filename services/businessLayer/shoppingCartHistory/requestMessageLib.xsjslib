@@ -20,7 +20,7 @@ function parseNewMessage(requestId, requester, userId){
 	 requestMailObj.REQUEST_ID = requestId;
 	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName), "Colleague");
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	 return mail.sendMail(emailObj,true,null);
+	 mail.sendMail(emailObj,true,null);
 }
 
 //Insert new request message
@@ -29,14 +29,12 @@ function insertRequestMessage(objRequest, userId) {
 		if (!existRequest(objRequest.REQUEST_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
 	    }
-		if(Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CHECKED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.IN_PROCESS || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-			objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-			status.updateRequestStatusManual(objRequest, userId);
+		if (Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.APPROVED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED) {
+	        objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
+	        status.updateRequestStatusManual(objRequest, userId);
 		}
-		
-		var result = {};
-		result.id = message.insertRequestMessage(objRequest, userId);
-		result.mail = parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
+		var result = message.insertRequestMessage(objRequest, userId);
+		parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
         
         return result;
     }

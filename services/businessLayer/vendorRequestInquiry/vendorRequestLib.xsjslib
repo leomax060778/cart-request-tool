@@ -53,13 +53,10 @@ function insertVendorRequest(objVendorRequest, userId) {
     		var result_id = request.insertVendorRequestManual(objVendorRequest, userId);
         	if(result_id){
         		vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
-        		var mail = sendSubmitMail(result_id, userId);
+        		sendSubmitMail(result_id, userId);
         		}
         	
-        	var result = {};
-        	result.id = result_id;
-        	result.mail = mail;
-        	return result;
+        	return result_id;
     }
 }
 
@@ -89,14 +86,10 @@ function insertVendorRequestManual(objVendorRequest, userId) {
         			vendorMessage.insertVendorRequestMessage(objVendorRequest, userId);
     			}
     			
-    			var mail = sendSubmitMail(result_id, userId);
-    			var result = {};
-            	result.id = result_id;
-            	result.mail = mail;
-            	        		
+    			sendSubmitMail(result_id, userId);            	        		
     		}
     		
-        return result;
+        return result_id;
     }
 }
 
@@ -131,7 +124,7 @@ function getVendorRequestById(vendorRequestId, userId, edition_mode) {
     if(validatePermissionByUserRole(roleData[0], resRequest)){
 	    resRequest = JSON.parse(JSON.stringify(resRequest));
 	    
-	    if(resRequest){
+	    if(resRequest && resRequest.VENDOR_REQUEST_ID){
 	    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
 	    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
@@ -167,8 +160,10 @@ function getVendorRequestByIdManual(vendorRequestId) {
     if(resRequest){
     	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
     	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
-    	 var attachments = businessAttachmentVendor.getAttachmentVendorByIdManual(objRequest);
-    	 resRequest.ATTACHMENTS = attachments;
+    	if (objRequest.VENDOR_ID) {
+    		var attachments = businessAttachmentVendor.getAttachmentVendorByIdManual(objRequest);
+    	 	resRequest.ATTACHMENTS = attachments;
+    	}
     }
     return resRequest;
 }
@@ -285,11 +280,9 @@ function updateVendorRequest(objVendorRequest, userId) {
     		updateDataProtectionAnswer(item, userId);
     	});
     }
-	
-    var result = {};
-    
-    result.id = request.updateVendorRequest(objVendorRequest, userId);
-    result.mail = sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId);
+	    
+    var result = request.updateVendorRequest(objVendorRequest, userId);
+    sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId);
     
     return result;
 }
@@ -537,7 +530,7 @@ function sendSubmitMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
 	var mailObj = vendorMail.parseSubmit(vendorMailObj, getBasicData(pathName),requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendResubmitMail(newVendorRequestId, userId){
@@ -547,7 +540,7 @@ function sendResubmitMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId;
 	var mailObj = vendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(newVendorRequestId, userId){
@@ -557,7 +550,7 @@ function sendMessageMail(newVendorRequestId, userId){
 	vendorMailObj.REQUEST_ID = newVendorRequestId.VENDOR_REQUEST_ID;
 	var mailObj = vendorMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

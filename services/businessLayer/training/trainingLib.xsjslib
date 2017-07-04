@@ -2,6 +2,7 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataTraining = mapper.getDataTraining();
 var dataTrainingType = mapper.getDataTrainingType();
+var dataPopup = mapper.getDataPopUp();
 var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
@@ -46,6 +47,17 @@ function updateTraining(objTraining, userId) {
     if (validateUpdateTraining(objTraining, userId)) {
         return dataTraining.updateTraining(objTraining, userId);
     }
+}
+
+//Update training folder id in pop-up content
+function updateTrainingFolderId(objTraining, userId) {
+	var folderId = objTraining.TRAINING_ID;
+	var popUp = dataPopup.getPopUpByCode("DATA_PROTECTION_POP_UP")[0];
+	var popUpContent = popUp.CONTENT;
+	var objPopUp = JSON.parse(JSON.stringify(popUp));
+	objPopUp.CONTENT = popUpContent.replace(/folderId=\d+/, "folderId=" + Number(folderId));
+	dataPopup.updatePopUp(objPopUp, userId);
+	return dataTraining.updateDataProtectionFolder(objTraining, userId);
 }
 
 //Delete training

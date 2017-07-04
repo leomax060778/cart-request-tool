@@ -47,16 +47,9 @@ function handlePut(){
     return httpUtil.notImplementedMethod();
 }
 
-/**
- *
- * @param {object} reqBody
- * @param {string} reqBody.change_vendor_request_id - id of the change vendor request
- * @param userId
- * @returns {int} count - Modified rows count
- */
-function handleDelete(reqBody, userId) {
-    var req = request.deleteChangeVendorRequest(reqBody, userId);
-    return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
+//Not Implemented Method
+function handleDelete() {
+   return httpUtil.notImplementedMethod();
 }
 
 /**

@@ -55,6 +55,7 @@ function getRequestByFilters(objFilters, userId){
     parameters.in_status_id = objFilters.STATUS_ID;
     parameters.out_result = '?';
     parameters.out_service_table = '?';
+    parameters.out_special_request_table = '?';
     parameters.out_attachment_table = '?';
     
     var result = db.executeProcedureManual(GET_REQUEST_BY_FILTERS, parameters);
@@ -62,6 +63,7 @@ function getRequestByFilters(objFilters, userId){
     
     results.requests = db.extractArray(result.out_result);
     results.services = db.extractArray(result.out_service_table);
+    results.special_request = db.extractArray(result.out_special_request_table);
     results.attachments = db.extractArray(result.out_attachment_table);
     
     return results;

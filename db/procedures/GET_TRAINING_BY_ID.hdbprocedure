@@ -7,6 +7,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TRAINING_BY_
 			link NVARCHAR(2048),
 			name NVARCHAR(2048),
 			description NVARCHAR(2048),
+	 		data_protection_folder tinyint,
 			training_order INTEGER
 		)
 	)
@@ -22,6 +23,7 @@ BEGIN
 				link, 
 				name, 
 				description, 
+	 			data_protection_folder,
 				training_order
 			FROM "TRAINING"
 			WHERE "TRAINING".training_id = in_training_id

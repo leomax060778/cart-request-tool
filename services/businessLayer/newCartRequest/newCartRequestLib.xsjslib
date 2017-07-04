@@ -28,23 +28,24 @@ function insertRequestService(reqBody, requestId, user_id){
 	reqBody.REQUEST_ID = requestId;
 	if(validateInsertRequestService(reqBody, user_id)){
 		return dataRService.insertRequestService(reqBody, user_id);
-	}	
+	}
 }
 
 function insertSpecialRequest(reqBody, requestId, user_id){
 	reqBody.REQUEST_ID = requestId;
+
 	if(businessSpecialRequest.validateInsertSpecialRequest(reqBody, user_id)){
 		return dataSpecialRequest.insertSpecialRequest(reqBody, user_id);
-	}	
+	}
 }
 
 function insertService(reqBody, user_id){
 	if(validateInsertService(reqBody, user_id)){
 		return dataService.insertService(reqBody, user_id);
-	}	
+	}
 }
 
-//Return the total amount to be used in Request Service
+//Return the total amount of Services to be used in Request Service
 function insertServices(services, requestId, conversion_rate, userId){
 	var amount = 0;
 	(services).forEach(function(itemService){
@@ -58,31 +59,43 @@ function insertServices(services, requestId, conversion_rate, userId){
 	return amount;
 }
 
+//Return the total amount of Special Requests to be used in Request Service
+function insertSpecialRequests(specialRequests, requestId, conversionRate, userId){
+    var amount = 0;
+    specialRequests.forEach(function (elem) {
+        amount += (Number(elem.UNIT_PRICE) * elem.QUANTITY);
+        elem.BUDGET = (elem.AMOUNT / conversionRate) / 1000;
+        elem.BUDGET = (elem.BUDGET).toFixed(2);
+        insertSpecialRequest(elem, requestId, userId);
+    });
+
+    return amount;
+}
 
 function insertCostObject(reqBody, user_id){
 	if(validateInsertCostObject(reqBody, user_id)){
 		return dataRCostObject.insertCostObject(reqBody, user_id);
-	}	
+	}
 }
 
 function insertRiskFunded(reqBody, user_id){
 	if(validateInsertRiskFunded(reqBody, user_id)){
 		return dataRRiskFunded.insertRiskFunded(reqBody, user_id);
-	}	
+	}
 }
 
 function insertDataProtectionAnswer(reqBody, in_request_id, user_id){
 	reqBody.REQUEST_ID = in_request_id;
 	if(validateInsertDataProtectionAnswer(reqBody, user_id)){
 		return dataRDataProtection.insertDataProtectionAnswer(reqBody, user_id);
-	}	
+	}
 }
 
 
 function insertMaterial(reqBody, user_id){
 	if(validateInsertMaterial(reqBody, user_id)){
 		return dataMaterial.insertMaterial(reqBody, user_id);
-	}	
+	}
 }
 
 function insertAttachmentRequest(objAttachment, in_request_id, userId){
@@ -102,7 +115,7 @@ function insertAttachmentRequestAuto(objAttachment, in_request_id, userId){
 function insertNoteRequest(objNoteReq, in_request_id, user_id){
 	objNoteReq.REQUEST_ID = in_request_id;
 	if(validateInsertNoteRequest(objNoteReq, user_id)){
-		dataNoteReq.insertNoteRequest(objNoteReq, user_id); 
+		dataNoteReq.insertNoteRequest(objNoteReq, user_id);
 	}
 }
 
@@ -125,8 +138,7 @@ function insertRequest(reqBody, user_id){
 		}
 		//NON-SAP Vendor logic
 		if(reqBody.NON_SAP_VENDOR !== null){
-			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
-			reqBody.NON_SAP_VENDOR_ID = nonsap;
+            reqBody.NON_SAP_VENDOR_ID = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 		} else{
 			reqBody.NON_SAP_VENDOR_ID = null;
 		}
@@ -134,21 +146,24 @@ function insertRequest(reqBody, user_id){
 		if(validateInsertRequest(reqBody, user_id)){
 			request = data.insertRequest(reqBody, user_id);
 		}
-		
+
 		if(request){
 			reqBody.COST_OBJECT.REQUEST_ID = request;
-			if(reqBody.REQUEST_SERVICE !== undefined){
+			if(reqBody.REQUEST_SERVICE !== undefined) {
 				var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
 				var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
-				var cart_amount = insertServices(reqBody.SERVICES, request, conversion_rate, user_id);
+				var cart_amount;
+				if (reqBody.SERVICES && reqBody.SERVICES.length > 0) {
+					cart_amount = insertServices(reqBody.SERVICES, request, conversion_rate, user_id);
+				} else if (reqBody.SPECIAL_REQUEST && reqBody.SPECIAL_REQUEST.length > 0) {
+                    cart_amount = insertSpecialRequests(reqBody.SPECIAL_REQUEST, request, conversion_rate, user_id);
+                    request.MATERIAL_ID = 0;
+                }
 				reqBody.CART_AMOUNT = cart_amount;
 				reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
 				insertRequestService(reqBody.REQUEST_SERVICE, request ,user_id);
 			}
-		
-			if(reqBody.SPECIAL_REQUEST && Object.keys(reqBody.SPECIAL_REQUEST).length > 0){
-				insertSpecialRequest(reqBody.SPECIAL_REQUEST, request ,user_id);
-			}
+
 			insertCostObject(reqBody.COST_OBJECT, user_id);
 			if(Object.keys(reqBody.RISK_FUNDED).length > 0){
 				var risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
@@ -224,10 +239,10 @@ function validateInsertAttachmentRequest(objReq, userId) {
 }
 
 function validateInsertRequest(objRequest, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestService/handlePost/insertRequest",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestService/handlePost/insertRequest",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -242,21 +257,21 @@ function validateInsertRequest(objRequest, user_id) {
 	            'ALTERNATIVE_VENDOR_PHONE',
 	            'ALTERNATIVE_VENDOR_EMAIL'
 	            ];
-	
+
 	if (objRequest.DATA_PROTECTION_ENABLED) {
 		keys.push('DATA_PROTECTION_ENABLED');
 	}
-	
+
 	if (objRequest.INFRASTRUCTURE_OF_WORK_ID) {
 		keys.push('INFRASTRUCTURE_OF_WORK_ID');
 	}
 	if(objRequest.LOCATION_OF_WORK_ID) {
 		keys.push('LOCATION_OF_WORK_ID');
 	}
-	
+
 	if(!objRequest)
 		throw ErrorLib.getErrors().CustomError("","requestService/handlePost/insertRequest","The object Request is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (objRequest[key] === null || objRequest[key] === undefined) {
@@ -264,7 +279,7 @@ function validateInsertRequest(objRequest, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, objRequest[key])
+				isValid = validateType(key, objRequest[key]);
 				if (!isValid) {
 					errors[key] = objRequest[key];
 					throw BreakException;
@@ -273,12 +288,12 @@ function validateInsertRequest(objRequest, user_id) {
 		});
 		optionalKeys.forEach(function(key) {
 			// validate attribute type
-			isValid = validateType(key, objRequest[key])
+			isValid = validateType(key, objRequest[key]);
 				if (!isValid) {
 					errors[key] = objRequest[key];
 					throw BreakException;
 				}
-			
+
 		});
 
 		isValid = true;
@@ -293,10 +308,10 @@ function validateInsertRequest(objRequest, user_id) {
 }
 
 function validateInsertRequestService(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestServiceService/handlePost/insertRequestService",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestServiceService/handlePost/insertRequestService",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -308,10 +323,10 @@ function validateInsertRequestService(reqBody, user_id) {
 	                     'LINE_TO_UPLIFT',
 	                     'PURCHASE_ORDER_AMOUNT',
 	                     'SAP_BUYER_NAME'];
-	
+
 	if(!reqBody)
 		throw ErrorLib.getErrors().CustomError("","requestServiceService/handlePost/insertRequestService","The object Request Service is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -319,7 +334,7 @@ function validateInsertRequestService(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -328,14 +343,14 @@ function validateInsertRequestService(reqBody, user_id) {
 		});
 		optional_keys.forEach(function(key) {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
 				}
 		});
-		
-		
+
+
 		isValid = true;
 	} catch (e) {
 		if (e !== BreakException)
@@ -348,10 +363,10 @@ function validateInsertRequestService(reqBody, user_id) {
 }
 
 function validateInsertService(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","serviceService/handlePost/insertService",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","serviceService/handlePost/insertService",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -363,10 +378,7 @@ function validateInsertService(reqBody, user_id) {
 	            'ITEM'];
 	var specialKeys = ['AMOUNT',
 	                   'CURRENCY_ID'];
-	
-	if(!reqBody)
-		throw ErrorLib.getErrors().CustomError("","serviceService/handlePost/insertService","The object Service is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -374,7 +386,7 @@ function validateInsertService(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -387,7 +399,7 @@ function validateInsertService(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateServiceType(key, reqBody[key])
+				isValid = validateServiceType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -407,10 +419,10 @@ function validateInsertService(reqBody, user_id) {
 
 
 function validateInsertCostObject(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestCostObjectService/handlePost/insertCostObject",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestCostObjectService/handlePost/insertCostObject",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -418,10 +430,10 @@ function validateInsertCostObject(reqBody, user_id) {
 	            'ENTITY_ID',
 	            'COST_OBJECT_TYPE_ID',
 	            'COST_VALUE'];
-	
+
 	if(!reqBody)
 		throw ErrorLib.getErrors().CustomError("","requestCostObjectService/handlePost/insertCostObject","The object Cost Object is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -429,7 +441,7 @@ function validateInsertCostObject(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -449,20 +461,20 @@ function validateInsertCostObject(reqBody, user_id) {
 
 
 function validateInsertDataProtectionAnswer(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","dataProtectionService/handlePost/insertDataProtection",request_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","dataProtectionService/handlePost/insertDataProtection",request_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
 	var keys = ['REQUEST_ID',
 	            'QUESTION_ID',
 	            'OPTION_ID'];
-	
+
 	if(!reqBody)
 		throw ErrorLib.getErrors().CustomError("","dataProtectionService/handlePost/insertDataProtection","The object DataProtection is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -470,7 +482,7 @@ function validateInsertDataProtectionAnswer(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -530,10 +542,10 @@ function validateInsertNoteRequest(objReq, userId) {
 }
 
 function validateInsertRiskFunded(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestRiskFundedService/handlePost/insertRiskFunded",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","requestRiskFundedService/handlePost/insertRiskFunded",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -541,10 +553,10 @@ function validateInsertRiskFunded(reqBody, user_id) {
 	            'AMOUNT',
 	            'CURRENCY_ID',
 	            'AMOUNT_KEUR'];
-	
+
 	if(!reqBody)
 		throw ErrorLib.getErrors().CustomError("","requestRiskFundedService/handlePost/insertRiskFunded","The object Risk Funded is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -552,7 +564,7 @@ function validateInsertRiskFunded(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -571,10 +583,10 @@ function validateInsertRiskFunded(reqBody, user_id) {
 }
 
 function validateInsertMaterial(reqBody, user_id) {
-	
+
 	if(!user_id)
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","materialService/handlePost/insertMaterial",user_id);	
-	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","materialService/handlePost/insertMaterial",user_id);
+
 	var isValid = false;
 	var errors = {};
 	var BreakException = {};
@@ -582,10 +594,10 @@ function validateInsertMaterial(reqBody, user_id) {
 	            'MATERIAL_DESCRIPTION',
 	            'POPUP',
 	            'CODE'];
-	
+
 	if(!reqBody)
 		throw ErrorLib.getErrors().CustomError("","materialService/handlePost/insertMaterial","The object Material is not found");
-	
+
 	try {
 		keys.forEach(function(key) {
 			if (reqBody[key] === null || reqBody[key] === undefined) {
@@ -593,7 +605,7 @@ function validateInsertMaterial(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -617,19 +629,19 @@ function validateType(key, value) {
 	switch (key) {
 	case 'REQUEST_SERVICE_ID':
 		valid = !isNaN(value) && value > 0;
-		break;	
+		break;
 	case 'REQUEST_RISK_FUNDED_ID':
 		valid = !isNaN(value) && value > 0;
-		break;		
+		break;
 	case 'REQUEST_COST_OBJECT_ID':
 		valid = !isNaN(value) && value > 0;
-		break;		
+		break;
 	case 'REQUEST_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'ENTITY_ID':
 		valid = !isNaN(value) && value > 0;
-		break;		
+		break;
 	case 'VENDOR_ID':
 		valid = (!value) || (!isNaN(value) && value > 0);
 		break;
@@ -674,7 +686,7 @@ function validateType(key, value) {
 		break;
 	case 'LINE_TO_UPLIFT':
 		valid = (!value) || (value.length > 0 && value.length <= 255);
-		break;		
+		break;
 	case 'PURCHASE_ORDER_AMOUNT':
 		valid = (!value) || (!isNaN(value));
 		break;
@@ -701,13 +713,13 @@ function validateType(key, value) {
 		break;
 	case 'AMOUNT_KEUR':
 		valid = !isNaN(value) || (!value);
-		break;	
+		break;
 	case 'USER_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'MATERIAL_ID':
 		valid = !isNaN(value) && value > 0;
-		break;	
+		break;
 	case 'PARENT_MATERIAL_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
@@ -763,7 +775,7 @@ function validateType(key, value) {
 		valid = (!value) || (value.length > 0 && value.length <= 255);
 		break;
 	}
-	
+
 	return valid;
 }
 
@@ -778,7 +790,7 @@ function validateServiceType(key, value) {
 			valid = (!isNaN(value) && value > 0);
 			break;
 	}
-	
+
 	return valid;
 }
 
@@ -788,8 +800,8 @@ function sendSubmitMail(newCartRequestId, userId){
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	newCartRequestObj.REQUEST_ID = newCartRequestId;
 	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

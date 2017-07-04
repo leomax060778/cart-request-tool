@@ -42,6 +42,16 @@ function getPopUpById(pop_up_id, user_id) {
 	}
 	return data.getPopUpById(pop_up_id);
 }
+
+function getPopUpByCode(popUpCode, user_id) {
+	if (!user_id){
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter user_id is not found",
+				"popUpService/handleGet/getPopUpByCode", user_id);
+	}
+	return data.getPopUpByCode(popUpCode);
+}
+
 function updatePopUp(objPopUp, user_id) {
 	if (validateUpdatePopUp(objPopUp, user_id)) {
 		try{

@@ -101,7 +101,7 @@ function getChangeVendorRequestById(changeVendorRequestId, userId, edition_mode)
     resChange = JSON.parse(JSON.stringify(resChange));
     
     if(validatePermissionByUserRole(roleData[0], resChange)){
-	    if(resChange){
+	    if(resChange && resChange.CHANGE_VENDOR_REQUEST_ID){
 	    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
 	    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
@@ -128,7 +128,7 @@ function getChangeVendorRequestByIdManual(changeVendorRequestId) {
     }
     var resChange = change.getChangeVendorRequestByIdManual(changeVendorRequestId);
     resChange = JSON.parse(JSON.stringify(resChange));
-    if(resChange){
+    if(resChange && resChange.CHANGE_VENDOR_REQUEST_ID){
     	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
     	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
@@ -370,7 +370,7 @@ function sendResubmitMail(changeVendorRequestId, userId){
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
 	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function sendMessageMail(changeVendorRequest, userId){
@@ -380,7 +380,7 @@ function sendMessageMail(changeVendorRequest, userId){
 	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
 	var mailObj = changeVendorMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

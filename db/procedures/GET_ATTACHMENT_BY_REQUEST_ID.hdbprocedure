@@ -5,7 +5,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_B
 		user_id bigint, 
 		original_name nvarchar(255), 
 		saved_name nvarchar(255), 
-		attachment_size integer
+		attachment_size integer,
+		created_date nvarchar(32)
 	)) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -14,14 +15,15 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_B
 BEGIN
 	out_result = 
 	SELECT 
-		"ATTACHMENT".ATTACHMENT_ID, 
-		"ATTACHMENT".USER_ID, 
-		"ATTACHMENT".ORIGINAL_NAME, 
-		"ATTACHMENT".SAVED_NAME, 
-		"ATTACHMENT".ATTACHMENT_SIZE
-	FROM "ATTACHMENT_REQUEST"
-		INNER JOIN "ATTACHMENT" AS ATTACHMENT ON "ATTACHMENT_REQUEST".attachment_id = ATTACHMENT.attachment_id
-		WHERE in_request_id = "ATTACHMENT_REQUEST".REQUEST_ID
-		AND "ATTACHMENT".deleted = 0
-		AND "ATTACHMENT".enabled = 1;
+		ATT.ATTACHMENT_ID, 
+		ATT.USER_ID, 
+		ATT.ORIGINAL_NAME, 
+		ATT.SAVED_NAME, 
+		ATT.ATTACHMENT_SIZE,
+		TO_NVARCHAR(ATT.CREATED_DATE_TZ, 'YYYY-MM-DD') AS CREATED_DATE
+	FROM "ATTACHMENT_REQUEST" ATR
+		INNER JOIN "ATTACHMENT" ATT ON ATR.attachment_id = ATT.attachment_id
+		WHERE in_request_id = ATR.REQUEST_ID
+		AND ATT.deleted = 0
+		AND ATT.enabled = 1;
 	END;

@@ -21,10 +21,6 @@ function insertInquiryMessage(objInquiry, userId) {
 	    if (!existInquiry(objInquiry.INQUIRY_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
 	    } 
-	    if(Number(objInquiry.PREVIOUS_STATUS_ID) === statusMap.RETURN_TO_REQUESTER || Number(objInquiry.PREVIOUS_STATUS_ID) === statusMap.CANCELLED){
-	    	objInquiry.STATUS_ID = statusMap.TO_BE_CHECKED;
-	    	status.updateInquiryStatusManual(objInquiry, userId);
-	    }
 	    return message.insertInquiryMessage(objInquiry, userId);
     }
 }
@@ -181,7 +177,7 @@ function sendMessageMail(inquiryId, userId){
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	var mailObj = inquiryMail.parseMessage(inquiryMailObj, getBasicData(pathName), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	return mail.sendMail(emailObj,true,null);
+	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

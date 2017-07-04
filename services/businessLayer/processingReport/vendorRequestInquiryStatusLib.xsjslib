@@ -110,8 +110,8 @@ function getVendorInquiryById(inquiryId, userId) {
     
 	if(!validateAccess(pathName.VENDOR_INQUIRY_MAIL, inquiryId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "This Vendor Inquiry is not longer available in Processing Report");
+				"",
+				"vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "Unauthorized request");
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -122,14 +122,13 @@ function getVendorInquiryById(inquiryId, userId) {
 	    var vendorInquiryText = businessVendorInquiryMessage.getVendorInquiryMessage(inquiryId, userId);
 	    
 	    var lastVendorInquiryMessage = vendorInquiryText.length - 1;
-	    if(resInquiry){
+	    if(resInquiry && resInquiry.VENDOR_INQUIRY_ID){
 	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
 	    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
 	    	 resInquiry.ATTACHMENTS = attachments;
+	    	 resInquiry.INQUIRY_TEXT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
 	    }
-	    resInquiry.INQUIRY_TEXT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
-	    
 	    return resInquiry;
 	}else{
 		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "The user does not have permission to see this Vendor Inquiry.");
@@ -153,13 +152,13 @@ function getChangeVendorRequestById(changeId) {
     
 	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "This Change Vendor Request is not longer available in Processing Report");
+				"",
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "Unauthorized request");
 	}
     
     var resChange = dataStatus.getChangeVendorRequestById(changeId);
     resChange = JSON.parse(JSON.stringify(resChange));
-    if(resChange){
+    if(resChange && resChange.CHANGE_VENDOR_REQUEST_ID){
     	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
     	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
     	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
@@ -177,8 +176,8 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
     
 	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "This Change Vendor Request is not longer available in Processing Report");
+				"",
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "Unauthorized request");
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -187,7 +186,7 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
     
 	if(validatePermissionByUserRole(roleData[0], resChange)){
 	   
-	    if(resChange){
+	    if(resChange && resChange.CHANGE_VENDOR_REQUEST_ID){
 	    	 objChange.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
 	    	 objChange.VENDOR_ID = resChange.CHANGE_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objChange);
@@ -216,8 +215,8 @@ function getExtendVendorRequestById(extendId, userId) {
     
 	if(!validateAccess(pathName.EXTEND_VENDOR_MAIL, extendId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "This Extend Vendor Request is not longer available in Processing Report");
+				"",
+				"vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "Unauthorized request");
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -225,7 +224,7 @@ function getExtendVendorRequestById(extendId, userId) {
     resExtend = JSON.parse(JSON.stringify(resExtend));
     
     if(validatePermissionByUserRole(roleData[0], resExtend)){
-	    if(resExtend){
+	    if(resExtend && resExtend.EXTEND_VENDOR_REQUEST_ID){
 	    	objExtend.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
 	    	objExtend.VENDOR_ID = resExtend.EXTEND_VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objExtend);
@@ -261,8 +260,8 @@ function getVendorRequestById(requestId, userId) {
     
 	if(!validateAccess(pathName.VENDOR_REQUEST_MAIL, requestId)){
 		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "This Vendor Request is not longer available in Processing Report");
+				"",
+				"vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "Unauthorized request");
 	}
     
     var resRequest = dataStatus.getVendorRequestById(requestId);
@@ -271,7 +270,7 @@ function getVendorRequestById(requestId, userId) {
 	
 	if(validatePermissionByUserRole(roleData[0], resRequest)){
     
-	    if(resRequest){
+	    if(resRequest && resRequest.VENDOR_REQUEST_ID){
 	    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
 	    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
 	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
@@ -739,7 +738,7 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		return mail.sendMail(emailObj,true,null);
+		mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -767,7 +766,7 @@ function sendExtendVendorMailByStatus(objRequest,extendVendorData, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		return mail.sendMail(emailObj,true,null);
+		mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -790,7 +789,7 @@ function sendVendorInquiryMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		return mail.sendMail(emailObj,true,null);
+		mail.sendMail(emailObj,true,null);
 	}
 }
 
@@ -820,7 +819,7 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 		}
 		
 		var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-		return mail.sendMail(emailObj,true,null);
+		mail.sendMail(emailObj,true,null);
 	}
 }
 

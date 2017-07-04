@@ -87,9 +87,9 @@ function ExecutePermission() {
 /** ************************************************************************ */
 
 /* **********URLs****************** */
-var AppUrl = "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
-var UrlLogin =  "http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
-var Environment = "Staging"; //Can be: Development - Staging - Production.
+var AppUrl = "http://localhost:63342/crt/webapp/index.html#"; //"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
+var UrlLogin =  "http://localhost:63342/crt/webapp/index.html";//"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
+var Environment = "Development"; //Can be: Development - Staging - Production.
 	
 var complete_path = {
 		"HOME": "/home",
@@ -104,14 +104,14 @@ var complete_path = {
 /** ******************************* */
 
 /** ************Email Accounts********************* */
-var SMTPAccount = "info_cartrequesttool@sap.com";//
+var SMTPAccount = [{address: "lpeccin@folderit.net"}];// "info_planningtool@sap.com";//
 											// //adderes configured - SMTP
 											// server
-var SupportAccount = "support_cartrequesttool@sap.com";
-var SiteAdministrator = "support_cartrequesttool@sap.com";
+var SupportAccount = "lpeccin@folderit.net";// "support_planningtool@sap.com";
+var SiteAdministrator = "lpeccin@folderit.net";// "support_planningtool@sap.com";
 
-var emailAccounts = [{address: "lhildt@folderit.net"}, {address: "marylyn.scott@sap.com"}, {address: "shanna.mayorga@sap.com"}];
-var sendEmailType = "servlet"; //can be: servlet or smpt
+var emailAccounts = [{address: "iberon@folderit.net"}, {address: "lhildt@folderit.net"}];
+var sendEmailType = "smpt"; //can be: servlet or smpt
 /** ************************************** */
 
 // TODO: move this to configuration

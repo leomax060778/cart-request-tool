@@ -65,14 +65,9 @@ function handlePut(reqBody, userId) {
 			}
 		}
 		if(Number(reqBody.STATUS_ID === statusMap.APPROVED)){
-			if(!reqBody.SERVICE){
-				throw ErrorLib.getErrors().BadRequest(
-	                "",
-	                "cartRequestService/handlePut",
-	                "SERVICE is not found"
-	            );
+			if(reqBody.SERVICE.length > 0){
+				service.updateServiceLineNumber(reqBody, userId);
 			}
-			service.updateServiceLineNumber(reqBody, userId);
 			if (purchase.existPurchaseOrder(reqBody.REQUEST_ID)) {
 				purchase.updatePurchaseOrderManual(reqBody, userId);
 			} else {
@@ -89,8 +84,8 @@ function handlePut(reqBody, userId) {
 	var mailData = request.getRequestMailDataByRequestId(reqBody, userId);
 	
 	var res = {};
-    res.id = request.updateRequestStatus(reqBody, userId);
-    res.mail = request.sendMailByStatus(reqBody,mailData, userId);
+    res = request.updateRequestStatus(reqBody, userId);
+    request.sendMailByStatus(reqBody,mailData, userId);
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
