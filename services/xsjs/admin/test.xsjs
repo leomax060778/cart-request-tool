@@ -1,4 +1,3 @@
-
 function performAdd() {
     var body = '';
     var num1 = $.request.parameters.get('num1');
@@ -152,40 +151,6 @@ function handleResponse(body, code) {
 	$.response.status = code;
 	$.response.setBody(JSON.stringify(body));
 };
-
-/****************************************************************************************************************/
-
-// Send a email
-function sendMail() {
-    
-    var mail = new $.net.Mail({
-
-        sender: {address: "support_planningtool@folderit.net"},
-
-        to: [{ address: "lhildt@folderit.net"}],
-
-        subject: "XSJS Email Test",
-
-        parts: [ new $.net.Mail.Part({
-
-        type: $.net.Mail.Part.TYPE_TEXT,
-
-        text: "The body of the mail.",
-
-        contentType: "text/plain"
-
-        })]
-
-        });
-
-        var returnValue = mail.send();
-
-        var response = "MessageId = " + returnValue.messageId +
-
-        ", final reply = " + returnValue.finalReply;
-  
-
-}
 
 /****************************************************************************************************************/
 
@@ -447,8 +412,7 @@ switch (aCmd) {
     	updateUserRole();
     	break;
     case "sendEmail":
-    	//postEmailData();
-    	sendMail()
+    	postEmailData();
     	break;
     default:
     	$.response.status = $.net.http.BAD_REQUEST;

@@ -205,7 +205,7 @@
 		                LEFT JOIN :va_vendor_additional_information VAI ON RQ.VENDOR_ID = VAI.VENDOR_ID
 		                LEFT JOIN :va_po_service POS ON RQ.REQUEST_ID = POS.REQUEST_ID
 		                INNER JOIN :va_entity EN ON RQ.ENTITY_ID = EN.ENTITY_ID
-		                INNER JOIN :va_service SV ON RQ.REQUEST_ID = SV.REQUEST_ID
+		                LEFT JOIN :va_service SV ON RQ.REQUEST_ID = SV.REQUEST_ID
 		                LEFT JOIN :va_material MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
 		                LEFT JOIN :va_special_request SRQ ON SRQ.REQUEST_ID = RQ.REQUEST_ID
 		                INNER JOIN :va_request_cost_object RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID
