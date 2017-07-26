@@ -42,7 +42,7 @@ function getRequestLastId(){
     return db.extractArray(result.out_result)[0];
 }
 
-function getRequestByFilters(objFilters, userId){
+function getRequestByFilters(objFilters, permissionData, userId){
     var parameters = {};
     parameters.in_goods_recipient = objFilters.GOODS_RECIPIENT;
     parameters.in_budget_year_id = objFilters.BUDGET_YEAR_ID;
@@ -53,6 +53,8 @@ function getRequestByFilters(objFilters, userId){
     parameters.in_user_id = userId;
     parameters.in_vendor_id = objFilters.VENDOR_ID;
     parameters.in_status_id = objFilters.STATUS_ID;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     parameters.out_result = '?';
     parameters.out_service_table = '?';
     parameters.out_special_request_table = '?';

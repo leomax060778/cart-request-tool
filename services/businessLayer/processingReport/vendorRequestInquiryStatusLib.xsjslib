@@ -25,6 +25,8 @@ var userRole = mapper.getUserRole();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'IN_PROCESS': 3, 'APPROVED': 5, 'CANCELLED': 6};
+var viStatusMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+
 //Vendor types
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1, "EXTEND_VENDOR_REQUEST": 2, "VENDOR_INQUIRY": 4, "VENDOR_REQUEST": 3};
 
@@ -111,7 +113,7 @@ function getVendorInquiryById(inquiryId, userId) {
 	if(!validateAccess(pathName.VENDOR_INQUIRY_MAIL, inquiryId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", "Unauthorized request");
+				"vendorRequestInquiryStatusService/handleGet/getVendorInquiryById", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Inquiry"}');
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -153,7 +155,7 @@ function getChangeVendorRequestById(changeId) {
 	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "Unauthorized request");
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Change Vendor Request"}');
 	}
     
     var resChange = dataStatus.getChangeVendorRequestById(changeId);
@@ -177,7 +179,7 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
 	if(!validateAccess(pathName.CHANGE_VENDOR_MAIL, changeId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", "Unauthorized request");
+				"vendorRequestInquiryStatusService/handleGet/getChangeVendorRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Change Vendor Request"}');
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -216,7 +218,7 @@ function getExtendVendorRequestById(extendId, userId) {
 	if(!validateAccess(pathName.EXTEND_VENDOR_MAIL, extendId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", "Unauthorized request");
+				"vendorRequestInquiryStatusService/handleGet/getExtendVendorRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Extend Vendor Request"}');
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);
@@ -261,7 +263,7 @@ function getVendorRequestById(requestId, userId) {
 	if(!validateAccess(pathName.VENDOR_REQUEST_MAIL, requestId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"vendorRequestInquiryStatusService/handleGet/getVendorRequestById", "Unauthorized request");
+				"vendorRequestInquiryStatusService/handleGet/getVendorRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Request"}');
 	}
     
     var resRequest = dataStatus.getVendorRequestById(requestId);
@@ -300,7 +302,13 @@ function updateVendorInquiryStatus(objVendorInquiry, userId) {
     	if(!inquiry.existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)){
     		throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorInquiryStatus", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
     	}
-        return dataStatus.updateVendorInquiryStatus(objVendorInquiry, userId);
+
+    	if(Number(objVendorInquiry.STATUS_ID) === viStatusMap.COMPLETED){
+    		return dataStatus.updateVendorInquiryStatusCompleted(objVendorInquiry, userId);
+    	} else {
+    		return dataStatus.updateVendorInquiryStatus(objVendorInquiry, userId);
+    	}
+        
     }
 }
 

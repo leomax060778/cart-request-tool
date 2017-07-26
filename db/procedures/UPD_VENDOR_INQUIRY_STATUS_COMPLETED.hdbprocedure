@@ -12,7 +12,7 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
 	UPDATE vinquiry
-	SET vinquiry.receiver_modified_date_tz = CURRENT_TIMESTAMP,
+	SET vinquiry.receiver_date_completed_tz = CURRENT_TIMESTAMP,
 		vinquiry.status_id = in_status_id,
         vinquiry.modified_user_id = in_modified_user_id,
         vinquiry.user_id_status = in_user_id_status,
@@ -23,4 +23,4 @@ BEGIN
 	WHERE vinquiry.vendor_inquiry_id = in_vendor_inquiry_id;
 
 SELECT ::ROWCOUNT into out_result FROM DUMMY;
-END;
+END; 

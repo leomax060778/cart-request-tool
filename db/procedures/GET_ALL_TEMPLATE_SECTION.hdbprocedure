@@ -8,5 +8,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE
 BEGIN
 	out_result = SELECT section_id, name
 		FROM "TEMPLATE_SECTION"
-		WHERE ENABLED = 1 AND DELETED = 0;
+			WHERE ENABLED = 1 
+				AND DELETED = 0
+		ORDER BY name ASC;
 END;

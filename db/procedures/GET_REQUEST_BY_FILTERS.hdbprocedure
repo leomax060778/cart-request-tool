@@ -8,6 +8,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 	 IN in_user_id bigint,
 	 IN in_vendor_id bigint,
 	 IN in_status_id bigint,
+	 IN in_permission_id bigint,
+	 IN in_resource_id bigint, 
 	 OUT out_result TABLE(REQUEST_ID integer, 
 	 					  ISO nvarchar(2),
 	 					  STATUS_ID integer,
@@ -97,9 +99,13 @@ BEGIN
 				 		WHERE RM.CREATED_USER_ID != in_user_id AND RM.DELETED = 0 AND RM.ENABLED = 1
 				 		GROUP BY RM.REQUEST_ID;
 				 		
-	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
 						FROM "USER_ROLE" USR
 							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID
+							INNER JOIN "ROLE_PERMISSION" RP 
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
 						WHERE USR.USER_ID = in_user_id;
 				 		
 	out_result = SELECT DISTINCT RQ.REQUEST_ID,
@@ -117,7 +123,7 @@ BEGIN
 						 To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') AS REQUEST_CREATED_DATE,
 						 RCO.COST_VALUE,
                			 VAM.MESSAGE_READ,
-               			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) AND USR.ROLE_ID != 1 THEN FALSE ELSE TRUE END) AS EDITABLE
+               			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) AND USR.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
 				  FROM "REQUEST" RQ
 						  INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID
 						  LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON

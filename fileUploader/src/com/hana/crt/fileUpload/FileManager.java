@@ -18,24 +18,34 @@ public class FileManager {
 	private static final String UPLOAD_DIRECTORY_PROPERTY = "upload.path";
 	private static final String CONFIG_PROPERTIES = "config.properties";
 	private static final String ZIP_FILE_NAME = "files.zip";
+	private static final String UPLOAD_FOLDER_CRT = "upload.crt.folder";
+	private static final String UPLOAD_FOLDER_MPT = "upload.mpt.folder";
 
 	final String lexicon = "abcdefghijklmnopqrstuvwxyz12345674890";
 	final java.util.Random rand = new java.util.Random();
 	final Set<String> identifiers = new HashSet<String>();
 
-	public String generateZipFile(List<AttachmentHana> fileList) throws IOException {
+	public String generateZipFile(List<AttachmentHana> fileList, String origin) throws IOException {
 		Properties properties = this.getProperties();
 		String uploadFilesDir = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY);
 		String zipPathTmp = uploadFilesDir + "\\tmp";
 		String zipFileName = this.getNewFileName(zipPathTmp);
 		String tmpDir = zipPathTmp + "\\" + zipFileName + ".zip";
-		this.createZipFile(tmpDir, uploadFilesDir, fileList);
+		
+		//Files need to be get from the corresponding folder for each app
+		String uploadFilesAppDir = uploadFilesDir + "\\" + properties.getProperty(UPLOAD_FOLDER_CRT);
+		if (origin != null && origin.equalsIgnoreCase("MPT")) {
+			uploadFilesAppDir = uploadFilesDir + "\\" + properties.getProperty(UPLOAD_FOLDER_MPT);
+		}
+		
+		//Create .zip file and add the files
+		this.createZipFile(tmpDir, uploadFilesAppDir, fileList);
 		return zipFileName;
 	}
 
-	private void createZipFile(String tmpDir, String uploadFilesDir, List<AttachmentHana> attachments) {
+	private void createZipFile(String tmpDir, String uploadFilesAppDir, List<AttachmentHana> attachments) {
 		ZipFileGenerator zipGenerator = new ZipFileGenerator();
-		zipGenerator.createZipFile(tmpDir, uploadFilesDir, attachments);
+		zipGenerator.createZipFile(tmpDir, uploadFilesAppDir, attachments);
 	}
 
 	private String createTempDir() {

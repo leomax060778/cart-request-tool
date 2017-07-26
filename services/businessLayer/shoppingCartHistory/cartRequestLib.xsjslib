@@ -25,6 +25,7 @@ var dataNoteRequest = mapper.getDataShoppingNoteRequest();
 var dataRequestDataProtection = mapper.getDataRequestDataProtection();
 var dataRDataProtection = mapper.getDataRequestDataProtection();
 var dataUserRole = mapper.getDataUserRole();
+var dataRolePermission = mapper.getDataRolePermission();
 
 var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
@@ -35,6 +36,9 @@ var mail = mapper.getMail();
 var userRole = mapper.getUserRole();
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var resourceMap = {'SHOPPING_CART_HISTORY': 2};
+var permissionMap = {'CREATE_EDIT': 10};
+
 var pathName = "CART_REQUEST";
 
 /* VALIDATION KEYS FOR INSERTS & UPDATES */
@@ -50,10 +54,11 @@ var attachmentKeys = ["REQUEST_ID", "ATTACHMENT_ID"];
 var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
 
 function validateAccess(request_id, user_id){
-	var user_role = dataUserRole.getRoleNameByUserId(user_id);
+	var user_role = dataUserRole.getUserRoleByUserId(user_id);
 	var request_status = dataRequest.getRequestStatusByRequestId(request_id);
+	var rolePermission = dataRolePermission.getPermissionByRoleAndResourceAndPermission(Number(user_role[0].ROLE_ID), resourceMap.SHOPPING_CART_HISTORY, permissionMap.CREATE_EDIT);
 
-	if(user_role.ROLE_NAME !== 'SuperAdmin'){
+	if(Number(rolePermission[0].PERMISSION_LEVEL) !== 2){
 		return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
 	}else{
 		return true;
@@ -97,13 +102,13 @@ function validateType(key, value) {
 		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'AMOUNT':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'BUDGET':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'AMOUNT_KEUR':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'ITEM':
 		valid = !isNaN(value);
@@ -389,7 +394,13 @@ function getRequestByFilters(objFilters, userId) {
 			throw ErrorLib.getErrors().CustomError("",
 					"Invalid date format (YYYY-MM-DD)", "getRequestByFilters");
 		}
-		var request = dataRequest.getRequestByFilters(objFilters, userId);
+		
+		var permissionData = {
+				RESOURCE_ID: resourceMap.SHOPPING_CART_HISTORY,
+				PERMISSION_ID: permissionMap.CREATE_EDIT
+		};
+		
+		var request = dataRequest.getRequestByFilters(objFilters, permissionData, userId);
 		request = JSON.parse(JSON.stringify(request));
 
 		var complete_request = mergeData(request.requests, request.services, request.special_request, request.attachments, userId);
@@ -414,7 +425,7 @@ function getRequestById(request_id, userId, edition_mode) {
 	if(edition_mode && !validateAccess(request_id, userId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"Unauthorized request.",
-				"requestService/handleGet/getRequestById", "This Cart Request is not longer available for edition");
+				"requestService/handleGet/getRequestById", '{"EDIT_PERMISSION_ERROR": "cartRequest"}');
 	}
 
 	var roleData = userRole.getUserRoleByUserId(userId);
@@ -438,7 +449,7 @@ function getRequestById(request_id, userId, edition_mode) {
 
 		return req;
 	}else{
-		throw ErrorLib.getErrors().Forbidden("", "requestService/handleGet/getRequestById", "The user does not have permission to see this Cart Request.");
+		throw ErrorLib.getErrors().BadRequest("", "requestService/handleGet/getRequestById", '{"VIEW_PERMISSION_ERROR": "cartRequest"}');
 	}
 }
 

@@ -784,7 +784,7 @@ function validateServiceType(key, value) {
 	var valid = true;
 	switch (key) {
 		case 'AMOUNT':
-			valid = !isNaN(value);
+			valid = !isNaN(value) && value >= 0;
 			break;
 		case 'CURRENCY_ID':
 			valid = (!isNaN(value) && value > 0);

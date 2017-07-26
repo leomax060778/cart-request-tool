@@ -16,6 +16,11 @@ var RoleEnum = {
 		BusinessOwner: 4
 	};
 
+var permissionLevel = {
+	"level1": 1,
+	"level2": 2
+};
+
 /* Return all permissions for roles */
 function getAllPermissionByRole() {
 	// get the roles
@@ -113,13 +118,15 @@ function getPermissionByRole(roleId) {
 								roles[i].ROLE_ID, sysResources[r].RESOURCE_ID,
 								sysPermissions[p].PERMISSION_ID);
 
-				var permissionEnabled = currentPermission.length > 0
-						&& currentPermission[0].ENABLED == 1 ? true : false;
+				var permissionEnabled = currentPermission.length > 0 && currentPermission[0].ENABLED == 1 ? true : false;
+				//Special Permissions
+				var permissionLevel = (currentPermission.length > 0 && currentPermission[0].PERMISSION_LEVEL)? currentPermission[0].PERMISSION_LEVEL : false;
 
 				var permissionSetting = {};
 				permissionSetting["PERMISSION"] = sysPermissions[p].NAME;
 				permissionSetting["PERMISSION_ID"] = sysPermissions[p].PERMISSION_ID;
 				permissionSetting["ENABLED"] = permissionEnabled;
+				permissionSetting["PERMISSION_LEVEL"] = permissionLevel;
 				permissionsResource.push(permissionSetting);
 			} // end loop for permissions by role and resource
 
@@ -193,6 +200,13 @@ function updateRolePermission(rolePermissions, modifiedUser) {
 									.updateRolePermission(roleId, resourceId,
 											permissionId, permissionEnabled,
 											modifiedUser);
+							if(!permissionEnabled && (rolePermissions[i].PERMISSIONS[j].CONFIGURATION[r].PERMISSION_LEVEL !== permissionLevel.level1)){
+								var payload = rolePermissions[i].PERMISSIONS[j];
+								payload.SPECIAL_PERMISSION = false;
+								payload.ROLE_ID = Number(roleId);
+								
+								updateRolePermissionLevel(payload, modifiedUser);
+							}
 						} else {
 							// insert the configuration for the role permission
 							// (role, resource and permission)
@@ -222,6 +236,25 @@ function updateRolePermission(rolePermissions, modifiedUser) {
 	} finally {
 		db.closeConnection();
 	}
+}
+
+//Update Permission Level from Role Permission
+function updateRolePermissionLevel(objRolePermission, userId){
+	var result;
+	
+	if(validateUpdateRolePermissionLevel(objRolePermission, objRolePermission.CONFIGURATION)){
+		if(!userId){
+			throw ErrorLib.getErrors().CustomError("",
+					"rolePermissionServices/handlePut/updateRolePermissionLevel",
+					"The User ID is not found");
+		}
+		
+		objRolePermission.PERMISSION_LEVEL = (objRolePermission.SPECIAL_PERMISSION)? permissionLevel.level2 : permissionLevel.level1;
+		objRolePermission.PERMISSION_ID = Number(objRolePermission.CONFIGURATION[0].PERMISSION_ID);
+		
+		result = dataRolePermission.updateRolePermissionLevel(objRolePermission, userId);
+	}
+	return result;
 }
 
 /* Validate role permissions object */
@@ -316,6 +349,61 @@ function validateRolePermission(rolePermissions) {
 	}
 
 	return true;
+}
+
+function validateUpdateRolePermissionLevel(objRolePermission, configuration){
+	var isValid = false;
+    var errors = {};
+    var BreakException = {};
+    var keys = ['ROLE_ID',
+                'RESOURCE_ID'];
+
+    if (!objRolePermission) {
+        throw ErrorLib.getErrors().CustomError("", "rolePermissionServices/handlePut/updateRolePermissionLevel", "The object Role Permission is not found");
+    }
+    
+    if(!configuration[0].ENABLED && objRolePermission.SPECIAL_PERMISSION){
+    	throw ErrorLib.getErrors().CustomError("", "rolePermissionServices/handlePut/updateRolePermissionLevel", "The resource is not available for Special Permissions");
+    }
+
+    try {
+        keys.forEach(function (key) {
+            if (objRolePermission[key] === null || objRolePermission[key] === undefined) {
+                errors[key] = null;
+                throw BreakException;
+            } else {
+                // validate attribute type
+                isValid = validateType(key, objRolePermission[key]);
+                if (!isValid) {
+                    errors[key] = objRolePermission[key];
+                    throw BreakException;
+                }
+            }
+        });
+        isValid = true;
+    } catch (e) {
+        if (e !== BreakException) {
+            throw ErrorLib.getErrors().CustomError("", "rolePermissionServices/handlePut/updateRolePermissionLevel", e.toString());
+        }
+        else {
+            throw ErrorLib.getErrors().CustomError("", "rolePermissionServices/handlePut/updateRolePermissionLevel", JSON.stringify(errors));
+        }
+    }
+    return isValid;
+}
+
+//Check data types
+function validateType(key, value) {
+    var valid = true;
+    switch (key) {
+        case 'ROLE_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'RESOURCE_ID':
+        	valid = !isNaN(value) && value > 0;
+            break;
+    }
+    return valid;
 }
 
 /* Validate if exists the role permissions in the database */

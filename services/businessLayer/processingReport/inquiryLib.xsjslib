@@ -23,7 +23,7 @@ function validateAccess(inquiry_id){
 		return false;
 	}
 	
-	return !(crt_inquiry_status.STATUS_NAME == 'Completed' || crt_inquiry_status.STATUS_NAME == 'Cancelled');
+	return !(crt_inquiry_status.STATUS_NAME === 'Completed' || crt_inquiry_status.STATUS_NAME === 'Cancelled');
 }
 
 //Get inquiry by status
@@ -68,7 +68,7 @@ function getInquiryById(inquiryId, userId) {
 	if(!validateAccess(inquiryId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"inquiryService/handleGet/getInquiryById", "Unauthorized request");
+				"inquiryService/handleGet/getInquiryById", '{"NOT_AVAILABLE_IN_PROCESSING": "CRT Inquiry"}');
 	}
 	
 	var inquiry = inquiryStatus.getInquiryById(inquiryId);

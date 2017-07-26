@@ -25,7 +25,12 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_REQUEST" (
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."REQUEST"( hl3_id, 
+
+  --Get the next value for ID field
+  SELECT "CART_REQUEST_TOOL".SEQ_CART_REQUEST.NEXTVAL INTO out_result FROM dummy;
+
+  INSERT INTO "CART_REQUEST_TOOL"."REQUEST"( request_id,
+		  									 hl3_id, 
   											 entity_id, 
   											 vendor_id,
   											 vendor_contact_information_id, 
@@ -44,7 +49,7 @@ BEGIN
   											 budget_year_id, 
   											 created_user_id 
   											 ) 
-  	VALUES( 
+  	VALUES( out_result,
   			in_team_id, 
   			in_entity_id, 
   			in_vendor_id, 
@@ -65,7 +70,9 @@ BEGIN
   			in_created_user_id
   			);
  
-  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST";
+  --SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."REQUEST";
+  SELECT out_result FROM dummy;
+  
 END;
 
 

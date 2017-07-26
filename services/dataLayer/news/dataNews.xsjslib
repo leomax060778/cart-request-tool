@@ -9,6 +9,8 @@ var ErrorLib = mapper.getErrors();
 var INS_NEWS = "INS_NEWS";
 var UPD_NEWS = "UPD_NEWS";
 var UPD_NEWS_STATUS = "UPD_NEWS_STATUS";
+var UPD_NEWS_PUBLISHED_STATUS = "UPD_NEWS_PUBLISHED_STATUS";
+
 var DEL_NEWS = "DEL_NEWS";
 var INS_READ_NEWS = "INS_READ_NEWS";
 
@@ -131,7 +133,7 @@ function insertNews(objNews, userId){
     parameters.IN_DESCRIPTION = objNews.DESCRIPTION;
     parameters.IN_AUTHOR_ID = userId;
     parameters.IN_STATUS_ID = objNews.STATUS_ID;
-    parameters.IN_PUBLISHED_DATE = objNews.PUBLISHED_DATE;
+    parameters.IN_PUBLISHED_DATE = objNews.PUBLISHED_DATE || null;
     parameters.IN_ATTACHMENT_ID = objNews.ATTACHMENT_ID || null;
     parameters.IN_URGENT = objNews.URGENT || 0;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
@@ -150,7 +152,6 @@ function updateNews(objNews, userId){
     parameters.in_description = objNews.DESCRIPTION;
     parameters.in_status_id = objNews.STATUS_ID;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
-    parameters.in_published_date = objNews.PUBLISHED_DATE;
     parameters.in_attachment_id = objNews.ATTACHMENT_ID || null;
     parameters.in_urgent = objNews.URGENT || 0;
     parameters.in_modified_user_id = userId;
@@ -175,6 +176,15 @@ function updateNewsStatusManual(objNews, userId){
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalarManual(UPD_NEWS_STATUS, parameters, 'out_result');
+}
+
+function updateNewsPublishedStatus(objNews, userId){
+	var parameters = {};
+    parameters.in_news_id = objNews.NEWS_ID;
+    parameters.in_status_id = objNews.STATUS_ID;
+    parameters.in_modified_user_id = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_NEWS_PUBLISHED_STATUS, parameters, 'out_result');
 }
 
 function deleteNews(newsId, userId){

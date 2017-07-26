@@ -31,7 +31,7 @@ function validateAccess(request_id){
 		return false;
 	}
 	
-	return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
+	return !(request_status.STATUS_NAME === 'Approved' || request_status.STATUS_NAME === 'Cancelled');
 }
 
 //Get request by status
@@ -70,7 +70,7 @@ function getRequestById(requestId, userId) {
 	if(!validateAccess(requestId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"cartRequestService/handleGet/getRequestById", "Unauthorized request");
+				"cartRequestService/handleGet/getRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Cart Request"}');
 	}
 	
 	if(validatePermissionByUserRole(roleData[0], resRequest)){

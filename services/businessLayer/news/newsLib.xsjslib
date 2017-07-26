@@ -4,6 +4,12 @@ var dbHelper = mapper.getdbHelper();
 var dataNews = mapper.getDataNews();
 var ErrorLib = mapper.getErrors();
 
+var statusMap = {
+	"Pending": 1,
+	"Archive": 2,
+	"Published": 3
+};
+
 function getAllNewsStatus() {
     return dataNews.getAllNewsStatus();
 }
@@ -149,7 +155,14 @@ function newsRead(objNews, userId) {
 }
 
 function insertNews(objNews, userId) {
+	
     if (validateInsertNews(objNews, userId)) {
+    	if(statusMap.Published === Number(objNews.STATUS_ID)){
+    		objNews.PUBLISHED_DATE = objNews.CREATED_DATE;
+    	}else{
+    		objNews.PUBLISHED_DATE = null;
+    	}
+
         return dataNews.insertNews(objNews, userId);
     }
 }
@@ -160,8 +173,13 @@ function existNews(newsId) {
 
 function updateNews(objNews, userId) {
     if (validateUpdateNews(objNews, userId)) {
-        if (!existNews(objNews.NEWS_ID)) {
+    	var oldNews = getManualNewsById(objNews.NEWS_ID);
+    	
+        if (!Object.keys(oldNews).length > 0) {
             throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", "The News with the id " + objNews.NEWS_ID + " does not exist");
+        }
+        if(Number(objNews.STATUS_ID) === statusMap.Published && Number(oldNews.STATUS_ID) !== statusMap.Published){
+        	dataNews.updateNewsPublishedStatus(objNews, userId);
         }
         return dataNews.updateNews(objNews, userId);
     }
@@ -194,12 +212,19 @@ function updateSingleNewsStatus(objNews, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter STATUS_ID is not found", "newsService/handlePut/updateNewsStatus", objNews.STATUS_ID);
     }
     if (validateUpdateNewsStatus(objNews, userId)) {
-        if (!existNews(objNews.NEWS_ID, userId)) {
+    	var oldNews = getManualNewsById(objNews.NEWS_ID);
+    	
+        if (!Object.keys(oldNews).length > 0) {
             throw ErrorLib.getErrors().CustomError("",
                 "newsService/handlePut/updateNewsStatus",
                 "The News with the id " + objNews.NEWS_ID + " does not exist");
         } else {
-            return dataNews.updateNewsStatusManual(objNews, userId);
+        	 if(Number(objNews.STATUS_ID) === statusMap.Published && Number(oldNews.STATUS_ID) !== statusMap.Published){
+             	return dataNews.updateNewsPublishedStatus(objNews, userId);
+             }else{
+            	return dataNews.updateNewsStatusManual(objNews, userId);
+             }
+           
         }
     }
 }

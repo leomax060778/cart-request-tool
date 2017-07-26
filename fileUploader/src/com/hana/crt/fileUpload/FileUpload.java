@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,14 +41,19 @@ public class FileUpload extends HttpServlet {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUpload.class);
 
 	private static final String UPLOAD_DIRECTORY_PROPERTY = "upload.path";
+	private static final String UPLOAD_FOLDER_CRT = "upload.crt.folder";
+	private static final String UPLOAD_FOLDER_MPT = "upload.mpt.folder";
 	private static final String UPLOAD_URL_PROPERTY = "upload.url";
 	private static final String FILE_NAME_ZIP_GPO = "file.name.zip.requester.gpo";
 	private static final String FILE_NAME_ZIP_TRAINING = "file.name.zip.requester.training";
+	private static final String FILE_NAME_ZIP_INTEL_FOUNDING = "file.name.zip.intel.founding";
 	private static final String CONFIG_PROPERTIES = "config.properties";
 	private static final String REQUESTER_GPO = "gpo";
 	private static final String REQUESTER_TRAINING = "training";
+	private static final String INTEL_FOUNDING = "intelExtFounding";
 	private static final String ORIGINAL_NAME = "ORIGINAL_NAME";
 	private static final String SAVED_NAME = "SAVED_NAME";
+	private static final String ORIGIN = "ORIGIN";
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -68,7 +74,8 @@ public class FileUpload extends HttpServlet {
 
 		if (originalName != null) {
 			String savedName = request.getParameter(SAVED_NAME);
-			this.responseSingleFile(originalName, savedName, response, properties);
+			String origin = request.getParameter(ORIGIN) == null ? "" : request.getParameter(ORIGIN);
+			this.responseSingleFile(originalName, savedName, origin, response, properties);
 		}
 	}
 
@@ -79,18 +86,12 @@ public class FileUpload extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		// Properties props = this.getProperties();
-		// String uploadUrl = propesties.getProperty(UPLOAD_URL_PROPERTY);
-		// FileUploadHanaConnection connection = new FileUploadHanaConnection();
-		// response.getWriter().append("attachments list length: " +
-		// responseString.size());
-		// response.getWriter().append("upload url: " + uploadUrl);
-
-		// Workaround to downloa multiple files
+		// Workaround to download multiple files
 		String action = request.getParameter("action");
 		String requester = request.getParameter("requester");
 
 		if (action != null && (action.startsWith("downloadzip") && requester != null)) {
+			String origin = request.getParameter(ORIGIN) == null ? "" : request.getParameter(ORIGIN);
 			StringBuffer jb = new StringBuffer();
 			String line = null;
 			try {
@@ -108,7 +109,7 @@ public class FileUpload extends HttpServlet {
 
 				DownloadZip[] requestedZip = gson.fromJson(jb.toString(), DownloadZip[].class);
 				zipFiles = Arrays.asList(requestedZip);
-				DownloadZip zipFile = this.responseZipFile(zipFiles, response, properties, requester);
+				DownloadZip zipFile = this.responseZipFile(zipFiles, response, properties, requester, origin);
 
 				byte[] bytes = gson.toJson(zipFile).getBytes();
 				response.setContentType("application/json");
@@ -126,18 +127,45 @@ public class FileUpload extends HttpServlet {
 			}
 
 		} else {
-			// Current implementation - Tested and working 20170517
-			List<Attachment> attachmentList = this.createFiles(request, response);
-			List<String> responseString = new ArrayList<String>();
+			/*
+			 * // Current implementation - Tested and working 20170517
+			 * List<Attachment> attachmentList = this.createFiles(request,
+			 * response); List<String> responseString = new ArrayList<String>();
+			 * 
+			 * request.setCharacterEncoding("utf8");
+			 * response.setContentType("application/json");
+			 * 
+			 * for (Attachment attachment : attachmentList) { LOGGER.info(
+			 * "Created file " + attachment.getJson());
+			 * responseString.add(attachment.getJson()); }
+			 * response.getWriter().append(responseString.toString());
+			 * 
+			 */
+			List<Attachment> attachmentList = new ArrayList<Attachment>();
+			List<String> attachmentListAsJson = new ArrayList<String>();
+			PrintWriter out = null;
 
-			request.setCharacterEncoding("utf8");
 			response.setContentType("application/json");
+			response.setCharacterEncoding("utf8");
 
-			for (Attachment attachment : attachmentList) {
-				LOGGER.info("Created file " + attachment.getJson());
-				responseString.add(attachment.getJson());
+			try {
+				attachmentList = this.createFiles(request, response);
+				out = response.getWriter();
+
+				for (Attachment attachment : attachmentList) {
+					attachmentListAsJson.add(attachment.getJson());
+				}
+
+				out.println(attachmentListAsJson);
+				out.flush();
+				out.close();
+
+			} catch (Exception e) {
+				throw new IOException("Error when creating the file");
+			} finally {
+
 			}
-			response.getWriter().append(responseString.toString());
+
 		}
 	}
 
@@ -147,12 +175,13 @@ public class FileUpload extends HttpServlet {
 	 * @param response
 	 * @param properties
 	 * @param requester
+	 * @param origin
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
 	private DownloadZip responseZipFile(List<DownloadZip> zipFiles, HttpServletResponse response, Properties properties,
-			String requester) throws MalformedURLException, IOException {
+			String requester, String origin) throws MalformedURLException, IOException {
 
 		/*
 		 * FileUploadHanaConnection connection = new FileUploadHanaConnection();
@@ -192,7 +221,7 @@ public class FileUpload extends HttpServlet {
 			}
 		}
 
-		String zipFileName = fileManager.generateZipFile(attachmentsHana);
+		String zipFileName = fileManager.generateZipFile(attachmentsHana, origin);
 
 		// Return attachment for zip file
 		DownloadZip zipAttachment = new DownloadZip();
@@ -200,23 +229,6 @@ public class FileUpload extends HttpServlet {
 		zipAttachment.setSavedName(zipFileName);
 
 		return zipAttachment;
-
-		/*
-		 * DO NOT SEND THE FILE File file = new File(zipFilePath); String mime =
-		 * file.toURL().openConnection().getContentType();
-		 * response.setHeader("Content-Disposition", "attachment;filename=" +
-		 * this.getFileName(requester, properties));
-		 * 
-		 * if (mime == null) {
-		 * response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		 * return; }
-		 * 
-		 * response.setContentType(mime); response.setContentLength((int)
-		 * file.length()); FileInputStream in = new FileInputStream(file);
-		 * OutputStream out = response.getOutputStream(); byte[] buf = new
-		 * byte[1024]; int count = 0; while ((count = in.read(buf)) >= 0) {
-		 * out.write(buf, 0, count); } out.close(); in.close();
-		 */
 	}
 
 	/**
@@ -227,7 +239,7 @@ public class FileUpload extends HttpServlet {
 	 * @param properties
 	 * @throws IOException
 	 */
-	private void responseSingleFile(String originalName, String savedName, HttpServletResponse response,
+	private void responseSingleFile(String originalName, String savedName, String origin, HttpServletResponse response,
 			Properties properties) throws IOException {
 
 		// Validate parameters
@@ -237,29 +249,22 @@ public class FileUpload extends HttpServlet {
 		}
 
 		String uploadDiretory = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY);
+		String filename = "";
 		// Special case for .zip files
 		if (originalName.endsWith(".zip")) {
 			uploadDiretory = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY) + "tmp";
 			savedName = savedName + ".zip";
+			filename = uploadDiretory + "\\" + savedName;
+		}else{
+			filename = uploadDiretory + "\\" + properties.getProperty(UPLOAD_FOLDER_CRT) + "\\" + savedName;
+			// look for file in CRT or MPT folder
+			if (origin != null && origin.equalsIgnoreCase("MPT")) {
+				filename = uploadDiretory + "\\" + properties.getProperty(UPLOAD_FOLDER_MPT) + "\\" + savedName;
+			}
 		}
-		/*
-		 * FileUploadHanaConnection connection = new FileUploadHanaConnection();
-		 * 
-		 * String uploadUrl = properties.getProperty(UPLOAD_URL_PROPERTY);
-		 * 
-		 * String responseString = connection.getAttachmentService(uploadUrl,
-		 * "GET_ATTACHMENT_BY_ID="+attachmentId); Gson gson = new Gson(); Type
-		 * type = new TypeToken<Map<String, String>>(){}.getType(); Map<String,
-		 * String> myMap = gson.fromJson(responseString, type);
-		 * 
-		 * String filename = uploadDiretory + "\\" + myMap.get("SAVED_NAME");
-		 */
 
-		String filename = uploadDiretory + "\\" + savedName;
 		File file = new File(filename);
 		String mime = file.toURL().openConnection().getContentType();
-		// response.setHeader("Content-Disposition", "attachment;filename=" +
-		// myMap.get("ORIGINAL_NAME"));
 		response.setHeader("Content-Disposition", "attachment;filename=" + originalName);
 
 		if (mime == null) {
@@ -293,8 +298,18 @@ public class FileUpload extends HttpServlet {
 		FileManager fileManager = new FileManager();
 		List<Attachment> attachmentList = new ArrayList<Attachment>();
 		response.setContentType("text/html");
-		Properties propesties = this.getProperties();
-		String uploadDiretory = propesties.getProperty(UPLOAD_DIRECTORY_PROPERTY);
+		Properties properties = this.getProperties();
+		String uploadDiretory = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY);
+		String origin = request.getParameter(ORIGIN);
+
+		// look for file in CRT or MPT folder
+		uploadDiretory = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY) + "\\"
+				+ properties.getProperty(UPLOAD_FOLDER_CRT);
+		if (origin != null && origin.equalsIgnoreCase("MPT")) {
+			uploadDiretory = properties.getProperty(UPLOAD_DIRECTORY_PROPERTY) + "\\"
+					+ properties.getProperty(UPLOAD_FOLDER_MPT);
+		}
+
 		boolean isMultipartContent = ServletFileUpload.isMultipartContent(request);
 		if (!isMultipartContent) {
 			response.getWriter().append("You are not trying to upload");
@@ -312,23 +327,27 @@ public class FileUpload extends HttpServlet {
 			while (it.hasNext()) {
 				Attachment attachment = new Attachment();
 				FileItem fileItem = it.next();
-				String fileName = fileItem.getName().substring(fileItem.getName().lastIndexOf('\\') + 1,
-						fileItem.getName().length());
-				fileName = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.length());
-				String newName = fileManager.getNewFileName(uploadDiretory);
-				attachment.setOriginalName(fileName);
-				attachment.setSavedName(newName);
-				attachment.setAttachmentSize(fileItem.getSize());
-				attachment.setType(fileItem.getContentType());
-				boolean isFormField = fileItem.isFormField();
-				if (!isFormField) {
-					File file = new File(uploadDiretory + newName);
-					if (!file.exists()) {
-						file.createNewFile();
+
+				if (fileItem.getName() != null) {
+					String fileName = fileItem.getName().substring(fileItem.getName().lastIndexOf('\\') + 1,
+							fileItem.getName().length());
+					fileName = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.length());
+					String newName = fileManager.getNewFileName(uploadDiretory);
+					attachment.setOriginalName(fileName);
+					attachment.setSavedName(newName);
+					attachment.setAttachmentSize(fileItem.getSize());
+					attachment.setType(fileItem.getContentType());
+					boolean isFormField = fileItem.isFormField();
+					if (!isFormField) {
+						File file = new File(uploadDiretory + newName);
+						if (!file.exists()) {
+							file.createNewFile();
+						}
+						fileItem.write(file);
+						attachmentList.add(attachment);
 					}
-					fileItem.write(file);
-					attachmentList.add(attachment);
 				}
+
 			}
 		} catch (FileUploadException e) {
 			e.printStackTrace();
@@ -373,10 +392,17 @@ public class FileUpload extends HttpServlet {
 	private String getFileName(String requester, Properties properties) {
 		String fileName = "files.zip";
 		if (requester != null && !requester.trim().equals("")) {
+			// CRT - GPIO Info and Templates
 			if (requester.equals(REQUESTER_GPO)) {
 				fileName = properties.getProperty(FILE_NAME_ZIP_GPO);
-			} else if (requester.equals(REQUESTER_TRAINING)) {
+			}
+			// CRT - Training & Education
+			if (requester.equals(REQUESTER_TRAINING)) {
 				fileName = properties.getProperty(FILE_NAME_ZIP_TRAINING);
+			}
+			// MPT - Intel Foundation
+			if (requester.equalsIgnoreCase(INTEL_FOUNDING)) {
+				fileName = properties.getProperty(FILE_NAME_ZIP_INTEL_FOUNDING);
 			}
 		}
 		return fileName;

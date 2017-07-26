@@ -82,13 +82,13 @@ function insertUser(user, createUser) {
 		if (validateUser(user)) {
 			if(getUserByUserName(user.USER_NAME)){
 				throw ErrorLib.getErrors().CustomError("",
-						"userServices/handlePost/insertUser", "The User Name already exists"); 
+						"userServices/handlePost/insertUser", '{"USER_ERROR": "username"}'); 
 			}
 
             var userByEmail = getUserByEmail(user.EMAIL);
             if(userByEmail && userByEmail.USER_ID != user.USER_ID){
                 throw ErrorLib.getErrors().CustomError("",
-                    "userServices/handlePost/insertUser", "Another user with the same email already exists");
+                    "userServices/handlePost/insertUser", '{"USER_ERROR": "email"}');
             }
 			// Hash password
 			userPassword = !user.USE_DEFAULT_PASSWORD
@@ -150,13 +150,13 @@ function updateUser(user, updateUser) {
     var userByUserName = getUserByUserName(user.USER_NAME);
     if (userByUserName && userByUserName.USER_ID != user.USER_ID) {
         throw ErrorLib.getErrors().CustomError("",
-            "userServices/handlePost/insertUser", "The User Name already exists");
+            "userServices/handlePost/insertUser", '{"USER_ERROR": "username"}');
     }
 
     var userByEmail = getUserByEmail(user.EMAIL);
     if(userByEmail && userByEmail.USER_ID != user.USER_ID){
         throw ErrorLib.getErrors().CustomError("",
-            "userServices/handlePost/insertUser", "Another user with the same email already exists");
+            "userServices/handlePost/insertUser", '{"USER_ERROR": "email"}');
     }
 
 	try {

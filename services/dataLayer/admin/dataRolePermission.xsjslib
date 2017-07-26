@@ -9,6 +9,7 @@ var spGetRolePermissionByRole = "GET_ALL_ROLE_PERMISSION_BY_ROLE";
 var spGetRolePermissionByRoleAndResource = "GET_ROLE_PERMISSION_BY_ROLE_RESOURCE_PERMISSION";
 var spInsertRolePermission = "INS_ROLE_PERMISSION";
 var spUpdateRolePermission = "UPD_ROLE_PERMISSION";
+var spUpdateRolePermissionLevel = "UPD_ROLE_PERMISSION_LEVEL";
 
 function getPermissionByRole(roleId) {
 	if (!!roleId) {
@@ -79,4 +80,15 @@ function updateRolePermission(roleId, resourceId, permissionId, enabled,
 
 	return db.executeScalarManual(spUpdateRolePermission, parameters,
 			"out_result");
+}
+
+function updateRolePermissionLevel(objRolePermission, userId){
+	var parameters = {};
+	parameters.in_role_id = objRolePermission.ROLE_ID;
+	parameters.in_resource_id = objRolePermission.RESOURCE_ID;
+	parameters.in_permission_id = objRolePermission.PERMISSION_ID;
+	parameters.in_permission_level = objRolePermission.PERMISSION_LEVEL;
+	parameters.in_modified_user_id = userId;
+
+	return db.executeScalar(spUpdateRolePermissionLevel, parameters, "out_result");
 }

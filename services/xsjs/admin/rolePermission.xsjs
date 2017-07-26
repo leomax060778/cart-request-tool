@@ -8,6 +8,7 @@ var blRolePermission = mapper.getRolePermission();
 
 var GET_PERMISSION_BY_ROLE_ID = "ROLE_ID";
 var GET_ALL_PERMISSIONS = "ALL";
+var permissionLevelMethod = "SPECIAL_PERMISSION";
 
 var service_name = "rolePermission";
 
@@ -40,7 +41,19 @@ function handlePost(reqBody,userSessionID) {
 
 //Implementation of UPDATE call -- Update Role Permission
 function handlePut(reqBody,userSessionID){
-	var rdo =  blRolePermission.updateRolePermission(reqBody,userSessionID);
+	var rdo;
+	var method = httpUtil.getUrlParameters();
+	
+	if(method.length > 0){
+		if(method.get("METHOD") === permissionLevelMethod){
+			rdo = blRolePermission.updateRolePermissionLevel(reqBody, userSessionID);
+		}else{
+			throw ErrorLib.getErrors().BadRequest("","rolePermissionServices/handlePut","invalid parameter name (can be: SPECIAL_PERMISSION)");
+		}
+	}else{
+		rdo =  blRolePermission.updateRolePermission(reqBody,userSessionID);
+	}
+	
 	return httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 };
 

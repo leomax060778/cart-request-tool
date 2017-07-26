@@ -1,0 +1,24 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NEWS_PUBLISHED_STATUS" (
+  IN in_news_id bigint,
+  IN in_status_id bigint,
+  IN in_modified_user_id bigint,
+  OUT out_result bigint
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+AS
+BEGIN
+	UPDATE news
+	SET news.previous_status_id = news.status_id,
+		news.status_id = in_status_id,
+        news.modified_user_id = in_modified_user_id,
+        news.user_id_status = in_modified_user_id,
+        news.update_status_tz = CURRENT_TIMESTAMP,
+        news.modified_date_tz = CURRENT_TIMESTAMP,
+        news.published_date = CURRENT_TIMESTAMP
+	FROM "CART_REQUEST_TOOL"."NEWS" news
+	WHERE news.news_id = in_news_id;
+
+SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

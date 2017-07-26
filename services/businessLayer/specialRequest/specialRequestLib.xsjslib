@@ -207,10 +207,10 @@ function validateType(key, value) {
 		valid = !isNaN(value) && value > 0;
 		break;
 	case 'UNIT_PRICE':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'QUANTITY':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'CURRENCY_ID':
 		valid = !isNaN(value) && value > 0;
@@ -222,10 +222,10 @@ function validateType(key, value) {
 		valid = value.length > 0 && value.length <= 255;
 		break;
 	case 'AMOUNT':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	case 'BUDGET':
-		valid = !isNaN(value) && value > 0;
+		valid = !isNaN(value) && value >= 0;
 		break;
 	}
 	return valid;
