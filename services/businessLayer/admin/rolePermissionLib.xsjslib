@@ -21,6 +21,10 @@ var permissionLevel = {
 	"level2": 2
 };
 
+var permissionMap = {
+		CreateEdit: 10
+};
+
 /* Return all permissions for roles */
 function getAllPermissionByRole() {
 	// get the roles
@@ -200,7 +204,7 @@ function updateRolePermission(rolePermissions, modifiedUser) {
 									.updateRolePermission(roleId, resourceId,
 											permissionId, permissionEnabled,
 											modifiedUser);
-							if(!permissionEnabled && (rolePermissions[i].PERMISSIONS[j].CONFIGURATION[r].PERMISSION_LEVEL !== permissionLevel.level1)){
+							if(!permissionEnabled && (rolePermissions[i].PERMISSIONS[j].CONFIGURATION[r].PERMISSION_LEVEL !== permissionLevel.level1) && (Number(permissionId) === permissionMap.CreateEdit)){
 								var payload = rolePermissions[i].PERMISSIONS[j];
 								payload.SPECIAL_PERMISSION = false;
 								payload.ROLE_ID = Number(roleId);

@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::DEL_BUDGET_YEAR" (
+		IN in_budget_year_id BIGINT,
+		IN in_user_id BIGINT,
+		OUT out_result BIGINT
+	) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+
+	UPDATE BUDGET_YEAR SET
+		enabled = 0,
+		deleted = 1,
+		modified_user_id = in_user_id,
+		modified_date_tz = CURRENT_TIMESTAMP
+		where BUDGET_YEAR_ID = in_budget_year_id;
+	
+	SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+END;

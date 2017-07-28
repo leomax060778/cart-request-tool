@@ -5,6 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_BUDGET_YEAR"
 	IN description NVARCHAR (255),
 	IN modified_user_id BIGINT,
 	IN budget_year integer,
+	IN new_cart_request_enabled tinyint,
 	OUT out_params TIMESTAMP
 	) 
 	LANGUAGE SQLSCRIPT
@@ -15,6 +16,7 @@ BEGIN
         "CART_REQUEST_TOOL"."BUDGET_YEAR"."END_DATE" = :end_date,
         "CART_REQUEST_TOOL"."BUDGET_YEAR"."DEFAULT_YEAR" = :default_year,
         "CART_REQUEST_TOOL"."BUDGET_YEAR"."DESCRIPTION" = :description,
+        "CART_REQUEST_TOOL"."BUDGET_YEAR"."NEW_CART_REQUEST_ENABLED" = :new_cart_request_enabled,
         "CART_REQUEST_TOOL"."BUDGET_YEAR"."MODIFIED_USER_ID" = :modified_user_id,
         "CART_REQUEST_TOOL"."BUDGET_YEAR"."MODIFIED_DATE_TZ" = CURRENT_TIMESTAMP
 	WHERE "CART_REQUEST_TOOL"."BUDGET_YEAR"."BUDGET_YEAR" = :budget_year;

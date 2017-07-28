@@ -7,6 +7,7 @@ var budgetYear = mapper.getBudgetYear();
 
 var GET_ALL_BUDGET_YEAR = "GET_ALL_BUDGET_YEAR";
 var GET_DEFAULT_BUDGET_YEAR = "GET_DEFAULT_BUDGET_YEAR";
+var GET_BUDGET_YEAR_NEW_CART_REQUEST_ENABLED = "GET_BUDGET_YEAR_NEW_CART_REQUEST_ENABLED";
 
 var service_name = "budgetYearService";
 
@@ -21,11 +22,13 @@ function handleGet(parameters) {
             rdo = budgetYear.getAllBudgetYear(parameters[0].value);
         } else if (parameters[0].name === GET_DEFAULT_BUDGET_YEAR) {
             rdo = budgetYear.getDefaultBudgetYear(parameters[0].value);
+        } else if (parameters[0].name === GET_BUDGET_YEAR_NEW_CART_REQUEST_ENABLED) {
+            rdo = budgetYear.getBudgetYearNCREnabled(parameters[0].value);
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
                 "budgetYearService/handleGet",
-                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_BUDGET_YEAR or GET_DEFAULT_BUDGET_YEAR)"
+                "invalid parameter name " + parameters[0].name + " (can be: GET_ALL_BUDGET_YEAR or GET_DEFAULT_BUDGET_YEAR or GET_BUDGET_YEAR_NEW_CART_REQUEST_ENABLED)"
             );
         }
     } else {
@@ -39,17 +42,18 @@ function handleGet(parameters) {
 }
 
 function handlePut(reqBody, userId) {
-	return httpUtil.notImplementedMethod();
+	var rdo = budgetYear.updateBudgetYear(reqBody, userId);
+	return	httpUtil.handleResponse(rdo,httpUtil.OK,httpUtil.AppJson);
 }
 
-
-function handleDelete(reqBody, userId) {
-	return httpUtil.notImplementedMethod();
+function handleDelete(reqBody, userId){
+	var result = budgetYear.deleteBudgetYear(reqBody, userId);
+	return httpUtil.handleResponse(result,httpUtil.OK,httpUtil.AppJson);
 }
 
-
-function handlePost(reqBody, userId) {
-	return httpUtil.notImplementedMethod();
+function handlePost(reqBody, userId){
+	var result = budgetYear.insertBudgetYear(reqBody, userId);
+	return httpUtil.handleResponse(result,httpUtil.OK,httpUtil.AppJson);
 }
 
 processRequest();

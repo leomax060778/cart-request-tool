@@ -83,3 +83,12 @@ function validateObjectAttributes(objReq, userId, keys ,serviceUrl, validateType
 	}
 	return isValid;
 }
+
+function validateDateEndMayorStart(dateStart,dateEnd)
+{
+	if(dateStart>=dateEnd)
+	{
+		return true;
+	}
+	return false;
+}

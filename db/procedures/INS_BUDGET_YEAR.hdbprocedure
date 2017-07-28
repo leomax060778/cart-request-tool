@@ -1,0 +1,35 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_BUDGET_YEAR" (
+  IN in_budget_year integer,
+  IN in_start_date timestamp,
+  IN in_end_date timestamp,
+  IN in_default_year tinyint,
+  IN in_description nvarchar(255),
+  IN in_new_cart_request_enabled tinyint,
+  IN in_created_user_id BIGINT,
+
+  OUT out_budget_year_id BIGINT
+ )
+ LANGUAGE SQLSCRIPT
+ SQL SECURITY INVOKER
+ DEFAULT SCHEMA "CART_REQUEST_TOOL"
+ AS
+BEGIN
+ INSERT INTO BUDGET_YEAR (	BUDGET_YEAR, 
+ 							START_DATE, 
+ 							END_DATE, 
+ 							DEFAULT_YEAR,
+ 							DESCRIPTION, 
+ 							NEW_CART_REQUEST_ENABLED,
+ 							CREATED_USER_ID
+ 							)
+ VALUES (	in_budget_year, 
+ 			in_start_date, 
+ 			in_end_date, 
+ 			in_default_year, 
+ 			in_description,
+ 			in_new_cart_request_enabled,
+ 			in_created_user_id 
+ 			);
+ 
+ SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_budget_year_id FROM "CART_REQUEST_TOOL"."BUDGET_YEAR";
+END;
