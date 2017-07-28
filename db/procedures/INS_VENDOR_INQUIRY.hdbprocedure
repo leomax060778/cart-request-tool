@@ -10,8 +10,12 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_INQUI
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_INQUIRY" (user_id, vendor_type_id, vendor_name, created_user_id)
-   VALUES(in_user_id, in_vendor_type_id, in_vendor_name, in_created_user_id);
+
+--Get the next value for ID field
+SELECT "CART_REQUEST_TOOL".SEQ_VENDOR_INQUIRY.NEXTVAL INTO out_result FROM dummy;
+
+  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_INQUIRY" (VENDOR_INQUIRY_ID,user_id, vendor_type_id, vendor_name, created_user_id)
+   VALUES(out_result,in_user_id, in_vendor_type_id, in_vendor_name, in_created_user_id);
    
-  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR_INQUIRY";
+  SELECT out_result FROM dummy;
 END;

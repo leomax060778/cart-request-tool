@@ -24,13 +24,17 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR_REQUE
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_REQUEST"(user_id, country_id, entity_id, commodity_id, not_used_sap_supplier,
+
+--Get the next value for ID field
+SELECT "CART_REQUEST_TOOL".SEQ_VENDOR_REQUEST.NEXTVAL INTO out_result FROM dummy;
+
+  INSERT INTO "CART_REQUEST_TOOL"."VENDOR_REQUEST"(VENDOR_REQUEST_ID, user_id, country_id, entity_id, commodity_id, not_used_sap_supplier,
    service_supplier, vendor_type_id, purchase_amount, expected_amount, purchase_currency_id, expected_currency_id,
    accept_american_express, cost_center_owner, additional_information, created_user_id, vendor_id)
 
-VALUES(in_user_id, in_country_id, in_entity_id, in_commodity_id, in_not_used_sap_supplier, in_service_supplier, in_vendor_type_id,
+VALUES(out_result, in_user_id, in_country_id, in_entity_id, in_commodity_id, in_not_used_sap_supplier, in_service_supplier, in_vendor_type_id,
  in_purchase_amount, in_expected_amount, in_purchase_currency_id, in_expected_currency_id, in_accept_american_express,
  in_cost_center_owner, in_additional_information, in_created_user_id, in_vendor_id);
 	
-  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR_REQUEST";
+  SELECT out_result FROM dummy;
 END;

@@ -1,0 +1,6 @@
+--DROP SEQUENCE SEQ_EXTEND_VENDOR_REQUEST;
+
+-- Please set the correct ID value to use for the next insert
+CREATE SEQUENCE SEQ_EXTEND_VENDOR_REQUEST START WITH 12 MINVALUE 0; 
+
+COMMIT;

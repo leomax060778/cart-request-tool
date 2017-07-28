@@ -19,7 +19,11 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_CHANGE_VENDO
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-  INSERT INTO "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST"(
+
+--Get the next value for ID field
+SELECT "CART_REQUEST_TOOL".SEQ_CHANGE_VENDOR_REQUEST.NEXTVAL INTO out_result FROM dummy;
+
+  INSERT INTO "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST"(CHANGE_VENDOR_REQUEST_ID,
 	  	user_id, 
 	  	entity_id, 
 	  	commodity_id,
@@ -31,7 +35,7 @@ BEGIN
 		vendor_contact_phone,
 		vendor_contact_email,
 		additional_information
-	) VALUES( 
+	) VALUES( out_result,
 		in_user_id, 
 		in_entity_id, 
 		in_commodity_id, 
@@ -45,5 +49,5 @@ BEGIN
 		in_additional_information
 		);
 	
-  SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."CHANGE_VENDOR_REQUEST";
+  SELECT out_result FROM dummy;
 END;	
