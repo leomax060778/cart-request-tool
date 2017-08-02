@@ -23,6 +23,7 @@ var sender = config.getSMTPAccount();
 var typeText = "TEXT";
 var typeInline = "INLINE";
 var typeAttachment = "ATTACHMENT";
+var currentMailTemplateId = 3;
 
 function validateEmail(email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -226,7 +227,7 @@ function getMailTemplateById(mailTemplateId) {
 
 function getDefaultTemplate(body) {
 	//TODO: add variable mail template id as function parameter
-	var mailTemplateId = 1;
+	var mailTemplateId = currentMailTemplateId;
     var textHtml = eval(getMailTemplateById(mailTemplateId));
     return textHtml;
 
@@ -234,9 +235,9 @@ function getDefaultTemplate(body) {
 
 function getOldDefaultTemplate(body) {
 	//TODO: add variable mail template id as function parameter
-	var mailTemplateId = 1;
+	var mailTemplateId = currentMailTemplateId;
 	var textHtmlBody = eval(getMailTemplateById(mailTemplateId));
-    var textHtml =	"<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'></head>" + textHtmlBody + "</html>";
+    var textHtml =	"<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>" + textHtmlBody + "</html>";
     var newPart = new $.net.Mail.Part();
     newPart.type = $.net.Mail.Part.TYPE_TEXT;
     newPart.text = textHtml;

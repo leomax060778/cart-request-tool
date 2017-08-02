@@ -131,6 +131,7 @@ function updateRequestManual(objRequest, userId){
     parameters.in_request_id = objRequest.REQUEST_ID;
     parameters.in_team_id = objRequest.TEAM_ID;
     parameters.in_entity_id = objRequest.ENTITY_ID;
+    parameters.in_budget_year_id = Number(objRequest.BUDGET_YEAR_ID);
     parameters.in_material_id = objRequest.MATERIAL_ID;
     parameters.in_vendor_id = objRequest.VENDOR_ID;
     parameters.in_vendor_contact_information_id = objRequest.VENDOR_CONTACT_INFORMATION_ID || null;

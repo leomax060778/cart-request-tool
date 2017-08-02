@@ -16,6 +16,7 @@ var MSG_BUDGET_YEAR_NOT_FOUND = "Budget Year not found.";
 var MSG_INVALID_BUDGET_YEAR = "Another Budget Year with the same year already exist.";
 var MSG_ACTUAL_START_DATE_NOT_FOUND = "Invalid Budget Year ACTUAL START DATE.";
 var MSG_ACTUAL_END_DATE_NOT_FOUND = "Invalid Budget Year ACTUAL END DATE.";
+var DEFAULT_BUDGET_YEAR_NOT_FOUND = "There is not Budget Year Available. Please select a Default Budget Year from the Administration";
 
 var MSG_INVALID_DATE_RANGE = "Invalid Budget Year DATE RANGE.";
 var MSG_DATE_RANGE_OVERLAPPING = "Date range is overlapped with another Budget Year date range.";
@@ -35,7 +36,19 @@ function getAllBudgetYear(){
 }
 
 function getDefaultBudgetYear(){
-	return dbBudget.getDefaultBudgetYear();
+	var result = dbBudget.getDefaultBudgetYear();
+	if(result.length === 0){
+		var date = new Date();
+		var year = date.getFullYear();
+		result = [];
+		var budget = dbBudget.getBudgetYear(Number(year));
+		if(Object.keys(budget).length > 0){
+			result.push(budget);
+		}else{
+			throw ErrorLib.getErrors().BadRequest("There is not Budget Year Available. Please select a Default Budget Year from the Administration", "budgetYearServices/handleGet/getDefaultBudgetYear", DEFAULT_BUDGET_YEAR_NOT_FOUND);
+		}
+	}
+	return result;
 }
 
 function getBudgetYearNCREnabled(){
@@ -46,10 +59,14 @@ function updateBudgetYear(budgetYear, userId){
 	budgetYear.NEW_CART_REQUEST_ENABLED = (budgetYear.NEW_CART_REQUEST_ENABLED)? 1:0;
 	budgetYear.DEFAULT_YEAR = (budgetYear.DEFAULT_YEAR)? 1:0;
 	
+	if(existOtherBudgetYear(budgetYear)){
+		throw ErrorLib.getErrors().CustomError("", "budgetYearServices/handlePut/validateBudgetYearData", MSG_INVALID_BUDGET_YEAR);
+	}
+	
 	if(Number(budgetYear.DEFAULT_YEAR)){
 		dbBudget.resetAllBudgetYearDefaultYear(0, userId);
 	}
-		
+	
 	return dbBudget.updateBudgetYear(budgetYear, userId);
 }
 

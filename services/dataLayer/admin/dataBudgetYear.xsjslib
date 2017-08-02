@@ -54,17 +54,19 @@ function getBudgetYearId(budgetYearid){
 }
 
 function updateBudgetYear(budgetYear, userId){
+
 	var params = {
-			"start_date" : budgetYear.START_DATE,
-			"end_date": budgetYear.END_DATE,
-			"default_year": budgetYear.DEFAULT_YEAR,
-			"description": budgetYear.DESCRIPTION,
-			"modified_user_id": userId,
-			"new_cart_request_enabled": budgetYear.NEW_CART_REQUEST_ENABLED,
-			"budget_year": budgetYear.BUDGET_YEAR
+			"in_budget_year_id" : Number(budgetYear.BUDGET_YEAR_ID),
+			"in_start_date" : budgetYear.START_DATE,
+			"in_end_date": budgetYear.END_DATE,
+			"in_default_year": budgetYear.DEFAULT_YEAR,
+			"in_description": budgetYear.DESCRIPTION,
+			"in_modified_user_id": userId,
+			"in_new_cart_request_enabled": budgetYear.NEW_CART_REQUEST_ENABLED,
+			"in_budget_year": Number(budgetYear.BUDGET_YEAR)
 	};
 	
-	return db.executeProcedure(spUdpBudgetYear,params);
+	return db.executeScalar(spUdpBudgetYear,params, 'out_params');
 }
 
 function insertBudgetYear(budgetYear, userId){

@@ -3,13 +3,16 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var data = mapper.getDataCurrency();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
+var budgetYear = mapper.getBudgetYear();
 
 function getAllCurrency() {
 	return data.getAllCurrency();
 }
 
 function getAllCurrencyByDefaultYear(){
-	return data.getAllCurrencyByDefaultYear();
+	var defaultBudgetYeat = budgetYear.getDefaultBudgetYear();
+
+	return getCurrencyByYear(defaultBudgetYeat[0].BUDGET_YEAR);
 }
 
 function getCurrencyByYear(currencyYear){
