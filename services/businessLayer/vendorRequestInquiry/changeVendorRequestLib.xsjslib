@@ -28,11 +28,7 @@ function validateAccess(change_vendor_request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var change_vendor_request_status = change.getChangeVendorRequestStatusByCVRId(change_vendor_request_id);
 	
-	if(user_role.ROLE_NAME !== 'SuperAdmin'){
-		return !(change_vendor_request_status.STATUS_NAME == 'Approved' || change_vendor_request_status.STATUS_NAME == 'Cancelled');
-	}else{
-		return true;
-	}
+	return !(change_vendor_request_status.STATUS_NAME == 'Approved' || change_vendor_request_status.STATUS_NAME == 'Cancelled');
 }
 
 //Insert change vendor request

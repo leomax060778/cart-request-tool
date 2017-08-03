@@ -30,11 +30,7 @@ function validateAccess(extend_vendor_request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var extend_vendor_request_status = extend.getExtendVendorRequestStatusByEVRId(extend_vendor_request_id);
 	
-	if(user_role.ROLE_NAME !== 'SuperAdmin'){
-		return !(extend_vendor_request_status.STATUS_NAME == 'Approved' || extend_vendor_request_status.STATUS_NAME == 'Cancelled');
-	}else{
-		return true;
-	}
+	return !(extend_vendor_request_status.STATUS_NAME == 'Approved' || extend_vendor_request_status.STATUS_NAME == 'Cancelled');
 }
 
 //Insert extend vendor request

@@ -30,11 +30,7 @@ function validateAccess(vendor_inquiry_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var vendor_inquiry_status = inquiry.getVendorInquiryStatusByVendorInquiryId(vendor_inquiry_id);
 	
-	if(user_role.ROLE_NAME !== 'SuperAdmin'){
-		return !(vendor_inquiry_status.STATUS_NAME == 'Completed' || vendor_inquiry_status.STATUS_NAME == 'Cancelled');
-	}else{
-		return true;
-	}
+	return !(vendor_inquiry_status.STATUS_NAME == 'Completed' || vendor_inquiry_status.STATUS_NAME == 'Cancelled');
 }
 
 //Get vendor inquiry by ID

@@ -26,11 +26,7 @@ function validateAccess(vendor_request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var vendor_request_status = request.getVendorRequestStatusByVendorRequestId(vendor_request_id);
 	
-	if(user_role.ROLE_NAME !== 'SuperAdmin'){
-		return !(vendor_request_status.STATUS_NAME == 'Approved' || vendor_request_status.STATUS_NAME == 'Cancelled');
-	}else{
-		return true;
-	}
+	return !(vendor_request_status.STATUS_NAME == 'Approved' || vendor_request_status.STATUS_NAME == 'Cancelled');
 }
 
 //Insert Vendor Request Data Protection
