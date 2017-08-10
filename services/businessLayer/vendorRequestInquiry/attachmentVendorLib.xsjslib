@@ -2,6 +2,8 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataAttachmentV = mapper.getDataAttachmentVendor();
 var dataAttachment = mapper.getDataAttachment();
+var businessAttachment = mapper.getAttachment();
+
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -48,6 +50,12 @@ function insertManualAttachmentVendor(objAttachment, userId) {
         throw ErrorLib.getErrors().CustomError("", "attachmentVendorService/handlePost/insertAttachmentVendor", "The Attachment with the id " + objAttachment.ATTACHMENT_ID + " does not exist");
     }
 }
+
+//Delete Attachment from Vendor Request/Inquiry edit section
+function deleteAttachment(objAttachment, userId){
+	return businessAttachment.deleteAttachment(objAttachment, userId);
+}
+
 
 //Delete attachment vendor
 function deleteAttachmentVendor(objAttachment, userId) {

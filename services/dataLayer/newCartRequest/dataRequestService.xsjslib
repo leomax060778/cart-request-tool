@@ -17,7 +17,7 @@ function insertRequestService(objReq, user_id){
 	parameters.in_purchase_order_to_uplift = objReq.PURCHASE_ORDER_TO_UPLIFT;
 	parameters.in_line_to_uplift = objReq.LINE_TO_UPLIFT;
 	parameters.in_purchase_order_amount = objReq.PURCHASE_ORDER_AMOUNT;
-	parameters.in_sap_buyer_name = objReq.SAP_BUYER_NAME;
+	parameters.in_sap_buyer_name = objReq.SAP_BUYER_NAME || null;
 	parameters.in_cart_amount = objReq.CART_AMOUNT;
 	parameters.in_total_budget = objReq.TOTAL_BUDGET;
 	parameters.in_user_id = user_id;
@@ -34,7 +34,7 @@ function updateManualRequestService(objReq, userId){
 	parameters.in_purchase_order_to_uplift = objReq.PURCHASE_ORDER_TO_UPLIFT;
 	parameters.in_line_to_uplift = objReq.LINE_TO_UPLIFT;
 	parameters.in_purchase_order_amount = objReq.PURCHASE_ORDER_AMOUNT;
-	parameters.in_sap_buyer_name = objReq.SAP_BUYER_NAME;
+	parameters.in_sap_buyer_name = objReq.SAP_BUYER_NAME || null;
 	parameters.in_cart_amount = objReq.CART_AMOUNT;
 	parameters.in_total_budget = objReq.TOTAL_BUDGET;
 	parameters.in_modified_user_id = userId;

@@ -9,6 +9,7 @@ var GET_ALL_INQUIRY = "GET_ALL_INQUIRY";
 var GET_INQUIRY_BY_ID = "GET_INQUIRY_BY_ID";
 var GET_INQUIRY_LAST_ID = "GET_INQUIRY_LAST_ID";
 var EDITION_MODE = "EDITION_MODE";
+var deleteAttachment = "DELETE_ATTACHMENT"
 
 var service_name = "inquiryService";
 
@@ -73,9 +74,19 @@ function handleGet(parameters, userId) {
  */
 function handlePut(reqBody, userId) {
 	var req;
-    req = inquiry.updateInquiry(reqBody, userId);
-    inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
-    
+	
+	var method = httpUtil.getUrlParameters();
+	if(method.length > 0){
+		if(method.get("METHOD") === deleteAttachment){
+			req =  inquiry.deleteAttachmentOnly(reqBody, userId);
+		}else{
+			throw ErrorLib.getErrors().BadRequest("","inquiryService/handlePut","invalid parameter name (can be: DELETE_ATTACHMENT)");
+		}
+	}else{
+		req = inquiry.updateInquiry(reqBody, userId);
+		inquiry.sendResubmitMail(reqBody.INQUIRY_ID, userId);
+	}
+	
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

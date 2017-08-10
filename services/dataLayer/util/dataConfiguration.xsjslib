@@ -103,6 +103,11 @@ var complete_path = {
 		"VENDOR_INQUIRY": "/vendorInquiry/detail",
 		"PROCESSING_REPORT": "/processingReport"
 };
+
+var complete_path_additional_param = {
+		"MESSAGE": "/TAB=messageHistory"
+};
+
 /** ******************************* */
 
 /** ************Email Accounts********************* */
@@ -178,7 +183,11 @@ function getPath(nameString){
 	return complete_path[nameString];
 }
 
-function getBasicData(stringPathName){
+function getAdditionalParam(param){
+	return complete_path_additional_param[param];
+}
+
+function getBasicData(stringPathName, additionalParam){
 	var parameters = {};
 	parameters.URL_BASE = getUrlBase();
 		
@@ -187,6 +196,10 @@ function getBasicData(stringPathName){
 		parameters.ENVIRONMENT = getMailEnvironment();
 	}else{
 		parameters.ENVIRONMENT = getEnvironment();
+	}
+	
+	if(additionalParam){
+		parameters.ADDITIONAL_PARAM = getAdditionalParam(additionalParam.PARAM);
 	}
 	
 	return parameters;

@@ -2,6 +2,8 @@
 function parseReturnToRequest(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body = 'Dear CRT Admin,<br /><br />Your <b>Change Vendor</b> has been returned'+
 	' to you with an <b>Action and/or Response that is required</b> in order to process'+
@@ -17,6 +19,8 @@ function parseReturnToRequest(changeVendorObj, basicData,  userName){
 function parseCancelled(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>CV'+changeVendorObj.CHANGE_VENDOR_REQUEST_ID+'</b> has been <b>Cancelled.</b><br />'+
 	'<br />The reason for cancellation has been recorded in the Message History as FYI Only, '+
@@ -68,6 +72,8 @@ function parseApproved(changeVendorObj, basicData,  userName){
 function parseFYI(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br /> A message has been added to the '+
 	'Message History tab for your request <b>CV'+changeVendorObj.CHANGE_VENDOR_REQUEST_ID+'</b> in the <b>Cart '+
@@ -95,6 +101,8 @@ function parseInProcess(changeVendorObj, basicData,  userName){
 function parseMessage(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>VI'+changeVendorObj.CHANGE_VENDOR_REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+

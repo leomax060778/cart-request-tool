@@ -486,6 +486,12 @@ function deleteAttachment(attachment, in_request_id, userId){
 		}
 }
 
+//Delete Attachment from Shopping Cart History section
+function deleteAttachmentOnly(reqBody, userId){
+	return bussinesAttachment.deleteAttachment(reqBody, userId);
+}
+
+
 function updateAttachments(original_attachments, newAttachments, request_id, user_id){
 
 	var original_attachments_local = original_attachments;

@@ -2,6 +2,8 @@
 function parseReturnToRequest(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>CRT Inquiry</b> has been returned to you with an '+
 	'<b>Action and/or Response that is required</b> in order to process your request.<br /><br />'+
@@ -28,6 +30,8 @@ function parseSubmit(inquiryObj, basicData, userName){
 function parseCancelled(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>CI'+inquiryObj.INQUIRY_ID+'</b> has been <b>Cancelled.</b><br /><br />'+
 	'The reason for cancellation has been recorded in the Message History as FYI Only, requiring no response.'+
@@ -52,6 +56,8 @@ function parseResubmitted(inquiryObj, basicData, userName){
 function parseCompleted(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  'Dear CRT Admin<br /><br />Your <b>CI'+inquiryObj.INQUIRY_ID+'</b> has been <b>Completed.</b><br /><br />'+
 	'You may review the response in the Message History of your inquiry.<br /><br />Log in to CRT'+
@@ -64,6 +70,8 @@ function parseCompleted(inquiryObj, basicData, userName){
 function parseFYI(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message History '+
 	'tab for your request <b>CI'+inquiryObj.INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+
@@ -77,6 +85,8 @@ function parseFYI(inquiryObj, basicData, userName){
 function parseMessage(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message History '+
 	'tab for <b>CI'+inquiryObj.INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+

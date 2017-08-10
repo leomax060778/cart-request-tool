@@ -2,11 +2,15 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var httpUtil = mapper.getHttp();
 var ErrorLib = mapper.getErrors();
+
 var requestInquiry = mapper.getVendorRequestInquiry();
+var attachmentVendor = mapper.getAttachmentVendor();
+
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
 var change = mapper.getChangeVendorRequest();
+
 var selection = mapper.getChangeVendorSelection();
 /** ***********END INCLUDE LIBRARIES*************** */
 
@@ -17,6 +21,7 @@ var GET_EXTEND_VENDOR_REQUEST_BY_ID = "GET_EXTEND_VENDOR_REQUEST_BY_ID";
 var GET_CHANGE_VENDOR_REQUEST_BY_ID = "GET_CHANGE_VENDOR_REQUEST_BY_ID";
 var GET_LAST_ID = "GET_LAST_ID";
 var EDITION_MODE = "EDITION_MODE";
+var deleteAttachment = "DELETE_ATTACHMENT";
 
 var service_name = "vendorRequestInquiryService";
 
@@ -130,25 +135,34 @@ function handleGet(parameters, userId) {
  * @returns {int} count - Modified rows count
  */
 function handlePut(reqBody, userId) {
-    var res;
-    if (reqBody.VENDOR_INQUIRY_ID) {
-        res = inquiry.updateVendorInquiry(reqBody, userId);
-        inquiry.sendResubmitMail(reqBody.VENDOR_INQUIRY_ID,userId);
-    } else if (reqBody.VENDOR_REQUEST_ID) {
-    	res = request.updateVendorRequest(reqBody, userId);
-    	request.sendResubmitMail(reqBody.VENDOR_REQUEST_ID,userId);
-    } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-    	res = extend.updateExtendVendorRequest(reqBody, userId);
-    	extend.sendResubmitMail(reqBody.EXTEND_VENDOR_REQUEST_ID,userId);
-    } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-    	selection.updateChangeSelectionManual(reqBody, userId);
-    	res = change.updateChangeVendorRequest(reqBody, userId);
-    	change.sendResubmitMail(reqBody.CHANGE_VENDOR_REQUEST_ID,userId);
-    } else {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService",
-            "The object reqBody is invalid. Must be included one of the following id: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID or CHANGE_VENDOR_REQUEST_ID");
-    }
-    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
+	 var res;
+	    var method = httpUtil.getUrlParameters();
+	    if(method.length > 0){
+	    	if(method.get("METHOD") === deleteAttachment){
+				res =  attachmentVendor.deleteAttachment(reqBody, userId);
+			}else{
+				throw ErrorLib.getErrors().BadRequest("","vendorRequestInquiryService/handlePut","invalid parameter name (can be: DELETE_ATTACHMENT)");
+			}
+	    }else{
+	    	 if (reqBody.VENDOR_INQUIRY_ID) {
+	 	        res = inquiry.updateVendorInquiry(reqBody, userId);
+	 	        inquiry.sendResubmitMail(reqBody.VENDOR_INQUIRY_ID,userId);
+	 	    } else if (reqBody.VENDOR_REQUEST_ID) {
+	 	    	res = request.updateVendorRequest(reqBody, userId);
+	 	    	request.sendResubmitMail(reqBody.VENDOR_REQUEST_ID,userId);
+	 	    } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
+	 	    	res = extend.updateExtendVendorRequest(reqBody, userId);
+	 	    	extend.sendResubmitMail(reqBody.EXTEND_VENDOR_REQUEST_ID,userId);
+	 	    } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
+	 	    	selection.updateChangeSelectionManual(reqBody, userId);
+	 	    	res = change.updateChangeVendorRequest(reqBody, userId);
+	 	    	change.sendResubmitMail(reqBody.CHANGE_VENDOR_REQUEST_ID,userId);
+	 	    } else {
+	 	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService",
+	 	            "The object reqBody is invalid. Must be included one of the following id: VENDOR_INQUIRY_ID, VENDOR_REQUEST_ID, EXTEND_VENDOR_REQUEST_ID or CHANGE_VENDOR_REQUEST_ID");
+	 	    }
+	    }
+	    return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 //Not Implemented Method

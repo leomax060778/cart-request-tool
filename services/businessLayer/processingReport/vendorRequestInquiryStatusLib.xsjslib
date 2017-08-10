@@ -37,6 +37,8 @@ var pathName = {
 		"VENDOR_REQUEST_MAIL" : "VENDOR_REQUEST"
 };
 
+var additionalParam = {"PARAM": "MESSAGE"};
+
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (Number(roleData.USER_ID) === Number(resRequest.CREATED_USER_ID));
 }
@@ -728,6 +730,7 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 	if(objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)){
 		var changeVendorRequestMailObj = {};
 		var mailObj = {};
+		
 		changeVendorRequestMailObj.CHANGE_VENDOR_REQUEST_ID = objRequest.CHANGE_VENDOR_REQUEST_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
@@ -735,13 +738,13 @@ function sendChangeVendorMailByStatus(objRequest, userId){
 				mailObj = changeVendorMail.parseInProcess(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), "Colleague");
+				mailObj = changeVendorMail.parseReturnToRequest(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), "Colleague");
 				break;
 			case '5':
 				mailObj = changeVendorMail.parseApproved(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), "Colleague");
 				break;
 			case '6':
-				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL), "Colleague");
+				mailObj = changeVendorMail.parseCancelled(changeVendorRequestMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), "Colleague");
 				break;
 		}
 		
@@ -763,13 +766,13 @@ function sendExtendVendorMailByStatus(objRequest,extendVendorData, userId){
 				mailObj = extendVendorMail.parseInProcess(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 			case '4':
-				mailObj = extendVendorMail.parseReturnToRequest(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), "Colleague");
+				mailObj = extendVendorMail.parseReturnToRequest(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), "Colleague");
 				break;
 			case '5':
 				mailObj = extendVendorMail.parseApproved(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), "Colleague");
 				break;
 			case '6':
-				mailObj = extendVendorMail.parseCancelled(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL), "Colleague");
+				mailObj = extendVendorMail.parseCancelled(extendVendorRequestMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), "Colleague");
 				break;
 		}
 		
@@ -786,13 +789,13 @@ function sendVendorInquiryMailByStatus(objRequest, userId){
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
 			case '2':
-				mailObj = vendorInquiryMail.parseReturnToRequest(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
+				mailObj = vendorInquiryMail.parseReturnToRequest(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), "Colleague");
 				break;
 			case '3':
-				mailObj = vendorInquiryMail.parseCompleted(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
+				mailObj = vendorInquiryMail.parseCompleted(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), "Colleague");
 				break;
 			case '4':
-				mailObj = vendorInquiryMail.parseCancelled(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL), "Colleague");
+				mailObj = vendorInquiryMail.parseCancelled(vendorInquiryMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), "Colleague");
 				break;
 		}
 		
@@ -816,13 +819,13 @@ function sendVendorRequestMailByStatus(objRequest, userId){
 				mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 			case '4':
-				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
+				mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
 				break;
 			case '5':
 				mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
 				break;
 			case '6':
-				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL), requester);
+				mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
 				break;
 		}
 		
@@ -843,6 +846,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam){
+	return config.getBasicData(stringPathName, additionalParam);
 }

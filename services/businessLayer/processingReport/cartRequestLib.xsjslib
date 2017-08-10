@@ -266,6 +266,8 @@ function sendMailByStatus(objRequest, mailData, userId){
 		var mailObj = {};
 		var userData = businessUser.getUserById(userId)[0];
 		var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
+		var additionalParam = {"PARAM": "MESSAGE"};
+		
 		cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
 		var statusId = objRequest.STATUS_ID;
 		switch (statusId) {
@@ -276,7 +278,7 @@ function sendMailByStatus(objRequest, mailData, userId){
 				break;
 			case '4':
 			case 4:
-				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName), requester);
+				mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName, additionalParam), requester);
 				break;
 			case '5':
 			case 5:
@@ -285,7 +287,7 @@ function sendMailByStatus(objRequest, mailData, userId){
 				break;
 			case '6':
 			case 6:
-				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName), requester);
+				mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName, additionalParam), requester);
 				break;
 		}
 		
@@ -310,6 +312,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam){
+	return config.getBasicData(stringPathName, additionalParam);
 }

@@ -18,7 +18,7 @@ var pathName = "CART_REQUEST";
 function parseNewMessage(requestId, requester, userId){
 	 var requestMailObj = {};
 	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName), "Colleague");
+	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), "Colleague");
 	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
 	 mail.sendMail(emailObj,true,null);
 }
@@ -201,6 +201,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam){
+	return config.getBasicData(stringPathName, additionalParam);
 }

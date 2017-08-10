@@ -7,7 +7,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SPECIAL_REQU
    						START_DATE nvarchar(32),
    						END_DATE nvarchar(32),
    						UNIT_PRICE decimal(19,2),
-					   	QUANTITY decimal(19,3),
+					   	QUANTITY integer,
 					   	CURRENCY_ID bigint,
 					   	currency_abbreviation nvarchar (255),
 					   	VENDOR_TEXT nvarchar(1000),

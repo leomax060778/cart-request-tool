@@ -1,10 +1,12 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CATALOG_REPORT" (
-	OUT out_result TABLE (catalog_id bigint,
+	OUT out_result TABLE (	catalog_id bigint,
 							catalog_name nvarchar(255),
-							category_name nvarchar(255),
-							sub_category_name nvarchar(255),
+							catalog_parent_id bigint,
+							catalog_type_id bigint,
+							catalog_type_name nvarchar(255),
+							material_id bigint,
 							material_name nvarchar(255),
-							material_code nvarchar(255)
+							material_code nvarchar(255)					
 	)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -12,16 +14,27 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CATALOG_REPO
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT DISTINCT CAT.CATALOG_ID,
-				 				 CAT.NAME AS catalog_name,
-								 CTY.NAME AS category_name,
-								 SCT.NAME AS sub_category_name,
-								 MAT.DESCRIPTION AS material_name,
-								 MAT.CODE AS material_code
-					FROM "CATALOG" CAT
-						LEFT JOIN "CATALOG" CTY ON CAT.CATALOG_ID = CTY.CATALOG_PARENT_ID
-						LEFT JOIN "CATALOG" SCT ON CTY.CATALOG_ID = SCT.CATALOG_PARENT_ID
-						LEFT JOIN "MATERIAL" MAT ON MAT.CATALOG_ID = SCT.CATALOG_ID AND MAT.ENABLED = 1 AND MAT.DELETED = 0
-					WHERE CAT.CATALOG_PARENT_ID = 0 AND CAT.ENABLED = 1 AND CAT.DELETED = 0
-					ORDER BY CAT.CATALOG_ID;
+
+	out_result = SELECT DISTINCT 	CAT.CATALOG_ID,
+									CAT.NAME AS CATALOG_NAME,
+									CAT.CATALOG_PARENT_ID,
+									CAT.CATALOG_TYPE_ID,
+									CAT_TYPE.NAME AS CATALOG_TYPE_NAME,
+									MAT.MATERIAL_ID,
+									MAT.DESCRIPTION AS MATERIAL_NAME,
+									MAT.CODE AS MATERIAL_CODE
+								FROM "CATALOG" CAT
+									LEFT JOIN "MATERIAL" MAT
+										ON MAT.CATALOG_ID = CAT.CATALOG_ID
+											AND MAT.ENABLED = 1
+											AND MAT.DELETED = 0
+									INNER JOIN "CATALOG_TYPE" CAT_TYPE
+										ON CAT_TYPE.CATALOG_TYPE_ID = CAT.CATALOG_TYPE_ID
+								WHERE CAT.ENABLED = 1 
+									AND CAT.DELETED = 0
+								ORDER BY	CAT.CATALOG_ID ASC,
+											CAT.NAME ASC,
+											MAT.DESCRIPTION ASC;
+					
+					
 END;

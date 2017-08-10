@@ -6,7 +6,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SPECIAL_REQU
   IN in_start_date timestamp,
   IN in_end_date timestamp,
   IN in_unit_price decimal(19,2),
-  IN in_quantity decimal(19,3),
+  IN in_quantity integer,
   IN in_currency_id bigint,
   IN in_vendor_text nvarchar(1000),
   IN in_unit nvarchar(255),

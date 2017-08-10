@@ -161,7 +161,7 @@
 	va_sub_out = SELECT (CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID)) AS REQUEST_ID,
 						RQ.REQUEST_ID AS R_ID,
 						BUD.BUDGET_YEAR,
-	                    TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD HH24:MI:SS') AS REQUEST_DATE,
+	                    TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS REQUEST_DATE,
 	                    US.REQUESTER,
 	                    HL3.TEAM,
 	                    RQ.HL3_ID,

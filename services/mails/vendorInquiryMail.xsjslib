@@ -2,6 +2,8 @@
 function parseReturnToRequest(vendorInquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>Vendor Inquiry</b> has been returned '+
 	'to you with an <b>Action and/or Response that is required</b> in order to '+
@@ -17,6 +19,8 @@ function parseReturnToRequest(vendorInquiryObj, basicData, userName){
 function parseCompleted(vendorInquiryObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
 	'<b>Completed.</b><br /><br />You may review the response in the '+
@@ -30,6 +34,8 @@ function parseCompleted(vendorInquiryObj,basicData, userName){
 function parseCancelled(vendorInquiryObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> has been '+
 	'<b>Cancelled.</b><br /><br />The reason for cancellation has been '+
@@ -70,6 +76,8 @@ function parseResubmitted(vendorInquiryObj, basicData, userName){
 function parseFYI(vendorInquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the '+
 	'Message History tab for your request <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> in the <b>Cart Request Tool.'+
@@ -83,6 +91,8 @@ function parseFYI(vendorInquiryObj, basicData, userName){
 function parseMessage(vendorInquiryObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorInquiryObj.VENDOR_INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorInquiryId = 'VI' + vendorInquiryObj.VENDOR_INQUIRY_ID;
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>VI'+vendorInquiryObj.VENDOR_INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b>'+

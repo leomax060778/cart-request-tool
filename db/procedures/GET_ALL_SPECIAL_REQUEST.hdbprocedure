@@ -6,7 +6,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_SPECIAL_
    						START_DATE timestamp,
    						END_DATE timestamp,
    						UNIT_PRICE decimal(19,2),
-					   	QUANTITY decimal(19,3),
+					   	QUANTITY integer,
 					   	CURRENCY_ID bigint,
 					   	VENDOR_TEXT nvarchar(1000),
 					   	UNIT nvarchar(255),

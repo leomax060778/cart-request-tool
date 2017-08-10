@@ -175,7 +175,7 @@ function sendMessageMail(inquiryId, userId){
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	var userData = businessUser.getUserById(userId)[0];
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	var mailObj = inquiryMail.parseMessage(inquiryMailObj, getBasicData(pathName), requester);
+	var mailObj = inquiryMail.parseMessage(inquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -192,6 +192,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, aditionalParam){
+	return config.getBasicData(stringPathName, aditionalParam);
 }

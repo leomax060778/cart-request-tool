@@ -346,7 +346,7 @@ function sendMessageMail(vendorInquiryRequest, userId){
 	var userData = businessUser.getUserById(userId)[0];
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
 	vendorMailObj.VENDOR_INQUIRY_ID = vendorInquiryRequest.VENDOR_INQUIRY_ID;
-	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName), requester);
+	var mailObj = vendorInquiryMail.parseFYI(vendorMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), requester);
 	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
 	mail.sendMail(emailObj,true,null);
 }
@@ -363,6 +363,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam){
+	return config.getBasicData(stringPathName, additionalParam);
 }
