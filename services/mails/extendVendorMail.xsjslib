@@ -2,6 +2,8 @@
 function parseReturnToRequest(extendVendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + extendVendorObj.EXTEND_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var extendId = 'EV' + extendVendorObj.EXTEND_VENDOR_REQUEST_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>Extend Vendor</b> '+
 	'has been returned to you with an <b>Action and/or Response that is '+
@@ -18,6 +20,8 @@ function parseReturnToRequest(extendVendorObj, basicData, userName){
 function parseCancelled(extendVendorObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + extendVendorObj.EXTEND_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var extendId = 'EV' + extendVendorObj.EXTEND_VENDOR_REQUEST_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>EV'+extendVendorObj.EXTEND_VENDOR_REQUEST_ID+'</b> has been <b>Cancelled.</b>'+
 	'<br /><br />The reason for cancellation has been recorded in the Message History as '+

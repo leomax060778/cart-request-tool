@@ -17,6 +17,8 @@ function parseSubmit(vendorObj,basicData, userName){
 function parseCancelled(vendorObj,basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body =  'Dear '
 	+ userName +
@@ -84,6 +86,8 @@ function parseFYI(vendorObj, basicData, userName){
 function parseReturnToRequest(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body =  'Dear CRT Admin,<br /><br />Your <b>New Vendor</b> has been returned to you with '+
 	'an <b>Action and/or Response that is required</b> in order to process your request.<br />'+

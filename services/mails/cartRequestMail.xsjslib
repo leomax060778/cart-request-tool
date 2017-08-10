@@ -2,6 +2,8 @@
 function parseReturnToRequest(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
 	mailObj.body = 'Dear CRT Admin,<br /> <br /> Your <b>Cart Request</b> has been returned '+
 	'to you with an <b>Action and/or Response that is required</b> in order to process '+
@@ -16,6 +18,8 @@ function parseReturnToRequest(cartRequestObj, basicData,  userName){
 function parseCancelled(cartRequestObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + cartRequestObj.REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var requestId = 'CR' + cartRequestObj.REQUEST_ID;
 	mailObj.body = 'Dear CRT Admin,<br /><br />Your <b>CR'+cartRequestObj.REQUEST_ID+'</b> has been <b>Cancelled.</b><br />'+
 	'<br />The reason for cancellation has been recorded in the Message History as FYI Only, '+

@@ -171,16 +171,18 @@ function sendMailByStatus(inquiryId, statusId, userId){
 	var mailObj = {};
 	var userData = businessUser.getUserById(userId)[0];
 	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
+	var additionalParam = {"PARAM": "MESSAGE"};
+	
 	inquiryMailObj.INQUIRY_ID = inquiryId;
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName), requester);
+		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName), requester);
+		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName), requester);
+		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
 		break;
 	}
 	
@@ -200,6 +202,6 @@ function getPath(stringName){
 	return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam){
+	return config.getBasicData(stringPathName, additionalParam);
 }
