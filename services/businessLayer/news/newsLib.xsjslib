@@ -131,7 +131,24 @@ function getNewsByYear(budgetYearId) {
     if (!budgetYearId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByYear", budgetYearId);
     }
-    return dataNews.getNewsByYear(budgetYearId);
+    var news = dataNews.getNewsByYear(budgetYearId);
+    news = JSON.parse(JSON.stringify(news));
+    news.forEach(function(elem){
+    	var splitNumber;
+        var newsId;
+        var i;
+    	var startPosition = 1;
+    	var newsTextLength = 5000;
+    	var newsContent = "";
+	    splitNumber = elem.CONTENT_LENGTH / newsTextLength;
+	    newsId = elem.NEWS_ID;
+	    for (i = 0; i < splitNumber; i++) {
+	        newsContent = newsContent.concat(dataNews.getNewsContentManual(newsId, startPosition, newsTextLength)[0]);
+	        startPosition = startPosition + newsTextLength;
+	    }
+	    elem.CONTENT = newsContent;
+    });
+    return news;
 }
 
 function getNewsByStatusYear(statusId, year) {

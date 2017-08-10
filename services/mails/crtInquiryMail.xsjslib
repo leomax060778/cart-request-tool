@@ -64,6 +64,8 @@ function parseCompleted(inquiryObj, basicData, userName){
 function parseFYI(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message History '+
 	'tab for your request <b>CI'+inquiryObj.INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+
@@ -77,6 +79,8 @@ function parseFYI(inquiryObj, basicData, userName){
 function parseMessage(inquiryObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + inquiryObj.INQUIRY_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var inquiryId = 'CI' + inquiryObj.INQUIRY_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message History '+
 	'tab for <b>CI'+inquiryObj.INQUIRY_ID+'</b> in the <b>Cart Request Tool.</b><br /><br />'+

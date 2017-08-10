@@ -5,6 +5,12 @@ var mail = mapper.getMail();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var catalogTypeMap = {
+	"1":"CATALOG_NAME",
+	"2":"CATEGORY_NAME",
+	"3":"SUB_CATEGORY_NAME"
+};
+
 //Get report
 function getReport(userId) {
     var result = data.getReport(userId);
@@ -37,7 +43,77 @@ function getVendorReport(userId) {
 }
 
 function getCatalogReport(userId) {
-  return data.getCatalogReport(userId);
+	var catalogReport = data.getCatalogReport(userId);
+	var result = [];
+	
+	if(catalogReport && catalogReport.length > 0){
+		var catalogParentMap = {};
+		
+		//Map catalogs using its parent ID 
+		catalogReport.forEach(function(catalog){
+			if(!catalogParentMap[catalog.CATALOG_PARENT_ID]){
+				catalogParentMap[catalog.CATALOG_PARENT_ID] = [];
+			}
+			catalogParentMap[catalog.CATALOG_PARENT_ID].push(catalog);
+		});
+		
+		var catalogResult;
+		
+		if(catalogParentMap && catalogParentMap[0]){
+			//Use each Standard Catalog
+			catalogParentMap[0].forEach(function(catalog){
+				//Has Categories?
+				if(catalogParentMap[catalog.CATALOG_ID]){
+					//Complete each category
+					catalogParentMap[catalog.CATALOG_ID].forEach(function(catalogChild){
+						
+						catalogResult = {};
+						catalogResult.CATALOG_ID = catalog.CATALOG_ID;
+						catalogResult[catalogTypeMap[catalog.CATALOG_TYPE_ID]] = catalog.CATALOG_NAME;
+						catalogResult[catalogTypeMap[catalogChild.CATALOG_TYPE_ID]] = catalogChild.CATALOG_NAME;
+						
+						//Has material?
+						if(catalogChild.MATERIAL_ID){
+							//Then add material data and push a new row
+							catalogResult.MATERIAL_NAME = catalogChild.MATERIAL_NAME;
+							catalogResult.MATERIAL_CODE = catalogChild.MATERIAL_CODE;
+							
+							result.push(catalogResult);
+						}
+						
+						//Has subCategories?
+						if(catalogParentMap[catalogChild.CATALOG_ID]){
+							//Complete each subCategory
+							catalogParentMap[catalogChild.CATALOG_ID].forEach(function(subCategory){
+								catalogResult = {};
+								catalogResult.CATALOG_ID = catalog.CATALOG_ID;
+								catalogResult[catalogTypeMap[catalog.CATALOG_TYPE_ID]] = catalog.CATALOG_NAME;
+								catalogResult[catalogTypeMap[catalogChild.CATALOG_TYPE_ID]] = catalogChild.CATALOG_NAME;
+								
+								catalogResult[catalogTypeMap[subCategory.CATALOG_TYPE_ID]] = subCategory.CATALOG_NAME;
+								
+								catalogResult.MATERIAL_NAME = subCategory.MATERIAL_NAME || null;
+								catalogResult.MATERIAL_CODE = subCategory.MATERIAL_CODE || null;
+								
+								result.push(catalogResult);
+							});
+								
+						}else if(!catalogChild.MATERIAL_ID){							
+							result.push(catalogResult);
+						}
+						
+					});
+						
+				}else{
+					catalogResult = {};
+					catalogResult.CATALOG_ID = catalog.CATALOG_ID;
+					catalogResult[catalogTypeMap[catalog.CATALOG_TYPE_ID]] = catalog.CATALOG_NAME;
+					result.push(catalogResult);
+				}
+			});
+		}
+	}
+  return result;
 }
 
 function getCommodityReport(userId) {

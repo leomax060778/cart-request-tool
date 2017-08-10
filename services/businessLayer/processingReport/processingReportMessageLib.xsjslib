@@ -57,8 +57,7 @@ function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	    if (objChangeVendorRequest.SUBJECT_ID && !existSubject(objChangeVendorRequest.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryMessageService/handlePost/insertChangeVendorRequestMessage", "The issue type with the id " + objChangeVendorRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objChangeVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objChangeVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+	    if (Number(objChangeVendorRequest.STATUS_ID) > 0){
 			statusVendor.updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId);
 		}
 	    
@@ -81,8 +80,7 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	    if (objExtendVendorRequest.SUBJECT_ID && !existSubject(objExtendVendorRequest.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertExtendVendorRequestMessage", "The issue type with the id " + objExtendVendorRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objExtendVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objExtendVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+	    if (Number(objExtendVendorRequest.STATUS_ID) > 0){
 			statusVendor.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
 		}
 	    
@@ -105,8 +103,7 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 	    if (objVendorRequest.SUBJECT_ID && !existSubject(objVendorRequest.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objVendorRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objVendorRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+	    if (Number(objVendorRequest.STATUS_ID) > 0){
 			statusVendor.updateVendorRequestStatusManual(objVendorRequest, userId);
 		}
 	    
@@ -129,8 +126,7 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 	    if (objVendorInquiry.SUBJECT_ID && !existSubject(objVendorInquiry.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "VendorMessageService/handlePost/insertVendorRequestMessage", "The issue type with the id " + objVendorInquiry.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objVendorInquiry.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objVendorInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+	    if (Number(objVendorInquiry.STATUS_ID) > 0){
 			statusVendor.updateVendorInquiryStatusManual(objVendorInquiry, userId);
 		}
 	    
@@ -154,8 +150,7 @@ function insertInquiryMessage(objInquiry, userId) {
 	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The Subject with the id " + objInquiry.MESSAGE_TYPE_ID + " does not exist");
 	    }
 	    
-	    if (Number(objInquiry.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objInquiry.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
+	    if (Number(objInquiry.STATUS_ID) > 0){
 			statusInquiry.updateInquiryStatusManual(objInquiry, userId);
 		}
 	    
@@ -178,8 +173,7 @@ function insertRequestMessage(objRequest, userId) {
 	    if (objRequest.SUBJECT_ID && !existSubject(objRequest.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The issue type with the id " + objRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objRequest.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    	objRequest.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
+	    if (Number(objRequest.STATUS_ID) > 0){
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
 	    

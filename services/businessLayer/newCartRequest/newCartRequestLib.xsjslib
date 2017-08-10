@@ -24,6 +24,11 @@ var ErrorLib = mapper.getErrors();
 
 var pathName = "CART_REQUEST";
 
+//Delete Attachment from New Cart Request section
+function deleteAttachment(reqBody, userId){
+	return businessAttachment.deleteAttachment(reqBody, userId);
+}
+
 function insertRequestService(reqBody, requestId, user_id){
 	reqBody.REQUEST_ID = requestId;
 	if(validateInsertRequestService(reqBody, user_id)){

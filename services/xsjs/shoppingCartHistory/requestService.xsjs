@@ -9,6 +9,7 @@ var GET_REQUEST_BY_ID = "GET_REQUEST_BY_ID";
 var GET_REQUEST_BY_FILTERS = "GET_REQUEST_BY_FILTERS";
 var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
 var EDITION_MODE = "EDITION_MODE"; 
+var deleteAttachment = "DELETE_ATTACHMENT"
 
 var service_name = "sch_requestService";
 
@@ -72,11 +73,22 @@ function handlePost() {
 
 function handlePut(reqBody, user_id) {
 	var res;
-	if(reqBody.ONLY_ATTACHMENTS){
-		res =  request.updateAttachmentRequest(reqBody, user_id);
+	var method = httpUtil.getUrlParameters();
+	
+	if(method.length > 0){
+		if(method.get("METHOD") === deleteAttachment){
+			res =  request.deleteAttachmentOnly(reqBody, userId);
+		}else{
+			throw ErrorLib.getErrors().BadRequest("","requestService/handlePut","invalid parameter name (can be: DELETE_ATTACHMENT)");
+		}
 	}else{
-		res =  request.updateRequest(reqBody, user_id);
+		if(reqBody.ONLY_ATTACHMENTS){
+			res =  request.updateAttachmentRequest(reqBody, user_id);
+		}else{
+			res =  request.updateRequest(reqBody, user_id);
+		}
 	}
+	
 	return httpUtil.handleResponse(res,httpUtil.OK,httpUtil.AppJson);
 }
 

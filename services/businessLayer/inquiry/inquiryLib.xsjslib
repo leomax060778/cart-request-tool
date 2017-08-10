@@ -3,6 +3,7 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataInquiry = mapper.getDataInquiry();
 var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
+var businessAttachment = mapper.getAttachment();
 var mail = mapper.getMail();
 var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
@@ -134,6 +135,10 @@ function deleteAttachment(attachment, in_inquiry_id, userId){
 		if(businessAttachmentInquiry.deleteAttachmentInquiryManual(attachment, userId)){
 			businessAttachmentInquiry.deleteAttachmentInquiryConectionManual(attachment.ATTACHMENT_ID, in_inquiry_id ,userId);
 		}
+}
+
+function deleteAttachmentOnly(reqBody, userId){
+	return businessAttachment.deleteAttachment(reqBody, userId);
 }
 
 function updateAttachments(original_attachments, newAttachments, inquiry_id, user_id){

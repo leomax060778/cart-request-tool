@@ -8,5 +8,5 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_COUNTRY"
 BEGIN
 	out_result = SELECT country_id, country_name_es, country_name_en, country_name_fr, iso1, iso2, country_code
 				FROM "COUNTRY"
-					WHERE enabled = 1 AND deleted = 0;
+					WHERE enabled = 1 AND deleted = 0 ORDER BY country_name_en;
 END;

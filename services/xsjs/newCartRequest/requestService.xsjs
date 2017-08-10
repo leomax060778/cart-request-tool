@@ -5,6 +5,7 @@ var request = mapper.getNewCartRequest();
 var shopping_request = mapper.getRequest();
 
 var GET_REQUEST_LAST_ID = "GET_REQUEST_LAST_ID";
+var deleteAttachment = "DELETE_ATTACHMENT";
 var service_name = "ncr_requestService";
 
 function processRequest() {
@@ -37,7 +38,19 @@ function handleGet(parameters, userId) {
 }
 
 function handlePut(reqBody, userId) {
-	return httpUtil.notImplementedMethod();
+	var res;
+	var method = httpUtil.getUrlParameters();
+	if(method.length > 0){
+		if(method.get("METHOD") === deleteAttachment){
+			res =  request.deleteAttachment(reqBody, userId);
+		}else{
+			throw ErrorLib.getErrors().BadRequest("","requestService/handlePut","invalid parameter name (can be: DELETE_ATTACHMENT)");
+		}
+	}else{
+		throw ErrorLib.getErrors().BadRequest("","requestService/handlePut","Without parameters");
+	}
+	
+	return httpUtil.handleResponse(res,httpUtil.OK,httpUtil.AppJson);
 }
 
 function handleDelete(reqBody, userId) {

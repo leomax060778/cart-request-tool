@@ -68,6 +68,8 @@ function parseApproved(changeVendorObj, basicData,  userName){
 function parseFYI(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br /> A message has been added to the '+
 	'Message History tab for your request <b>CV'+changeVendorObj.CHANGE_VENDOR_REQUEST_ID+'</b> in the <b>Cart '+
@@ -95,6 +97,8 @@ function parseInProcess(changeVendorObj, basicData,  userName){
 function parseMessage(changeVendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var changeId = 'CV' + changeVendorObj.CHANGE_VENDOR_REQUEST_ID;
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>VI'+changeVendorObj.CHANGE_VENDOR_REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+

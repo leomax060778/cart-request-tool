@@ -69,6 +69,8 @@ function parseInProcess(vendorObj, basicData, userName){
 function parseFYI(vendorObj, basicData, userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body =  '<b>Dear CRT Admin,</b><br /><br />A message has been added to the Message '+
 	'History tab for your request <b>NV'+vendorObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b><br />'+
@@ -95,6 +97,8 @@ function parseReturnToRequest(vendorObj, basicData, userName){
 function parseMessage(vendorObj, basicData,  userName){
 	var mailObj = {};
 	var completePath = basicData.URL_BASE + basicData.PATH + '/' + vendorObj.REQUEST_ID;
+	completePath = (basicData.ADDITIONAL_PARAM)? completePath+basicData.ADDITIONAL_PARAM : completePath;
+	
 	var vendorRequestId = 'NV' + vendorObj.REQUEST_ID;
 	mailObj.body = '<b>Dear CRT Admin,</b><br /><br />A message has been '+
 	'added to the Message History tab for <b>VI'+vendorObj.REQUEST_ID+'</b> in the <b>Cart Request Tool.</b>'+
