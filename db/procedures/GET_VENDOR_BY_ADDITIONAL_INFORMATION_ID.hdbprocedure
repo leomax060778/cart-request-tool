@@ -1,5 +1,5 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_BY_ENTITY_ID" (
-IN in_entity_id bigint,
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID" ( 
+IN in_vendor_additional_information_id bigint,
 OUT out_result TABLE (vendor_id bigint,
 						account nvarchar (255),
 						name nvarchar (255),
@@ -23,7 +23,7 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-out_result = SELECT DISTINCT VE.vendor_id,
+out_result = SELECT DISTINCT VAI.vendor_id,
 					V.account,
 					VAI.vendor_name as name,
 					VAI.vendor_additional_information_id,
@@ -39,14 +39,10 @@ out_result = SELECT DISTINCT VE.vendor_id,
 			        V.fax,
 			        V.legal_name,
 			        V.informal_name
-         FROM "VENDOR_ENTITY" VE
-	         INNER JOIN "VENDOR" V ON VE.vendor_id = V.vendor_id
+         FROM "VENDOR_ADDITIONAL_INFORMATION" VAI
+	         INNER JOIN "VENDOR" V ON VAI.vendor_id = V.vendor_id
 	         LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
-	         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VE.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
 	         INNER JOIN "VENDOR_STATUS" ST ON V.STATUS_ID = ST.STATUS_ID AND ST.NAME = 'Approved'
-         WHERE VE.entity_id = in_entity_id
-         	AND VE.ENABLED = 1 
-         	AND VE.DELETED = 0 
+         WHERE VAI.VENDOR_ADDITIONAL_INFORMATION_ID = in_vendor_additional_information_id 
          	ORDER BY UPPER(VAI.VENDOR_NAME);
 END;
-

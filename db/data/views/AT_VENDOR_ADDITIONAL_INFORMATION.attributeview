@@ -11,6 +11,10 @@
       <descriptions defaultDescription="VENDOR_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_ADDITIONAL_INFORMATION" columnName="VENDOR_ID"/>
     </attribute>
+    <attribute id="VENDOR_ADDITIONAL_INFORMATION_ID" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ADDITIONAL_INFORMATION_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_ADDITIONAL_INFORMATION" columnName="VENDOR_ADDITIONAL_INFORMATION_ID"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>

@@ -20,6 +20,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_I
 			alternative_vendor_phone NVARCHAR(255),
 			alternative_vendor_email NVARCHAR(255),
 			vendor_contact_information_id integer,
+			vendor_additional_information_id bigint,
 			non_sap_vendor_id BIGINT,
 			non_sap_contact_name NVARCHAR(255),
 			non_sap_contact_email NVARCHAR(255),
@@ -74,6 +75,7 @@ BEGIN
 				RQ.ALTERNATIVE_VENDOR_PHONE, 
 				RQ.ALTERNATIVE_VENDOR_EMAIL, 
 				RQ.VENDOR_CONTACT_INFORMATION_ID,
+				RQ.VENDOR_ADDITIONAL_INFORMATION_ID,
 				NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
 				NSV.CONTACT_NAME AS non_sap_contact_name, 
 				NSV.CONTACT_EMAIL AS non_sap_contact_email, 
@@ -114,9 +116,7 @@ BEGIN
 				INNER JOIN "ENTITY" AS ET
 				ON RQ.ENTITY_ID = ET.ENTITY_ID
 				LEFT OUTER JOIN "VENDOR_ADDITIONAL_INFORMATION" AS VAI
-				ON RQ.VENDOR_ID = VAI.VENDOR_ID
-					AND VAI.ENABLED = 1
-					AND VAI.DELETED = 0
+				ON RQ.VENDOR_ADDITIONAL_INFORMATION_ID = VAI.VENDOR_ADDITIONAL_INFORMATION_ID
 				LEFT OUTER JOIN "VENDOR" AS V
 				ON RQ.VENDOR_ID = V.VENDOR_ID
 				LEFT OUTER JOIN "NON_SAP_VENDOR" AS NSV

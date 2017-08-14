@@ -1,7 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPORT" (
 	OUT out_result TABLE (vendor_id bigint,
 							account nvarchar(255),
-							entity nvarchar(255),
 							name nvarchar(255),
 							legal_name nvarchar(511),
 							informal_name nvarchar(511),
@@ -15,7 +14,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPOR
 							zip nvarchar(255),
 							phone nvarchar(255),
 							fax nvarchar(255),
-							status nvarchar(255)
+							status nvarchar(255),
+							entity nvarchar(255)
 	)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -25,7 +25,6 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPOR
 BEGIN
 	out_result = SELECT DISTINCT V.VENDOR_ID,
 								 V.ACCOUNT,
-								 ET.ENTITY_NAME AS ENTITY,
 								 VAI.VENDOR_NAME AS NAME,
 								 V.LEGAL_NAME,
 								 V.INFORMAL_NAME,
@@ -39,7 +38,8 @@ BEGIN
 								 V.ZIP,
 								 V.PHONE,
 								 V.FAX,
-								 VS.NAME AS STATUS
+								 VS.NAME AS STATUS,
+								 ET.ENTITY_NAME AS ENTITY
 					FROM "VENDOR" V
 						LEFT JOIN "VENDOR_ENTITY" VET ON VET.VENDOR_ID = V.VENDOR_ID
 						LEFT JOIN "ENTITY" ET ON ET.ENTITY_ID = VET.ENTITY_ID

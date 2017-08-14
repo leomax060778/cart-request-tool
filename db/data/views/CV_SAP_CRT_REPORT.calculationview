@@ -79,7 +79,7 @@
  	va_vendor = SELECT V.VENDOR_ID, V.ACCOUNT AS VENDOR_ACCOUNT
  					FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_VENDOR&quot; V;
  					
-	va_vendor_additional_information = SELECT VAI.VENDOR_ID, VAI.VENDOR_NAME
+	va_vendor_additional_information = SELECT VAI.VENDOR_ADDITIONAL_INFORMATION_ID, VAI.VENDOR_ID, VAI.VENDOR_NAME
 											FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_VENDOR_ADDITIONAL_INFORMATION&quot; VAI;
 								
 	va_po_service = SELECT POS.REQUEST_ID, POS.SHOPPING_CART AS CART_NUMBER,
@@ -135,7 +135,8 @@
 						RQ.HL3_ID,
 						RQ.CREATED_DATE_TZ,
 						RQ.ENTITY_ID,
-						RQ.BUDGET_YEAR_ID
+						RQ.BUDGET_YEAR_ID,
+						RQ.VENDOR_ADDITIONAL_INFORMATION_ID
 					FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_REQUEST&quot; RQ;
 					
 	va_material = SELECT MT.MATERIAL_ID,

@@ -74,6 +74,9 @@ function validateType(key, value) {
 	case 'SERVICE_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
+	case 'VENDOR_ADDITIONAL_INFORMATION_ID':
+		valid = !isNaN(value) && value > 0;
+		break;
 	case 'NON_SAP_VENDOR_ID':
 		valid = !isNaN(value) && value > 0;
 		break;
@@ -386,7 +389,7 @@ function getRequestByFilters(objFilters, userId) {
 	}
 	try {
 		var filtersArray = [ "GOODS_RECIPIENT","BUDGET_YEAR_ID" ,"TEAM_ID", "REQUEST_DATE_FROM",
-				"REQUEST_DATE_TO", "USER_ID", "USER_ID", "VENDOR_ID",
+				"REQUEST_DATE_TO", "USER_ID", "USER_ID", "VENDOR_ADDITIONAL_INFORMATION_ID",
 				"STATUS_ID" ];
 		validateFilterParameters(objFilters, filtersArray);
 		if (!validateDateStringFormat(objFilters["REQUEST_DATE_FROM"])
