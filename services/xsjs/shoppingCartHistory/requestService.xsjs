@@ -44,7 +44,7 @@ function handleGet(parameters, userId) {
             }
 		} else if (parameters[0].name === GET_REQUEST_BY_FILTERS) {
 			var filtersArray = ["GOODS_RECIPIENT","BUDGET_YEAR_ID","TEAM_ID","REQUEST_DATE_FROM",
-			                    "REQUEST_DATE_TO","USER_ID","VENDOR_ID",
+			                    "REQUEST_DATE_TO","USER_ID","VENDOR_ADDITIONAL_INFORMATION_ID",
 			                    "STATUS_ID"];
 			var filters = getFilters(parameters,filtersArray);
 			req = request.getRequestByFilters(filters, userId);

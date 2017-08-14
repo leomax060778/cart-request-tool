@@ -29,13 +29,34 @@ function getAllVendorForFilters(user_id) {
 	return data.getAllVendorForFilters(user_id);
 }
 
-function getAllVendorByEntity(entityId) {
+function getAllVendorByEntity(entityId, vendorAdditionalInformationId) {
 	if (!entityId){
 		throw ErrorLib.getErrors().BadRequest(
 				"The Parameter entityId is not found",
 				"vendorService/handleGet/getAllVendorByEntity", entityId);
 	}
-	return dataVE.getAllVendorByEntityId(entityId);
+	var vendorCollection = dataVE.getAllVendorByEntityId(entityId);
+	if (vendorAdditionalInformationId) {
+		var oldVendor = data.getVendorByAdditionalInformationId(vendorAdditionalInformationId);
+		var existVendorName = validateVendorName(oldVendor, vendorCollection);
+		if (!existVendorName) {
+			vendorCollection = JSON.parse(JSON.stringify(vendorCollection));
+			oldVendor = JSON.parse(JSON.stringify(oldVendor));
+			oldVendor.NAME = oldVendor.NAME + " (Old Name)";
+			vendorCollection.push(oldVendor);
+		}
+	}
+	return vendorCollection;
+}
+
+function validateVendorName(oldVendor, vendorCollection){
+	var result = false;
+	vendorCollection.forEach(function(elem){
+		if(Number(elem.VENDOR_ADDITIONAL_INFORMATION_ID) === Number(oldVendor.VENDOR_ADDITIONAL_INFORMATION_ID)) {
+			result = true;
+		}
+	});
+	return result;
 }
 
 function getVendorByStatus(statusId){
@@ -149,14 +170,9 @@ function updateVendor(objVendor, user_id) {
 	objVendor.MODIFIED_USER_ID = user_id;
 	if (validateUpdateVendor(objVendor, user_id)) {
 		var vendors = getManualVendorById(objVendor.VENDOR_ID, user_id);
-		if (!(vendors.length > 0)) {
-			throw ErrorLib.getErrors().CustomError("",
-					"vendorService/handlePut/updateVendor",
-					"The object vendor does not exist", objVendor);
-		}
 		try{
 			updateVendorEntity(objVendor, user_id);
-			if(vendors[0].NAME !== objVendor.NAME){
+			if(vendors.NAME !== objVendor.NAME){
 				data.deleteManualVendorAdditionalInformation(objVendor, user_id);
 				data.insertManualVendorAdditionalInformation(objVendor, user_id);
 			}			

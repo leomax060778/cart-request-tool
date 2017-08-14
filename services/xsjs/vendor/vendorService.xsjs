@@ -23,7 +23,7 @@ function processRequest() {
 }
 
 function handleGet(parameters, user_id) {
-	var rdo = {};
+	var res = {};
 	if (parameters.length > 0) {
 		if (parameters[0].name === GET_VENDOR_BY_ID) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -33,7 +33,7 @@ function handleGet(parameters, user_id) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-            	rdo = vendor.getVendorById(parameters[0].value, user_id);
+            	res = vendor.getVendorById(parameters[0].value, user_id);
             }
 		} else if (parameters[0].name === GET_VENDOR_BY_ENTITY_ID) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
@@ -42,15 +42,17 @@ function handleGet(parameters, user_id) {
                     "vendorRequestService/handleGet",
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
+            } else if (parameters[1] && (Number(parameters[1].value) > 0 || !isNaN(parameters[1].value))){
+            	res = vendor.getAllVendorByEntity(parameters[0].value, parameters[1].value);
             } else {
-            	rdo = vendor.getAllVendorByEntity(parameters[0].value, user_id);
+            	res = vendor.getAllVendorByEntity(parameters[0].value);
             }
 		} else if (parameters[0].name === GET_ALL_VENDOR) {
-			rdo = vendor.getAllVendor();
+			res = vendor.getAllVendor();
 		} else if (parameters[0].name === GET_ALL_VENDOR_STATUS) {
-			rdo = vendor.getAllVendorStatus();
+			res = vendor.getAllVendorStatus();
 		} else if (parameters[0].name === GET_ALL_VENDOR_FOR_FILTERS) {
-			rdo = vendor.getAllVendorForFilters(user_id);
+			res = vendor.getAllVendorForFilters(user_id);
 		} else if (parameters[0].name === GET_VENDOR_BY_STATUS) {
 			if (parameters[0].value <= 0 || isNaN(parameters[0].value)) {
                 throw ErrorLib.getErrors().BadRequest(
@@ -59,7 +61,7 @@ function handleGet(parameters, user_id) {
                     "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
                 );
             } else {
-            	rdo = vendor.getVendorByStatus(parameters[0].value);
+            	res = vendor.getVendorByStatus(parameters[0].value);
             }
 		}
 	} else {
@@ -69,7 +71,7 @@ function handleGet(parameters, user_id) {
 				"invalid parameter (can be: GET_VENDOR_BY_ID, GET_ALL_VENDOR, GET_VENDOR_BY_ENTITY_ID, GET_ALL_VENDOR_FOR_FILTERS or GET_VENDOR_BY_STATUS)"
 				);
 	}
-	return http.handleResponse(rdo, http.OK, http.AppJson);
+	return http.handleResponse(res, http.OK, http.AppJson);
 }
 
 function handlePost(vendorObj, user_id) {

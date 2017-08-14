@@ -7,6 +7,7 @@ var ErrorLib = mapper.getErrors();
 var GET_ALL_VENDOR = 'GET_ALL_VENDOR';
 var GET_VENDOR_BY_ID = 'GET_VENDOR_BY_ID';
 var GET_VENDOR_BY_STATUS = 'GET_VENDOR_BY_STATUS';
+var GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID = "GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID";
 var INS_VENDOR = 'INS_VENDOR';
 var UPD_VENDOR = 'UPD_VENDOR';
 var UPD_VENDOR_ACCOUNT = 'UPD_VENDOR_ACCOUNT';
@@ -40,6 +41,21 @@ function getVendorById(vendor_id) {
 
 	var result = db.executeProcedure(GET_VENDOR_BY_ID, param);
 	return db.extractArray(result.out_result);
+}
+
+function getVendorByAdditionalInformationId(vendorAdditionalInformationId) {
+
+	var param = {};
+	param.in_vendor_additional_information_id = vendorAdditionalInformationId;
+	param.out_result = '?';
+
+	var result = db.executeProcedure(GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID, param);
+	var list = db.extractArray(result.out_result);
+    if(list.length){
+ 	   return list[0];
+    } else {
+ 	   	return {};
+    }
 }
 
 function getVendorByStatus(statusId) {

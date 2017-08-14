@@ -63,6 +63,10 @@
       <descriptions defaultDescription="BUDGET_YEAR_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="BUDGET_YEAR_ID"/>
     </attribute>
+    <attribute id="VENDOR_ADDITIONAL_INFORMATION_ID" order="16" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ADDITIONAL_INFORMATION_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="VENDOR_ADDITIONAL_INFORMATION_ID"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>

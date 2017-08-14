@@ -42,7 +42,7 @@ BEGIN
 					              LEFT JOIN "HL3_USER" CHL3 ON CHL3.USER_ID = INQ.CREATED_USER_ID
 	             		WHERE (USR.ROLE_ID != 2 AND INQ.ENABLED = 1 AND INQ.DELETED = 0)
 			              		OR (USR.ROLE_ID = 2 
-			              			AND ((HL3.HL3_ID = CHL3.HL3_ID) OR (HL3.HL3_ID is null AND INQ.CREATED_USER_ID = in_user_id)) 
+			              			AND INQ.CREATED_USER_ID = in_user_id
 			              			AND INQ.ENABLED = 1 
 			              			AND INQ.DELETED = 0
 			              		   )

@@ -51,7 +51,7 @@ function getRequestByFilters(objFilters, permissionData, userId){
     parameters.in_request_date_to = objFilters.REQUEST_DATE_TO;
     parameters.in_requester_user_id = objFilters.USER_ID;
     parameters.in_user_id = userId;
-    parameters.in_vendor_id = objFilters.VENDOR_ID;
+    parameters.in_vendor_additional_information_id = objFilters.VENDOR_ADDITIONAL_INFORMATION_ID;
     parameters.in_status_id = objFilters.STATUS_ID;
     parameters.in_permission_id = permissionData.PERMISSION_ID;
     parameters.in_resource_id = permissionData.RESOURCE_ID;
@@ -135,6 +135,7 @@ function updateRequestManual(objRequest, userId){
     parameters.in_material_id = objRequest.MATERIAL_ID;
     parameters.in_vendor_id = objRequest.VENDOR_ID;
     parameters.in_vendor_contact_information_id = objRequest.VENDOR_CONTACT_INFORMATION_ID || null;
+    parameters.in_vendor_additional_information_id = objRequest.VENDOR_ADDITIONAL_INFORMATION_ID;
     parameters.in_non_sap_vendor_id = objRequest.NON_SAP_VENDOR_ID;
     parameters.in_goods_recipient_username = objRequest.GOODS_RECIPIENT_USERNAME;
     parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;
