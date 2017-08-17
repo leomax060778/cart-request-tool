@@ -11,8 +11,10 @@ OUT out_result TABLE (request_id nvarchar(15),
                         description_purchase_order nvarchar(255),
                         product_catalog nvarchar(255),
                         product_category nvarchar(255),
+                        product_sub_category nvarchar(255),
                         material_description nvarchar(255),
                         material_code nvarchar(255),
+                        material_catalog_type_id bigint,
                         special_request_description nvarchar(255),
 						special_request_code nvarchar(255),
                         sap_entity nvarchar(255),
@@ -51,12 +53,14 @@ BEGIN
 				 	 				RQR.VENDOR_NAME,
 				 	 				RQR.VENDOR_ACCOUNT,
 				 	 				RQR.DESCRIPTION_PURCHASE_ORDER,
-				 	 				RQR.PRODUCT_CATALOG,
- 	 				  				RQR.PRODUCT_CATEGORY,
- 	 				  				RQR.MATERIAL_DESCRIPTION,
- 	 				  				RQR.MATERIAL_CODE,
- 	 				  				RQR.SPECIAL_REQUEST_DESCRIPTION,
-	                  				RQR.SPECIAL_REQUEST_CODE,
+				 	 				COALESCE(RQR.PRODUCT_CATALOG,'N/A - Special Request') AS PRODUCT_CATALOG,
+ 	 				  				COALESCE(RQR.PRODUCT_CATEGORY,'N/A') AS PRODUCT_CATEGORY,
+ 	 				  				COALESCE(RQR.PRODUCT_SUB_CATEGORY,'N/A') AS PRODUCT_SUB_CATEGORY,
+ 	 				  				COALESCE(RQR.MATERIAL_DESCRIPTION,'N/A') AS MATERIAL_DESCRIPTION,
+ 	 				  				COALESCE(RQR.MATERIAL_CODE,'N/A') AS MATERIAL_CODE,
+ 	 				  				RQR.MATERIAL_CATALOG_TYPE_ID, 
+ 	 				  				COALESCE(RQR.SPECIAL_REQUEST_DESCRIPTION,'N/A') AS SPECIAL_REQUEST_DESCRIPTION,
+ 	 				  				COALESCE(RQR.SPECIAL_REQUEST_CODE,'N/A') AS SPECIAL_REQUEST_CODE,
  	 				  				RQR.SAP_ENTITY,
  	 				  				RQR.COST_OBJECT,
 				 	 				RQR.START_DATE,
@@ -79,15 +83,16 @@ BEGIN
 				 	 				RQR.MESSAGE_TYPE
              FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT" RQR
              	INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
-				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id
-	         WHERE (USR.ROLE_ID = 1)
+				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+			 --Current roles: 1. SuperAdmin, 2. Requester, 3. Business Mgt, 4. Budget Owner/Mgr 
+	         WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3)
               		OR (USR.ROLE_ID = 2 
               			AND (
               				 (HL3.HL3_ID = RQR.HL3_ID AND RQR.CREATED_USER_ID = in_user_id) 
               				 OR (HL3.HL3_ID is null AND RQR.CREATED_USER_ID = in_user_id)
               				)
               		   )
-              		OR (USR.ROLE_ID > 2 
+              		OR (USR.ROLE_ID = 4 
               			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
               		   )
              ORDER BY RQR.R_ID;

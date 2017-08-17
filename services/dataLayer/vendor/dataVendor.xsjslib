@@ -8,6 +8,7 @@ var GET_ALL_VENDOR = 'GET_ALL_VENDOR';
 var GET_VENDOR_BY_ID = 'GET_VENDOR_BY_ID';
 var GET_VENDOR_BY_STATUS = 'GET_VENDOR_BY_STATUS';
 var GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID = "GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID";
+var GET_VENDOR_BY_ACCOUNT = "GET_VENDOR_BY_ACCOUNT";
 var INS_VENDOR = 'INS_VENDOR';
 var UPD_VENDOR = 'UPD_VENDOR';
 var UPD_VENDOR_ACCOUNT = 'UPD_VENDOR_ACCOUNT';
@@ -66,6 +67,19 @@ function getVendorByStatus(statusId) {
 
 	var result = db.executeProcedure(GET_VENDOR_BY_STATUS, param);
 	return db.extractArray(result.out_result);
+}
+
+function getVendorByAccount(account) {
+	var param = {};
+	param.in_account = account;
+	param.out_result = '?';
+	var result = db.executeProcedure(GET_VENDOR_BY_ACCOUNT, param);
+	var list = db.extractArray(result.out_result);
+	if(list.length){
+	 	   return list[0];
+	    } else {
+	 	   	return {};
+	    }
 }
 
 function insertVendor(objVendor, user_id) {

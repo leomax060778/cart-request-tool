@@ -44,11 +44,11 @@ function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_NEWS_BY_ID) {
-            res = news.getNewsById(parameters[0].value);
+            res = news.getNewsById(parameters[0].value, userId);
 
         }
         else if (parameters[0].name === GET_ALL_NEWS) {
-            res = news.getAllNews();
+            res = news.getAllNews(userId);
 
         }
         else if (parameters[0].name === GET_NEWS_URGENT) {
@@ -60,11 +60,11 @@ function handleGet(parameters, userId) {
 
         }
         else if (parameters[0].name === GET_NEWS_BY_STATUS) {
-            res = news.getNewsByStatus(parameters[0].value);
+            res = news.getNewsByStatus(parameters[0].value, userId);
 
         }
         else if (parameters[0].name === GET_NEWS_BY_YEAR) {
-            res = news.getNewsByYear(parameters[0].value);
+            res = news.getNewsByYear(parameters[0].value, userId);
 
         }
         else if (parameters[0].name === GET_NEWS_BY_STATUS_YEAR) {

@@ -68,6 +68,15 @@ function getVendorByStatus(statusId){
 	return data.getVendorByStatus(statusId);
 }
 
+function getVendorByAccount(account) {
+	if (!account) {
+		throw ErrorLib.getErrors().BadRequest(
+				"The Parameter account is not found",
+				"vendorService/handleGet/getVendorByAccount", account);
+	}
+	return data.getVendorByAccount(account);
+}
+
 function insertManualVendor(objVendor, userId) {
 	var result = {};
 	if(validateInsertVendor(objVendor, userId)){
