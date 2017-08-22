@@ -3,12 +3,24 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dbHelper = mapper.getdbHelper();
 var dataNews = mapper.getDataNews();
 var ErrorLib = mapper.getErrors();
+var userRoleLib = mapper.getUserRole();
+var dataPermission = mapper.getDataPermission();
 
 var statusMap = {
 	"Pending": 1,
 	"Archive": 2,
 	"Published": 3
 };
+
+var roleMap = {
+		SUPERADMIN: 1,
+		REQUESTER: 2,
+		BUSINESS_MGT: 3,
+		BUDGET_OWNER: 4
+};
+
+var serviceMap = {'NEWS_MANAGER': "newsService"};
+var permissionMap = {'CREATE_EDIT': 10};
 
 function getAllNewsStatus() {
     return dataNews.getAllNewsStatus();
@@ -39,13 +51,34 @@ function getNewsUnread(userId) {
 	return [result];
 }
 
-function getNewsById(newsId) {
+function validateAccess(userId){
+	var userRole = userRoleLib.getUserRoleByUserId(userId);
+	
+	//Check Service Role permission
+	var authorized = dataPermission.checkAuthorization(userId, permissionMap.CREATE_EDIT, serviceMap.NEWS_MANAGER);
+	 
+    if(!userRole || userRole.length === 0){
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getAllNews", userId);
+    }
+    if(!authorized && Number(userRole[0].ROLE_ID) === roleMap.REQUESTER){
+    	throw ErrorLib.getErrors().BadRequest("The required News is not longer available", "newsService/handleGet/getNewsById");
+    }
+}
+
+function getNewsById(newsId, userId) {
     try {
         if (!newsId) {
             throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
         }
+        
         var result = dataNews.getManualNewsById(newsId);
         result = JSON.parse(JSON.stringify(result));
+        
+        if(Number(result.STATUS_ID) !== statusMap.Published){
+        	//Validate if the user can see the news
+            validateAccess(userId);
+        }
+        
         var newsTextLength = 5000;
         var splitNumber = result.CONTENT_LENGTH / newsTextLength;
         var startPosition = 1;
@@ -74,6 +107,7 @@ function getManualNewsById(newsId) {
     if (!newsId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
     }
+    
     var result = dataNews.getManualNewsById(newsId);
     result = JSON.parse(JSON.stringify(result));
     var newsTextLength = 5000;
@@ -90,8 +124,23 @@ function getManualNewsById(newsId) {
     return result;
 }
 
-function getAllNews() {
-    var news = dataNews.getAllNews();
+function getAllNews(userId) {
+	if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleGet/getAllNews", userId);
+    }
+    
+    var userRole = userRoleLib.getUserRoleByUserId(userId);
+    if(!userRole || userRole.length === 0){
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getAllNews", userId);
+    }
+    var news;
+    
+    if(Number(userRole[0].ROLE_ID) === roleMap.REQUESTER){
+    	news = getNewsByStatus(statusMap.Published);
+    }else{
+    	news = dataNews.getAllNews();
+    }
+    
     news = JSON.parse(JSON.stringify(news));
     news.forEach(function(elem){
     	var splitNumber;
@@ -120,18 +169,41 @@ function getNewsCarousel() {
     return dataNews.getNewsCarousel();
 }
 
-function getNewsByStatus(statusId) {
+function getNewsByStatus(statusId, userId) {
     if (!statusId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "newsService/handleGet/getNewsByStatus", statusId);
     }
+    if(Number(statusId) !== statusMap.Published){
+    	//Validate if the user can see the news
+        validateAccess(userId);
+    }
+    
     return dataNews.getNewsByStatus(statusId);
 }
 
-function getNewsByYear(budgetYearId) {
+function getNewsByYear(budgetYearId, userId) {
     if (!budgetYearId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByYear", budgetYearId);
     }
-    var news = dataNews.getNewsByYear(budgetYearId);
+    
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleGet/getNewsByYear", userId);
+    }
+    
+    var userRole = userRoleLib.getUserRoleByUserId(userId);
+    
+    if(!userRole || userRole.length === 0){
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getNewsByYear", userId);
+    }
+    
+    var news;
+    
+    if(Number(userRole[0].ROLE_ID) === roleMap.REQUESTER){
+    	news = getNewsByStatusYear(statusMap.Published, budgetYearId);
+    }else{
+    	news = dataNews.getNewsByYear(budgetYearId);
+    }
+    
     news = JSON.parse(JSON.stringify(news));
     news.forEach(function(elem){
     	var splitNumber;
@@ -158,6 +230,11 @@ function getNewsByStatusYear(statusId, year) {
     if (!statusId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "newsService/handleGet/getNewsByStatusYear", statusId);
     }
+    if(Number(statusId) !== statusMap.Published){
+    	//Validate if the user can see the news
+        validateAccess(userId);
+    }
+    
     var objNews = {};
     objNews.BUDGET_YEAR_ID = year;
     objNews.STATUS_ID = statusId;
