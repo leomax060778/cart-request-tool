@@ -67,7 +67,7 @@ function getInquiryById(inquiryId, userId, edition_mode) {
 		throw ErrorLib.getErrors().BadRequest(
 				"Unauthorized request.",
 				"inquiryService/handleGet/getInquiryById", 
-				"This CRT Inquiry is not longer available for edition");
+				'{"EDIT_PERMISSION_ERROR": "inquiry"}');
 	}
 	
 	var roleData = userRole.getUserRoleByUserId(userId);

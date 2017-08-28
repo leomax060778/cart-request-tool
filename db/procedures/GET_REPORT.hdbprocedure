@@ -87,10 +87,7 @@ BEGIN
 			 --Current roles: 1. SuperAdmin, 2. Requester, 3. Business Mgt, 4. Budget Owner/Mgr 
 	         WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3)
               		OR (USR.ROLE_ID = 2 
-              			AND (
-              				 (HL3.HL3_ID = RQR.HL3_ID AND RQR.CREATED_USER_ID = in_user_id) 
-              				 OR (HL3.HL3_ID is null AND RQR.CREATED_USER_ID = in_user_id)
-              				)
+              			AND RQR.CREATED_USER_ID = in_user_id
               		   )
               		OR (USR.ROLE_ID = 4 
               			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
