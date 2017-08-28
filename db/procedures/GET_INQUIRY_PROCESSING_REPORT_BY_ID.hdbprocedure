@@ -27,7 +27,7 @@ BEGIN
                     	ST.name AS STATUS_NAME
                     FROM "INQUIRY" INQ
 	                    INNER JOIN "CRT_TYPE" CT ON CT.CRT_TYPE_ID = INQ.CRT_TYPE_ID AND CT.ENABLED = 1 AND CT.DELETED = 0
-	                    INNER JOIN "USER" US ON US.USER_ID = INQ.USER_ID AND US.ENABLED = 1 AND US.DELETED = 0
+	                    INNER JOIN "USER" US ON US.USER_ID = INQ.USER_ID
 	                    INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id AND TP.enabled = 1 AND TP.deleted = 0
 	                    INNER JOIN "INQUIRY_STATUS" ST ON INQ.status_id = ST.status_id AND ST.enabled = 1 AND ST.deleted = 0
                     WHERE INQ.INQUIRY_ID = in_inquiry_id AND INQ.ENABLED = 1 AND INQ.DELETED = 0;
