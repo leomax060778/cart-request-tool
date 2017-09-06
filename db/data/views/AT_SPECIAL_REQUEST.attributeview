@@ -19,6 +19,10 @@
       <descriptions defaultDescription="MATERIAL_CODE"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="MATERIAL_CODE"/>
     </attribute>
+    <attribute id="ITEM" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ITEM"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="ITEM"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>

@@ -68,6 +68,15 @@ function getReport(userId) {
             	elem.PRODUCT_CATEGORY = elem.PRODUCT_SUB_CATEGORY;
             	elem.PRODUCT_SUB_CATEGORY = "";
             }
+            if(!elem.AMOUNT_LINE) {
+            	elem.AMOUNT_LINE = 0;
+            }
+            if(!elem.BUDGET) {
+            	elem.BUDGET = 0;
+            }
+            if(!elem.ITEM) {
+            	elem.ITEM = elem.SPECIAL_REQUEST_ITEM;
+            }
         });
     } else {
     	throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");

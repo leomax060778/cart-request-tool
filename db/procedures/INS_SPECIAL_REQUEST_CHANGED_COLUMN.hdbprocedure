@@ -1,0 +1,32 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_SPECIAL_REQUEST_CHANGED_COLUMN" (
+	IN in_request_id bigint,
+	IN in_special_request_id bigint,
+	IN in_column_name nvarchar(255),
+	IN in_column_changed tinyint,
+	IN in_display_name nvarchar(255),
+	IN in_created_user_id bigint,
+	OUT out_result BIGINT
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	INSERT INTO "CART_REQUEST_TOOL"."SPECIAL_REQUEST_CHANGED_COLUMN"(
+		request_id,
+		special_request_id,
+		column_name, 
+		column_changed,
+		display_name,
+		created_user_id
+	)
+	VALUES(in_request_id,
+			in_special_request_id,
+      		in_column_name,
+      		in_column_changed,
+      		in_display_name,
+      		in_created_user_id
+      	);
+      	
+    SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."SPECIAL_REQUEST_CHANGED_COLUMN";
+END;

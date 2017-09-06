@@ -1,16 +1,23 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_DATA_PROTECTION_QUESTION_BY_CRT_TYPE_ID" (
 	IN in_crt_type_id bigint,
-	OUT out_result TABLE (question_id bigint, content nvarchar (512), description nvarchar (1000))
+	OUT out_result TABLE (question_id bigint, 
+							content nvarchar (512), 
+							description nvarchar (1000), 
+							short_description nvarchar(255)
+						  )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT "DATA_PROTECTION_QUESTION".QUESTION_ID, "DATA_PROTECTION_QUESTION".CONTENT, "DATA_PROTECTION_QUESTION".DESCRIPTION
-	FROM "DATA_PROTECTION_QUESTION"
-		WHERE crt_type_id = in_crt_type_id
-		AND deleted = 0
-		AND enabled = 1
-		ORDER BY "DATA_PROTECTION_QUESTION".QUESTION_ID;
+	out_result = SELECT DPQ.QUESTION_ID, 
+						DPQ.CONTENT, 
+						DPQ.DESCRIPTION,
+						DPQ.SHORT_DESCRIPTION
+				  FROM "DATA_PROTECTION_QUESTION" DPQ
+				  WHERE crt_type_id = in_crt_type_id
+					AND deleted = 0
+					AND enabled = 1
+				  ORDER BY DPQ.QUESTION_ID;
 END;

@@ -164,7 +164,7 @@ function insertInquiryMessage(objInquiry, userId) {
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
 	if (validateInsertRequestMessage(objRequest, userId)) {
-	    if (!existRequest(objRequest.REQUEST_ID)) {
+	    if (!existRequest(objRequest.REQUEST_ID, userId)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
 	    }
 	    if (objRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objRequest.MESSAGE_TYPE_ID)) {
@@ -478,8 +478,8 @@ function existInquiry(inquiryId) {
 }
 
 //Check if the request exists
-function existRequest(requestId) {
-    return getRequest.getRequestByIdManual(requestId).length > 0;
+function existRequest(requestId, userId) {
+    return getRequest.getRequestByIdManual(requestId, userId).length > 0;
 }
 
 //Check if the issue type exists

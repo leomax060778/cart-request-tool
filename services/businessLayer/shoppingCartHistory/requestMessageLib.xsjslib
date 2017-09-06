@@ -26,7 +26,7 @@ function parseNewMessage(requestId, requester, userId){
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
 	if (validateInsertRequestMessage(objRequest, userId)) {
-		if (!existRequest(objRequest.REQUEST_ID)) {
+		if (!existRequest(objRequest.REQUEST_ID, userId)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
 	    }
 		if (Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.APPROVED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED) {
@@ -126,8 +126,8 @@ function updateRequestMessage(objRequestMessage, userId) {
 }
 
 //Check if the request exists
-function existRequest(requestId) {
-    return request.getRequestByIdManual(requestId).length > 0;
+function existRequest(requestId, userId) {
+    return request.getRequestByIdManual(requestId, userId).length > 0;
 }
 
 //Validate insert request message
