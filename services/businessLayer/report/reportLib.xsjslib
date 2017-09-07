@@ -54,9 +54,6 @@ function getReport(userId) {
         result = data.getReport(userId);
         result = JSON.parse(JSON.stringify(result));
         result.forEach(function (elem) {
-            if (elem.RETURN_TYPE) {
-                elem.MESSAGE_INFO = elem.MESSAGE_INFO + " / " + elem.RETURN_TYPE;
-            }
             if (elem.STATUS !== 'In process') {
                 elem.DAYS_OUTSTANDING = 'N/A';
             }
@@ -66,10 +63,19 @@ function getReport(userId) {
             if (elem.STATUS !== 'Approved') {
                 elem.PURCHASE_TURN_AROUND_TIME = 'N/A';
             }
-            if(Number(elem.MATERIAL_CATALOG_TYPE_ID) === catalogTypeIdMap.SUB_CATEGORY){
+            if(Number(elem.MATERIAL_CATALOG_TYPE_ID) === catalogTypeIdMap.CATEGORY){
             	elem.PRODUCT_CATALOG = elem.PRODUCT_CATEGORY;
             	elem.PRODUCT_CATEGORY = elem.PRODUCT_SUB_CATEGORY;
             	elem.PRODUCT_SUB_CATEGORY = "";
+            }
+            if(!elem.AMOUNT_LINE) {
+            	elem.AMOUNT_LINE = 0;
+            }
+            if(!elem.BUDGET) {
+            	elem.BUDGET = 0;
+            }
+            if(!elem.ITEM) {
+            	elem.ITEM = elem.SPECIAL_REQUEST_ITEM;
             }
         });
     } else {

@@ -4,6 +4,7 @@ var dbHelper = mapper.getdbHelper();
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
 var businessPOService = mapper.getPurchaseOrderService();
+var businessChangedColumn = mapper.getRequestChangedColumn();
 var dataRequest = mapper.getDataRequest();
 var dataAttachmentR = mapper.getDataAttachmentRequest();
 var bussinesAttachment = mapper.getAttachment();
@@ -35,7 +36,14 @@ var config = mapper.getDataConfig();
 var mail = mapper.getMail();
 var userRole = mapper.getUserRole();
 
-var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var statusMap = {
+    'TO_BE_CHECKED': 1,
+    'CHECKED': 2,
+    'IN_PROCESS': 3,
+    'RETURN_TO_REQUESTER': 4,
+    'APPROVED': 5,
+    'CANCELLED': 6
+};
 var resourceMap = {'SHOPPING_CART_HISTORY': 2};
 var permissionMap = {'CREATE_EDIT': 10};
 
@@ -53,251 +61,251 @@ var noteKeys = ["NOTE_TYPE_ID"];
 var attachmentKeys = ["REQUEST_ID", "ATTACHMENT_ID"];
 var riskFundedKeys = ["REQUEST_ID", "AMOUNT", "CURRENCY_ID", "AMOUNT_KEUR"];
 
-function validateAccess(request_id, user_id){
-	var user_role = dataUserRole.getUserRoleByUserId(user_id);
-	var request_status = dataRequest.getRequestStatusByRequestId(request_id);
-	var rolePermission = dataRolePermission.getPermissionByRoleAndResourceAndPermission(Number(user_role[0].ROLE_ID), resourceMap.SHOPPING_CART_HISTORY, permissionMap.CREATE_EDIT);
+function validateAccess(request_id, user_id) {
+    var user_role = dataUserRole.getUserRoleByUserId(user_id);
+    var request_status = dataRequest.getRequestStatusByRequestId(request_id);
+    var rolePermission = dataRolePermission.getPermissionByRoleAndResourceAndPermission(Number(user_role[0].ROLE_ID), resourceMap.SHOPPING_CART_HISTORY, permissionMap.CREATE_EDIT);
 
-	if(Number(rolePermission[0].PERMISSION_LEVEL) !== 2){
-		return !(request_status.STATUS_NAME == 'Approved' || request_status.STATUS_NAME == 'Cancelled');
-	}else{
-		return true;
-	}
+    if (Number(rolePermission[0].PERMISSION_LEVEL) !== 2) {
+        return !(request_status.STATUS_NAME === 'Approved' || request_status.STATUS_NAME === 'Cancelled');
+    } else {
+        return true;
+    }
 }
+
 //Check data types
 function validateType(key, value) {
-	var valid = true;
-	switch (key) {
-	case 'REQUEST_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'SERVICE_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'VENDOR_ADDITIONAL_INFORMATION_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'NON_SAP_VENDOR_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'NOTE_TYPE_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'REQUEST_RISK_FUNDED_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'ATTACHMENT_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'ENTITY_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'CURRENCY_ID':
-		valid = !isNaN(value) && value > 0;
-		break;
-	case 'START_DATE':
-		valid = value.length > 0;
-		break;
-	case 'END_DATE':
-		valid = value.length > 0;
-		break;
-	case 'DESCRIPTION':
-		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'AMOUNT':
-		valid = !isNaN(value) && value >= 0;
-		break;
-	case 'BUDGET':
-		valid = !isNaN(value) && value >= 0;
-		break;
-	case 'AMOUNT_KEUR':
-		valid = !isNaN(value) && value >= 0;
-		break;
-	case 'ITEM':
-		valid = !isNaN(value);
-		break;
-	case 'NAME':
-		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'CONTACT_NAME':
-		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'CONTACT_PHONE':
-		valid = value.length > 0 && value.length <= 255;
-		break;
-	case 'CONTACT_EMAIL':
-		valid = value.length > 0 && value.length <= 255;
-		break;
-	}
-	return valid;
+    var valid = true;
+    switch (key) {
+        case 'REQUEST_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'SERVICE_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'VENDOR_ADDITIONAL_INFORMATION_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'NON_SAP_VENDOR_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'NOTE_TYPE_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'REQUEST_RISK_FUNDED_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'ATTACHMENT_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'ENTITY_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'CURRENCY_ID':
+            valid = !isNaN(value) && value > 0;
+            break;
+        case 'START_DATE':
+            valid = value.length > 0;
+            break;
+        case 'END_DATE':
+            valid = value.length > 0;
+            break;
+        case 'DESCRIPTION':
+            valid = value.length > 0 && value.length <= 255;
+            break;
+        case 'AMOUNT':
+            valid = !isNaN(value) && value >= 0;
+            break;
+        case 'BUDGET':
+            valid = !isNaN(value) && value >= 0;
+            break;
+        case 'AMOUNT_KEUR':
+            valid = !isNaN(value) && value >= 0;
+            break;
+        case 'ITEM':
+            valid = !isNaN(value);
+            break;
+        case 'NAME':
+            valid = value.length > 0 && value.length <= 255;
+            break;
+        case 'CONTACT_NAME':
+            valid = value.length > 0 && value.length <= 255;
+            break;
+        case 'CONTACT_PHONE':
+            valid = value.length > 0 && value.length <= 255;
+            break;
+        case 'CONTACT_EMAIL':
+            valid = value.length > 0 && value.length <= 255;
+            break;
+    }
+    return valid;
 }
 
 
 /* ! VALIDATION KEYS FOR UPDATES */
 
-function validatePermissionByUserRole(roleData, resRequest){
-	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.REQUESTER_ID);
+function validatePermissionByUserRole(roleData, resRequest) {
+    return (roleData.ROLE_ID !== "2") ? true : (roleData.USER_ID === resRequest.REQUESTER_ID);
 }
 
 /*----- REQUEST SERVICE -----*/
 
 function getRequestServiceByRequestId(request_id, user_id) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getRequestServiceById", request_id);
-	}
-	return dataRService.getRequestServiceByRequestId(request_id);
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getRequestServiceById", request_id);
+    }
+    return dataRService.getRequestServiceByRequestId(request_id);
 }
 
 function getAllRequestService(user_id) {
-	if (!user_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter user_id is not found",
-				"requestService/handleGet/getAllRequestService", user_id);
-	}
-	return dataRService.getAllRequestService();
+    if (!user_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter user_id is not found",
+            "requestService/handleGet/getAllRequestService", user_id);
+    }
+    return dataRService.getAllRequestService();
 }
-
 
 
 /*----- SERVICES -----*/
 
 function getServicesByRequestId(request_id, user_id) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getServicesByRequestId", request_id);
-	}
-	return dataService.getServiceByRequestId(request_id);
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getServicesByRequestId", request_id);
+    }
+    return dataService.getServiceByRequestId(request_id);
 }
 
 function getServiceById(serviceId, userId) {
-	if (!serviceId) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter serviceId is not found",
-				"requestService/handleGet/getServiceById", serviceId);
-	}
-	return dataService.getServiceById(serviceId);
+    if (!serviceId) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter serviceId is not found",
+            "requestService/handleGet/getServiceById", serviceId);
+    }
+    return dataService.getServiceById(serviceId);
 }
 
-function getSpecialRequestByRequestId(request_id, user_id){
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getSpecialRequestByRequestId", request_id);
-	}
-	return dataSpecialRequest.getSpecialRequestByRequestId(request_id);
+function getSpecialRequestByRequestId(request_id, user_id) {
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getSpecialRequestByRequestId", request_id);
+    }
+    return dataSpecialRequest.getSpecialRequestByRequestId(request_id);
 }
 
 
 /*----- REQUEST COST OBJECT -----*/
 
 function getCostObjectByRequestId(request_id, user_id) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getCostObjectById", request_id);
-	}
-	return dataRCostObject.getCostObjectByRequestId(request_id);
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getCostObjectById", request_id);
+    }
+    return dataRCostObject.getCostObjectByRequestId(request_id);
 }
 
 function getAllCostObject(user_id) {
-	return dataRCostObject.getAllCostObject();
+    return dataRCostObject.getAllCostObject();
 }
 
 function getAllCostObjectType(user_id) {
-	return dataRCostObject.getAllCostObjectType();
+    return dataRCostObject.getAllCostObjectType();
 }
 
 /*----- REQUEST RISK FUNDED -----*/
 
 function getRiskFundedByRequestId(request_id, user_id) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getRiskFundedById", request_id);
-	}
-	return dataRRiskFunded.getRiskFundedByRequestId(request_id);
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getRiskFundedById", request_id);
+    }
+    return dataRRiskFunded.getRiskFundedByRequestId(request_id);
 }
 
 function getAllRiskFunded(user_id) {
-	return dataRRiskFunded.getAllRiskFunded();
+    return dataRRiskFunded.getAllRiskFunded();
 }
 
-function getCatalogByParentId(catalog_id){
-	return dataCatalog.getCatalogByIdManual(catalog_id);
+function getCatalogByParentId(catalog_id) {
+    return dataCatalog.getCatalogByIdManual(catalog_id);
 }
 
-function getNoteRequestByRequestId(requestId){
-   if (!requestId) {
+function getNoteRequestByRequestId(requestId) {
+    if (!requestId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "cartRequestService/handleGet/getNoteRequestByRequestId", requestId);
     }
     var result = [];
     var objRequest = {};
     var noteText;
-	var startPosition;
-	var requestNoteLength;
-	var i;
-	var splitNumber;
-    try{
-    	result = dataNoteRequest.getNoteRequestByRequestId(requestId);
-    	result = JSON.parse(JSON.stringify(result));
-    	result.forEach(function (elem) {
-	    	noteText = "";
-    		startPosition = 1;
-    		requestNoteLength = 5000;
-    		i = 0;
-    		splitNumber = 0;
+    var startPosition;
+    var requestNoteLength;
+    var i;
+    var splitNumber;
+    try {
+        result = dataNoteRequest.getNoteRequestByRequestId(requestId);
+        result = JSON.parse(JSON.stringify(result));
+        result.forEach(function (elem) {
+            noteText = "";
+            startPosition = 1;
+            requestNoteLength = 5000;
+            i = 0;
+            splitNumber = 0;
 
-	    	//Join message content
-	    	splitNumber = elem.NOTE_TEXT_LENGTH / requestNoteLength;
-	    	for (i = 0; i < splitNumber; i++){
-	    		noteText = noteText.concat(dataNoteRequest.getNoteRequestContentManual(elem.REQUEST_ID, elem.NOTE_REQUEST_ID, startPosition, requestNoteLength).NOTE_TEXT);
-	    		startPosition = startPosition + requestNoteLength;
-	    	}
-	    	elem.NOTE_TEXT = noteText;
-	    });
-    } catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "cartRequestService/handleGet/getNoteRequestByRequestId", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
-	return result;
+            //Join message content
+            splitNumber = elem.NOTE_TEXT_LENGTH / requestNoteLength;
+            for (i = 0; i < splitNumber; i++) {
+                noteText = noteText.concat(dataNoteRequest.getNoteRequestContentManual(elem.REQUEST_ID, elem.NOTE_REQUEST_ID, startPosition, requestNoteLength).NOTE_TEXT);
+                startPosition = startPosition + requestNoteLength;
+            }
+            elem.NOTE_TEXT = noteText;
+        });
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", "cartRequestService/handleGet/getNoteRequestByRequestId", e.toString());
+    }
+    finally {
+        dbHelper.commit();
+        dbHelper.closeConnection();
+    }
+    return result;
 }
 
 function completeRequest(item, user_id) {
-	if(item.MATERIAL_PARENT_ID){
-		var catalog;
-		var result = {};
-		var catalogs = [];
-		item.CATALOGS = dataCatalog.getManualCatalogById(item.MATERIAL_PARENT_ID);
+    if (item.MATERIAL_PARENT_ID) {
+        var catalog;
+        var result = {};
+        var catalogs = [];
+        item.CATALOGS = dataCatalog.getManualCatalogById(item.MATERIAL_PARENT_ID);
 
-		catalog = item.CATALOGS[0].CATALOG_PARENT_ID;
-		if(catalog){
-			while(catalog != "0"){
-				result = getCatalogByParentId(catalog);
-				catalog = result[0].CATALOG_PARENT_ID;
-				(item.CATALOGS).push(result[0]);
-				if(!catalog){
-					catalog = "0";
-				}
-			}
-		}
+        catalog = item.CATALOGS[0].CATALOG_PARENT_ID;
+        if (catalog) {
+            while (catalog != "0") {
+                result = getCatalogByParentId(catalog);
+                catalog = result[0].CATALOG_PARENT_ID;
+                (item.CATALOGS).push(result[0]);
+                if (!catalog) {
+                    catalog = "0";
+                }
+            }
+        }
 
-	}
+    }
 
-	item.SERVICES = getServicesByRequestId(item.REQUEST_ID, user_id);
-	item.REQUEST_SERVICE = getRequestServiceByRequestId(item.REQUEST_ID, user_id);
-	item.SPECIAL_REQUEST = getSpecialRequestByRequestId(item.REQUEST_ID, user_id);
-	item.COST_OBJECT = getCostObjectByRequestId(item.REQUEST_ID, user_id);
-	item.RISK_FUNDED = getRiskFundedByRequestId(item.REQUEST_ID, user_id);
-	item.NOTES = getNoteRequestByRequestId(item.REQUEST_ID);
-	item.DATA_PROTECTION = getRequestDataProtection(item.REQUEST_ID, user_id);
-	item.ATTACHMENTS = getAttachmentRequest(item.REQUEST_ID, user_id);
+    item.SERVICES = getServicesByRequestId(item.REQUEST_ID, user_id);
+    item.REQUEST_SERVICE = getRequestServiceByRequestId(item.REQUEST_ID, user_id);
+    item.SPECIAL_REQUEST = getSpecialRequestByRequestId(item.REQUEST_ID, user_id);
+    item.COST_OBJECT = getCostObjectByRequestId(item.REQUEST_ID, user_id);
+    item.RISK_FUNDED = getRiskFundedByRequestId(item.REQUEST_ID, user_id);
+    item.NOTES = getNoteRequestByRequestId(item.REQUEST_ID);
+    item.DATA_PROTECTION = getRequestDataProtection(item.REQUEST_ID, user_id);
+    item.ATTACHMENTS = getAttachmentRequest(item.REQUEST_ID, user_id);
 
 }
 
@@ -308,196 +316,204 @@ function getAllRequest(userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestMessageService/handleGet/getRequestMessage", userId);
     }
     var request = [];
-	try {
-		request = dataRequest.getAllRequest(userId);
-		request = JSON.parse(JSON.stringify(request));
+    try {
+        request = dataRequest.getAllRequest(userId);
+        request = JSON.parse(JSON.stringify(request));
 
-		var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
+        var complete_request = mergeData(request.requests, request.services, request.attachments, userId);
 
-		dbHelper.commit();
-	} catch (e) {
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),
-		 		"getAllRequest");
-	} finally {
-		dbHelper.closeConnection();
-	}
+        dbHelper.commit();
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(),
+            "getAllRequest");
+    } finally {
+        dbHelper.closeConnection();
+    }
 
-	return complete_request;
+    return complete_request;
 }
 
 function mergeData(requests, services, specialRequest, attachments, userId) {
 
-	var attachment_request = {};
-	var service_request = {};
-	var special_request = {};
+    var attachment_request = {};
+    var service_request = {};
+    var special_request = {};
 
-	var loop_length = (attachments.length > services.length)? attachments.length : services.length;
-	loop_length = (loop_length > specialRequest.length)? loop_length : specialRequest.length;
+    var loop_length = (attachments.length > services.length) ? attachments.length : services.length;
+    loop_length = (loop_length > specialRequest.length) ? loop_length : specialRequest.length;
 
-	for(var i = 0; i<loop_length; i++){
-		if(services[i]){
-			if(!service_request[services[i].REQUEST_ID]){
-				service_request[services[i].REQUEST_ID] = [];
-			}
-			service_request[services[i].REQUEST_ID].push(services[i]);
-		}
-		if(attachments[i]){
-			if(!attachment_request[attachments[i].REQUEST_ID]){
-				attachment_request[attachments[i].REQUEST_ID] = [];
-			}
-			attachments[i].ATTACHMENT_SIZE = (parseFloat(Number(attachments[i].ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
-			attachment_request[attachments[i].REQUEST_ID].push(attachments[i]);
-		}
-		if (specialRequest[i]) {
-			if(!special_request[specialRequest[i].REQUEST_ID]){
-				special_request[specialRequest[i].REQUEST_ID] = [];
-			}
-			special_request[specialRequest[i].REQUEST_ID].push(specialRequest[i]);
-		}
-	}
+    for (var i = 0; i < loop_length; i++) {
+        if (services[i]) {
+            if (!service_request[services[i].REQUEST_ID]) {
+                service_request[services[i].REQUEST_ID] = [];
+            }
+            service_request[services[i].REQUEST_ID].push(services[i]);
+        }
+        if (attachments[i]) {
+            if (!attachment_request[attachments[i].REQUEST_ID]) {
+                attachment_request[attachments[i].REQUEST_ID] = [];
+            }
+            attachments[i].ATTACHMENT_SIZE = (parseFloat(Number(attachments[i].ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+            attachment_request[attachments[i].REQUEST_ID].push(attachments[i]);
+        }
+        if (specialRequest[i]) {
+            if (!special_request[specialRequest[i].REQUEST_ID]) {
+                special_request[specialRequest[i].REQUEST_ID] = [];
+            }
+            special_request[specialRequest[i].REQUEST_ID].push(specialRequest[i]);
+        }
+    }
 
-	requests.forEach(function(request){
-		request.SERVICES = service_request[request.REQUEST_ID] || [];
-		request.ATTACHMENTS = attachment_request[request.REQUEST_ID] || [];
-		request.SPECIAL_REQUEST = special_request[request.REQUEST_ID] || [];
-		request.FORMATED_REQUEST_ID = request.ISO +''+ request.REQUEST_ID;
-		request.SHOW_MESSAGE_READ = (request.MESSAGE_READ > 0)?1:0;
-	});
+    requests.forEach(function (request) {
+        request.SERVICES = service_request[request.REQUEST_ID] || [];
+        request.ATTACHMENTS = attachment_request[request.REQUEST_ID] || [];
+        request.SPECIAL_REQUEST = special_request[request.REQUEST_ID] || [];
+        request.FORMATED_REQUEST_ID = request.ISO + '' + request.REQUEST_ID;
+        request.SHOW_MESSAGE_READ = (request.MESSAGE_READ > 0) ? 1 : 0;
+    });
 
-	return requests;
+    return requests;
 
 }
 
 function getRequestLastId() {
-	var newId = dataRequest.getRequestLastId();
-	var request;
-	if (newId) {
-		request = newId;
-	} else {
-		request = {"CR_ID": "CR1"};
-	}
-	return request;
+    var newId = dataRequest.getRequestLastId();
+    var request;
+    if (newId) {
+        request = newId;
+    } else {
+        request = {"CR_ID": "CR1"};
+    }
+    return request;
 }
 
 function getRequestByFilters(objFilters, userId) {
-	if (!objFilters) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Object Filters is not found",
-				"requestService/handleGet/getRequestByFilters",
-				getRequestByFilters);
-	}
-	try {
-		var filtersArray = [ "GOODS_RECIPIENT","BUDGET_YEAR_ID" ,"TEAM_ID", "REQUEST_DATE_FROM",
-				"REQUEST_DATE_TO", "USER_ID", "USER_ID", "VENDOR_ADDITIONAL_INFORMATION_ID",
-				"STATUS_ID" ];
-		validateFilterParameters(objFilters, filtersArray);
-		if (!validateDateStringFormat(objFilters["REQUEST_DATE_FROM"])
-				|| !validateDateStringFormat(objFilters["REQUEST_DATE_TO"])) {
-			throw ErrorLib.getErrors().CustomError("",
-					"Invalid date format (YYYY-MM-DD)", "getRequestByFilters");
-		}
-		
-		var permissionData = {
-				RESOURCE_ID: resourceMap.SHOPPING_CART_HISTORY,
-				PERMISSION_ID: permissionMap.CREATE_EDIT
-		};
-		
-		var request = dataRequest.getRequestByFilters(objFilters, permissionData, userId);
-		request = JSON.parse(JSON.stringify(request));
+    if (!objFilters) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Object Filters is not found",
+            "requestService/handleGet/getRequestByFilters",
+            getRequestByFilters);
+    }
+    try {
+        var filtersArray = ["GOODS_RECIPIENT", "BUDGET_YEAR_ID", "TEAM_ID", "REQUEST_DATE_FROM",
+            "REQUEST_DATE_TO", "USER_ID", "USER_ID", "VENDOR_ADDITIONAL_INFORMATION_ID",
+            "STATUS_ID"];
+        validateFilterParameters(objFilters, filtersArray);
+        if (!validateDateStringFormat(objFilters["REQUEST_DATE_FROM"])
+            || !validateDateStringFormat(objFilters["REQUEST_DATE_TO"])) {
+            throw ErrorLib.getErrors().CustomError("",
+                "Invalid date format (YYYY-MM-DD)", "getRequestByFilters");
+        }
 
-		var complete_request = mergeData(request.requests, request.services, request.special_request, request.attachments, userId);
-		dbHelper.commit();
-	} catch (e) {
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),
-				"getRequestByFilters");
-	} finally {
-		dbHelper.closeConnection();
-	}
+        var permissionData = {
+            RESOURCE_ID: resourceMap.SHOPPING_CART_HISTORY,
+            PERMISSION_ID: permissionMap.CREATE_EDIT
+        };
 
-	return complete_request;
+        var request = dataRequest.getRequestByFilters(objFilters, permissionData, userId);
+        request = JSON.parse(JSON.stringify(request));
+
+        var complete_request = mergeData(request.requests, request.services, request.special_request, request.attachments, userId);
+        dbHelper.commit();
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(),
+            "getRequestByFilters");
+    } finally {
+        dbHelper.closeConnection();
+    }
+
+    return complete_request;
 }
+
 function getRequestById(request_id, userId, edition_mode) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleGet/getRequestById", request_id);
-	}
-	//Validates the status and the user role
-	if(edition_mode && !validateAccess(request_id, userId)){
-		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"requestService/handleGet/getRequestById", '{"EDIT_PERMISSION_ERROR": "cartRequest"}');
-	}
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleGet/getRequestById", request_id);
+    }
+    //Validates the status and the user role
+    if (edition_mode && !validateAccess(request_id, userId)) {
+        throw ErrorLib.getErrors().BadRequest(
+            "Unauthorized request.",
+            "requestService/handleGet/getRequestById", '{"EDIT_PERMISSION_ERROR": "cartRequest"}');
+    }
+    var lastId = getRequestLastId();
+    var roleData = userRole.getUserRoleByUserId(userId);
+    var request = dataRequest.getRequestByIdManual(request_id, userId);
+    if (!Object.keys(request).length && Number(request_id) <= Number(lastId)) {
+    	throw ErrorLib.getErrors().BadRequest(
+                "Unauthorized request.",
+                "requestService/handleGet/getRequestById", '{"VIEW_PERMISSION_ERROR": "cartRequest"}');
+    }
+    if (validatePermissionByUserRole(roleData[0], request)) {
 
-	var roleData = userRole.getUserRoleByUserId(userId);
-	var request = dataRequest.getRequestByIdManual(request_id);
-	if(validatePermissionByUserRole(roleData[0], request)){
+        try {
+            var req = {};
+            if (request.length > 0) {
+                req = JSON.parse(JSON.stringify(request));
+                completeRequest(req, userId);
+            }
+            dbHelper.commit();
+        } catch (e) {
+            dbHelper.rollback();
+            throw ErrorLib.getErrors().CustomError("", e.toString(),
+                "getRequestById");
+        } finally {
+            dbHelper.closeConnection();
+        }
 
-		try {
-			var req = {};
-			if (request.length > 0) {
-				req = JSON.parse(JSON.stringify(request));
-				completeRequest(req, userId);
-			}
-			dbHelper.commit();
-		} catch (e) {
-			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", e.toString(),
-					"getRequestById");
-		} finally {
-			dbHelper.closeConnection();
-		}
-
-		return req;
-	}else{
-		throw ErrorLib.getErrors().BadRequest("", "requestService/handleGet/getRequestById", '{"VIEW_PERMISSION_ERROR": "cartRequest"}');
-	}
+        return req;
+    } else {
+        throw ErrorLib.getErrors().BadRequest("", "requestService/handleGet/getRequestById", '{"VIEW_PERMISSION_ERROR": "cartRequest"}');
+    }
 }
 
 //----------------------- UPDATE NEW CART REQUEST -----------------------//
 
 //DATA PROTECTION
-function updateDataProtectionAnswer(item, user_id){
-	dataRDataProtection.updateManualDataProtectionAnswer(item, user_id);
+function updateDataProtectionAnswer(item, user_id) {
+    dataRDataProtection.updateManualDataProtectionAnswer(item, user_id);
 }
 
 //NOTE REQUEST
-function insertManualNoteRequest(objNoteReq, request_id, user_id){
-	objNoteReq.REQUEST_ID = request_id;
-	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNoteRequest";
-	if(utilLib.validateObjectAttributes(objNoteReq, user_id, noteKeys, serviceUrl, validateType)){
-		dataNoteReq.insertNoteRequest(objNoteReq, user_id);
-	}
+function insertManualNoteRequest(objNoteReq, request_id, user_id) {
+    objNoteReq.REQUEST_ID = request_id;
+    var noteId = 0;
+    var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNoteRequest";
+    if (utilLib.validateObjectAttributes(objNoteReq, user_id, noteKeys, serviceUrl, validateType)) {
+        noteId = dataNoteReq.insertNoteRequest(objNoteReq, user_id);
+    }
+    return noteId;
 }
 
 //ATTACHMENT REQUEST
-function insertAttachmentRequest(attachment, in_request_id, userId){
-	attachment.REQUEST_ID = in_request_id;
-	var serviceUrl = "requestService/handleUpdate/updateRequest/insertAttachmentRequest";
+function insertAttachmentRequest(attachment, in_request_id, userId) {
+    attachment.REQUEST_ID = in_request_id;
+    var serviceUrl = "requestService/handleUpdate/updateRequest/insertAttachmentRequest";
 
-	if(utilLib.validateObjectAttributes(attachment, userId, attachmentKeys, serviceUrl, validateType)){
-		return dataAttachmentR.insertAttachmentRequest(attachment, userId);
-	}
+    if (utilLib.validateObjectAttributes(attachment, userId, attachmentKeys, serviceUrl, validateType)) {
+        return dataAttachmentR.insertAttachmentRequest(attachment, userId);
+    }
 }
 
-function deleteAttachment(attachment, in_request_id, userId){
-	attachment.REQUEST_ID = in_request_id;
-		if(bussinesAttachment.deleteManualAttachment(attachment, userId)){
-			bussinesAttachment.deleteManualAttachmentRequestConection(attachment.ATTACHMENT_ID, in_request_id ,userId);
-		}
+function deleteAttachment(attachment, in_request_id, userId) {
+    attachment.REQUEST_ID = in_request_id;
+    if (bussinesAttachment.deleteManualAttachment(attachment, userId)) {
+        bussinesAttachment.deleteManualAttachmentRequestConection(attachment.ATTACHMENT_ID, in_request_id, userId);
+    }
 }
 
 //Delete Attachment from Shopping Cart History section
-function deleteAttachmentOnly(reqBody, userId){
-	return bussinesAttachment.deleteAttachment(reqBody, userId);
+function deleteAttachmentOnly(reqBody, userId) {
+    return bussinesAttachment.deleteAttachment(reqBody, userId);
 }
 
 
-function updateAttachments(original_attachments, newAttachments, request_id, user_id){
+function updateAttachments(original_attachments, newAttachments, request_id, user_id) {
 
-	var original_attachments_local = original_attachments;
+    var original_attachments_local = original_attachments;
     var originalAttachmentsToUpdate = newAttachments;
 
     var insertOriginalAttachments = [];
@@ -508,16 +524,16 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
         var result = true;
         var o_attachment_id = o_attachment.ATTACHMENT_ID;
         if (typeof o_attachment_id === 'string') {
-        	o_attachment_id = Number(o_attachment_id);
+            o_attachment_id = Number(o_attachment_id);
         }
         originalAttachmentsToUpdate.forEach(function (updateAttach) {
-        	updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
+            updateAttach.ATTACHMENT_ID = Number(updateAttach.ATTACHMENT_ID);
             if (o_attachment_id === updateAttach.ATTACHMENT_ID) {
                 result = false;
             }
         });
         if (result) {
-        	deleteOriginalAttachments.push(o_attachment);
+            deleteOriginalAttachments.push(o_attachment);
         }
     });
 
@@ -528,122 +544,122 @@ function updateAttachments(original_attachments, newAttachments, request_id, use
         original_attachments_local.forEach(function (attachment) {
             var o_attachment_id = attachment.ATTACHMENT_ID;
             if (typeof o_attachment_id === 'string') {
-            	o_attachment_id = Number(o_attachment_id);
+                o_attachment_id = Number(o_attachment_id);
             }
             if (newAttach.ATTACHMENT_ID === o_attachment_id) {
                 result = false;
             }
         });
         if (result) {
-        	insertOriginalAttachments.push(newAttach);
+            insertOriginalAttachments.push(newAttach);
         }
     });
 
     //ACTIONS
-    if(insertOriginalAttachments.length > 0){
-    	insertOriginalAttachments.forEach(function(attachment){
-    		insertAttachmentRequest(attachment, request_id, user_id);
-    	});
+    if (insertOriginalAttachments.length > 0) {
+        insertOriginalAttachments.forEach(function (attachment) {
+            insertAttachmentRequest(attachment, request_id, user_id);
+            insertNewAttachmentChangedColumn(attachment, request_id, user_id);
+        });
     }
-    if(deleteOriginalAttachments.length > 0){
-    	deleteOriginalAttachments.forEach(function(attachment){
-    		deleteAttachment(attachment, request_id, user_id);
-    	});
+    if (deleteOriginalAttachments.length > 0) {
+        deleteOriginalAttachments.forEach(function (attachment) {
+            deleteAttachment(attachment, request_id, user_id);
+        });
     }
-	return 1;
+    return 1;
 }
 
-function deleteManualNoteRequest(note_request_id, user_id){
-	dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id);
+function deleteManualNoteRequest(note_request_id, user_id) {
+    dataNoteReq.deleteManualNoteRequestById(note_request_id, user_id);
 }
 
 
-function updateManualNoteRequest(objNoteReq, user_id){
-	dataNoteReq.updateManualNoteRequest(objNoteReq, user_id);
+function updateManualNoteRequest(objNoteReq, user_id) {
+    dataNoteReq.updateManualNoteRequest(objNoteReq, user_id);
 }
 
-function deleteNotes(notes, user_id){
-	notes.forEach(function(note){
-		deleteManualNoteRequest(note.NOTE_REQUEST_ID, user_id);
-	});
+function deleteNotes(notes, user_id) {
+    notes.forEach(function (note) {
+        deleteManualNoteRequest(note.NOTE_REQUEST_ID, user_id);
+    });
 }
-
 
 
 //SPECIAL REQUEST
-function updateSpecialRequest(special_request, user_id){
+function updateSpecialRequest(special_request, user_id) {
     return businessSpecialRequest.updateSpecialRequest(special_request, user_id);
 }
 
-function insertSpecialRequest(special_request, request_id, user_id){
-	special_request.REQUEST_ID = request_id;
-    return businessSpecialRequest.insertSpecialRequest(special_request, user_id);
+function insertSpecialRequest(specialRequest, requestId, userId) {
+    specialRequest.REQUEST_ID = requestId;
+    return businessSpecialRequest.insertSpecialRequest(specialRequest, userId);
 }
 
-function deleteSpecialRequest(special_request_id, user_id){
+function deleteSpecialRequest(special_request_id, user_id) {
     return businessSpecialRequest.deleteSpecialRequest(special_request_id, user_id);
 }
 
 //RISK FUNDED
-function updateRiskFunded(risk_funded, user_id){
-	var serviceUrl = "requestService/handleUpdate/updateRequest/updateRiskFunded";
-	var updateRiskFundedKeys = riskFundedKeys;
-	updateRiskFundedKeys.push("REQUEST_RISK_FUNDED_ID");
-	if(utilLib.validateObjectAttributes(risk_funded, user_id, updateRiskFundedKeys, serviceUrl, validateType)){
-		return dataRRiskFunded.updateManualRiskFunded(risk_funded, user_id);
-	}
+function updateRiskFunded(risk_funded, user_id) {
+    var serviceUrl = "requestService/handleUpdate/updateRequest/updateRiskFunded";
+    var updateRiskFundedKeys = riskFundedKeys;
+    updateRiskFundedKeys.push("REQUEST_RISK_FUNDED_ID");
+    if (utilLib.validateObjectAttributes(risk_funded, user_id, updateRiskFundedKeys, serviceUrl, validateType)) {
+        return dataRRiskFunded.updateManualRiskFunded(risk_funded, user_id);
+    }
 
 }
 
-function deleteRiskFunded(risk_funded, user_id){
-	dataNewCartRiskFunded.deleteManualRiskFunded(risk_funded.REQUEST_RISK_FUNDED_ID, user_id);
+function deleteRiskFunded(risk_funded, user_id) {
+    dataNewCartRiskFunded.deleteManualRiskFunded(risk_funded.REQUEST_RISK_FUNDED_ID, user_id);
 }
 
-function insertRiskFunded(reqBody, user_id){
-	var serviceUrl = "requestService/handleUpdate/updateRequest/insertRiskFunded";
-	if(utilLib.validateObjectAttributes(reqBody, user_id, riskFundedKeys, serviceUrl, validateType)){
-		return dataNewCartRiskFunded.insertRiskFunded(reqBody, user_id);
-	}
+function insertRiskFunded(reqBody, user_id) {
+    var serviceUrl = "requestService/handleUpdate/updateRequest/insertRiskFunded";
+    if (utilLib.validateObjectAttributes(reqBody, user_id, riskFundedKeys, serviceUrl, validateType)) {
+        return dataNewCartRiskFunded.insertRiskFunded(reqBody, user_id);
+    }
 }
 
 //COST OBJECT
-function updateCostObject(cost_object, user_id){
-	return dataUpdateCostObject.updateManualCostObject(cost_object, user_id);
+function updateCostObject(cost_object, user_id) {
+    return dataUpdateCostObject.updateManualCostObject(cost_object, user_id);
 }
 
 //NON-SAP VENDOR
-function insertManualNonSapVendor(non_sap_vendor, user_id){
-	var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNonSapVendor";
-	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, nonSapVendorKeys, serviceUrl, validateType)){
-		return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);
-	}
+function insertManualNonSapVendor(non_sap_vendor, user_id) {
+    var serviceUrl = "requestService/handleUpdate/updateRequest/insertManualNonSapVendor";
+    if (utilLib.validateObjectAttributes(non_sap_vendor, user_id, nonSapVendorKeys, serviceUrl, validateType)) {
+        return businessNonSap.insertManualNonSapVendor(non_sap_vendor, user_id);
+    }
 }
 
-function updateManualNonSapVendor(non_sap_vendor, user_id){
-	var serviceUrl = "requestService/handleUpdate/updateRequest/updateManualNonSapVendor";
-	var updateNonSapVendorKeys = nonSapVendorKeys;
-	updateNonSapVendorKeys.push("NON_SAP_VENDOR_ID");
-	if(utilLib.validateObjectAttributes(non_sap_vendor, user_id, updateNonSapVendorKeys, serviceUrl, validateType)){
-		return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);
-	}
+function updateManualNonSapVendor(non_sap_vendor, user_id) {
+    var serviceUrl = "requestService/handleUpdate/updateRequest/updateManualNonSapVendor";
+    var updateNonSapVendorKeys = nonSapVendorKeys;
+    updateNonSapVendorKeys.push("NON_SAP_VENDOR_ID");
+    if (utilLib.validateObjectAttributes(non_sap_vendor, user_id, updateNonSapVendorKeys, serviceUrl, validateType)) {
+        return businessNonSap.updateManualNonSapVendor(non_sap_vendor, user_id);
+    }
 }
 
-function deleteManualNonSapVendor(non_sap_vendor_id, user_id){
-	non_sap_vendor_id = Number(non_sap_vendor_id);
+function deleteManualNonSapVendor(non_sap_vendor_id, user_id) {
+    non_sap_vendor_id = Number(non_sap_vendor_id);
 
-	return businessNonSap.deleteManualNonSapVendor(non_sap_vendor_id, user_id);
+    return businessNonSap.deleteManualNonSapVendor(non_sap_vendor_id, user_id);
 }
 
 //NOTES
-function updateNotes(original_notes, notes, request_id, userId){
-	var original_notes_local = original_notes;
+function updateNotes(original_notes, notes, request_id, userId) {
+    var original_notes_local = original_notes;
     var updateOriginalNotes = notes;
     var insertOriginalNotes = [];
     var updateNotesArray = [];
     var deleteOriginalNotes = [];
 
-    if( original_notes_local.length > 0){
-    	//DELETE
+    if (original_notes_local.length > 0) {
+        //DELETE
         original_notes_local.forEach(function (o_note) {
             var result = true;
             var o_note_id = o_note.NOTE_REQUEST_ID;
@@ -651,10 +667,10 @@ function updateNotes(original_notes, notes, request_id, userId){
                 o_note_id = Number(o_note_id);
             }
             updateOriginalNotes.forEach(function (updateNote) {
-            	updateNote.NOTE_REQUEST_ID = Number(updateNote.NOTE_REQUEST_ID);
+                updateNote.NOTE_REQUEST_ID = Number(updateNote.NOTE_REQUEST_ID);
                 if (updateNote.NOTE_TEXT !== null && (updateNote.NOTE_TEXT).length > 0 && o_note_id === updateNote.NOTE_REQUEST_ID) {
 
-                	result = false;
+                    result = false;
                 }
             });
             if (result) {
@@ -676,7 +692,7 @@ function updateNotes(original_notes, notes, request_id, userId){
                 }
             });
             if (result) {
-            	updateNotes.push(newNote);
+                updateNotesArray.push(newNote);
             }
         });
 
@@ -698,8 +714,8 @@ function updateNotes(original_notes, notes, request_id, userId){
             }
         });
     }
-    else{
-    	updateOriginalNotes.forEach(function (newNote) {
+    else {
+        updateOriginalNotes.forEach(function (newNote) {
             if (newNote.NOTE_TEXT !== null) {
                 insertOriginalNotes.push(newNote);
             }
@@ -707,10 +723,14 @@ function updateNotes(original_notes, notes, request_id, userId){
     }
 
     insertOriginalNotes.forEach(function (insertNote) {
-        insertManualNoteRequest(insertNote, request_id, userId);
+        var noteId = insertManualNoteRequest(insertNote, request_id, userId);
+        if (noteId > 0) {
+            insertNote.NOTE_REQUEST_ID = noteId;
+            insertNewNoteChangedColumn(insertNote, request_id, userId)
+        }
     });
-    updateNotesArray.forEach(function (note){
-    	updateManualNoteRequest(note, userId);
+    updateNotesArray.forEach(function (note) {
+        updateManualNoteRequest(note, userId);
     });
     deleteOriginalNotes.forEach(function (deleteNote) {
         deleteManualNoteRequest(deleteNote, userId);
@@ -720,69 +740,82 @@ function updateNotes(original_notes, notes, request_id, userId){
 
 //SERVICES
 
-function updateRequestService(reqBody, user_id){
-	dataRUpdateService.updateManualRequestService(reqBody, user_id);
+function updateRequestService(reqBody, user_id) {
+    dataRUpdateService.updateManualRequestService(reqBody, user_id);
 }
 
-function insertService(reqBody, user_id){
-	var serviceUrl = "requestService/handleUpdate/updateRequest/insertService";
-	if(utilLib.validateObjectAttributes(reqBody, user_id, ServiceKeys, serviceUrl, validateType)){
-		return dataService.insertService(reqBody, user_id);
-	}
-}
-
-//Return the total amount to be used in Request Service
-function insertServices(services, requestId, conversion_rate, userId){
-	var amount = 0;
-	(services).forEach(function(itemService){
-		itemService.REQUEST_ID = requestId;
-		amount += Number(itemService.AMOUNT);
-		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
-		itemService.BUDGET = itemService.BUDGET.toFixed(2);
-		insertService(itemService, userId);
-	});
-	return amount;
+function insertService(reqBody, user_id) {
+    var serviceUrl = "requestService/handleUpdate/updateRequest/insertService";
+    if (utilLib.validateObjectAttributes(reqBody, user_id, ServiceKeys, serviceUrl, validateType)) {
+        return dataService.insertService(reqBody, user_id);
+    }
 }
 
 //Return the total amount to be used in Request Service
-function insertEditServices(services, requestId, userId){
-	(services).forEach(function(itemService){
-		itemService.REQUEST_ID = requestId;
-		insertService(itemService, userId);
-	});
+function insertServices(services, requestId, conversion_rate, userId) {
+    var amount = 0;
+    (services).forEach(function (itemService) {
+        itemService.REQUEST_ID = requestId;
+        amount += Number(itemService.AMOUNT);
+        itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
+        itemService.BUDGET = itemService.BUDGET.toFixed(2);
+        insertService(itemService, userId);
+    });
+    return amount;
+}
+
+//Return the total amount to be used in Request Service
+function insertEditServices(services, requestId, userId) {
+    var columnsChanged = [
+        {COLUMN_NAME: "ITEM", DISPLAY_NAME: "Item #"},
+        {COLUMN_NAME: "START_DATE", DISPLAY_NAME: "Start date"},
+        {COLUMN_NAME: "END_DATE", DISPLAY_NAME: "End date"},
+        {COLUMN_NAME: "DESCRIPTION", DISPLAY_NAME: "Description on PO"},
+        {COLUMN_NAME: "AMOUNT", DISPLAY_NAME: "Amount"},
+        {COLUMN_NAME: "BUDGET", DISPLAY_NAME: "Budget Amount (K EUR)"}
+    ];
+    var serviceId = 0;
+    (services).forEach(function (itemService) {
+        itemService.REQUEST_ID = requestId;
+        serviceId = insertService(itemService, userId);
+        columnsChanged.forEach(function (elem) {
+            elem.SERVICE_ID = serviceId;
+        });
+        insertNewServiceChangedColumns(columnsChanged, itemService.REQUEST_ID, userId);
+    });
 
 }
 
-function updateService(reqBody, user_id){
-	var updateServiceKeys = ServiceKeys;
-	updateServiceKeys.push('SERVICE_ID');
-	var serviceUrl = "requestService/handleUpdate/updateRequest/updateService";
-	if(utilLib.validateObjectAttributes(reqBody, user_id, updateServiceKeys, serviceUrl, validateType)){
-		return dataUpdateService.updateService(reqBody, user_id);
-	}
+function updateService(reqBody, user_id) {
+    var updateServiceKeys = ServiceKeys;
+    updateServiceKeys.push('SERVICE_ID');
+    var serviceUrl = "requestService/handleUpdate/updateRequest/updateService";
+    if (utilLib.validateObjectAttributes(reqBody, user_id, updateServiceKeys, serviceUrl, validateType)) {
+        return dataUpdateService.updateService(reqBody, user_id);
+    }
 }
 
-function deleteService(service_id, user_id){
-		return dataService.deleteManualServiceById(service_id, user_id);
+function deleteService(service_id, user_id) {
+    return dataService.deleteManualServiceById(service_id, user_id);
 }
 
-function deleteServices(services, user_id){
-	services.forEach(function(service){
-		deleteService(service, user_id);
-	});
+function deleteServices(services, user_id) {
+    services.forEach(function (service) {
+        deleteService(service, user_id);
+    });
 }
 
-function updateEachService(services, userId){
-	services.forEach(function(service){
-		updateService(service, userId);
-	});
+function updateEachService(services, userId) {
+    services.forEach(function (service) {
+        updateService(service, userId);
+    });
 }
 
 //Return the total amount of Services to be used in Request Service
-function updateServices(original_services, services, request_id, conversion_rate, userId){
-	var amount = 0;
+function updateServices(original_services, services, request_id, conversion_rate, userId) {
+    var amount = 0;
 
-	var original_services_local = original_services;
+    var original_services_local = original_services;
     var originalServicesToUpdate = services;
     var updateOriginalServices = [];
     var insertOriginalServices = [];
@@ -796,7 +829,7 @@ function updateServices(original_services, services, request_id, conversion_rate
             o_service_id = Number(o_service_id);
         }
         originalServicesToUpdate.forEach(function (updateService) {
-        	updateService.SERVICE_ID = Number(updateService.SERVICE_ID);
+            updateService.SERVICE_ID = Number(updateService.SERVICE_ID);
             if (o_service_id === updateService.SERVICE_ID) {
                 result = false;
             }
@@ -843,30 +876,30 @@ function updateServices(original_services, services, request_id, conversion_rate
     });
 
     //ACTIONS
-    if(insertOriginalServices.length > 0){
-    	 insertEditServices(insertOriginalServices, request_id, userId);
+    if (insertOriginalServices.length > 0) {
+        insertEditServices(insertOriginalServices, request_id, userId);
     }
-    if(updateOriginalServices.length > 0){
-    	updateEachService(updateOriginalServices, userId);
+    if (updateOriginalServices.length > 0) {
+        updateEachService(updateOriginalServices, userId);
     }
-    if(deleteOriginalServices.length > 0){
-    	deleteServices(deleteOriginalServices, userId);
+    if (deleteOriginalServices.length > 0) {
+        deleteServices(deleteOriginalServices, userId);
     }
 
     //Obtain total amount to be used in REQUEST_SERVICE
-	(services).forEach(function(itemService){
-		amount += Number(itemService.AMOUNT);
-		itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
-	});
+    (services).forEach(function (itemService) {
+        amount += Number(itemService.AMOUNT);
+        itemService.BUDGET = (itemService.AMOUNT / conversion_rate) / 1000;
+    });
 
-	return amount;
+    return amount;
 }
 
 //Return the total amount of Special Requests to be used in Request Service
-function updateSpecialRequests(originalSpecialRequest, specialRequest, request_id, userId){
-	var amount = 0;
+function updateSpecialRequests(originalSpecialRequest, specialRequest, request_id, userId) {
+    var amount = 0;
 
-	var originalSpecialRequest_local = originalSpecialRequest;
+    var originalSpecialRequest_local = originalSpecialRequest;
     var originalSpecialRequestToUpdate = specialRequest;
     var updateOriginalSpecialRequest = [];
     var insertOriginalSpecialRequest = [];
@@ -927,152 +960,318 @@ function updateSpecialRequests(originalSpecialRequest, specialRequest, request_i
     });
 
     //ACTIONS
-    if(insertOriginalSpecialRequest.length > 0){
-    	insertOriginalSpecialRequest.forEach(function(specialRequest){
-    		insertSpecialRequest(specialRequest, request_id, userId);
-    	});
+    if (insertOriginalSpecialRequest.length > 0) {
+        var columnsChanged = [
+            {COLUMN_NAME: "ITEM", DISPLAY_NAME: "Item #"},
+            {COLUMN_NAME: "START_DATE", DISPLAY_NAME: "Start date"},
+            {COLUMN_NAME: "END_DATE", DISPLAY_NAME: "End date"},
+            {COLUMN_NAME: "MATERIAL_DESCRIPTION", DISPLAY_NAME: "Description on PO"},
+            {COLUMN_NAME: "AMOUNT", DISPLAY_NAME: "Amount"},
+            {COLUMN_NAME: "MATERIAL_CODE", DISPLAY_NAME: "Material #"},
+            {COLUMN_NAME: "BUDGET", DISPLAY_NAME: "Budget Amount (K EUR)"},
+            {COLUMN_NAME: "QUANTITY", DISPLAY_NAME: "Qty"},
+            {COLUMN_NAME: "UNIT_PRICE", DISPLAY_NAME: "Price per unit"},
+            {COLUMN_NAME: "UNIT", DISPLAY_NAME: "Unit"},
+            {COLUMN_NAME: "VENDOR_TEXT", DISPLAY_NAME: "Vendor text"}
+        ];
+        var specialId = 0;
+        insertOriginalSpecialRequest.forEach(function (specialRequest) {
+            specialId = insertSpecialRequest(specialRequest, request_id, userId);
+            columnsChanged.forEach(function (elem) {
+                elem.SPECIAL_REQUEST_ID = specialId;
+                elem.COLUMN_CHANGED = 1;
+                elem.REQUEST_ID = request_id;
+                businessChangedColumn.insertSpecialRequestChangedColumn(elem, userId);
+            });
+        });
     }
-    
-    if(updateOriginalSpecialRequest.length > 0){
-    	updateOriginalSpecialRequest.forEach(function(specialRequest){
-    		updateSpecialRequest(specialRequest, userId);
-    	});
+
+    if (updateOriginalSpecialRequest.length > 0) {
+        updateOriginalSpecialRequest.forEach(function (specialRequest) {
+            updateSpecialRequest(specialRequest, userId);
+        });
     }
-    if(deleteOriginalSpecialRequest.length > 0){
-        deleteOriginalSpecialRequest.forEach(function(specialRequest){
+    if (deleteOriginalSpecialRequest.length > 0) {
+        deleteOriginalSpecialRequest.forEach(function (specialRequest) {
             deleteSpecialRequest(specialRequest, userId);
         });
     }
 
     //Obtain total amount to be used in REQUEST_SERVICE
-    specialRequest.forEach(function(elem){
-		amount += (Number(elem.UNIT_PRICE) * elem.QUANTITY);
-	});
+    specialRequest.forEach(function (elem) {
+        amount += (Number(elem.UNIT_PRICE) * elem.QUANTITY);
+    });
 
-	return amount;
+    return amount;
 }
 
-function updateAttachmentRequest(objRequest, user_id){
-	var request;
-	try{
-		var attachmentList = dataRequest.getAttachmentByRequestId(objRequest.REQUEST_ID, user_id);
+function updateAttachmentRequest(objRequest, user_id) {
+    var request;
+    try {
+        var attachmentList = dataRequest.getAttachmentByRequestId(objRequest.REQUEST_ID, user_id);
 
-		//ATTACHMENTS UPDATE
-		if(attachmentList){
-			request = updateAttachments(attachmentList, objRequest.ATTACHMENTS, objRequest.REQUEST_ID, user_id);
-		}
-		dbHelper.commit();
-	}
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),"updateAttachmentRequest");
-	}
-	finally{
-		dbHelper.closeConnection();
-	}
-	return request;
+        //ATTACHMENTS UPDATE
+        if (attachmentList) {
+            request = updateAttachments(attachmentList, objRequest.ATTACHMENTS, objRequest.REQUEST_ID, user_id);
+        }
+        dbHelper.commit();
+    }
+    catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(), "updateAttachmentRequest");
+    }
+    finally {
+        dbHelper.closeConnection();
+    }
+    return request;
 
 }
 
 //Send Mail
-function sendResubmitMail(requestId, requester, userId){
-	 var requestMailObj = {};
-	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
-	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
-	 mail.sendMail(emailObj,true,null);
+function sendResubmitMail(requestId, requester, userId) {
+    var requestMailObj = {};
+    requestMailObj.REQUEST_ID = requestId;
+    var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
+    var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
+    mail.sendMail(emailObj, true, null);
+}
+
+//Insert changed columns data protection
+function insertDataProtectionChangedColumn(arrChangedColumns, requestId, userId) {
+    var objRequestChangedColumn = {};
+    var dataProtectionKey = "";
+    var objColumnsParsed = "";
+    arrChangedColumns.forEach(function (dataProtectionElem) {
+        objColumnsParsed = JSON.parse(dataProtectionElem);
+        dataProtectionKey = Object.keys(objColumnsParsed);
+        objRequestChangedColumn.COLUMN_NAME = dataProtectionKey[0];
+        objRequestChangedColumn.DISPLAY_NAME = objColumnsParsed[dataProtectionKey[0]];
+        objRequestChangedColumn.COLUMN_CHANGED = 1;
+        objRequestChangedColumn.REQUEST_ID = requestId;
+        businessChangedColumn.insertRequestChangedColumn(objRequestChangedColumn, userId);
+    });
+}
+
+//Insert new service changed columns
+function insertNewServiceChangedColumns(arrChangedColumns, requestId, userId) {
+    var objServiceChangedColumn = {};
+    arrChangedColumns.forEach(function (serviceElem) {
+        objServiceChangedColumn.SERVICE_ID = serviceElem.SERVICE_ID;
+        objServiceChangedColumn.COLUMN_NAME = serviceElem.COLUMN_NAME;
+        objServiceChangedColumn.DISPLAY_NAME = serviceElem.DISPLAY_NAME;
+        objServiceChangedColumn.COLUMN_CHANGED = 1;
+        objServiceChangedColumn.REQUEST_ID = requestId;
+        businessChangedColumn.insertServiceChangedColumn(objServiceChangedColumn, userId);
+    });
+}
+
+//Insert service changed columns
+function insertServiceChangedColumns(arrChangedColumns, requestId, userId) {
+    var objServiceChangedColumn = {};
+    var serviceKey = "";
+    arrChangedColumns.forEach(function (serviceElem) {
+        serviceKey = Object.keys(serviceElem);
+        serviceKey.forEach(function (keyElem) {
+            if (keyElem !== "SERVICE_ID") {
+                objServiceChangedColumn.COLUMN_NAME = keyElem;
+                objServiceChangedColumn.DISPLAY_NAME = serviceElem[keyElem];
+                objServiceChangedColumn.COLUMN_CHANGED = 1;
+                objServiceChangedColumn.SERVICE_ID = serviceElem.SERVICE_ID;
+                objServiceChangedColumn.REQUEST_ID = requestId;
+                businessChangedColumn.insertServiceChangedColumn(objServiceChangedColumn, userId);
+            }
+        });
+    });
+}
+
+//Insert new special request changed columns
+function insertNewSpecialRequestChangedColumns(objChangedColumns, requestId, userId) {
+    var objSpecialRequestChangedColumn = {};
+    objSpecialRequestChangedColumn.SPECIAL_REQUEST_ID = objChangedColumns.SPECIAL_REQUEST_ID;
+    objSpecialRequestChangedColumn.COLUMN_NAME = objChangedColumns.COLUMN_NAME;
+    objSpecialRequestChangedColumn.DISPLAY_NAME = objChangedColumns.DISPLAY_NAME;
+    objSpecialRequestChangedColumn.COLUMN_CHANGED = 1;
+    objSpecialRequestChangedColumn.REQUEST_ID = requestId;
+    businessChangedColumn.insertSpecialRequestChangedColumn(objSpecialRequestChangedColumn, userId);
+}
+
+//Insert special request changed columns
+function insertSpecialRequestChangedColumns(arrChangedColumns, requestId, userId) {
+    var objSpecialRequestChangedColumn = {};
+    var specialRequestKey = "";
+    arrChangedColumns.forEach(function (specialRequestElem) {
+        specialRequestKey = Object.keys(specialRequestElem);
+        specialRequestKey.forEach(function (keyElem) {
+            if (keyElem !== "SPECIAL_REQUEST_ID") {
+                objSpecialRequestChangedColumn.COLUMN_NAME = keyElem;
+                objSpecialRequestChangedColumn.DISPLAY_NAME = specialRequestElem[keyElem];
+                objSpecialRequestChangedColumn.COLUMN_CHANGED = 1;
+                objSpecialRequestChangedColumn.SPECIAL_REQUEST_ID = specialRequestElem.SPECIAL_REQUEST_ID;
+                objSpecialRequestChangedColumn.REQUEST_ID = requestId;
+                businessChangedColumn.insertSpecialRequestChangedColumn(objSpecialRequestChangedColumn, userId);
+            }
+        });
+    });
+}
+
+function insertNoteChangedColumn(arrChangedColumns, requestId, userId) {
+    var objNoteChangedColumn = {};
+    var noteKey = "";
+    arrChangedColumns.forEach(function (noteElem) {
+        noteKey = Object.keys(noteElem);
+        noteKey.forEach(function (keyElem) {
+            if (keyElem !== "NOTE_REQUEST_ID") {
+                objNoteChangedColumn.COLUMN_NAME = '{"NOTE_REQUEST_ID": "' + noteElem.NOTE_REQUEST_ID + '"}';
+                objNoteChangedColumn.DISPLAY_NAME = noteElem[keyElem];
+                objNoteChangedColumn.COLUMN_CHANGED = 1;
+                objNoteChangedColumn.REQUEST_ID = requestId;
+                businessChangedColumn.insertRequestChangedColumn(objNoteChangedColumn, userId);
+            }
+        });
+    });
+}
+
+function insertNewNoteChangedColumn(objChangedColumns, requestId, userId) {
+    var changedColumns = {
+        REQUEST_ID: requestId,
+        DISPLAY_NAME: objChangedColumns.NOTE_TYPE_NAME,
+        COLUMN_NAME: '{"NOTE_REQUEST_ID": "' + objChangedColumns.NOTE_REQUEST_ID + '"}',
+        COLUMN_CHANGED: 1
+    };
+    businessChangedColumn.insertRequestChangedColumn(changedColumns, userId);
+}
+
+function insertNewAttachmentChangedColumn(objAttachment, requestId, userId) {
+    var changedColumns = {
+        REQUEST_ID: requestId,
+        DISPLAY_NAME: "Attachment",
+        COLUMN_NAME: '{"ATTACHMENT_ID": "' + objAttachment.ATTACHMENT_ID + '"}',
+        COLUMN_CHANGED: 1
+    };
+    businessChangedColumn.insertRequestChangedColumn(changedColumns, userId);
+}
+
+//Insert changed columns
+function insertChangedColumn(changedColumns, requestId, userId) {
+    var objRequestChangedColumn = {};
+    Object.keys(changedColumns).forEach(function (elem) {
+        switch (elem) {
+            case "DATA_PROTECTION":
+                insertDataProtectionChangedColumn(changedColumns[elem], requestId, userId);
+                break;
+            case "SERVICES":
+                insertServiceChangedColumns(changedColumns[elem], requestId, userId);
+                break;
+            case "SPECIAL_REQUEST":
+                insertSpecialRequestChangedColumns(changedColumns[elem], requestId, userId);
+                break;
+            case "NOTES":
+                insertNoteChangedColumn(changedColumns[elem], requestId, userId);
+                break;
+            default:
+                objRequestChangedColumn.COLUMN_NAME = elem;
+                objRequestChangedColumn.DISPLAY_NAME = changedColumns[elem];
+                objRequestChangedColumn.COLUMN_CHANGED = 1;
+                objRequestChangedColumn.REQUEST_ID = requestId;
+                businessChangedColumn.insertRequestChangedColumn(objRequestChangedColumn, userId);
+        }
+    });
 }
 
 //REQUEST
-function updateRequest(reqBody, user_id){
-	var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
-	var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
-	var request;
-	try{
-		//Infrastructure & location of work logic
-		if(reqBody.INFRASTRUCTURE_OF_WORK_ID == 0 || reqBody.LOCATION_OF_WORK_ID == 0){
-			reqBody.INFRASTRUCTURE_OF_WORK_ID = null;
-			reqBody.LOCATION_OF_WORK_ID = null;
-		}
-		//STATUS UPDATE
-		reqBody.PREVIOUS_STATUS_ID = reqBody.STATUS_ID;
-		if(Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED){
-			reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
-			status.updateRequestStatusManual(reqBody, user_id);
-		}
+function updateRequest(reqBody, user_id) {
+    var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
+    var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
+    var request;
+    var changedColumns = reqBody.CHANGED_FIELDS;
+    try {
+        //Insert changed columns
+        if (changedColumns && Object.keys(changedColumns).length > 0) {
+            insertChangedColumn(changedColumns, reqBody.REQUEST_ID, user_id);
+        }
+        //Infrastructure & location of work logic
+        if (!Number(reqBody.INFRASTRUCTURE_OF_WORK_ID) || !Number(reqBody.LOCATION_OF_WORK_ID)) {
+            reqBody.INFRASTRUCTURE_OF_WORK_ID = null;
+            reqBody.LOCATION_OF_WORK_ID = null;
+        }
+        //STATUS UPDATE
+        reqBody.PREVIOUS_STATUS_ID = reqBody.STATUS_ID;
+        if (Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
+            status.updateRequestStatusManual(reqBody, user_id);
+        }
 
-		//NON-SAP VENDOR UPDATE
-		var non_sap_id;
-		if(original_request.NON_SAP_VENDOR_ID == null && reqBody.NON_SAP_VENDOR !== null){
-			var nonsap = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
-			reqBody.NON_SAP_VENDOR_ID = nonsap;
+        //NON-SAP VENDOR UPDATE
+        var non_sap_id;
+        if (!original_request.NON_SAP_VENDOR_ID && reqBody.NON_SAP_VENDOR !== null) {
+            reqBody.NON_SAP_VENDOR_ID = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
 
-		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
-			non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
-			updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
-			reqBody.NON_SAP_VENDOR_ID = reqBody.NON_SAP_VENDOR.NON_SAP_VENDOR_ID;
+        } else if (original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
+            non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
+            updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
+            reqBody.NON_SAP_VENDOR_ID = reqBody.NON_SAP_VENDOR.NON_SAP_VENDOR_ID;
 
-		} else if(original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR == null){
-			non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
-			deleteManualNonSapVendor(non_sap_id, user_id);
-			reqBody.NON_SAP_VENDOR_ID = null;
-		} else{
-			reqBody.NON_SAP_VENDOR_ID = null;
-		}
+        } else if (!!original_request.NON_SAP_VENDOR_ID && !reqBody.NON_SAP_VENDOR) {
+            non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
+            deleteManualNonSapVendor(non_sap_id, user_id);
+            reqBody.NON_SAP_VENDOR_ID = null;
+        } else {
+            reqBody.NON_SAP_VENDOR_ID = null;
+        }
 
-		//MATERIAL_ID LOGIC
+        //MATERIAL_ID LOGIC
 
-		//NOTES UPDATE
-		if(reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0){
-			updateNotes(original_request.NOTES, reqBody.NOTES, original_request.REQUEST_ID, user_id);
+        //NOTES UPDATE
+        if (reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0) {
+            updateNotes(original_request.NOTES, reqBody.NOTES, original_request.REQUEST_ID, user_id);
 
-		} else if(original_request.NOTES.length > 0){
-			deleteNotes(reqBody.NOTES, user_id);
-		}
+        } else if (original_request.NOTES.length > 0) {
+            deleteNotes(reqBody.NOTES, user_id);
+        }
 
-		//COST OBJECT UPDATE
-		if(reqBody.COST_OBJECT !== null){
-			updateCostObject(reqBody.COST_OBJECT, user_id);
-		}
+        //COST OBJECT UPDATE
+        if (reqBody.COST_OBJECT !== null) {
+            updateCostObject(reqBody.COST_OBJECT, user_id);
+        }
 
-		//RISK_FUNDED UPDATE
+        //RISK_FUNDED UPDATE
         var risk_conversion_rate_table;
         var risk_conversion_rate;
-		if(Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
-			risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
-			risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
-			reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-			reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
-			updateRiskFunded(reqBody.RISK_FUNDED, user_id);
+        if (Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
+            risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+            risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+            reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
+            reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
+            updateRiskFunded(reqBody.RISK_FUNDED, user_id);
 
-		} else if((original_request.RISK_FUNDED).length == 0 && Object.keys(reqBody.RISK_FUNDED).length > 0){
-			risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
-			risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
+        } else if (original_request.RISK_FUNDED.length === 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
+            risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
+            risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 
-			reqBody.RISK_FUNDED.REQUEST_ID = original_request.REQUEST_ID;
-			reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
-			reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
+            reqBody.RISK_FUNDED.REQUEST_ID = original_request.REQUEST_ID;
+            reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
+            reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
 
-			insertRiskFunded(reqBody.RISK_FUNDED, user_id);
+            insertRiskFunded(reqBody.RISK_FUNDED, user_id);
 
-		} else if((original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length == 0){
-			deleteRiskFunded(original_request.RISK_FUNDED[0], user_id);
+        } else if ((original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length === 0) {
+            deleteRiskFunded(original_request.RISK_FUNDED[0], user_id);
 
-		}
+        }
 
-		//REQUEST SERVICE & SERVICES UPDATES
-		if(reqBody.REQUEST_SERVICE !== undefined){
-			if((reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT) == ""){
-				reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT = null;
-				reqBody.REQUEST_SERVICE.PURCHASE_ORDER_TO_UPLIFT = null;
-				reqBody.REQUEST_SERVICE.LINE_TO_UPLIFT = null;
-			}
-			if((reqBody.REQUEST_SERVICE.SAP_BUYER_NAME) == ""){
-				reqBody.REQUEST_SERVICE.SAP_BUYER_NAME = null;
-			}
-			var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
-			var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
-			var cart_amount;
+        //REQUEST SERVICE & SERVICES UPDATES
+        if (reqBody.REQUEST_SERVICE !== undefined) {
+            if (!reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT) {
+                reqBody.REQUEST_SERVICE.PURCHASE_ORDER_AMOUNT = null;
+                reqBody.REQUEST_SERVICE.PURCHASE_ORDER_TO_UPLIFT = null;
+                reqBody.REQUEST_SERVICE.LINE_TO_UPLIFT = null;
+            }
+            if (!reqBody.REQUEST_SERVICE.SAP_BUYER_NAME) {
+                reqBody.REQUEST_SERVICE.SAP_BUYER_NAME = null;
+            }
+            var conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.REQUEST_SERVICE.CURRENCY_ID);
+            var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
+            var cart_amount;
             if (reqBody.SERVICES && reqBody.SERVICES.length > 0) {
                 cart_amount = updateServices(original_request.SERVICES, reqBody.SERVICES, reqBody.REQUEST_ID, conversion_rate, user_id);
                 dataSpecialRequest.deleteSpecialRequestByRequestId(reqBody.REQUEST_ID, user_id);
@@ -1081,128 +1280,128 @@ function updateRequest(reqBody, user_id){
                 dataService.deleteServiceByRequestId(reqBody.REQUEST_ID, user_id);
                 reqBody.MATERIAL_ID = 0;
             }
-			reqBody.CART_AMOUNT = cart_amount;
-			reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
+            reqBody.CART_AMOUNT = cart_amount;
+            reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
 
-			updateRequestService(reqBody.REQUEST_SERVICE, user_id);
-		}
-		//REQUEST UPDATE
-		request = dataRequest.updateRequestManual(reqBody, user_id);
-		//Send MAIL
-		sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER,user_id);
-		//DATA PROTECTION ANSWERS UPDATE
-		var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
-		var newQuestion;
-		var i;
-		(reqBody.DATA_PROTECTION_ANSWERS).forEach(function(item){
-			newQuestion = true;
-			i = 0;
-			for (i = 0; i < dataProtectionAnswer.length; i++) {
-				if (Number(item.QUESTION_ID) === Number(dataProtectionAnswer[i].QUESTION_ID)) {
-					newQuestion = false;
-					break;
-				}
-			}
-			if (newQuestion) {
-				dataRDataProtection.insertDataProtectionAnswer(item, user_id);
-			} else {
-				updateDataProtectionAnswer(item, user_id);
-			}
-		});
+            updateRequestService(reqBody.REQUEST_SERVICE, user_id);
+        }
+        //REQUEST UPDATE
+        request = dataRequest.updateRequestManual(reqBody, user_id);
+        //Send MAIL
+        sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER, user_id);
+        //DATA PROTECTION ANSWERS UPDATE
+        var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
+        var newQuestion;
+        var i;
+        (reqBody.DATA_PROTECTION_ANSWERS).forEach(function (item) {
+            newQuestion = true;
+            i = 0;
+            for (i = 0; i < dataProtectionAnswer.length; i++) {
+                if (Number(item.QUESTION_ID) === Number(dataProtectionAnswer[i].QUESTION_ID)) {
+                    newQuestion = false;
+                    break;
+                }
+            }
+            if (newQuestion) {
+                dataRDataProtection.insertDataProtectionAnswer(item, user_id);
+            } else {
+                updateDataProtectionAnswer(item, user_id);
+            }
+        });
 
-		//ATTACHMENTS UPDATE
-		if(attachmentList){
-			updateAttachments(attachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
-		}
+        //ATTACHMENTS UPDATE
+        if (attachmentList) {
+            updateAttachments(attachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
+        }
 
-		dbHelper.commit();
-	}
-	catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),"updateRequest");
-	}
-	finally{
-		dbHelper.closeConnection();
-	}
+        dbHelper.commit();
+    }
+    catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(), "updateRequest");
+    }
+    finally {
+        dbHelper.closeConnection();
+    }
 
-	return request;
+    return request;
 }
 
 
 function deleteRequest(request_id, user_id) {
-	if (!request_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter request_id is not found",
-				"requestService/handleDelete/deleteRequest", request_id);
-	}
-	if (!user_id) {
-		throw ErrorLib.getErrors().BadRequest(
-				"The Parameter user_id is not found",
-				"requestService/handleDelete/deleteRequest", user_id);
-	}
-	try {
-		dataRCostObject.deleteCostObject(request_id, user_id);
-		dataRRiskFunded.deleteRiskFundedByRequestId(request_id, user_id);
-		dataService.deleteServiceByRequestId(request_id, user_id);
-		dataSpecialRequest.deleteSpecialRequestByRequestId(request_id, user_id);
-		dataRService.deleteRequestServiceByRequestId(request_id, user_id);
-		dataRequest.deleteRequestDataProtectionAnswersByRequestId(request_id, user_id);
-		var attachmentList = dataRequest.getAttachmentByRequestId(request_id, user_id);
-		attachmentList.forEach(function(attachmentRequest) {
-			dataAttachment.deleteAttachment(attachmentRequest, user_id);
-		});
-		dataRequest.deleteAttachmentRequest(request_id, user_id);
-		var request = dataRequest.deleteRequest(request_id, user_id);
+    if (!request_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter request_id is not found",
+            "requestService/handleDelete/deleteRequest", request_id);
+    }
+    if (!user_id) {
+        throw ErrorLib.getErrors().BadRequest(
+            "The Parameter user_id is not found",
+            "requestService/handleDelete/deleteRequest", user_id);
+    }
+    try {
+        dataRCostObject.deleteCostObject(request_id, user_id);
+        dataRRiskFunded.deleteRiskFundedByRequestId(request_id, user_id);
+        dataService.deleteServiceByRequestId(request_id, user_id);
+        dataSpecialRequest.deleteSpecialRequestByRequestId(request_id, user_id);
+        dataRService.deleteRequestServiceByRequestId(request_id, user_id);
+        dataRequest.deleteRequestDataProtectionAnswersByRequestId(request_id, user_id);
+        var attachmentList = dataRequest.getAttachmentByRequestId(request_id, user_id);
+        attachmentList.forEach(function (attachmentRequest) {
+            dataAttachment.deleteAttachment(attachmentRequest, user_id);
+        });
+        dataRequest.deleteAttachmentRequest(request_id, user_id);
+        var request = dataRequest.deleteRequest(request_id, user_id);
 
-		dbHelper.commit();
-		return request;
-	} catch (e) {
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),
-				"deleteRequest");
-	} finally {
-		dbHelper.closeConnection();
-	}
+        dbHelper.commit();
+        return request;
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", e.toString(),
+            "deleteRequest");
+    } finally {
+        dbHelper.closeConnection();
+    }
 }
 
 function validateDateStringFormat(dateString) {
-	return ((new Date(dateString)).toString() !== "Invalid Date");
+    return ((new Date(dateString)).toString() !== "Invalid Date");
 }
 
 function validateFilterParameters(objFilter, filters) {
-	(filters).forEach(function(filter) {
-		if (!objFilter[filter]) {
-			objFilter[filter] = null;
-		}
-	});
+    (filters).forEach(function (filter) {
+        if (!objFilter[filter]) {
+            objFilter[filter] = null;
+        }
+    });
 }
 
-function getRequestDataProtection(requestId, user_id){
-	return dataRequestDataProtection.getDataProtectionByRequestId(requestId);
+function getRequestDataProtection(requestId, user_id) {
+    return dataRequestDataProtection.getDataProtectionByRequestId(requestId);
 }
 
-function getAttachmentRequest(requestId, user_id){
-	var result = dataRequest.getAttachmentByRequestId(requestId, user_id);
-	result = JSON.parse(JSON.stringify(result));
-	result.forEach(function(attach){
-		attach.ATTACHMENT_SIZE = (parseFloat(Number(attach.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
-	});
+function getAttachmentRequest(requestId, user_id) {
+    var result = dataRequest.getAttachmentByRequestId(requestId, user_id);
+    result = JSON.parse(JSON.stringify(result));
+    result.forEach(function (attach) {
+        attach.ATTACHMENT_SIZE = (parseFloat(Number(attach.ATTACHMENT_SIZE) / 1048576).toFixed(2)) + " MB";
+    });
 
-	return result;
+    return result;
 }
 
-function getUrlBase(){
-	return config.getUrlBase();
+function getUrlBase() {
+    return config.getUrlBase();
 }
 
-function getEmailList(requestMailObj){
-	return config.getEmailList();
+function getEmailList(requestMailObj) {
+    return config.getEmailList();
 }
 
-function getPath(stringName){
-	return config.getPath(stringName);
+function getPath(stringName) {
+    return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName){
-	return config.getBasicData(stringPathName);
+function getBasicData(stringPathName) {
+    return config.getBasicData(stringPathName);
 }

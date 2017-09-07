@@ -111,7 +111,7 @@ function getVendorRequestById(vendorRequestId, userId, edition_mode) {
 		throw ErrorLib.getErrors().BadRequest(
 				"Unauthorized request.",
 				"vendorRequestInquiryService/handleGet/getVendorRequestById", 
-				"This Vendor Request is not longer available for edition");
+				'{"EDIT_PERMISSION_ERROR": "vendorRequest"}');
 	}
 	
     var roleData = userRole.getUserRoleByUserId(userId);

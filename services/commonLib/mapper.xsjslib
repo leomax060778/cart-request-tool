@@ -385,6 +385,11 @@ function getApi(){
     return $.xscartrequesttool.services.businessLayer.api.apiLib;
 }
 
+function getRequestChangedColumn(){
+	$.import("xscartrequesttool.services.businessLayer.util","requestChangedColumnLib");
+    return $.xscartrequesttool.services.businessLayer.util.requestChangedColumnLib;
+}
+
 /************Data Layer Mapper*****************/
 
 function getdbHelper(){
@@ -843,6 +848,11 @@ function getDataUserTeam() {
 function getDataReport(){
     $.import("xscartrequesttool.services.dataLayer.report","dataReport");
     return $.xscartrequesttool.services.dataLayer.report.dataReport;
+}
+
+function getDataRequestChangedColumn(){
+	$.import("xscartrequesttool.services.dataLayer.util","dataRequestChangedColumn");
+    return $.xscartrequesttool.services.dataLayer.util.dataRequestChangedColumn;
 }
 
 /********************

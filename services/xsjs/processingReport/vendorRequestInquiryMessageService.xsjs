@@ -118,29 +118,12 @@ function handleDelete() {
 function handlePost(reqBody, userId) {
     var res;
     if (reqBody.VENDOR_INQUIRY_ID){
-    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
-    		reqBody.STATUS_ID = statusInquiryMap.RETURN_TO_REQUESTER;
-    		status.updateVendorInquiryStatusManual(reqBody, userId);
-    	}
         res = request.insertVendorInquiryMessage(reqBody, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
-    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
-    		status.updateVendorRequestStatusManual(reqBody, userId);
-    	}
         res = request.insertVendorRequestMessage(reqBody, userId);
-        
     } else if (reqBody.CHANGE_VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
-    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
-    		status.updateChangeVendorRequestStatusManual(reqBody, userId);
-    	}
         res = request.insertChangeVendorRequestMessage(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-    	if (Number(reqBody.RETURN_TYPE_ID) === returnTypeMap.REQUEST_RESPONSE){
-    		reqBody.STATUS_ID = statusMap.RETURN_TO_REQUESTER;
-    		status.updateExtendVendorRequestStatusManual(reqBody, userId);
-    	}
         res = request.insertExtendVendorRequestMessage(reqBody, userId);
     } else {
     	throw ErrorLib.getErrors().CustomError("", 

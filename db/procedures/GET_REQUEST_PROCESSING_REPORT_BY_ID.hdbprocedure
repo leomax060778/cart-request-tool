@@ -28,7 +28,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROC
 			goods_recipient_username NVARCHAR(255),
 			data_protection_enabled tinyint,
 			infrastructure_name nvarchar(255),
-			location_name nvarchar(255)
+			location_name nvarchar(255),
+			risk_funded_amount decimal(19,2),
+			risk_funded_amount_keur decimal(19,2), 
+			risk_funded_currency nvarchar(255)
 		)
 	)
 	LANGUAGE SQLSCRIPT
@@ -67,7 +70,10 @@ BEGIN
 				CR.GOODS_RECIPIENT_USERNAME,
 				CR.DATA_PROTECTION_ENABLED,
 				IW.INFRASTRUCTURE_NAME,
-				LW.LOCATION_NAME
+				LW.LOCATION_NAME,
+				RF.AMOUNT AS RISK_FUNDED_AMOUNT,
+				RF.AMOUNT_KEUR AS RISK_FUNDED_AMOUNT_KEUR,
+				CUR.ABBREVIATION AS RISK_FUNDED_CURRENCY
 			FROM "REQUEST" AS CR
 				INNER JOIN "CRT_TYPE" AS CT
 				ON CT.CRT_TYPE_ID = CR.CRT_TYPE_ID
@@ -98,6 +104,10 @@ BEGIN
 					ON CR.INFRASTRUCTURE_OF_WORK_ID = IW.INFRASTRUCTURE_OF_WORK_ID
 				LEFT JOIN "LOCATION_OF_WORK" LW
 					ON CR.LOCATION_OF_WORK_ID = LW.LOCATION_OF_WORK_ID
+				LEFT JOIN "REQUEST_RISK_FUNDED" RF
+					ON RF.REQUEST_ID = CR.REQUEST_ID
+				LEFT JOIN "CURRENCY" CUR
+					ON RF.CURRENCY_ID = CUR.CURRENCY_ID
 			WHERE CR.REQUEST_ID = in_request_id
 				AND CR.ENABLED = 1
 				AND CR.DELETED = 0

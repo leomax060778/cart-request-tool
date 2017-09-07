@@ -15,6 +15,7 @@ OUT out_result TABLE (request_id nvarchar(15),
                         material_description nvarchar(255),
                         material_code nvarchar(255),
                         material_catalog_type_id bigint,
+                        special_request_item integer,
                         special_request_description nvarchar(255),
 						special_request_code nvarchar(255),
                         sap_entity nvarchar(255),
@@ -59,6 +60,7 @@ BEGIN
  	 				  				COALESCE(RQR.MATERIAL_DESCRIPTION,'N/A') AS MATERIAL_DESCRIPTION,
  	 				  				COALESCE(RQR.MATERIAL_CODE,'N/A') AS MATERIAL_CODE,
  	 				  				RQR.MATERIAL_CATALOG_TYPE_ID, 
+ 	 				  				RQR.SPECIAL_REQUEST_ITEM,
  	 				  				COALESCE(RQR.SPECIAL_REQUEST_DESCRIPTION,'N/A') AS SPECIAL_REQUEST_DESCRIPTION,
  	 				  				COALESCE(RQR.SPECIAL_REQUEST_CODE,'N/A') AS SPECIAL_REQUEST_CODE,
  	 				  				RQR.SAP_ENTITY,
@@ -87,13 +89,10 @@ BEGIN
 			 --Current roles: 1. SuperAdmin, 2. Requester, 3. Business Mgt, 4. Budget Owner/Mgr 
 	         WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3)
               		OR (USR.ROLE_ID = 2 
-              			AND (
-              				 (HL3.HL3_ID = RQR.HL3_ID AND RQR.CREATED_USER_ID = in_user_id) 
-              				 OR (HL3.HL3_ID is null AND RQR.CREATED_USER_ID = in_user_id)
-              				)
+              			AND RQR.CREATED_USER_ID = in_user_id AND HL3.HL3_ID = RQR.HL3_ID
               		   )
               		OR (USR.ROLE_ID = 4 
-              			AND (HL3.HL3_ID = RQR.HL3_ID OR RQR.CREATED_USER_ID = in_user_id)
+              			AND (HL3.HL3_ID = RQR.HL3_ID)
               		   )
              ORDER BY RQR.R_ID;
 END;

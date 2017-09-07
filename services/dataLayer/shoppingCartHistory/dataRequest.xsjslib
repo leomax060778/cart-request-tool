@@ -71,9 +71,10 @@ function getRequestByFilters(objFilters, permissionData, userId){
     return results;
 }
 
-function getRequestById(requestId){
+function getRequestById(requestId, userId){
     var parameters = {};
     parameters.in_request_id = requestId;
+    parameters.in_user_id = userId;
     parameters.out_result = '?';
     var result = db.executeProcedure(GET_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
@@ -84,9 +85,10 @@ function getRequestById(requestId){
     }
 }
 
-function getRequestByIdManual(requestId){
+function getRequestByIdManual(requestId, userId){
     var parameters = {};
     parameters.in_request_id = requestId;
+    parameters.in_user_id = userId;
     parameters.out_result = '?';
     var result = db.executeProcedureManual(GET_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
@@ -139,8 +141,8 @@ function updateRequestManual(objRequest, userId){
     parameters.in_non_sap_vendor_id = objRequest.NON_SAP_VENDOR_ID;
     parameters.in_goods_recipient_username = objRequest.GOODS_RECIPIENT_USERNAME;
     parameters.in_data_protection_enabled = objRequest.DATA_PROTECTION_ENABLED;
-    parameters.in_infrastructure_of_work_id = objRequest.INFRASTRUCTURE_OF_WORK_ID;
-    parameters.in_location_of_work_id = objRequest.LOCATION_OF_WORK_ID;
+    parameters.in_infrastructure_of_work_id = objRequest.INFRASTRUCTURE_OF_WORK_ID || null;
+    parameters.in_location_of_work_id = objRequest.LOCATION_OF_WORK_ID || null;
     parameters.in_alternative_vendor_name = objRequest.ALTERNATIVE_VENDOR_NAME;
     parameters.in_alternative_vendor_phone = objRequest.ALTERNATIVE_VENDOR_PHONE;
     parameters.in_alternative_vendor_email = objRequest.ALTERNATIVE_VENDOR_EMAIL;

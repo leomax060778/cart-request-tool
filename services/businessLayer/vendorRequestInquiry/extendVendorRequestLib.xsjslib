@@ -94,7 +94,7 @@ function getExtendVendorRequestById(extendVendorRequestId, userId, edition_mode)
 		throw ErrorLib.getErrors().BadRequest(
 				"Unauthorized request.",
 				"vendorRequestInquiryService/handleGet/getExtendVendorRequestById", 
-				"This Extend Vendor Request is not longer available for edition");
+				'{"EDIT_PERMISSION_ERROR": "extendVendorRequest"}');
 	}
 	
 	var roleData = userRole.getUserRoleByUserId(userId);
