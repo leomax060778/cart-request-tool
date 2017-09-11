@@ -1,4 +1,4 @@
-PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT" (
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REPORT_BY_TEAM" (
 IN in_user_id bigint,
 OUT out_result TABLE (request_id nvarchar(15),
 						budget_year nvarchar(5),
@@ -20,8 +20,6 @@ OUT out_result TABLE (request_id nvarchar(15),
 						special_request_end_date nvarchar(15),
 						special_request_amount_line decimal(19,2),
 						special_request_budget decimal(19,2),
-                        special_request_description nvarchar(255),
-						special_request_code nvarchar(255),
                         sap_entity nvarchar(255),
                         cost_object nvarchar(255),
                         start_date nvarchar(15),
@@ -37,7 +35,6 @@ OUT out_result TABLE (request_id nvarchar(15),
                         purchase_date nvarchar(15),
                         status nvarchar(255),
                         status_id bigint,
-                        stage_passes nvarchar(127),
                         days_outstanding nvarchar(127),
                         purchase_turn_around_time nvarchar(127),
                         r_id bigint,
@@ -70,8 +67,6 @@ BEGIN
 								    RQR.SPECIAL_REQUEST_END_DATE,
 								    RQR.SPECIAL_REQUEST_AMOUNT_LINE,
 								    RQR.SPECIAL_REQUEST_BUDGET,
- 	 				  				COALESCE(RQR.SPECIAL_REQUEST_DESCRIPTION,'N/A') AS SPECIAL_REQUEST_DESCRIPTION,
- 	 				  				COALESCE(RQR.SPECIAL_REQUEST_CODE,'N/A') AS SPECIAL_REQUEST_CODE,
  	 				  				RQR.SAP_ENTITY,
  	 				  				RQR.COST_OBJECT,
 				 	 				RQR.START_DATE,
@@ -87,17 +82,13 @@ BEGIN
 				 	 				RQR.PURCHASE_DATE,
 				 	 				RQR.STATUS,
 				 	 				RQR.STATUS_ID,
-				 	 				RQR.STAGE_PASSES,
 				 	 				RQR.DAYS_OUTSTANDING,
 				 	 				RQR.PURCHASE_TURN_AROUND_TIME,
 				 	 				RQR.R_ID,
 				 	 				RQR.MESSAGE_INFO,
 				 	 				RQR.MESSAGE_TYPE
              FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_SAP_CRT_REPORT" RQR
-             	INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
 				LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = in_user_id AND HL3.ENABLED = 1 AND HL3.DELETED = 0
-			 --Current roles: 1. SuperAdmin, 2. Requester, 3. Business Mgt, 4. Budget Owner/Mgr 
-	         WHERE USR.ROLE_ID != 4
-              		OR (USR.ROLE_ID = 4 AND HL3.HL3_ID = RQR.HL3_ID)
+	         WHERE HL3.HL3_ID = RQR.HL3_ID
              ORDER BY RQR.R_ID;
 END;

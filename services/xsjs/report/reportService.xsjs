@@ -6,6 +6,7 @@ var report = mapper.getReport();
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var GET_REPORT = "GET_REPORT";
+var GET_REPORT_REQUESTER = "GET_REPORT_REQUESTER";
 var GET_REPORT_TYPE = "GET_REPORT_TYPE";
 var GET_USER_REPORT = "GET_USER_REPORT";
 var GET_VENDOR_REPORT = "GET_VENDOR_REPORT";
@@ -22,7 +23,9 @@ function handleGet(parameters, userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_REPORT) {
-            res = report.getReport(userId);
+        	if (parameters.length > 1) {
+        		res = report.getReport(parameters[1].value, userId);
+        	}
         } else if (parameters[0].name === GET_USER_REPORT) {
             res = report.getUserReport(userId);
         } else if (parameters[0].name === GET_VENDOR_REPORT) {
@@ -37,7 +40,7 @@ function handleGet(parameters, userId) {
         	throw ErrorLib.getErrors().BadRequest(
         		"",
         		"reportService/handleGet",
-        		"invalid parameter name " + parameters[0].name + " (can be: GET_REPORT, GET_USER_REPORT, GET_VENDOR_REPORT, GET_CATALOG_REPORT, GET_COMMODITY_REPORT or GET_REPORT_TYPE)"
+        		"invalid parameter name " + parameters[0].name + " (can be: GET_REPORT, GET_REPORT_REQUESTER, GET_USER_REPORT, GET_VENDOR_REPORT, GET_CATALOG_REPORT, GET_COMMODITY_REPORT or GET_REPORT_TYPE)"
             );
         }
     } else {

@@ -6,6 +6,8 @@ var ErrorLib = mapper.getErrors();
 
 //STORE PROCEDURE LIST NAME
 var GET_REPORT = "GET_REPORT";
+var GET_REPORT_BY_USER_ID = "GET_REPORT_BY_USER_ID";
+var GET_REPORT_BY_TEAM = "GET_REPORT_BY_TEAM";
 var GET_REPORT_TYPE = "GET_REPORT_TYPE_BY_USER_ROLE";
 var GET_USER_REPORT = "GET_USER_REPORT";
 var GET_VENDOR_REPORT = "GET_VENDOR_REPORT";
@@ -14,6 +16,16 @@ var GET_COMMODITY_REPORT = "GET_COMMODITY_REPORT";
 
 function getReport(userId) {
     var result = db.extractArray(db.executeProcedure(GET_REPORT, {'in_user_id': userId}).out_result);
+    return result;
+}
+
+function getReportByUserId(userId) {
+    var result = db.extractArray(db.executeProcedure(GET_REPORT_BY_USER_ID, {'in_user_id': userId}).out_result);
+    return result;
+}
+
+function getReportByTeam(userId) {
+    var result = db.extractArray(db.executeProcedure(GET_REPORT_BY_TEAM, {'in_user_id': userId}).out_result);
     return result;
 }
 
