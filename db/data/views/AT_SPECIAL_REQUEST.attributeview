@@ -23,6 +23,22 @@
       <descriptions defaultDescription="ITEM"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="ITEM"/>
     </attribute>
+    <attribute id="START_DATE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="START_DATE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="START_DATE"/>
+    </attribute>
+    <attribute id="END_DATE" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="END_DATE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="END_DATE"/>
+    </attribute>
+    <attribute id="AMOUNT" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="AMOUNT"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="AMOUNT"/>
+    </attribute>
+    <attribute id="BUDGET" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="BUDGET"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="SPECIAL_REQUEST" columnName="BUDGET"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>
