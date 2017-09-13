@@ -96,6 +96,9 @@ function getReport(reportType, userId) {
             if(!elem.BUDGET) {
             	elem.BUDGET = elem.SPECIAL_REQUEST_BUDGET;
             }
+            if(!elem.DESCRIPTION_PURCHASE_ORDER) {
+            	elem.DESCRIPTION_PURCHASE_ORDER = elem.SPECIAL_REQUEST_DESCRIPTION;
+            }
             elem.BUDGET = Number(elem.BUDGET);
             elem.AMOUNT_LINE = Number(elem.AMOUNT_LINE);
         });

@@ -5,7 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_V
 							original_name nvarchar(255),
 							saved_name nvarchar(255),
 							attachment_size bigint,
-							created_date nvarchar(32)
+							created_date timestamp
 							)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -18,7 +18,7 @@ BEGIN
 					ATT.ORIGINAL_NAME AS original_name,
 					ATT.SAVED_NAME AS saved_name,
 					ATT.ATTACHMENT_SIZE	AS attachment_size,
-					TO_NVARCHAR(ATT.CREATED_DATE_TZ, 'YYYY-MM-DD') AS CREATED_DATE
+					ATT.CREATED_DATE_TZ AS CREATED_DATE
 	FROM "ATTACHMENT_VENDOR" ATTV
 	INNER JOIN "ATTACHMENT" ATT ON ATTV.ATTACHMENT_ID = ATT.ATTACHMENT_ID
 	 WHERE in_vendor_type_id = ATTV.VENDOR_TYPE_ID

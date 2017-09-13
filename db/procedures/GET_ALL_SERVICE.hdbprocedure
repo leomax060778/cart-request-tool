@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_SERVICE" (
   OUT out_result TABLE (service_id bigint,
-                      start_date nvarchar(32),
-                      end_date nvarchar(32),
+                      start_date timestamp,
+                      end_date timestamp,
                       description nvarchar (255),
                       amount decimal (19,2),
                       currency_id bigint,
@@ -17,8 +17,8 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
   out_result = SELECT SER.service_id, 
-  				TO_NVARCHAR(SER.start_date, 'YYYY-MM-DD') AS start_date, 
-  				TO_NVARCHAR(SER.end_date, 'YYYY-MM-DD') AS end_date, 
+  				SER.start_date, 
+  				SER.end_date, 
   				SER.description, 
   				SER.amount, 
   				SER.currency_id, 

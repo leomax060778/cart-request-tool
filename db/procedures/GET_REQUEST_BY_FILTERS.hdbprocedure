@@ -23,7 +23,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 						  USER_NAME nvarchar(255),
 						  LAST_NAME nvarchar(255),
 						  FIRST_NAME nvarchar(255),
-						  REQUEST_CREATED_DATE nvarchar(50),
+						  REQUEST_CREATED_DATE timestamp,
 						  COST_VALUE nvarchar(255),
   						  message_read integer,
   						  EDITABLE boolean
@@ -31,8 +31,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 	 OUT out_service_table TABLE(
 	 					REQUEST_ID integer,
 	 					service_id bigint,
-                      	start_date nvarchar(32),
-                      	end_date nvarchar(32),
+                      	start_date timestamp,
+                      	end_date timestamp,
                       	description nvarchar (255),
                       	amount decimal (19,2),
                       	currency_id bigint,
@@ -41,16 +41,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
                       	item integer,
                      	line_number nvarchar(255),
   						shopping_cart nvarchar (255), 
-  						cart_date nvarchar(32), 
+  						cart_date timestamp, 
   						purchase_order_number nvarchar (127),
-  						approval_date nvarchar(32), 
+  						approval_date timestamp, 
   						user_id bigint ),
   						
   	 OUT out_special_request_table TABLE(
 	 					REQUEST_ID integer,
 	 					special_request_id bigint,
-                      	start_date nvarchar(32),
-                      	end_date nvarchar(32),
+                      	start_date timestamp,
+                      	end_date timestamp,
                       	material_description nvarchar (255),
                       	material_code nvarchar(255),
                       	amount decimal (19,2),
@@ -70,7 +70,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 									original_name nvarchar(255), 
 									saved_name nvarchar(255), 
 									attachment_size integer,
-									CREATED_DATE nvarchar(32)
+									CREATED_DATE timestamp
 									)
 	 )
 	LANGUAGE SQLSCRIPT
@@ -87,9 +87,9 @@ BEGIN
 							FROM
 								(SELECT POS.request_id, 
   										POS.shopping_cart,
-  										TO_NVARCHAR(POS.cart_date, 'YYYY-MM-DD') AS cart_date,
+  										POS.cart_date,
   										POS.purchase_order_number,
-  										TO_NVARCHAR(POS.approval_date, 'YYYY-MM-DD') AS approval_date,
+  										POS.approval_date,
   										POS.user_id
                     	FROM "PURCHASE_ORDER_SERVICE" POS
                       		WHERE POS.ENABLED = 1 
@@ -122,7 +122,7 @@ BEGIN
 						 US.USER_NAME AS USER_NAME,
 						 US.LAST_NAME AS LAST_NAME,
 						 US.FIRST_NAME AS FIRST_NAME,
-						 To_Char(RQ.CREATED_DATE_TZ,'YYYY-MM-DD') AS REQUEST_CREATED_DATE,
+						 RQ.CREATED_DATE_TZ AS REQUEST_CREATED_DATE,
 						 RCO.COST_VALUE,
                			 VAM.MESSAGE_READ,
                			 (CASE WHEN (ST.STATUS_ID = 5 OR ST.STATUS_ID = 6) AND USR.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
@@ -159,8 +159,8 @@ BEGIN
 	out_service_table = SELECT 
   				SER.request_id,
   				SER.service_id, 
-  				TO_NVARCHAR(SER.start_date, 'YYYY-MM-DD') AS start_date, 
-  				TO_NVARCHAR(SER.end_date, 'YYYY-MM-DD') AS end_date, 
+  				SER.start_date, 
+  				SER.end_date, 
   				SER.description, 
   				SER.amount, 
   				SER.currency_id, 
@@ -182,8 +182,8 @@ BEGIN
 	 out_special_request_table = SELECT 
   				SRQ.request_id,
   				SRQ.special_request_id, 
-  				TO_NVARCHAR(SRQ.start_date, 'YYYY-MM-DD') AS start_date, 
-  				TO_NVARCHAR(SRQ.end_date, 'YYYY-MM-DD') AS end_date, 
+  				SRQ.start_date, 
+  				SRQ.end_date, 
   				SRQ.material_description, 
   				SRQ.material_code,
   				SRQ.amount, 
@@ -208,7 +208,7 @@ BEGIN
 								"ATTACHMENT".ORIGINAL_NAME, 
 								"ATTACHMENT".SAVED_NAME, 
 								"ATTACHMENT".ATTACHMENT_SIZE,
-								TO_NVARCHAR("ATTACHMENT".CREATED_DATE_TZ, 'YYYY-MM-DD') AS CREATED_DATE
+								"ATTACHMENT".CREATED_DATE_TZ AS CREATED_DATE
 							FROM "ATTACHMENT_REQUEST"
 								INNER JOIN "ATTACHMENT" AS ATTACHMENT ON "ATTACHMENT_REQUEST".attachment_id = ATTACHMENT.attachment_id
 								WHERE "ATTACHMENT".deleted = 0

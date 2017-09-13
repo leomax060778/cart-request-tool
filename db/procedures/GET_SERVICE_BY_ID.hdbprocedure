@@ -15,7 +15,7 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT service_id, TO_NVARCHAR(start_date, 'YYYY-MM-DD') AS start_date, TO_NVARCHAR(end_date, 'YYYY-MM-DD') AS end_date, description, amount, currency_id, budget, item
+  out_result = SELECT service_id, start_date, end_date, description, amount, currency_id, budget, item
             FROM "SERVICE"
             WHERE SERVICE_ID = in_service_id
             AND ENABLED = 1 AND DELETED = 0;

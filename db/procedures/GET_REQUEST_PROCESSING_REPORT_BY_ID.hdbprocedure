@@ -3,7 +3,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_PROC
 		OUT out_result TABLE (
 			crt_request_id NVARCHAR(32),
 			request_id INTEGER,
-			request_date NVARCHAR(32),
+			request_date TIMESTAMP,
 			team NVARCHAR(255),
 			requester NVARCHAR(255),
 			requester_id bigint,
@@ -42,10 +42,7 @@ AS
 BEGIN
 	out_result = SELECT CT.ISO || TO_NVARCHAR(CR.REQUEST_ID) AS CRT_REQUEST_ID, 
 				CR.REQUEST_ID AS REQUEST_ID, 
-				to_nvarchar(
-					CR.created_date_tz, 
-					'YYYY-MM-DD'
-				) AS request_date, 
+				CR.created_date_tz AS request_date, 
 				HL3.ACRONYM AS team, 
 				US.first_name || ' ' || US.last_name || ', ' || US.user_name AS REQUESTER, 
 				US.USER_ID AS REQUESTER_ID, 

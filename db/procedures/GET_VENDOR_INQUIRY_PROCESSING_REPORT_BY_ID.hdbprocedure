@@ -2,7 +2,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 	IN in_vendor_inquiry_id bigint,
 	OUT out_result TABLE (CRT_VENDOR_INQUIRY_ID nvarchar(255),
 							VENDOR_INQUIRY_ID integer,
-							inquiry_date nvarchar(255),
+							inquiry_date timestamp,
 							requester nvarchar(255),
 							vendor_name nvarchar(255),
 							status_id integer,
@@ -19,7 +19,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 BEGIN
 out_result = SELECT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS CRT_VENDOR_INQUIRY_ID,
 						VI.VENDOR_INQUIRY_ID,
-                    	to_nvarchar(VI.created_date_tz, 'YYYY-MM-DD') AS inquiry_date,
+                    	VI.created_date_tz AS inquiry_date,
                     	(US.first_name || ' ' || US.last_name || ', ' || US.user_name) AS REQUESTER,
                     	VI.VENDOR_NAME,
                     	VI.status_id,

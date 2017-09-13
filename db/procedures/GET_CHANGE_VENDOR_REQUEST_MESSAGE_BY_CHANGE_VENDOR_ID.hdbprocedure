@@ -12,7 +12,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							last_name nvarchar(255),
 							message_read tinyint,
 							created_user_id bigint,
-  							created_date nvarchar(32),
+  							created_date timestamp,
   							content_length integer
 						 )
  ) 
@@ -33,7 +33,7 @@ BEGIN
 						US.LAST_NAME,
 						CVRM.MESSAGE_READ,
 						CVRM.CREATED_USER_ID,
-  						TO_NVARCHAR(CVRM.created_date_tz, 'YYYY-MM-DD hh24:mi') as created_date,
+  						CVRM.created_date_tz as created_date,
   						LENGTH (CVRM.MESSAGE_CONTENT) AS content_length
 				FROM "CHANGE_VENDOR_REQUEST_MESSAGE" CVRM
 				LEFT JOIN "MESSAGE_TYPE" MT ON CVRM.MESSAGE_TYPE_ID = MT.MESSAGE_TYPE_ID AND MT.ENABLED = 1 AND MT.DELETED = 0

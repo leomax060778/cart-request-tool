@@ -2,9 +2,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_PURCHASE_ORD
   IN in_request_id bigint,
   OUT out_result TABLE (request_id bigint, 
   						shopping_cart nvarchar (255), 
-  						cart_date nvarchar(32), 
+  						cart_date timestamp, 
   						purchase_order_number nvarchar (127),
-  						approval_date nvarchar(32), 
+  						approval_date timestamp, 
   						user_id bigint
   						)
 )
@@ -15,9 +15,9 @@ READS SQL DATA AS
 BEGIN
   out_result = SELECT POS.request_id, 
   						POS.shopping_cart, 
-  						TO_NVARCHAR(POS.cart_date, 'YYYY-MM-DD') AS cart_date, 
+  						POS.cart_date, 
   						POS.purchase_order_number,
-  						TO_NVARCHAR(POS.approval_date, 'YYYY-MM-DD') AS approval_date,
+  						POS.approval_date,
   						POS.user_id
                     FROM "PURCHASE_ORDER_SERVICE" POS
                        WHERE POS.REQUEST_ID = in_request_id

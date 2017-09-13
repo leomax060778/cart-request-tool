@@ -20,10 +20,10 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							VENDOR_TYPE_ID bigint,
 							vendor_account nvarchar(255),
 							additional_information_flag tinyint,
-							receiver_date_submitted_tz nvarchar(15), 
-							receiver_date_completed_tz nvarchar(15), 
+							receiver_date_submitted_tz timestamp, 
+							receiver_date_completed_tz timestamp, 
 							receiver_yvc_request nvarchar(255), 
-							receiver_modified_date_tz nvarchar(15)
+							receiver_modified_date_tz timestamp
 						)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -51,10 +51,10 @@ BEGIN
 						CVR.VENDOR_TYPE_ID,
 						CVR.VENDOR_ACCOUNT,
 						CVR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG,
-						TO_NVARCHAR(CVR.CREATED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_SUBMITTED_TZ, 
-						TO_NVARCHAR(CVR.RECEIVER_DATE_COMPLETED_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_COMPLETED_TZ, 
+						CVR.CREATED_DATE_TZ AS RECEIVER_DATE_SUBMITTED_TZ, 
+						CVR.RECEIVER_DATE_COMPLETED_TZ AS RECEIVER_DATE_COMPLETED_TZ, 
 						CVR.RECEIVER_YVC_REQUEST, 
-						TO_NVARCHAR(CVR.RECEIVER_MODIFIED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_MODIFIED_DATE_TZ
+						CVR.RECEIVER_MODIFIED_DATE_TZ AS RECEIVER_MODIFIED_DATE_TZ
 	FROM "CHANGE_VENDOR_REQUEST" CVR
 		INNER JOIN "VENDOR_TYPE" VT ON CVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 		INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID

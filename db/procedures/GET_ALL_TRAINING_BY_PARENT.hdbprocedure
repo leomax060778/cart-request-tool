@@ -12,8 +12,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING
 	 attachment_id integer,
 	 original_name nvarchar(255),
 	 saved_name nvarchar(255),
-	 ATTACHMENT_CREATED_DATE nvarchar(32),
-	 TRAINING_CREATED_DATE nvarchar(32),
+	 ATTACHMENT_CREATED_DATE timestamp,
+	 TRAINING_CREATED_DATE timestamp,
 	 data_protection_folder tinyint
 	 )
  ) 
@@ -33,8 +33,8 @@ BEGIN
 					 TR.ATTACHMENT_ID,
 					 ATT.ORIGINAL_NAME,
 					 ATT.SAVED_NAME,
-					 TO_NVARCHAR(ATT.CREATED_DATE_TZ, 'YYYY-MM-DD') AS ATTACHMENT_CREATED_DATE,
-					 TO_NVARCHAR(TR.CREATED_DATE_TZ, 'YYYY-MM-DD') AS TRAINING_CREATED_DATE,
+					 ATT.CREATED_DATE_TZ AS ATTACHMENT_CREATED_DATE,
+					 TR.CREATED_DATE_TZ AS TRAINING_CREATED_DATE,
 					 TR.data_protection_folder
  			FROM "TRAINING" TR
  			INNER JOIN "TRAINING_TYPE" TTY ON TR.training_type_id = TTY.training_type_id
