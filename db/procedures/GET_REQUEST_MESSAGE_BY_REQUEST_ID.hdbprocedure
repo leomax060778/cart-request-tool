@@ -12,7 +12,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_MESS
 							last_name nvarchar(255),
 							created_user_id bigint,
 							message_read tinyint,
-							created_date nvarchar(32),
+							created_date timestamp,
 							content_length integer
 						 )
  ) 
@@ -33,7 +33,7 @@ BEGIN
 						US.last_name,
 						RM.created_user_id,
 						RM.message_read,
-						TO_NVARCHAR(RM.CREATED_DATE_TZ, 'YYYY-MM-DD hh24:mi') AS CREATED_DATE,
+						RM.CREATED_DATE_TZ AS CREATED_DATE,
   						LENGTH (RM.MESSAGE_CONTENT) AS content_length
 		FROM "REQUEST_MESSAGE" RM
                       LEFT JOIN "MESSAGE_TYPE" MT ON RM.MESSAGE_TYPE_ID = MT.MESSAGE_TYPE_ID AND MT.ENABLED = 1 AND MT.DELETED = 0

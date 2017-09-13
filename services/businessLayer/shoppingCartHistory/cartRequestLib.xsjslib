@@ -618,6 +618,8 @@ function deleteRiskFunded(risk_funded, user_id) {
 function insertRiskFunded(reqBody, user_id) {
     var serviceUrl = "requestService/handleUpdate/updateRequest/insertRiskFunded";
     if (utilLib.validateObjectAttributes(reqBody, user_id, riskFundedKeys, serviceUrl, validateType)) {
+    	var riskFunded = {COLUMN_NAME: "RISK_FUNDED_AMOUNT", DISPLAY_NAME: "Risk Funded Amount", COLUMN_CHANGED: 1, REQUEST_ID: reqBody.REQUEST_ID};
+    	businessChangedColumn.insertRequestChangedColumn(riskFunded, user_id);
         return dataNewCartRiskFunded.insertRiskFunded(reqBody, user_id);
     }
 }
@@ -1198,7 +1200,7 @@ function updateRequest(reqBody, user_id) {
         reqBody.PREVIOUS_STATUS_ID = reqBody.STATUS_ID;
         if (Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED) {
             reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
-            status.updateRequestStatusManual(reqBody, user_id);
+            status.updateRequestStatusManual(reqBody, user_id, true);
         }
 
         //NON-SAP VENDOR UPDATE
@@ -1287,8 +1289,7 @@ function updateRequest(reqBody, user_id) {
         }
         //REQUEST UPDATE
         request = dataRequest.updateRequestManual(reqBody, user_id);
-        //Send MAIL
-        sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER, user_id);
+        
         //DATA PROTECTION ANSWERS UPDATE
         var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
         var newQuestion;
@@ -1322,6 +1323,11 @@ function updateRequest(reqBody, user_id) {
     }
     finally {
         dbHelper.closeConnection();
+    }
+    
+    if(request){
+        //Send MAIL
+        sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER, user_id);
     }
 
     return request;

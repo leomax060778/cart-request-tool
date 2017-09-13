@@ -93,7 +93,7 @@ function getRequestById(requestId, userId) {
         var resSubCategory = "";
         var resCategory = "";
         var resCatalog = "";
-        var resSpecial = "";
+        var resSpecial = [];
         if (Number(resRequest.MATERIAL_ID) > 0) {
             resMaterial = material.getManualMaterialById(Number(resRequest.MATERIAL_ID), userId)[0];
             if (resMaterial) {
@@ -131,6 +131,7 @@ function getRequestById(requestId, userId) {
             res.SUB_CATEGORY = resSubCategory;
             res.CATEGORY = resCategory;
             res.CATALOG = resCatalog;
+            res.SPECIAL_REQUEST = resSpecial;
         } else {
             res.SPECIAL_REQUEST = resSpecial;
         }
@@ -193,9 +194,13 @@ function updateRequestStatus(objRequest, userId) {
 }
 
 //Update cart request status manual
-function updateRequestStatusManual(objRequest, userId) {
+function updateRequestStatusManual(objRequest, userId, shoppingCart) {
+	var statusChange = false;
     if (validateUpdateRequestStatus(objRequest, userId)) {
         if (Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED) {
+        	if (!shoppingCart) {
+        		statusChange = true;
+        	}
             switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
                 case statusMap.APPROVED:
                     objRequest.STAGE_ID = stageMap.STAGE_E;
@@ -207,20 +212,27 @@ function updateRequestStatusManual(objRequest, userId) {
                     objRequest.STAGE_ID = stageMap.STAGE_C;
             }
         } else if (Number(objRequest.STATUS_ID) === statusMap.CHECKED) {
+        	statusChange = true;
             objRequest.STAGE_ID = stageMap.STAGE_C;
         } else if (Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS) {
+        	statusChange = true;
             objRequest.STAGE_ID = stageMap.STAGE_D;
         } else if (Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER) {
             objRequest.STAGE_ID = stageMap.STAGE_B;
-            businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
-            businessChangedColumn.deleteServiceChangedColumn(objRequest.REQUEST_ID, userId);
-            businessChangedColumn.deleteSpecialRequestChangedColumn(objRequest.REQUEST_ID, userId);
+            statusChange = true;
         } else if (Number(objRequest.STATUS_ID) === statusMap.APPROVED) {
             objRequest.STAGE_ID = stageMap.STAGE_E;
+            statusChange = true;
         } else if (Number(objRequest.STATUS_ID) === statusMap.CANCELLED) {
             objRequest.STAGE_ID = stageMap.STAGE_F;
+            statusChange = true;
         } else {
             throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
+        }
+        if (statusChange) {
+        	businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
+            businessChangedColumn.deleteServiceChangedColumn(objRequest.REQUEST_ID, userId);
+            businessChangedColumn.deleteSpecialRequestChangedColumn(objRequest.REQUEST_ID, userId);
         }
         return data.updateRequestStatusManual(objRequest, userId);
     }

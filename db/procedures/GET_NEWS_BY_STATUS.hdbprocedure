@@ -4,15 +4,15 @@ OUT out_result TABLE(news_id bigint,
 						title nvarchar(255),
 						description nvarchar(2000), 
 						author_id bigint, 
-						published_date nvarchar(15), 
-						created_date nvarchar(50),
+						published_date timestamp, 
+						created_date timestamp,
 						attachment_id bigint, 
 						status_id bigint,
 						status_name nvarchar(255),
 						previous_status_id bigint,
 						user_id_status bigint,
 						author_name nvarchar(255),
-						update_status_tz nvarchar(15),
+						update_status_tz timestamp,
 						content_length integer
 					 )
 ) 
@@ -25,15 +25,15 @@ BEGIN
  						"NEWS".TITLE, 
  						"NEWS".DESCRIPTION, 
  						"NEWS".AUTHOR_ID, 
- 						TO_NVARCHAR("NEWS".PUBLISHED_DATE, 'YYYY-MM-DD') AS PUBLISHED_DATE,
- 						TO_NVARCHAR("NEWS".CREATED_DATE_TZ,'YYYY-MM-DD') AS CREATED_DATE,
+ 						"NEWS".PUBLISHED_DATE,
+ 						"NEWS".CREATED_DATE_TZ AS CREATED_DATE,
  						"NEWS".ATTACHMENT_ID, 
  						"NEWS".STATUS_ID,
  						NEWS_STATUS.NAME as STATUS_NAME,
 					 	"NEWS".PREVIOUS_STATUS_ID, 
 					 	"NEWS".USER_ID_STATUS, 
 					 	author.USER_NAME as author_name,
-					 	TO_NVARCHAR("NEWS".UPDATE_STATUS_TZ, 'YYYY-MM-DD') AS UPDATE_STATUS_TZ,
+					 	"NEWS".UPDATE_STATUS_TZ,
 					 	LENGTH ("NEWS".CONTENT) AS content_length
   			  FROM "NEWS"
   			  INNER JOIN "NEWS_STATUS" NEWS_STATUS ON NEWS_STATUS.NEWS_STATUS_ID = "NEWS".STATUS_ID

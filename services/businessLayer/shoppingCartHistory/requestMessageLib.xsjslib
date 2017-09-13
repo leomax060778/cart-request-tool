@@ -31,7 +31,7 @@ function insertRequestMessage(objRequest, userId) {
 	    }
 		if (Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.APPROVED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED) {
 	        objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-	        status.updateRequestStatusManual(objRequest, userId);
+	        status.updateRequestStatusManual(objRequest, userId, true);
 		}
 		var result = message.insertRequestMessage(objRequest, userId);
 		parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);

@@ -12,7 +12,7 @@
         <viewAttribute datatype="NVARCHAR" id="REQUEST_ID" length="15"/>
         <viewAttribute datatype="BIGINT" id="R_ID"/>
         <viewAttribute datatype="INTEGER" id="BUDGET_YEAR"/>
-        <viewAttribute datatype="NVARCHAR" id="REQUEST_DATE" length="15"/>
+        <viewAttribute datatype="TIMESTAMP" id="REQUEST_DATE"/>
         <viewAttribute datatype="NVARCHAR" id="REQUESTER" length="255"/>
         <viewAttribute datatype="NVARCHAR" id="TEAM" length="32"/>
         <viewAttribute datatype="BIGINT" id="HL3_ID"/>
@@ -27,25 +27,25 @@
         <viewAttribute datatype="NVARCHAR" id="MATERIAL_CODE" length="255"/>
         <viewAttribute datatype="BIGINT" id="MATERIAL_CATALOG_TYPE_ID"/>
         <viewAttribute datatype="INTEGER" id="SPECIAL_REQUEST_ITEM"/>
-        <viewAttribute datatype="NVARCHAR" id="SPECIAL_REQUEST_START_DATE" length="15"/>
-        <viewAttribute datatype="NVARCHAR" id="SPECIAL_REQUEST_END_DATE" length="15"/>
+        <viewAttribute datatype="TIMESTAMP" id="SPECIAL_REQUEST_START_DATE"/>
+        <viewAttribute datatype="TIMESTAMP" id="SPECIAL_REQUEST_END_DATE"/>
         <viewAttribute datatype="DECIMAL" id="SPECIAL_REQUEST_AMOUNT_LINE" length="19" scale="2"/>
         <viewAttribute datatype="DECIMAL" id="SPECIAL_REQUEST_BUDGET" length="19" scale="2"/>
         <viewAttribute datatype="NVARCHAR" id="SPECIAL_REQUEST_DESCRIPTION" length="255"/>
         <viewAttribute datatype="NVARCHAR" id="SPECIAL_REQUEST_CODE" length="255"/>
         <viewAttribute datatype="NVARCHAR" id="SAP_ENTITY" length="255"/>
         <viewAttribute datatype="NVARCHAR" id="COST_OBJECT" length="255"/>
-        <viewAttribute datatype="NVARCHAR" id="START_DATE" length="15"/>
-        <viewAttribute datatype="NVARCHAR" id="END_DATE" length="15"/>
+        <viewAttribute datatype="TIMESTAMP" id="START_DATE"/>
+        <viewAttribute datatype="TIMESTAMP" id="END_DATE"/>
         <viewAttribute datatype="DECIMAL" id="AMOUNT_LINE" length="19" scale="2"/>
         <viewAttribute datatype="NVARCHAR" id="CURRENCY" length="255"/>
         <viewAttribute datatype="DECIMAL" id="BUDGET" length="19" scale="2"/>
         <viewAttribute datatype="NVARCHAR" id="CART_NUMBER" length="255"/>
-        <viewAttribute datatype="NVARCHAR" id="CART_DATE" length="15"/>
+        <viewAttribute datatype="TIMESTAMP" id="CART_DATE"/>
         <viewAttribute datatype="NVARCHAR" id="PURCHASE_ORDER_NUMBER" length="127"/>
         <viewAttribute datatype="INTEGER" id="ITEM"/>
         <viewAttribute datatype="NVARCHAR" id="LINE_NUMBER" length="127"/>
-        <viewAttribute datatype="NVARCHAR" id="PURCHASE_DATE" length="15"/>
+        <viewAttribute datatype="TIMESTAMP" id="PURCHASE_DATE"/>
         <viewAttribute datatype="NVARCHAR" id="STATUS" length="255"/>
         <viewAttribute datatype="BIGINT" id="STATUS_ID"/>
         <viewAttribute datatype="NVARCHAR" id="STAGE_PASSES" length="127"/>
@@ -91,9 +91,9 @@
 											FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_VENDOR_ADDITIONAL_INFORMATION&quot; VAI;
 								
 	va_po_service = SELECT POS.REQUEST_ID, POS.SHOPPING_CART AS CART_NUMBER,
-		                    TO_NVARCHAR(POS.CART_DATE, 'YYYY-MM-DD') AS CART_DATE,
+		                    POS.CART_DATE,
 		                    POS.PURCHASE_ORDER_NUMBER,
-		                    TO_NVARCHAR(POS.APPROVAL_DATE, 'YYYY-MM-DD') AS PURCHASE_DATE
+		                    POS.APPROVAL_DATE AS PURCHASE_DATE
 						FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_PURCHASE_ORDER_SERVICE&quot; POS;
 						
 	va_entity = SELECT EN.ENTITY_ID, EN.ENTITY_NAME AS SAP_ENTITY
@@ -176,7 +176,7 @@
 	va_sub_out = SELECT (CT.ISO || TO_NVARCHAR(RQ.REQUEST_ID)) AS REQUEST_ID,
 						RQ.REQUEST_ID AS R_ID,
 						BUD.BUDGET_YEAR,
-	                    TO_NVARCHAR(RQ.CREATED_DATE_TZ, 'YYYY-MM-DD') AS REQUEST_DATE,
+	                    RQ.CREATED_DATE_TZ AS REQUEST_DATE,
 	                    US.REQUESTER,
 	                    HL3.TEAM,
 	                    RQ.HL3_ID,
@@ -191,21 +191,21 @@
 	                    MT.MATERIAL_CODE,
 	                    MT.MATERIAL_CATALOG_TYPE_ID,
 	                    SRQ.ITEM AS SPECIAL_REQUEST_ITEM,
-	                    TO_NVARCHAR(SRQ.START_DATE, 'YYYY-MM-DD') AS SPECIAL_REQUEST_START_DATE,
-						TO_NVARCHAR(SRQ.END_DATE, 'YYYY-MM-DD') AS SPECIAL_REQUEST_END_DATE,
+	                    SRQ.START_DATE AS SPECIAL_REQUEST_START_DATE,
+						SRQ.END_DATE AS SPECIAL_REQUEST_END_DATE,
 						SRQ.AMOUNT AS SPECIAL_REQUEST_AMOUNT_LINE,
 						SRQ.BUDGET AS SPECIAL_REQUEST_BUDGET,
 	                    SRQ.MATERIAL_DESCRIPTION AS SPECIAL_REQUEST_DESCRIPTION,
 	                    SRQ.MATERIAL_CODE AS SPECIAL_REQUEST_CODE,
 	                    EN.SAP_ENTITY,
 	                    RCO.COST_OBJECT,
-	                    TO_NVARCHAR(SV.START_DATE, 'YYYY-MM-DD') AS START_DATE,
-	                    TO_NVARCHAR(SV.END_DATE, 'YYYY-MM-DD') AS END_DATE,
+	                    SV.START_DATE,
+	                    SV.END_DATE,
 	                    SV.AMOUNT_LINE,
 	                    CUR.CURRENCY,
 	                    SV.BUDGET,
 	                    POS.CART_NUMBER,
-	                    TO_NVARCHAR(POS.CART_DATE, 'YYYY-MM-DD') AS CART_DATE,
+	                    POS.CART_DATE,
 	                    POS.PURCHASE_ORDER_NUMBER,
 	                    SV.ITEM,
 	                    SV.LINE_NUMBER,
