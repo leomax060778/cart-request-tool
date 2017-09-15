@@ -16,7 +16,7 @@ BEGIN
 	SET POS.shopping_cart = in_shopping_cart,
 		POS.cart_date = in_cart_date,
 		POS.purchase_order_number = in_purchase_order_number,
-		POS.approval_date = TO_DATE(in_approval_date, 'YYYY-MM-DD'),
+		POS.approval_date = in_approval_date,
 		POS.modified_user_id = in_modified_user_id
 	FROM "PURCHASE_ORDER_SERVICE" POS
 		WHERE POS.request_id = in_request_id
