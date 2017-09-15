@@ -70,11 +70,15 @@ function getReport(reportType, userId) {
             if (elem.STATUS !== 'In process') {
                 elem.DAYS_OUTSTANDING = 'N/A';
             }
-            if (Number(elem.DAYS_OUTSTANDING) < 0) {
+            if (Number(elem.DAYS_OUTSTANDING) < 0 || isNaN(elem.DAYS_OUTSTANDING)) {
                 elem.DAYS_OUTSTANDING = 'N/A';
+            } else {
+            	elem.DAYS_OUTSTANDING = Number(elem.DAYS_OUTSTANDING);
             }
             if (elem.STATUS !== 'Approved') {
                 elem.PURCHASE_TURN_AROUND_TIME = 'N/A';
+            } else {
+            	elem.PURCHASE_TURN_AROUND_TIME = Number(elem.PURCHASE_TURN_AROUND_TIME);
             }
             if(Number(elem.MATERIAL_CATALOG_TYPE_ID) === catalogTypeIdMap.CATEGORY){
             	elem.PRODUCT_CATALOG = elem.PRODUCT_CATEGORY;

@@ -5,7 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ATTACHMENT_B
 							original_name nvarchar(255),
 							saved_name nvarchar(255), 
 							attachment_size integer,
-							CREATED_DATE nvarchar(32)
+							CREATED_DATE timestamp
 						 )
  ) 
 	LANGUAGE SQLSCRIPT
