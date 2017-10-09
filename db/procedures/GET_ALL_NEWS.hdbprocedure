@@ -25,7 +25,7 @@ BEGIN
  						"NEWS".AUTHOR_ID, 
  						author.USER_NAME AS author_name, 
  						"NEWS".PUBLISHED_DATE, 
- 						"NEWS".CREATED_DATE_TZ AS CREATED_DATE,
+ 						"NEWS".DISPLAY_CREATED_DATE AS CREATED_DATE,
  						"NEWS".MODIFIED_DATE_TZ AS MODIFIED_DATE,
  						"NEWS".STATUS_ID, 
 					 	news_st.NAME AS status_name, 

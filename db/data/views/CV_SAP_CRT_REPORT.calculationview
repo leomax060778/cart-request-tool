@@ -213,7 +213,7 @@
 	                    ST.STATUS,
 	                    RQ.STATUS_ID,
 	                    (SG.STAGE_NAME || ' / #' || RQ.PASS) AS STAGE_PASSES,
-	                    DAYS_BETWEEN(POS.CART_DATE, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
+	                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
 	                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, POS.PURCHASE_DATE) AS PURCHASE_TURN_AROUND_TIME,
 	                    RM.MESSAGE_INFO,
 	                    RM.NAME AS MESSAGE_TYPE,

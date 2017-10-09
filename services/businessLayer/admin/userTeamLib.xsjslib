@@ -5,14 +5,25 @@ var db = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
-//Insert modal
 function getSelectedTeamsByUserBudgetYear(objRequest, userId) {
-    return dataUserTeam.getSelectedTeamsByUserBudgetYear(objRequest, userId);
+	return dataUserTeam.getSelectedTeamsByUserBudgetYear(objRequest, userId);
+}
+
+function getAllSelectedTeamsByUserId(selectedUserId) {
+	var result = dataUserTeam.getAllSelectedTeamsByUserId(selectedUserId);
+	var team = {};
+	result.forEach(function (elem) {
+		if(!team[elem.BUDGET_YEAR_ID]) {
+			team[elem.BUDGET_YEAR_ID] = [];
+		}
+		team[elem.BUDGET_YEAR_ID].push(elem);
+	});
+	return [team];
 }
 
 function updateUserTeam(objUserTeam, userId){
 	try{
-		var teams = dataUserTeam.getManualTeamsByUserIdAndBudgetYearId(objUserTeam.USER_ID, objUserTeam.BUDGET_YEAR_ID);	
+		var teams = dataUserTeam.getManualTeamsByUserIdAndBudgetYearId(objUserTeam.USER_ID, objUserTeam.BUDGET_YEAR_ID);
 		var updateTeams = objUserTeam.TEAMS;
 		var insertTeams = [];
 		var deleteTeams = [];
@@ -46,10 +57,10 @@ function updateUserTeam(objUserTeam, userId){
 				insertTeams.push(newTeam);
 			}
 		});
-		
+
 		insertTeams.forEach(function(insertTeam) {
 			dataUserTeam.insertUserTeamManual(objUserTeam.USER_ID, insertTeam, userId);
-		});		
+		});
 		deleteTeams.forEach(function(deleteTeam) {
 			dataUserTeam.deleteUserTeamManual(objUserTeam.USER_ID, deleteTeam, userId);
 		});

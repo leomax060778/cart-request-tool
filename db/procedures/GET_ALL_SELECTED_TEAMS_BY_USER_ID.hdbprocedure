@@ -1,0 +1,34 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_SELECTED_TEAMS_BY_USER_ID" (
+	IN in_user_id bigint,
+	OUT out_result TABLE (
+  	team_id bigint,
+  	name nvarchar(255),
+  	selected TINYINT,
+  	BUDGET_YEAR_ID bigint
+  )
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+DEFAULT SCHEMA "CART_REQUEST_TOOL"
+READS SQL DATA AS
+BEGIN
+  out_result = SELECT HL3.HL3_ID as team_id,
+  					  HL3.ACRONYM as name,
+  					  (CASE WHEN EXISTS (SELECT HL3_ID
+  					  						FROM HL3_USER
+  					  					 WHERE HL3_USER.HL3_ID = HL3.HL3_ID
+  					  					 	AND HL3_USER.USER_ID = in_user_id
+  					  					 	AND HL3_USER.ENABLED = 1
+  					  					 	AND HL3_USER.DELETED = 0
+  					  					  )
+  					  		THEN 1 ELSE 0 END) as selected,
+  					  HL2.BUDGET_YEAR_ID
+				FROM "CART_REQUEST_TOOL"."HL3" HL3
+					INNER JOIN "HL2" HL2 ON HL2.HL2_ID = HL3.HL2_ID
+					INNER JOIN "USER" USR ON USR.USER_ID = in_user_id
+					INNER JOIN "BUDGET_YEAR" BYEAR ON HL2.BUDGET_YEAR_ID = BYEAR.BUDGET_YEAR_ID
+				WHERE HL3.HL2_ID = HL2.HL2_ID
+					AND HL3.ENABLED = 1
+					AND HL3.DELETED = 0
+				ORDER BY HL3.ACRONYM, HL2.BUDGET_YEAR_ID ASC;
+END;

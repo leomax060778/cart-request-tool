@@ -26,14 +26,14 @@ var GET_NEWS_URGENT = "GET_NEWS_URGENT";
 var GET_NEWS_UNREAD = "GET_NEWS_UNREAD";
 
 function getNewsUnreadManual(userId){
-	var parameters = {};
+    var parameters = {};
     parameters.in_user_id = userId;
     var result = db.executeProcedureManual(GET_NEWS_UNREAD, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
- 	   return list[0];
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -43,9 +43,9 @@ function getNewsById(newsId){
     var result = db.executeProcedure(GET_NEWS_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
- 	   return list[0];
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -57,9 +57,9 @@ function getNewsContentManual(newsId, startPosition, stringLength){
     var result = db.executeProcedureManual(GET_NEWS_CONTENT, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
- 	   return list[0];
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -68,9 +68,9 @@ function getManualNewsById(newsId){
     var result = db.executeProcedureManual(GET_NEWS_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
- 	   return list[0];
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -134,6 +134,7 @@ function insertNews(objNews, userId){
     parameters.IN_AUTHOR_ID = userId;
     parameters.IN_STATUS_ID = objNews.STATUS_ID;
     parameters.IN_PUBLISHED_DATE = objNews.PUBLISHED_DATE || null;
+    parameters.IN_DISPLAY_CREATED_DATE = objNews.CREATED_DATE;
     parameters.IN_ATTACHMENT_ID = objNews.ATTACHMENT_ID || null;
     parameters.IN_URGENT = objNews.URGENT || 0;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
@@ -153,6 +154,8 @@ function updateNews(objNews, userId){
     parameters.in_status_id = objNews.STATUS_ID;
     parameters.IN_BUDGET_YEAR_ID = objNews.BUDGET_YEAR_ID;
     parameters.in_attachment_id = objNews.ATTACHMENT_ID || null;
+    parameters.IN_PUBLISHED_DATE = objNews.PUBLISHED_DATE || null;
+    parameters.IN_DISPLAY_CREATED_DATE = objNews.CREATED_DATE;
     parameters.in_urgent = objNews.URGENT || 0;
     parameters.in_modified_user_id = userId;
     parameters.in_content = objNews.CONTENT;
@@ -179,7 +182,7 @@ function updateNewsStatusManual(objNews, userId){
 }
 
 function updateNewsPublishedStatus(objNews, userId){
-	var parameters = {};
+    var parameters = {};
     parameters.in_news_id = objNews.NEWS_ID;
     parameters.in_status_id = objNews.STATUS_ID;
     parameters.in_modified_user_id = userId;

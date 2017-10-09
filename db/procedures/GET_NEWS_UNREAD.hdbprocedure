@@ -48,5 +48,5 @@ BEGIN
 		        WHERE   READ_NEWS.USER_ID = in_user_id
 		        		and READ_NEWS.NEWS_ID = NW.NEWS_ID
 	        )
-    ORDER BY NW.PUBLISHED_DATE ASC;
+    ORDER BY NW.PUBLISHED_DATE DESC;
 END;
