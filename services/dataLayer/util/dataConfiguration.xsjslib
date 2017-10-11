@@ -91,7 +91,7 @@ function ExecutePermission() {
 var AppUrl = getConfigurationByName("AppUrl")[0].CONF_VALUE; //"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
 var UrlLogin =  getConfigurationByName("UrlLogin")[0].CONF_VALUE;//"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
 
-var Environment = "Development"; //Can be: Development - Staging - Production.
+var Environment = "Testing"; //Can be: Development - Staging - Production.
 	
 var complete_path = {
 		"HOME": "/home",

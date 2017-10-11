@@ -7,28 +7,31 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_REPORT"
 							PHONE nvarchar(255),
 							ROLE_NAME nvarchar(255),
 							TEAM nvarchar(255),
-							ACRONYM nvarchar(25)
+							ACRONYM nvarchar(25),
+							BUDGET_YEAR integer
 						 )
- ) 
+ )
 	LANGUAGE SQLSCRIPT
-	SQL SECURITY INVOKER 
+	SQL SECURITY INVOKER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT US.user_id,
+	out_result = SELECT DISTINCT US.user_id,
 						US.user_name,
-						US.FIRST_NAME, 
-			 			US.LAST_NAME, 
-			 			US.EMAIL, 
+						US.FIRST_NAME,
+			 			US.LAST_NAME,
+			 			US.EMAIL,
 			 			US.PHONE,
 			 			ROLE.NAME as ROLE_NAME,
 			 			TM.HL3_DESCRIPTION AS TEAM,
-			 			TM.ACRONYM
+			 			TM.ACRONYM,
+			 			BYEAR.BUDGET_YEAR
 			 		FROM "USER" US
 			 			LEFT JOIN "USER_ROLE" UR ON UR.user_id = US.USER_ID
 						LEFT JOIN "ROLE" ROLE ON ROLE.role_id = UR.role_id
 						LEFT JOIN "HL3_USER" HLU ON HLU.USER_ID = US.USER_ID
 						LEFT JOIN "HL3" TM ON TM.HL3_ID = HLU.HL3_ID
-					WHERE US.ENABLED = 1 AND US.DELETED = 0
-					ORDER BY US.user_id;
+						INNER JOIN "HL2" HL2 ON TM.HL2_ID = HL2.HL2_ID
+						INNER JOIN "BUDGET_YEAR" BYEAR ON HL2.BUDGET_YEAR_ID = BYEAR.BUDGET_YEAR_ID
+					ORDER BY US.user_id ASC, BYEAR.BUDGET_YEAR DESC;
 END;

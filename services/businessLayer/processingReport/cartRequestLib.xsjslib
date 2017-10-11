@@ -56,7 +56,7 @@ function getAllCartRequest(userId) {
         } else {
             elem.SHOW_MESSAGE_READ = 0;
         }
-        if (elem.STATUS_NAME !== 'In process') {
+        if (Number(elem.STATUS_ID) === statusMap.APPROVED || Number(elem.STATUS_ID) === statusMap.CANCELLED) {
             elem.DAYS_OUTSTANDING = 'N/A';
         }
         if (Number(elem.DAYS_OUTSTANDING) < 0) {
@@ -195,12 +195,12 @@ function updateRequestStatus(objRequest, userId) {
 
 //Update cart request status manual
 function updateRequestStatusManual(objRequest, userId, shoppingCart) {
-	var statusChange = false;
+    var statusChange = false;
     if (validateUpdateRequestStatus(objRequest, userId)) {
         if (Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED) {
-        	if (!shoppingCart) {
-        		statusChange = true;
-        	}
+            if (!shoppingCart) {
+                statusChange = true;
+            }
             switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
                 case statusMap.APPROVED:
                     objRequest.STAGE_ID = stageMap.STAGE_E;
@@ -212,10 +212,10 @@ function updateRequestStatusManual(objRequest, userId, shoppingCart) {
                     objRequest.STAGE_ID = stageMap.STAGE_C;
             }
         } else if (Number(objRequest.STATUS_ID) === statusMap.CHECKED) {
-        	statusChange = true;
+            statusChange = true;
             objRequest.STAGE_ID = stageMap.STAGE_C;
         } else if (Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS) {
-        	statusChange = true;
+            statusChange = true;
             objRequest.STAGE_ID = stageMap.STAGE_D;
         } else if (Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER) {
             objRequest.STAGE_ID = stageMap.STAGE_B;
@@ -230,7 +230,7 @@ function updateRequestStatusManual(objRequest, userId, shoppingCart) {
             throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
         }
         if (statusChange) {
-        	businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
+            businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
             businessChangedColumn.deleteServiceChangedColumn(objRequest.REQUEST_ID, userId);
             businessChangedColumn.deleteSpecialRequestChangedColumn(objRequest.REQUEST_ID, userId);
         }
