@@ -248,69 +248,7 @@ function getOldDefaultTemplate(body) {
     return newPart;
 }
 
-
-function sendEventMail(reqBody) {
-	var mailTypeconfig = config.getSendMailType();
-	var result;
-	
-	switch(mailTypeconfig){
-	case "servlet":
-		result = sendMailServlet(reqBody, true);
-		break;
-	case "smpt":
-		result = sendMail(reqBody, true, config.getSMTPAccount());
-		break;
-	}
-	
-	return result;
-}
-
-function sendIncidentMail(reqBody) {
-	var mailTypeconfig = config.getSendMailType();
-	var result;
-	
-	switch(mailTypeconfig){
-	case "servlet":
-		result = sendMailServlet(reqBody, true);
-		break;
-	case "smpt":
-		result = sendMail(reqBody, true, config.getSupportAccount());
-		break;
-	}
-	
-	return result;
-}
-
 // Send a email
-/* function sendMail(reqBody, defaultBody, OptionalSender) {
-    try {
-        if (validate(reqBody)) {
-            var body = "";
-            if (reqBody.BODY != null) {
-                if (reqBody.BODY != undefined) {
-                    body = reqBody.BODY;
-                }
-            }
-            
-            var message = "";
-            if (defaultBody) {
-            	message = message + getDefaultTemplate(body);
-            }
-            
-            var jsonObject = {};
-
-        	jsonObject.addressBcc = reqBody.FROM;
-        	jsonObject.addressTo = reqBody.TO; //"iberon@folderit.net"
-        	jsonObject.subject = reqBody.SUBJECT;
-        	jsonObject.message = message;
-            
-        	return jsonObject;
-        }
-    } catch (e) {
-        throw e;
-    }
-} */
-
 function sendMail(reqBody, defaultBody, OptionalSender){
 	//Old sendEmail() function.
 

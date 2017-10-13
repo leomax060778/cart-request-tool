@@ -390,6 +390,11 @@ function getRequestChangedColumn(){
     return $.xscartrequesttool.services.businessLayer.util.requestChangedColumnLib;
 }
 
+function getApplication(){
+	$.import("xscartrequesttool.services.businessLayer.admin","applicationLib");
+    return $.xscartrequesttool.services.businessLayer.admin.applicationLib;
+}
+
 /************Data Layer Mapper*****************/
 
 function getdbHelper(){
@@ -855,6 +860,11 @@ function getDataRequestChangedColumn(){
     return $.xscartrequesttool.services.dataLayer.util.dataRequestChangedColumn;
 }
 
+function getDataApplication(){
+	$.import("xscartrequesttool.services.dataLayer.admin","dataApplication");
+    return $.xscartrequesttool.services.dataLayer.admin.dataApplication;
+}
+
 /********************
 * E-MAILS TEMPLATES *
 ********************/
@@ -864,9 +874,19 @@ function getCartRequestMail() {
     return $.xscartrequesttool.services.mails.cartRequestMail;
 }
 
+function getCartRequestMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory","cartRequestMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.shoppingCartHistory.cartRequestMailSendLib;
+}
+
 function getChangeVendorMail() {
     $.import("xscartrequesttool.services.mails","changeVendorMail");
     return $.xscartrequesttool.services.mails.changeVendorMail;
+}
+
+function getChangeVendorMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","changeVendorMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.changeVendorMailSendLib;
 }
 
 function getCrtInquiryMail() {
@@ -874,9 +894,19 @@ function getCrtInquiryMail() {
     return $.xscartrequesttool.services.mails.crtInquiryMail;
 }
 
+function getCrtInquiryMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.inquiry","inquiryMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.inquiry.inquiryMailSendLib;
+}
+
 function getExtendVendorMail() {
     $.import("xscartrequesttool.services.mails","extendVendorMail");
     return $.xscartrequesttool.services.mails.extendVendorMail;
+}
+
+function getExtendVendorMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","extendVendorMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.extendVendorMailSendLib;
 }
 
 function getVendorInquiryMail() {
@@ -884,7 +914,17 @@ function getVendorInquiryMail() {
     return $.xscartrequesttool.services.mails.vendorInquiryMail;
 }
 
+function getVendorInquiryMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","vendorInquiryMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.vendorInquiryMailSendLib;
+}
+
 function getVendorMail() {
     $.import("xscartrequesttool.services.mails","vendorMail");
     return $.xscartrequesttool.services.mails.vendorMail;
+}
+
+function getVendorRequestMailSend() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","vendorRequestMailSendLib");
+    return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.vendorRequestMailSendLib;
 }
