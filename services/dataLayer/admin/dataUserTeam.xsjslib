@@ -8,6 +8,7 @@ var ErrorLib = mapper.getErrors();
 var GET_SELECTED_TEAMS_BY_USER_ID_BUDGET_YEAR_ID = "GET_SELECTED_TEAMS_BY_USER_ID_BUDGET_YEAR_ID";
 var GET_ALL_SELECTED_TEAMS_BY_USER_ID = "GET_ALL_SELECTED_TEAMS_BY_USER_ID";
 var GET_TEAM_BY_USER_ID_BUDGET_YEAR_ID = "GET_TEAM_BY_USER_ID_BUDGET_YEAR_ID";
+var GET_TEAMS_BY_USER_ID = "GET_TEAMS_BY_USER_ID";
 var INS_USER_TEAM = "INS_USER_TEAM";
 var DEL_USER_TEAM = "DEL_USER_TEAM";
 
@@ -36,6 +37,14 @@ function getManualTeamsByUserIdAndBudgetYearId(userId,budgetYearId){
 	params.in_user_id = userId;
 	params.in_budget_year_id = budgetYearId;
 	var rdo = db.executeProcedureManual(GET_TEAM_BY_USER_ID_BUDGET_YEAR_ID, params);
+	return db.extractArray(rdo.out_result);
+}
+
+function getManualTeamsByUserId(userId){
+	var params = {};
+	params.out_result = '?';
+	params.in_user_id = userId;
+	var rdo = db.executeProcedureManual(GET_TEAMS_BY_USER_ID, params);
 	return db.extractArray(rdo.out_result);
 }
 

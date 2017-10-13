@@ -22,33 +22,6 @@ function getResourceIdByName(name) {
 	return null;
 }
 
-/****Resources Names******* */
-function level1() {
-	return "level1";
-}
-function level2() {
-	return "level2";
-}
-function level3() {
-	return "level3";
-}
-function settings() {
-	return "settings";
-}
-function administration() {
-	return "administration";
-}
-function dereport() {
-	return "dereport";
-}
-function report() {
-	return "report";
-}
-function search() {
-	return "search";
-}
-/** *********************** */
-
 function getPermissionIdByName(name) {
 	var rdo = db.executeProcedure(spGetPermissionByName, {
 		"IN_PERMISSION_NAME" : name
@@ -62,46 +35,55 @@ function getPermissionIdByName(name) {
 	return null;
 }
 
-/****Resources Names********/
-function ReadPermission(){ return "View/Read";}
-function CreatePermission(){ return "Create/Edit";}
-function DeletePermission(){ return "Delete";}
-
-/**************************/
-
 /***************************************************************************/
-
 
 function getConfigurationByName(key){
 	var result = db.executeProcedure(spGET_CONFIGURATION_BY_NAME,{'IN_KEY' : key});
 	return db.extractArray(result.out_result);
 }
 
-function GrantPermission() {
-	return "Grant";
-}
-function ExecutePermission() {
-	return "Execute";
-}
 /** *********************** */
 
+function GrantPermission() {
+	return getConfigurationByName("GrantPermission")[0].CONF_VALUE;
+}
+function ExecutePermission() {
+	return getConfigurationByName("ExecutePermission")[0].CONF_VALUE;
+}
+
 /** ************************************************************************ */
+
+/****Resources Names********/
+function ReadPermission(){ return getConfigurationByName("ReadPermission")[0].CONF_VALUE; }
+function CreatePermission(){ return getConfigurationByName("CreatePermission")[0].CONF_VALUE; }
+function DeletePermission(){ return getConfigurationByName("DeletePermission")[0].CONF_VALUE; }
 
 /** **********URLs****************** */
 var AppUrl = getConfigurationByName("AppUrl")[0].CONF_VALUE; //"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp";
 var UrlLogin =  getConfigurationByName("UrlLogin")[0].CONF_VALUE;//"http://rtm-bmo.bue.sap.corp:1081/crt2017-testing/webapp/index.html";
 
-var Environment = "Testing"; //Can be: Development - Staging - Production.
+var Environment = getConfigurationByName("Environment")[0].CONF_VALUE;
 	
 var complete_path = {
 		"HOME": "/home",
-		"CART_REQUEST": "/CartRequest",
-		"CRT_INQUIRY": "/crtInquiry/detail",
-		"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/detail",
-		"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/detail",
-		"VENDOR_REQUEST": "/newVendorRequest/detail",
-		"VENDOR_INQUIRY": "/vendorInquiry/detail",
+		"CART_REQUEST": "/processingReport/CartRequest",
+		"CRT_INQUIRY": "/processingReport/CrtInquiry",
+		"EXTEND_VENDOR_REQUEST": "/processingReport/ExtendVendorRequest",
+		"CHANGE_VENDOR_REQUEST": "/processingReport/ChangeVendorRequest",
+		"VENDOR_REQUEST": "/processingReport/NewVendorRequest",
+		"VENDOR_INQUIRY": "/processingReport/VendorInquiry",
 		"PROCESSING_REPORT": "/processingReport"
+};
+
+var complete_requester_path = {
+	"HOME": "/home",
+	"CART_REQUEST": "/CartRequest",
+	"CRT_INQUIRY": "/crtInquiry/detail",
+	"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/detail",
+	"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/detail",
+	"VENDOR_REQUEST": "/newVendorRequest/detail",
+	"VENDOR_INQUIRY": "/vendorInquiry/detail",
+	"PROCESSING_REPORT": "/processingReport"
 };
 
 var complete_path_additional_param = {
@@ -115,7 +97,6 @@ var SMTPAccount = eval(getConfigurationByName("SMTPAccount")[0].CONF_VALUE);//ev
 var SupportAccount = getConfigurationByName("SupportAccount")[0].CONF_VALUE;
 var SiteAdministrator = getConfigurationByName("SiteAdministrator")[0].CONF_VALUE;
 var emailAccounts = eval(getConfigurationByName("emailAccounts")[0].CONF_VALUE); //eval string to get the array
-var sendEmailType = "smpt"; //can be: servlet or smpt
  
 var tokenLifeTimeSeconds = parseInt(getConfigurationByName("tokenLifeTimeSeconds")[0].CONF_VALUE);
 
@@ -163,8 +144,8 @@ function getRoleEnum() {
 }
 
 function getMailEnvironment() {
-	Environment = (Environment !== "Production")? '('+Environment+')' : "";
-	return Environment;
+	var env = (Environment !== "Production")? '('+Environment+')' : "";
+	return env;
 }
 
 function getEnvironment() {
@@ -181,6 +162,10 @@ function getUrlBase(){
 
 function getPath(nameString){
 	return complete_path[nameString];
+}
+
+function getRequesterPath(nameString){
+	return complete_requester_path[nameString];
 }
 
 function getAdditionalParam(param){
@@ -205,6 +190,20 @@ function getBasicData(stringPathName, additionalParam){
 	return parameters;
 }
 
-function getSendMailType(){
-	return sendEmailType;
+function getRequesterBasicData(stringPathName, additionalParam){
+	var parameters = {};
+	parameters.URL_BASE = getUrlBase();
+		
+	if(stringPathName){
+		parameters.PATH = getRequesterPath(stringPathName);
+		parameters.ENVIRONMENT = getMailEnvironment();
+	}else{
+		parameters.ENVIRONMENT = getEnvironment();
+	}
+	
+	if(additionalParam){
+		parameters.ADDITIONAL_PARAM = getAdditionalParam(additionalParam.PARAM);
+	}
+	
+	return parameters;
 }
