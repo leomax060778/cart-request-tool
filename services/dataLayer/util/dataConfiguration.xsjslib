@@ -65,14 +65,14 @@ var UrlLogin =  getConfigurationByName("UrlLogin")[0].CONF_VALUE;//"http://rtm-b
 var Environment = getConfigurationByName("Environment")[0].CONF_VALUE;
 	
 var complete_path = {
-		"HOME": "/home",
-		"CART_REQUEST": "/processingReport/CartRequest",
-		"CRT_INQUIRY": "/processingReport/CrtInquiry",
-		"EXTEND_VENDOR_REQUEST": "/processingReport/ExtendVendorRequest",
-		"CHANGE_VENDOR_REQUEST": "/processingReport/ChangeVendorRequest",
-		"VENDOR_REQUEST": "/processingReport/NewVendorRequest",
-		"VENDOR_INQUIRY": "/processingReport/VendorInquiry",
-		"PROCESSING_REPORT": "/processingReport"
+	"HOME": "/home",
+	"CART_REQUEST": "/CartRequest",
+	"CRT_INQUIRY": "/crtInquiry/detail",
+	"EXTEND_VENDOR_REQUEST": "/extendVendorRequest/detail",
+	"CHANGE_VENDOR_REQUEST": "/changeVendorRequest/detail",
+	"VENDOR_REQUEST": "/newVendorRequest/detail",
+	"VENDOR_INQUIRY": "/vendorInquiry/detail",
+	"PROCESSING_REPORT": "/processingReport"
 };
 
 var complete_requester_path = {

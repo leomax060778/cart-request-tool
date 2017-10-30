@@ -31,8 +31,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
 	 OUT out_service_table TABLE(
 	 					REQUEST_ID integer,
 	 					service_id bigint,
-                      	start_date timestamp,
-                      	end_date timestamp,
+                      	start_date nvarchar(32),
+                      	end_date nvarchar(32),
                       	description nvarchar (255),
                       	amount decimal (19,2),
                       	currency_id bigint,
@@ -49,8 +49,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_REQUEST_BY_F
   	 OUT out_special_request_table TABLE(
 	 					REQUEST_ID integer,
 	 					special_request_id bigint,
-                      	start_date timestamp,
-                      	end_date timestamp,
+                      	start_date nvarchar(32),
+                      	end_date nvarchar(32),
                       	material_description nvarchar (255),
                       	material_code nvarchar(255),
                       	amount decimal (19,2),
@@ -159,8 +159,8 @@ BEGIN
 	out_service_table = SELECT 
   				SER.request_id,
   				SER.service_id, 
-  				SER.start_date, 
-  				SER.end_date, 
+  				TO_NVARCHAR(SER.start_date, 'MM-DD-YYYY') as start_date,
+                TO_NVARCHAR(SER.end_date, 'MM-DD-YYYY') as end_date,
   				SER.description, 
   				SER.amount, 
   				SER.currency_id, 
@@ -181,9 +181,9 @@ BEGIN
             
 	 out_special_request_table = SELECT 
   				SRQ.request_id,
-  				SRQ.special_request_id, 
-  				SRQ.start_date, 
-  				SRQ.end_date, 
+  				SRQ.special_request_id,
+  				TO_NVARCHAR(SRQ.start_date, 'MM-DD-YYYY') as start_date,
+                TO_NVARCHAR(SRQ.end_date, 'MM-DD-YYYY') as end_date,
   				SRQ.material_description, 
   				SRQ.material_code,
   				SRQ.amount, 

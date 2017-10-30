@@ -2,26 +2,23 @@ $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var message = mapper.getDataRequestMessage();
 var request = mapper.getDataRequest();
+var user = mapper.getUser();
+
 var status = mapper.getCartRequest();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var requestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
+var mailSend = mapper.getCartRequestMailSend();
+
 var config = mapper.getDataConfig();
 
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
-var pathName = "CART_REQUEST";
+var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
-//Send Mail
-function parseNewMessage(requestId, requester, userId){
-	 var requestMailObj = {};
-	 requestMailObj.REQUEST_ID = requestId;
-	 var mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), "Colleague");
-	 var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	 mail.sendMail(emailObj,true,null);
-}
+var pathName = "CART_REQUEST";
 
 //Insert new request message
 function insertRequestMessage(objRequest, userId) {
@@ -34,8 +31,17 @@ function insertRequestMessage(objRequest, userId) {
 	        status.updateRequestStatusManual(objRequest, userId, true);
 		}
 		var result = message.insertRequestMessage(objRequest, userId);
-		parseNewMessage(objRequest.REQUEST_ID, objRequest.REQUESTER, userId);
-        
+
+        var messageType = Number(objRequest.MESSAGE_TYPE_ID);
+        switch(messageType){
+            case messageTypeMap.FYI_ONLY:
+                mailSend.sendFYIMail(objRequest.REQUEST_ID, userId);
+                break;
+            default:
+                mailSend.sendNewMessageMail(objRequest.REQUEST_ID, userId);
+                break;
+        }
+
         return result;
     }
 }
