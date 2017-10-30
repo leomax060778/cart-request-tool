@@ -914,69 +914,70 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	var mailObj;
 	var emailObj;
 	var additionalParam = {"PARAM": "MESSAGE"};
-	switch(vendor_type) {
-	    case "CHANGE_VENDOR_REQUEST":
-	    	reqMailObj.CHANGE_VENDOR_REQUEST_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	    		mailObj = changeVendorMail.parseFYI(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = changeVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-	    	} else {
-	    		mailObj = changeVendorMail.parseMessage(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-	    	}
-	        break;
-	    case "EXTEND_VENDOR_REQUEST":
-	    	reqMailObj.EXTEND_VENDOR_REQUEST_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	    		mailObj = extendVendorMail.parseFYI(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = extendVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-	    	} else {
-	    		mailObj = extendVendorMail.parseMessage(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-	    	}
-	        break;
-	    case "VENDOR_INQUIRY":
-	    	reqMailObj.VENDOR_INQUIRY_ID = reqBody.VENDOR_INQUIRY_ID;
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	    		mailObj = vendorInquiryMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = vendorInquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-	    	} else {
-	    		mailObj = vendorInquiryMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-	    	}
-	        break;
-	    case "VENDOR_REQUEST":
-	    	reqMailObj.REQUEST_ID = reqBody.VENDOR_REQUEST_ID;
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	    		mailObj = vendorMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = vendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-	    	} else {
-	    		mailObj = vendorMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-	    	}
-	        break;
-	    case "CRT_INQUIRY":
-	    	reqMailObj.INQUIRY_ID = reqBody.INQUIRY_ID;
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	    		mailObj = inquiryMail.parseFYI(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = inquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-	    	} else {
-	    		mailObj = inquiryMail.parseMessage(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-	    	}
-			break;
-	    case "CART_REQUEST":
-	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-				requestMailSend.sendFYIMail(reqBody.REQUEST_ID, userId);
-	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-                requestMailSend.sendReturnToRequestMail(reqBody.REQUEST_ID, userId);
-	    	} else {
-				requestMailSend.sendNewMessageMail(reqBody.REQUEST_ID, userId);
-	    	}
-	    	break;
+	if (vendor_type === "CART_REQUEST") {
+    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+			requestMailSend.sendFYIMail(reqBody.REQUEST_ID, userId);
+    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+            requestMailSend.sendReturnToRequestMail(reqBody.REQUEST_ID, userId);
+    	} else {
+			requestMailSend.sendNewMessageMail(reqBody.REQUEST_ID, userId);
+    	}
+	} else {
+		switch(vendor_type) {
+		    case "CHANGE_VENDOR_REQUEST":
+		    	reqMailObj.CHANGE_VENDOR_REQUEST_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
+		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+		    		mailObj = changeVendorMail.parseFYI(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
+		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+		    		mailObj = changeVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
+		    	} else {
+		    		mailObj = changeVendorMail.parseMessage(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
+		    	}
+		        break;
+		    case "EXTEND_VENDOR_REQUEST":
+		    	reqMailObj.EXTEND_VENDOR_REQUEST_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
+		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+		    		mailObj = extendVendorMail.parseFYI(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
+		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+		    		mailObj = extendVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
+		    	} else {
+		    		mailObj = extendVendorMail.parseMessage(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
+		    	}
+		        break;
+		    case "VENDOR_INQUIRY":
+		    	reqMailObj.VENDOR_INQUIRY_ID = reqBody.VENDOR_INQUIRY_ID;
+		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+		    		mailObj = vendorInquiryMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
+		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+		    		mailObj = vendorInquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
+		    	} else {
+		    		mailObj = vendorInquiryMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
+		    	}
+		        break;
+		    case "VENDOR_REQUEST":
+		    	reqMailObj.REQUEST_ID = reqBody.VENDOR_REQUEST_ID;
+		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+		    		mailObj = vendorMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
+		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+		    		mailObj = vendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
+		    	} else {
+		    		mailObj = vendorMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
+		    	}
+		        break;
+		    case "CRT_INQUIRY":
+		    	reqMailObj.INQUIRY_ID = reqBody.INQUIRY_ID;
+		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+		    		mailObj = inquiryMail.parseFYI(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
+		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+		    		mailObj = inquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
+		    	} else {
+		    		mailObj = inquiryMail.parseMessage(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
+		    	}
+				break;
+		}
+		emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
+		return mail.sendMail(emailObj,true,null);
 	}
-	emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-	return mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){
