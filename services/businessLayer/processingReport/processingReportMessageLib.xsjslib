@@ -29,6 +29,19 @@ var requestMail = mapper.getCartRequestMail();
 
 var mail = mapper.getMail();
 
+//Cart Request email sending
+var requestMailSend = mapper.getCartRequestMailSend();
+//CRT Inquiry email sending
+var inquiryMailSend = mapper.getCrtInquiryMailSend();
+//CRT Vendor Request email sending
+var vendorRequestMailSend = mapper.getVendorRequestMailSend();
+//CRT Extend Vendor email sending
+var extendVendorMailSend = mapper.getExtendVendorMailSend();
+//CRT Change Vendor email sending
+var changeVendorMailSend = mapper.getChangeVendorMailSend();
+//CRT Vendor Inquiry email sending
+var vendorInquiryMailSend = mapper.getVendorInquiryMailSend();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var subjectMap = {'STATUS_CHECK': 1, 'SRM_SYSTEM_ISSUE': 2, 'GPO_PROCESS_ISSUE': 3, 'DELAYED_DPO_APPROVAL': 4, 'OTHERS': 5, 'YVC_SYSTEM_ISSUE': 6, 'INCORRECT_INFORMATION': 7, 'MISSING_INFORMATION': 8};
@@ -178,6 +191,13 @@ function insertRequestMessage(objRequest, userId) {
 		}
 	    
 	    var result = dataMessage.insertRequestMessage(objRequest, userId);
+
+	    var requestObj = getRequest.getRequestById(objRequest.REQUEST_ID, userId);
+		var createdUser = businessUser.getUserById(requestObj.REQUESTER_ID);
+		if(createdUser){
+			objRequest.CREATED_USER_EMAIL = createdUser[0].EMAIL;
+		}
+
 	    sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
         
         return result;
@@ -946,13 +966,12 @@ function sendMessageMail(reqBody, vendor_type, userId){
 	    	}
 			break;
 	    case "CART_REQUEST":
-	    	reqMailObj.REQUEST_ID = reqBody.REQUEST_ID;
 	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-	   	 		mailObj = requestMail.parseFYI(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL, additionalParam), requester);
+				requestMailSend.sendFYIMail(reqBody.REQUEST_ID, userId);
 	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-	    		mailObj = requestMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL, additionalParam), requester);
+                requestMailSend.sendReturnToRequestMail(reqBody.REQUEST_ID, userId);
 	    	} else {
-	    		mailObj = requestMail.parseNewMessage(reqMailObj, getBasicData(pathName.CART_REQUEST_MAIL, additionalParam), requester);
+				requestMailSend.sendNewMessageMail(reqBody.REQUEST_ID, userId);
 	    	}
 	    	break;
 	}

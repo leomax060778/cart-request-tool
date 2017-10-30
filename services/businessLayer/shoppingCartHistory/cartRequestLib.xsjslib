@@ -31,7 +31,10 @@ var dataRolePermission = mapper.getDataRolePermission();
 var ErrorLib = mapper.getErrors();
 var status = mapper.getCartRequest();
 var utilLib = mapper.getUtil();
+
 var requestMail = mapper.getCartRequestMail();
+var mailSend = mapper.getCartRequestMailSend();
+
 var config = mapper.getDataConfig();
 var mail = mapper.getMail();
 var userRole = mapper.getUserRole();
@@ -1029,15 +1032,6 @@ function updateAttachmentRequest(objRequest, user_id) {
 
 }
 
-//Send Mail
-function sendResubmitMail(requestId, requester, userId) {
-    var requestMailObj = {};
-    requestMailObj.REQUEST_ID = requestId;
-    var mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), requester);
-    var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
-    mail.sendMail(emailObj, true, null);
-}
-
 //Insert changed columns data protection
 function insertDataProtectionChangedColumn(arrChangedColumns, requestId, userId) {
     var objRequestChangedColumn = {};
@@ -1327,7 +1321,7 @@ function updateRequest(reqBody, user_id) {
     
     if(request){
         //Send MAIL
-        sendResubmitMail(reqBody.REQUEST_ID, reqBody.REQUESTER, user_id);
+    	mailSend.sendResubmitMail(reqBody.REQUEST_ID, user_id);
     }
 
     return request;

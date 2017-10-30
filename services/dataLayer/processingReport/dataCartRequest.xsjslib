@@ -10,6 +10,7 @@ var GET_REQUEST_PROCESSING_REPORT_BY_ID = "GET_REQUEST_PROCESSING_REPORT_BY_ID";
 var GET_REQUEST_DATA_PROTECTION = "GET_REQUEST_DATA_PROTECTION_ANSWER_BY_REQUEST_ID"; 
 var UPD_REQUEST_STATUS = "UPD_REQUEST_STATUS";
 var GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID = "GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID";
+var GET_SPECIAL_REQUEST_MAIL_DATA_BY_REQUEST_ID = "GET_SPECIAL_REQUEST_MAIL_DATA_BY_REQUEST_ID";
 
 function getAllRequest(userId) {
     var parameters = {'in_user_id': userId};
@@ -67,11 +68,19 @@ function updateRequestStatusManual(objRequest, userId) {
     return db.executeScalarManual(UPD_REQUEST_STATUS, parameters, 'out_result');
 }
 
-function getRequestMailDataByRequestId(objRequest){
+function getRequestServiceMailDataByRequestId(objRequest){
 	var params = {};
 	params.in_request_id = objRequest.REQUEST_ID;
 	params.out_result = '?';
 	var result = db.executeProcedureManual(GET_REQUEST_SERVICE_MAIL_DATA_BY_REQUEST_ID, params);
+    return db.extractArray(result.out_result);
+}
+
+function getSpecialRequestMailDataByRequestId(objRequest){
+	var params = {};
+	params.in_request_id = objRequest.REQUEST_ID;
+	params.out_result = '?';
+	var result = db.executeProcedureManual(GET_SPECIAL_REQUEST_MAIL_DATA_BY_REQUEST_ID, params);
     return db.extractArray(result.out_result);
 }
 

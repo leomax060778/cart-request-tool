@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SERVICE" (
 	IN in_service_id bigint,
-	IN in_start_date timestamp,
-	IN in_end_date timestamp,
+	IN in_start_date nvarchar(32),
+	IN in_end_date nvarchar(32),
 	IN in_description nvarchar(255),
 	IN in_amount decimal(19,2),
 	IN in_currency_id bigint,
@@ -16,8 +16,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_SERVICE" (
 	AS
 BEGIN
 	UPDATE SER
-	SET SER.start_date = in_start_date,
-		SER.end_date = in_end_date,
+	SET SER.start_date = TO_TIMESTAMP(in_start_date, 'MM-DD-YYYY'),
+		SER.end_date = TO_TIMESTAMP(in_end_date, 'MM-DD-YYYY'),
 		SER.description = in_description,
 		SER.amount = in_amount,
 		SER.currency_id = in_currency_id,

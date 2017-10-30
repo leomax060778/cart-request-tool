@@ -5,8 +5,11 @@ var dataRService = mapper.getDataNewCartRequestService();
 var dataService = mapper.getDataService();
 var dataSpecialRequest = mapper.getDataSpecialRequest();
 var dataCurrency = mapper.getDataCurrency();
+
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
+var mailSend = mapper.getCartRequestMailSend();
+
 var dataRCostObject = mapper.getDataRequestCostObject();
 var dataRRiskFunded = mapper.getDataNewCartRequestRiskFunded();
 var dataRDataProtection = mapper.getDataRequestDataProtection();
@@ -800,13 +803,7 @@ function validateServiceType(key, value) {
 }
 
 function sendSubmitMail(newCartRequestId, userId){
-	var newCartRequestObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	newCartRequestObj.REQUEST_ID = newCartRequestId;
-	var mailObj = newCartRequestMail.parseSubmit(newCartRequestObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
-	mail.sendMail(emailObj,true,null);
+    mailSend.sendSubmitMail(newCartRequestId, userId);
 }
 
 function getUrlBase(){

@@ -18,6 +18,9 @@ var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
 var dataRequest = mapper.getDataRequest();
 
+//Cart Request email sending
+var requestMailSend = mapper.getCartRequestMailSend();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {
@@ -301,10 +304,6 @@ function validateType(key, value) {
 function sendMailByStatus(objRequest, mailData, userId) {
     if (objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)) {
         var cartRequestMailObj = {};
-        var mailObj = {};
-        var userData = businessUser.getUserById(userId)[0];
-        var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-        var additionalParam = {"PARAM": "MESSAGE"};
 
         cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
         var statusId = objRequest.STATUS_ID;
@@ -312,30 +311,38 @@ function sendMailByStatus(objRequest, mailData, userId) {
             case '3':
             case 3:
                 cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
-                mailObj = cartRequestMail.parseInProcess(cartRequestMailObj, getBasicData(pathName), requester);
+                requestMailSend.sendInProcessMail(cartRequestMailObj, userId);
                 break;
             case '4':
             case 4:
-                mailObj = cartRequestMail.parseReturnToRequest(cartRequestMailObj, getBasicData(pathName, additionalParam), requester);
+                requestMailSend.sendReturnToRequestMail(cartRequestMailObj.REQUEST_ID, userId);
                 break;
             case '5':
             case 5:
-                cartRequestMailObj.SERVICES = mailData;
-                mailObj = cartRequestMail.parseApproved(cartRequestMailObj, getBasicData(pathName), requester);
+            	if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
+            		cartRequestMailObj.SERVICES = mailData;
+            	} else {
+            		cartRequestMailObj.SPECIAL_REQUEST = mailData;
+            	}
+                cartRequestMailObj.VENDOR_NAME = objRequest.VENDOR_NAME;
+                requestMailSend.sendApprovedMail(cartRequestMailObj, userId);
                 break;
             case '6':
             case 6:
-                mailObj = cartRequestMail.parseCancelled(cartRequestMailObj, getBasicData(pathName, additionalParam), requester);
+                requestMailSend.sendCancelledMail(cartRequestMailObj, userId);
                 break;
         }
-
-        var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);
-        mail.sendMail(emailObj, true, null);
     }
 }
 
 function getRequestMailDataByRequestId(objRequest, userId) {
-    return data.getRequestMailDataByRequestId(objRequest, userId);
+	var result = {};
+	if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
+		result = data.getRequestServiceMailDataByRequestId(objRequest, userId);
+	} else {
+		result = data.getSpecialRequestMailDataByRequestId(objRequest, userId);
+	}
+	return result;
 }
 
 function getUrlBase() {

@@ -3,8 +3,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SERVICE_BY_R
   	OUT out_result TABLE (
   						request_id bigint,
   						service_id bigint,
-                      	start_date timestamp,
-                      	end_date timestamp,
+                      	start_date nvarchar(32),
+                      	end_date nvarchar(32),
                       	description nvarchar (255),
                       	amount decimal (19,2),
                       	currency_id bigint,
@@ -13,9 +13,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SERVICE_BY_R
                       	item integer,
                      	line_number nvarchar(255),
   						shopping_cart nvarchar (255), 
-  						cart_date nvarchar(32), 
+  						cart_date timestamp,
   						purchase_order_number nvarchar (127),
-  						approval_date nvarchar(32), 
+  						approval_date timestamp,
   						user_id bigint
                     	)
     
@@ -27,9 +27,9 @@ READS SQL DATA AS
 BEGIN
   va_purchase_order = SELECT 	POS.request_id, 
   								POS.shopping_cart, 
-  								TO_NVARCHAR(POS.cart_date, 'YYYY-MM-DD') AS cart_date, 
+  								POS.cart_date,
   								POS.purchase_order_number,
-  								TO_NVARCHAR(POS.approval_date, 'YYYY-MM-DD') AS approval_date,
+  								POS.approval_date,
   								POS.user_id
                     				FROM "PURCHASE_ORDER_SERVICE" POS
                       				WHERE POS.REQUEST_ID = in_request_id
@@ -37,9 +37,11 @@ BEGIN
                            				AND POS.DELETED = 0;
   out_result = SELECT DISTINCT
   				SER.request_id,
-  				SER.service_id, 
-  				SER.start_date, 
-  				SER.end_date, 
+  				SER.service_id,
+  				-- Both Start Date and End Date need to behave as Strings. No need to convert them depending on the time zone.
+  				TO_NVARCHAR(SER.start_date, 'MM-DD-YYYY') AS start_date,
+  				TO_NVARCHAR(SER.end_date, 'MM-DD-YYYY') AS end_date,
+  				-- /
   				SER.description, 
   				SER.amount, 
   				SER.currency_id, 

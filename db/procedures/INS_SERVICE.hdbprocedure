@@ -1,7 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_SERVICE" (
   IN in_request_id bigint,
-  IN in_start_date timestamp,
-  IN in_end_date timestamp,
+  IN in_start_date nvarchar(32),
+  IN in_end_date nvarchar(32),
   IN in_description nvarchar (255),
   IN in_amount decimal (19,2),
   IN in_currency_id bigint,
@@ -16,6 +16,6 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
 	 INSERT INTO "CART_REQUEST_TOOL"."SERVICE"(request_id, start_date, end_date, description, amount, currency_id, budget, item, created_user_id)
-		VALUES(in_request_id, in_start_date, in_end_date, in_description, in_amount, in_currency_id, in_budget, in_item, in_created_user_id);
+		VALUES(in_request_id, TO_TIMESTAMP(in_start_date, 'MM-DD-YYYY'),  TO_TIMESTAMP(in_end_date, 'MM-DD-YYYY'), in_description, in_amount, in_currency_id, in_budget, in_item, in_created_user_id);
 	 SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."SERVICE";
 END;
