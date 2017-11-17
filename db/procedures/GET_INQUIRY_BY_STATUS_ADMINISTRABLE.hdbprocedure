@@ -5,6 +5,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_S
   						inquiry_id integer,
   						REQUESTER nvarchar(255), 
   						status_name nvarchar(255),
+  						status_id bigint,
   						message_read integer,
   						created_user_id bigint
   						)
@@ -23,6 +24,7 @@ BEGIN
 		  						INQ.inquiry_id AS inquiry_id,
 		  						(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER,
 		  						ST.name AS status_name,
+		  						INQ.status_id,
 		  						VAM.MESSAGE_READ,
 		  						INQ.CREATED_USER_ID
               FROM "INQUIRY" INQ

@@ -13,9 +13,9 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_SERVICE_BY_R
                       	item integer,
                      	line_number nvarchar(255),
   						shopping_cart nvarchar (255), 
-  						cart_date timestamp,
+  						cart_date timestamp, 
   						purchase_order_number nvarchar (127),
-  						approval_date timestamp,
+  						approval_date timestamp, 
   						user_id bigint
                     	)
     
@@ -27,7 +27,7 @@ READS SQL DATA AS
 BEGIN
   va_purchase_order = SELECT 	POS.request_id, 
   								POS.shopping_cart, 
-  								POS.cart_date,
+  								POS.cart_date, 
   								POS.purchase_order_number,
   								POS.approval_date,
   								POS.user_id

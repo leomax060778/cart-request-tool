@@ -7,7 +7,10 @@ var vendorMessage = mapper.getVendorMessage();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
+
 var mail = mapper.getMail();
+var extendVendorMailSend = mapper.getExtendVendorMailSend();
+
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
 var dataUserRole = mapper.getDataUserRole();
@@ -21,6 +24,7 @@ var dbHelper = mapper.getdbHelper();
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var vendorType = {"EXTEND_VENDOR_REQUEST": 2};
 var pathName = "EXTEND_VENDOR_REQUEST";
+var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
@@ -30,7 +34,7 @@ function validateAccess(extend_vendor_request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var extend_vendor_request_status = extend.getExtendVendorRequestStatusByEVRId(extend_vendor_request_id);
 	
-	return !(extend_vendor_request_status.STATUS_NAME == 'Approved' || extend_vendor_request_status.STATUS_NAME == 'Cancelled');
+	return !(extend_vendor_request_status.STATUS_NAME === 'Approved' || extend_vendor_request_status.STATUS_NAME === 'Cancelled');
 }
 
 //Insert extend vendor request
@@ -42,7 +46,7 @@ function insertExtendVendorRequest(objExtendVendorRequest, userId) {
 		        	//Insert the Extend Vendor
 		        	result_id = extend.insertExtendVendorRequestManual(objExtendVendorRequest, userId);
 
-		        	if(objExtendVendorRequest.ATTACHMENTS != undefined && objExtendVendorRequest.ATTACHMENTS != null && result_id !== null){
+		        	if(objExtendVendorRequest.ATTACHMENTS !== undefined && objExtendVendorRequest.ATTACHMENTS !== null && result_id !== null){
 		           		(objExtendVendorRequest.ATTACHMENTS).forEach(function(attachment){
 		        			attachment.VENDOR_TYPE_ID = objExtendVendorRequest.VENDOR_TYPE_ID;
 		        			attachment.VENDOR_ID = result_id;
@@ -169,12 +173,12 @@ function updateExtendVendorAttachments(reqBody, user_id){
 	var original_attachments = businessAttachmentVendor.getAttachmentVendorById(params);
 
 	var originalAttachmentsToUpdate = reqBody.ATTACHMENTS;
-	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length == 0){
+	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length === 0){
 		original_attachments.forEach(function(attachment){
 			businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
 			businessAttachment.deleteManualAttachment(attachment, user_id);
 		});
-	}else if(original_attachments.length == 0 && originalAttachmentsToUpdate.length > 0){
+	}else if(original_attachments.length === 0 && originalAttachmentsToUpdate.length > 0){
 		originalAttachmentsToUpdate.forEach(function(attachment){
     		params.VENDOR_TYPE_ID = vendorType.EXTEND_VENDOR_REQUEST;
     		params.VENDOR_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
@@ -397,41 +401,32 @@ function validateType(key, value) {
 }
 
 function sendSubmitMail(extendVendorRequestId, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
-	var mailObj = extendVendorMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	extendVendorMailSend.sendSubmitMail(extendVendorRequestId, userId);
 }
 
 function sendResubmitMail(extendVendorRequestId, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequestId;
-	var mailObj = extendVendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	extendVendorMailSend.sendResubmitMail(extendVendorRequestId, userId);
 }
 
 function sendMessageMail(extendVendorRequest, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.EXTEND_VENDOR_REQUEST_ID = extendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-	var mailObj = extendVendorMail.parseFYI(vendorMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), requester);
-	
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	var messageType = Number(extendVendorRequest.MESSAGE_TYPE_ID);
+	switch(messageType){
+    case messageTypeMap.FYI_ONLY:
+    	extendVendorMailSend.sendFYIMail(extendVendorRequest, userId);
+        break;
+    case messageTypeMap.BM_EYES_ONLY:
+    	break;
+    default:
+    	extendVendorMailSend.sendMessageMail(extendVendorRequest, userId);
+        break;
+	}
 }
 
 function getUrlBase(){
 	return config.getUrlBase();
 }
 
-function getEmailList(extendVendorRequest){
+function getEmailList(){
 	return config.getEmailList();
 }
 

@@ -65,14 +65,14 @@ var UrlLogin =  getConfigurationByName("UrlLogin")[0].CONF_VALUE;//"http://rtm-b
 var Environment = getConfigurationByName("Environment")[0].CONF_VALUE;
 	
 var complete_path = {
-    "HOME": "/home",
-    "CART_REQUEST": "/CartRequest",
-    "CRT_INQUIRY": "/crtInquiry/detail",
-    "EXTEND_VENDOR_REQUEST": "/extendVendorRequest/detail",
-    "CHANGE_VENDOR_REQUEST": "/changeVendorRequest/detail",
-    "VENDOR_REQUEST": "/newVendorRequest/detail",
-    "VENDOR_INQUIRY": "/vendorInquiry/detail",
-    "PROCESSING_REPORT": "/processingReport"
+		"HOME": "/home",
+		"CART_REQUEST": "/processingReport/CartRequest",
+		"CRT_INQUIRY": "/processingReport/CrtInquiry",
+		"EXTEND_VENDOR_REQUEST": "/processingReport/ExtendVendorRequest",
+		"CHANGE_VENDOR_REQUEST": "/processingReport/ChangeVendorRequest",
+		"VENDOR_REQUEST": "/processingReport/NewVendorRequest",
+		"VENDOR_INQUIRY": "/processingReport/VendorInquiry",
+		"PROCESSING_REPORT": "/processingReport"
 };
 
 var complete_requester_path = {
@@ -152,7 +152,7 @@ function getEnvironment() {
 	return Environment;
 }
 
-function getEmailList(requestMailObj){
+function getEmailList(){
 	 return emailAccounts;
 }
 
@@ -172,12 +172,16 @@ function getAdditionalParam(param){
 	return complete_path_additional_param[param];
 }
 
-function getBasicData(stringPathName, additionalParam){
+function getBasicData(stringPathName, additionalParam, toProcessingReport){
 	var parameters = {};
 	parameters.URL_BASE = getUrlBase();
 		
 	if(stringPathName){
-		parameters.PATH = getPath(stringPathName);
+		if (toProcessingReport) {
+			parameters.PATH = getPath(stringPathName);
+		} else {
+			parameters.PATH = getRequesterPath(stringPathName);
+		}
 		parameters.ENVIRONMENT = getMailEnvironment();
 	}else{
 		parameters.ENVIRONMENT = getEnvironment();

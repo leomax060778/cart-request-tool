@@ -12,7 +12,7 @@ var mail = mapper.getMail();
 var mailSend = mapper.getCartRequestMailSend();
 
 var config = mapper.getDataConfig();
-
+ 
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
@@ -37,6 +37,8 @@ function insertRequestMessage(objRequest, userId) {
             case messageTypeMap.FYI_ONLY:
                 mailSend.sendFYIMail(objRequest.REQUEST_ID, userId);
                 break;
+            case messageTypeMap.BM_EYES_ONLY:
+            	break;
             default:
                 mailSend.sendNewMessageMail(objRequest.REQUEST_ID, userId);
                 break;
@@ -55,7 +57,6 @@ function getRequestMessage(requestId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
     }
     var result = [];
-    var objRequest = {};
     var messageContent;
 	var startPosition;
 	var requestMessageLength;
@@ -199,7 +200,7 @@ function getUrlBase(){
 	return config.getUrlBase();
 }
 
-function getEmailList(requestMailObj){
+function getEmailList(){
 	return config.getEmailList();
 }
 

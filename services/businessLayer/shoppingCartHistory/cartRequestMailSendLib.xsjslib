@@ -18,6 +18,7 @@ var mailTypeMap = {
     RESUBMIT: "resubmit",
     SUBMIT: "submit",
     NEW_MESSAGE: "newMessage",
+    CANCEL_MESSAGE: "cancelMessage",
     FYI_MESSAGE: "fyiMessage",
     RETURN_TO_REQUESTER_MESSAGE: "returnToRequesterMessage",
     STATUS_IN_PROCESS: "statusInProcess",
@@ -46,24 +47,20 @@ function getCurrentUserInformationByUserId(currentUserId){
     var currentUser = getUserInfoById(currentUserId);
 
     result.CURRENT_USER_ROLE = currentUser.ROLENAME;
-    result.CURRENT_USER_NAME = ''+currentUser.FIRST_NAME + ' '+currentUser.LAST_NAME;
+    result.CURRENT_USER_NAME = currentUser.FIRST_NAME + ' '+currentUser.LAST_NAME;
 
     return result;
 }
 
-function getBasicData(stringPathName, additionalParam, isRequester) {
-    if(additionalParam && Object.keys(additionalParam).length > 0){
-        return (isRequester)? config.getRequesterBasicData(stringPathName, additionalParam): config.getBasicData(stringPathName, additionalParam);
-    }
-
-    return (isRequester)? config.getRequesterBasicData(stringPathName): config.getBasicData(stringPathName);
+function getBasicData(stringPathName, additionalParam, isRequester, toProcessingReport) {
+	return isRequester ? config.getRequesterBasicData(stringPathName, additionalParam) : config.getBasicData(stringPathName, additionalParam, toProcessingReport);
 }
 
 function getUrlBase() {
     return config.getUrlBase();
 }
 
-function getEmailList(requestMailObj) {
+function getEmailList() {
     return config.getEmailList();
 }
 
@@ -76,12 +73,12 @@ function getPath(stringName) {
 function sendMailToRequester(requestMailObj, mailType){
     var mailObj;
     var requester = getRequesterByRequestId(requestMailObj.REQUEST_ID, requestMailObj.CURRENT_USER_ID);
-    var requesterFullName = ""+requester.FIRST_NAME+" "+requester.LAST_NAME;
+    var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
     var currentUser = getCurrentUserInformationByUserId(requestMailObj.CURRENT_USER_ID);
     requestMailObj.CURRENT_USER_ROLE = currentUser.CURRENT_USER_ROLE;
     requestMailObj.CURRENT_USER_NAME = currentUser.CURRENT_USER_NAME;
-
+    
     switch(mailType){
         case mailTypeMap.SUBMIT:
             mailObj = requestMail.parseSubmit(requestMailObj, getBasicData(pathName, {}, true), requesterFullName);
@@ -90,6 +87,9 @@ function sendMailToRequester(requestMailObj, mailType){
             mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName,{}, true), requesterFullName);
             break;
         case mailTypeMap.NEW_MESSAGE:
+            mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+            break;
+        case mailTypeMap.CANCEL_MESSAGE:
             mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
             break;
         case mailTypeMap.FYI_MESSAGE:
@@ -124,22 +124,25 @@ function sendMailToAdmin(requestMailObj, mailType){
 
     switch(mailType){
         case mailTypeMap.RESUBMIT:
-            mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName), defaultUserName);
+            mailObj = requestMail.parseResubmitted(requestMailObj, getBasicData(pathName, {}, false, true), defaultUserName);
             break;
         case mailTypeMap.SUBMIT:
-            mailObj = requestMail.parseSubmit(requestMailObj, getBasicData(pathName), defaultUserName);
+            mailObj = requestMail.parseSubmit(requestMailObj, getBasicData(pathName, {}, false, true), defaultUserName);
             break;
         case mailTypeMap.NEW_MESSAGE:
+            mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, false, true), defaultUserName);
+            break;
+        case mailTypeMap.CANCEL_MESSAGE:
             mailObj = requestMail.parseNewMessage(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), defaultUserName);
             break;
         case mailTypeMap.FYI_MESSAGE:
-            mailObj = requestMail.parseFYI(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), defaultUserName);
+            mailObj = requestMail.parseFYI(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, false, true), defaultUserName);
             break;
         case mailTypeMap.RETURN_TO_REQUESTER_MESSAGE:
-            mailObj = requestMail.parseReturnToRequest(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), defaultUserName);
+            mailObj = requestMail.parseReturnToRequest(requestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, false, true), defaultUserName);
             break;
         case mailTypeMap.STATUS_IN_PROCESS:
-            mailObj = requestMail.parseInProcess(requestMailObj, getBasicData(pathName), defaultUserName);
+            mailObj = requestMail.parseInProcess(requestMailObj, getBasicData(pathName, {}, false, true), defaultUserName);
             break;
         case mailTypeMap.STATUS_APPROVED:
             mailObj = requestMail.parseApproved(requestMailObj, getBasicData(pathName), defaultUserName);
@@ -160,8 +163,7 @@ function sendSubmitMail(newCartRequestId, userId){
     var newCartRequestObj = {};
     newCartRequestObj.REQUEST_ID = newCartRequestId;
     newCartRequestObj.CURRENT_USER_ID = userId;
-
-    sendMailToRequester(newCartRequestObj, "submit");
+    
     sendMailToAdmin(newCartRequestObj, "submit");
 }
 
@@ -170,55 +172,68 @@ function sendResubmitMail(requestId, userId) {
     var requestMailObj = {};
     requestMailObj.REQUEST_ID = requestId;
     requestMailObj.CURRENT_USER_ID = userId;
-
-    sendMailToRequester(requestMailObj, "resubmit");
+    
     sendMailToAdmin(requestMailObj, "resubmit");
 }
 
-function sendNewMessageMail(requestId, userId){
+function sendNewMessageMail(requestId, userId, fromProcessingReport){
     var requestMailObj = {};
     requestMailObj.REQUEST_ID = requestId;
     requestMailObj.CURRENT_USER_ID = userId;
 
-    sendMailToRequester(requestMailObj, "newMessage");
-    sendMailToAdmin(requestMailObj, "newMessage");
+    if (fromProcessingReport) {
+    	sendMailToRequester(requestMailObj, "newMessage");
+    } else {
+    	sendMailToAdmin(requestMailObj, "newMessage");
+    }
 }
 
-function sendFYIMail(requestId, userId){
+function sendCancelMessageMail(requestId, userId){
     var requestMailObj = {};
     requestMailObj.REQUEST_ID = requestId;
     requestMailObj.CURRENT_USER_ID = userId;
 
-    sendMailToRequester(requestMailObj, "fyiMessage");
-    sendMailToAdmin(requestMailObj, "fyiMessage");
+    sendMailToRequester(requestMailObj, "cancelMessage");
 }
 
-function sendReturnToRequestMail(requestId, userId){
+function sendFYIMail(requestId, userId, fromProcessingReport){
     var requestMailObj = {};
     requestMailObj.REQUEST_ID = requestId;
     requestMailObj.CURRENT_USER_ID = userId;
 
-    sendMailToRequester(requestMailObj, "returnToRequesterMessage");
-    sendMailToAdmin(requestMailObj, "returnToRequesterMessage");
+    if (fromProcessingReport) {
+    	sendMailToRequester(requestMailObj, "fyiMessage");
+    } else {
+    	sendMailToAdmin(requestMailObj, "fyiMessage");
+    }
+}
+
+function sendReturnToRequestMail(requestId, userId, fromProcessingReport){
+    var requestMailObj = {};
+    requestMailObj.REQUEST_ID = requestId;
+    requestMailObj.CURRENT_USER_ID = userId;
+
+    if (fromProcessingReport) {
+    	sendMailToRequester(requestMailObj, "returnToRequesterMessage");
+    } else {
+    	sendMailToAdmin(requestMailObj, "returnToRequesterMessage");
+    }
 }
 
 function sendInProcessMail(requestObj, userId){
     requestObj.CURRENT_USER_ID = userId;
 
     sendMailToRequester(requestObj, "statusInProcess");
-    sendMailToAdmin(requestObj, "statusInProcess");
 }
 
 function sendApprovedMail(requestObj, userId){
     requestObj.CURRENT_USER_ID = userId;
 
     sendMailToRequester(requestObj, "statusApproved");
-    sendMailToAdmin(requestObj, "statusApproved");
 }
 
 function sendCancelledMail(requestObj, userId){
     requestObj.CURRENT_USER_ID = userId;
 
     sendMailToRequester(requestObj, "statusCancelled");
-    sendMailToAdmin(requestObj, "statusCancelled");
 }

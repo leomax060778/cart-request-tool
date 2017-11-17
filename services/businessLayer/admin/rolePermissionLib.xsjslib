@@ -83,6 +83,11 @@ function getAllPermissionByRole() {
 			"PERMISSIONS" : rolePermissions
 		}
 
+		// Get message type permission
+		var messageTypePermission = dataRolePermission.getMessageTypePermissionByRoleId(roleId);
+		
+		rolePermissionsConfiguration.MESSAGE_TYPE_PERMISSIONS = messageTypePermission;
+		
 		jsonData.push(rolePermissionsConfiguration);
 	}
 
@@ -150,7 +155,11 @@ function getPermissionByRole(roleId) {
 			"PERMISSIONS" : rolePermissions,
 			"READONLY": roles[i].ROLE_ID == RoleEnum.SuperAdmin
 		}
-
+		// Get message type permission
+		var messageTypePermission = dataRolePermission.getMessageTypePermissionByRoleId(roleId);
+		
+		rolePermissionsConfiguration.MESSAGE_TYPE_PERMISSIONS = messageTypePermission;
+		
 		jsonData.push(rolePermissionsConfiguration);
 	}
 
@@ -259,6 +268,32 @@ function updateRolePermissionLevel(objRolePermission, userId){
 		result = dataRolePermission.updateRolePermissionLevel(objRolePermission, userId);
 	}
 	return result;
+}
+
+//Update Message Type Permission
+function updateMessageTypePermission(reqBody, roleId, userId){
+	var result;
+	var objMessageTypePermission = {};
+	if(!userId){
+		throw ErrorLib.getErrors().CustomError("",
+				"rolePermissionServices/handlePut/updateMessageTypePermission",
+				"The User ID is not found");
+	}
+	objMessageTypePermission.ROLE_ID = roleId;
+	objMessageTypePermission.RESOURCE_ID = reqBody.RESOURCE_ID;
+	objMessageTypePermission.PERMISSION_ID = reqBody.PERMISSION_ID;
+	objMessageTypePermission.ENABLED = reqBody.ENABLED;
+	if (existMessageTypePermission(objMessageTypePermission)) {
+		result = dataRolePermission.updateMessageTypePermission(objMessageTypePermission, userId);
+	} else {
+		result = dataRolePermission.insertMessageTypePermission(objMessageTypePermission, userId);
+	}
+	return result;
+}
+
+function existMessageTypePermission(objMessageTypePermission) {
+	var result = dataRolePermission.getMessageTypePermissionByRoleResource(objMessageTypePermission.ROLE_ID, objMessageTypePermission.RESOURCE_ID);
+	return result.length > 0;
 }
 
 /* Validate role permissions object */

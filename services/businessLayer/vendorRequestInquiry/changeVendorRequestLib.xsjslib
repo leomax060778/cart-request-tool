@@ -7,7 +7,10 @@ var vendorMessage = mapper.getVendorMessage();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
+
 var mail = mapper.getMail();
+var changeVendorMailSend = mapper.getChangeVendorMailSend();
+
 var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig(); 
@@ -19,6 +22,7 @@ var dataUserRole = mapper.getDataUserRole();
 var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
 var vendorType = {"CHANGE_VENDOR_REQUEST": 1};
 var pathName = "CHANGE_VENDOR_REQUEST";
+var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
 function validatePermissionByUserRole(roleData, resRequest){
 	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
@@ -28,7 +32,7 @@ function validateAccess(change_vendor_request_id, user_id){
 	var user_role = dataUserRole.getRoleNameByUserId(user_id);
 	var change_vendor_request_status = change.getChangeVendorRequestStatusByCVRId(change_vendor_request_id);
 	
-	return !(change_vendor_request_status.STATUS_NAME == 'Approved' || change_vendor_request_status.STATUS_NAME == 'Cancelled');
+	return !(change_vendor_request_status.STATUS_NAME === 'Approved' || change_vendor_request_status.STATUS_NAME === 'Cancelled');
 }
 
 //Insert change vendor request
@@ -46,7 +50,7 @@ function insertChangeVendorRequestManual(objChangeVendorRequest, userId) {
     	//Insert the Change Vendor Request
     	var result_id = change.insertChangeRequestManual(objChangeVendorRequest, userId);
 
-    	if(objChangeVendorRequest.ATTACHMENTS != undefined && objChangeVendorRequest.ATTACHMENTS != null && result_id !== null){
+    	if(objChangeVendorRequest.ATTACHMENTS !== undefined && objChangeVendorRequest.ATTACHMENTS !== null && result_id !== null){
        		(objChangeVendorRequest.ATTACHMENTS).forEach(function(attachment){
     			attachment.VENDOR_TYPE_ID = objChangeVendorRequest.VENDOR_TYPE_ID;
     			attachment.VENDOR_ID = result_id;
@@ -120,7 +124,7 @@ function getChangeVendorRequestById(changeVendorRequestId, userId, edition_mode)
 function getChangeVendorRequestByIdManual(changeVendorRequestId) {
 	var objChange = {};
     if (!changeVendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorRequestInquiryService/handleGet/getChangeVendorRequestById", changeVendorRequestId);
     }
     var resChange = change.getChangeVendorRequestByIdManual(changeVendorRequestId);
     resChange = JSON.parse(JSON.stringify(resChange));
@@ -160,12 +164,12 @@ function updateChangeVendorAttachments(reqBody, user_id){
 	var original_attachments = businessAttachmentVendor.getAttachmentVendorById(params);
 
 	var originalAttachmentsToUpdate = reqBody.ATTACHMENTS;
-	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length == 0){
+	if(original_attachments.length > 0 && originalAttachmentsToUpdate.length === 0){
 		original_attachments.forEach(function(attachment){
 			businessAttachmentVendor.deleteAttachmentVendorManual(attachment, user_id);
 			businessAttachment.deleteManualAttachment(attachment, user_id);
 		});
-	}else if(original_attachments.length == 0 && originalAttachmentsToUpdate.length > 0){
+	}else if(original_attachments.length === 0 && originalAttachmentsToUpdate.length > 0){
 		originalAttachmentsToUpdate.forEach(function(attachment){
     		params.VENDOR_TYPE_ID = vendorType.CHANGE_VENDOR_REQUEST;
     		params.VENDOR_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
@@ -349,41 +353,32 @@ function validateType(key, value) {
 }
 
 function sendSubmitMail(changeVendorRequestId, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseSubmit(vendorMailObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	var result = mail.sendEventMail(emailObj,true,null);
-	return result;
+	changeVendorMailSend.sendSubmitMail(changeVendorRequestId, userId);
 }
 
 function sendResubmitMail(changeVendorRequestId, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequestId;
-	var mailObj = changeVendorMail.parseResubmitted(vendorMailObj, getBasicData(pathName), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	changeVendorMailSend.sendResubmitMail(changeVendorRequestId, userId);
 }
 
 function sendMessageMail(changeVendorRequest, userId){
-	var vendorMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	vendorMailObj.CHANGE_VENDOR_REQUEST_ID = changeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-	var mailObj = changeVendorMail.parseFYI(vendorMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+	var messageType = Number(changeVendorRequest.MESSAGE_TYPE_ID);
+	switch(messageType){
+    case messageTypeMap.FYI_ONLY:
+    	changeVendorMailSend.sendFYIMail(changeVendorRequest, userId);
+        break;
+    case messageTypeMap.BM_EYES_ONLY:
+    	break;
+    default:
+    	changeVendorMailSend.sendMessageMail(changeVendorRequest, userId);
+        break;
+	}
 }
 
 function getUrlBase(){
 	return config.getUrlBase();
 }
 
-function getEmailList(changeVendorRequest){
+function getEmailList(){
 	return config.getEmailList();
 }
 

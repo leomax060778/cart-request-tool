@@ -70,7 +70,7 @@ function handlePost(reqBody, userId) {
 	var req;
     req = inquiry.insertInquiryMessage(reqBody, userId);
 
-    inquiry.sendMessageMail(reqBody.INQUIRY_ID, userId);
+    inquiry.sendMessageMail(reqBody, userId);
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

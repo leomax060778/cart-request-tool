@@ -24,8 +24,6 @@ var changeVendorMail = mapper.getChangeVendorMail();
 var extendVendorMail = mapper.getExtendVendorMail();
 var vendorInquiryMail = mapper.getVendorInquiryMail();
 var vendorMail = mapper.getVendorMail();
-var inquiryMail = mapper.getCrtInquiryMail();
-var requestMail = mapper.getCartRequestMail();
 
 var mail = mapper.getMail();
 
@@ -169,7 +167,6 @@ function insertInquiryMessage(objInquiry, userId) {
 	    
 	    var result = dataMessage.insertInquiryMessage(objInquiry, userId);
 	    sendMessageMail(objInquiry, pathName.CRT_INQUIRY_MAIL, userId);
-        
         return result;
     }
 }
@@ -186,18 +183,18 @@ function insertRequestMessage(objRequest, userId) {
 	    if (objRequest.SUBJECT_ID && !existSubject(objRequest.SUBJECT_ID)) {
 	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The issue type with the id " + objRequest.SUBJECT_ID + " does not exist");
 	    }
-	    if (Number(objRequest.STATUS_ID) > 0){
+	    if (Number(objRequest.STATUS_ID) > 0 && !objRequest.CANCEL_MESSAGE){
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
 	    
 	    var result = dataMessage.insertRequestMessage(objRequest, userId);
-
+	    
 	    var requestObj = getRequest.getRequestById(objRequest.REQUEST_ID, userId);
 		var createdUser = businessUser.getUserById(requestObj.REQUESTER_ID);
 		if(createdUser){
-			objRequest.CREATED_USER_EMAIL = createdUser[0].EMAIL;
+			objRequest.CREATED_USER_EMAIL = createdUser[0].EMAIL;	
 		}
-
+		
 	    sendMessageMail(objRequest, pathName.CART_REQUEST_MAIL, userId);
         
         return result;
@@ -215,7 +212,6 @@ function getInquiryMessage(inquiryId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
     }
     var result = [];
-    var objInquiry = {};
     var messageContent;
 	var startPosition;
 	var inquiryMessageLength;
@@ -259,7 +255,6 @@ function getVendorRequestMessage(vendorRequestId, userId){
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorRequestMessage", userId);
     }
     var result = [];
-    var objVendorRequest = {};
     var messageContent;
 	var startPosition;
 	var vendorRequestMessageLength;
@@ -303,7 +298,6 @@ function getChangeVendorRequestMessage(changeVendorRequestId, userId){
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getChangeVendorRequestMessage", userId);
     }
     var result = [];
-    var objChangeVendorRequest = {};
     var messageContent;
 	var startPosition;
 	var changeMessageLength;
@@ -347,7 +341,6 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId){
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getExtendVendorRequestMessage", userId);
     }
     var result = [];
-    var objExtendVendorRequest = {};
     var messageContent;
 	var startPosition;
 	var extendMessageLength;
@@ -391,7 +384,6 @@ function getRequestMessage(requestId, userId){
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "cartRequestService/handleGet/getRequestMessage", userId);
     }
     var result = [];
-    var objRequest = {};
     var messageContent;
 	var startPosition;
 	var requestMessageLength;
@@ -435,7 +427,6 @@ function getVendorInquiryMessage(vendorInquiryId, userId){
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryMessageService/handleGet/getVendorInquiryMessage", userId);
     }
     var result = [];
-    var objVendorInquiry = {};
     var messageContent = "";
 	var startPosition = 1;
 	var vendorInquiryMessageLength = 5000;
@@ -890,10 +881,10 @@ function validateType(key, value) {
             valid = value.length > 0;
             break;
         case 'MESSAGE_TYPE_ID':
-            valid = (!value) || !isNaN(value) && value > 0;
+            valid = !value || (!isNaN(value) && (value > 0));
             break;
         case 'SUBJECT_ID':
-            valid = (!value) || !isNaN(value) && value > 0;
+            valid = !value || (!isNaN(value) && (value > 0));
             break;
         case 'ADDITIONAL_MESSAGE_TYPE_INFORMATION':
             valid = (!value) || (value.length > 0 && value.length <= 255);
@@ -908,90 +899,64 @@ function validateType(key, value) {
 /** EMAIL **/
 
 function sendMessageMail(reqBody, vendor_type, userId){
-	var reqMailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	var mailObj;
-	var emailObj;
-	var additionalParam = {"PARAM": "MESSAGE"};
-	if (vendor_type === "CART_REQUEST") {
-    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-			requestMailSend.sendFYIMail(reqBody.REQUEST_ID, userId);
-    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-            requestMailSend.sendReturnToRequestMail(reqBody.REQUEST_ID, userId);
-    	} else {
-			requestMailSend.sendNewMessageMail(reqBody.REQUEST_ID, userId);
-    	}
-	} else {
-		switch(vendor_type) {
-		    case "CHANGE_VENDOR_REQUEST":
-		    	reqMailObj.CHANGE_VENDOR_REQUEST_ID = reqBody.CHANGE_VENDOR_REQUEST_ID;
-		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-		    		mailObj = changeVendorMail.parseFYI(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-		    		mailObj = changeVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-		    	} else {
-		    		mailObj = changeVendorMail.parseMessage(reqMailObj, getBasicData(pathName.CHANGE_VENDOR_MAIL, additionalParam), requester);
-		    	}
-		        break;
-		    case "EXTEND_VENDOR_REQUEST":
-		    	reqMailObj.EXTEND_VENDOR_REQUEST_ID = reqBody.EXTEND_VENDOR_REQUEST_ID;
-		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-		    		mailObj = extendVendorMail.parseFYI(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-		    		mailObj = extendVendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-		    	} else {
-		    		mailObj = extendVendorMail.parseMessage(reqMailObj, getBasicData(pathName.EXTEND_VENDOR_MAIL, additionalParam), requester);
-		    	}
-		        break;
-		    case "VENDOR_INQUIRY":
-		    	reqMailObj.VENDOR_INQUIRY_ID = reqBody.VENDOR_INQUIRY_ID;
-		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-		    		mailObj = vendorInquiryMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-		    		mailObj = vendorInquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-		    	} else {
-		    		mailObj = vendorInquiryMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_INQUIRY_MAIL, additionalParam), requester);
-		    	}
-		        break;
-		    case "VENDOR_REQUEST":
-		    	reqMailObj.REQUEST_ID = reqBody.VENDOR_REQUEST_ID;
-		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-		    		mailObj = vendorMail.parseFYI(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-		    		mailObj = vendorMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-		    	} else {
-		    		mailObj = vendorMail.parseMessage(reqMailObj, getBasicData(pathName.VENDOR_REQUEST_MAIL, additionalParam), requester);
-		    	}
-		        break;
-		    case "CRT_INQUIRY":
-		    	reqMailObj.INQUIRY_ID = reqBody.INQUIRY_ID;
-		    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
-		    		mailObj = inquiryMail.parseFYI(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-		    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
-		    		mailObj = inquiryMail.parseReturnToRequest(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-		    	} else {
-		    		mailObj = inquiryMail.parseMessage(reqMailObj, getBasicData(pathName.CRT_INQUIRY_MAIL, additionalParam), requester);
-		    	}
-				break;
-		}
-		emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);         
-		return mail.sendMail(emailObj,true,null);
+	switch(vendor_type) {
+	    case "CHANGE_VENDOR_REQUEST":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+                changeVendorMailSend.sendFYIMail(reqBody, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+                changeVendorMailSend.sendReturnToRequestMail(reqBody.CHANGE_VENDOR_REQUEST_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+                changeVendorMailSend.sendMessageMail(reqBody, userId, true);
+	    	}
+	        break;
+	    case "EXTEND_VENDOR_REQUEST":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+	    		extendVendorMailSend.sendFYIMail(reqBody, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+                extendVendorMailSend.sendReturnToRequestMail(reqBody.EXTEND_VENDOR_REQUEST_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+                extendVendorMailSend.sendMessageMail(reqBody, userId, true);
+	    	}
+	        break;
+	    case "VENDOR_INQUIRY":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+                vendorInquiryMailSend.sendFYIMail(reqBody, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+                vendorInquiryMailSend.sendReturnToRequestMail(reqBody.VENDOR_INQUIRY_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+                vendorInquiryMailSend.sendMessageMail(reqBody, userId, true);
+	    	}
+	        break;
+	    case "VENDOR_REQUEST":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+	    		vendorRequestMailSend.sendFYIMail(reqBody, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+                vendorRequestMailSend.sendReturnToRequestMail(reqBody.VENDOR_REQUEST_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+                vendorRequestMailSend.sendMessageMail(reqBody, userId, true);
+	    	}
+	        break;
+	    case "CRT_INQUIRY":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+	    		inquiryMailSend.sendFYIMail(reqBody, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+	    		inquiryMailSend.sendReturnToRequestMail(reqBody.INQUIRY_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+	    		inquiryMailSend.sendNewMessageMail(reqBody, userId, true);
+	    	}
+			break;
+	    case "CART_REQUEST":
+	    	if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.FYI_ONLY){
+				requestMailSend.sendFYIMail(reqBody.REQUEST_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) === messageTypeMap.REQUEST_RESPONSE){
+                requestMailSend.sendReturnToRequestMail(reqBody.REQUEST_ID, userId, true);
+	    	} else if (Number(reqBody.MESSAGE_TYPE_ID) !== messageTypeMap.BM_EYES_ONLY) {
+	    		if (reqBody.CANCEL_MESSAGE) {
+	    			requestMailSend.sendCancelMessageMail(reqBody.REQUEST_ID, userId);
+	    		} else {
+	    			requestMailSend.sendNewMessageMail(reqBody.REQUEST_ID, userId, true);
+	    		}
+	    	}
+	    	break;
 	}
-}
-
-function getUrlBase(){
-	return config.getUrlBase();
-}
-
-function getEmailList(changeVendorRequest){
-	return config.getEmailList();
-}
-
-function getPath(stringName){
-	return config.getPath(stringName);
-}
-
-function getBasicData(stringPathName, additionalParam){
-	return config.getBasicData(stringPathName, additionalParam);
 }
