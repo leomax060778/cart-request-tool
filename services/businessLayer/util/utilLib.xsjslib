@@ -92,3 +92,36 @@ function validateDateEndMayorStart(dateStart,dateEnd)
 	}
 	return false;
 }
+
+/**
+ * @param {string} dateFormat - receives the format to parse the date
+ * @returns {string} - return formatted current date
+ */
+function getCurrentFormattedDate(dateFormat) {
+    var currentDate = new Date();
+    var year = currentDate.getFullYear();
+    var month = currentDate.getMonth() + 1;
+    var day = currentDate.getDate();
+    var hours = currentDate.getHours();
+    var minutes = currentDate.getMinutes();
+    var currentFormattedDate = "";
+    switch (dateFormat) {
+        case "YYYY-MM-DD":
+            currentFormattedDate = year + "-" + ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2);
+            break;
+        case "YYYY-DD-MM":
+            currentFormattedDate = year + "-" + ("0" + day).slice(-2) + "-" + ("0" + month).slice(-2);
+            break;
+        case "MM-DD-YYYY":
+            currentFormattedDate = ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2) + "-" + year;
+            break;
+        case "MM-DD-YYYY HH:MI":
+        	currentFormattedDate = ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2) + "-" + year + " " + ("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2) + " (GMT+0)";
+            break;
+        default:
+            //Currently the default format is MM-DD-YYYY HH:MI
+            currentFormattedDate = ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2) + "-" + year + " " + ("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2) + " (GMT+0)";
+            break;
+    }
+    return currentFormattedDate;
+}

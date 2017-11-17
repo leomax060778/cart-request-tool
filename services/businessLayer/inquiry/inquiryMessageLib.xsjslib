@@ -10,9 +10,14 @@ var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
 var config = mapper.getDataConfig();
 
+//CRT Inquiry email sending
+var inquiryMailSend = mapper.getCrtInquiryMailSend();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var statusMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
+
 var pathName = "CRT_INQUIRY";
 
 //Insert message
@@ -170,21 +175,26 @@ function validateType(key, value) {
     return valid;
 }
 
-function sendMessageMail(inquiryId, userId){
-	var inquiryMailObj = {};
-	inquiryMailObj.INQUIRY_ID = inquiryId;
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	var mailObj = inquiryMail.parseMessage(inquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}), requester);
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
+function sendMessageMail(objInquiry, userId){
+    var messageType = Number(objInquiry.MESSAGE_TYPE_ID);
+
+    switch(messageType){
+        case messageTypeMap.FYI_ONLY:
+            inquiryMailSend.sendFYIMail(objInquiry, userId);
+            break;
+        case messageTypeMap.BM_EYES_ONLY:
+        	break;
+        default:
+            inquiryMailSend.sendNewMessageMail(objInquiry, userId);
+            break;
+    }
 }
 
 function getUrlBase(){
 	return config.getUrlBase();
 }
 
-function getEmailList(inquiryMailObj){
+function getEmailList(){
 	return config.getEmailList();
 }
 

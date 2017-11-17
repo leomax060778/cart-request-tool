@@ -11,6 +11,14 @@ var spInsertRolePermission = "INS_ROLE_PERMISSION";
 var spUpdateRolePermission = "UPD_ROLE_PERMISSION";
 var spUpdateRolePermissionLevel = "UPD_ROLE_PERMISSION_LEVEL";
 
+/** *********************Message Type Permission Sp************************* */
+var GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_RESOURCE = "GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_RESOURCE";
+var GET_MESSAGE_TYPE_PERMISSION_BY_USER_ROLE_ID = "GET_MESSAGE_TYPE_PERMISSION_BY_USER_ROLE_ID";
+var GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_ID = "GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_ID";
+var INS_MESSAGE_TYPE_PERMISSION = "INS_MESSAGE_TYPE_PERMISSION";
+var UPD_MESSAGE_TYPE_PERMISSION = "UPD_MESSAGE_TYPE_PERMISSION";
+/** ********************* END ************************* */
+
 function getPermissionByRole(roleId) {
 	if (!!roleId) {
 		var rdo = db.executeProcedure(spGetRolePermissionByRole, {
@@ -91,4 +99,49 @@ function updateRolePermissionLevel(objRolePermission, userId){
 	parameters.in_modified_user_id = userId;
 
 	return db.executeScalar(spUpdateRolePermissionLevel, parameters, "out_result");
+}
+
+/** *********************Message Type Permission************************* */
+
+function getMessageTypePermissionByRoleResource(roleId, resourceId) {
+	var parameters = {};
+	parameters.in_role_id = roleId;
+	parameters.in_resource_id = resourceId; 
+	var result = db.executeProcedure(GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_RESOURCE, parameters);
+	return db.extractArray(result.out_result);
+}
+
+function getMessageTypePermissionByUserRole(userId) {
+	var parameters = {};
+	parameters.in_user_id = userId; 
+	var result = db.executeProcedure(GET_MESSAGE_TYPE_PERMISSION_BY_USER_ROLE_ID, parameters);
+	return db.extractArray(result.out_result);
+}
+
+function getMessageTypePermissionByRoleId(roleId) {
+	var parameters = {};
+	parameters.in_role_id = roleId; 
+	var result = db.executeProcedure(GET_MESSAGE_TYPE_PERMISSION_BY_ROLE_ID, parameters);
+	return db.extractArray(result.out_result);
+}
+
+function insertMessageTypePermission(objMessageTypePermission, userId) {
+	var parameters = {};
+	parameters.in_role_id = objMessageTypePermission.ROLE_ID;
+	parameters.in_resource_id = objMessageTypePermission.RESOURCE_ID;
+	parameters.in_permission_id = objMessageTypePermission.PERMISSION_ID;
+	parameters.in_enabled = objMessageTypePermission.ENABLED;
+	parameters.in_created_user_id = userId;
+
+	return db.executeScalar(INS_MESSAGE_TYPE_PERMISSION, parameters, "out_result");
+}
+
+function updateMessageTypePermission(objMessageTypePermission, userId){
+	var parameters = {};
+	parameters.in_role_id = objMessageTypePermission.ROLE_ID;
+	parameters.in_resource_id = objMessageTypePermission.RESOURCE_ID;
+	parameters.in_enabled = objMessageTypePermission.ENABLED;
+	parameters.in_modified_user_id = userId;
+
+	return db.executeScalar(UPD_MESSAGE_TYPE_PERMISSION, parameters, "out_result");
 }

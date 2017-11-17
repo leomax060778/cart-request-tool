@@ -5,6 +5,7 @@ var dataRService = mapper.getDataNewCartRequestService();
 var dataService = mapper.getDataService();
 var dataSpecialRequest = mapper.getDataSpecialRequest();
 var dataCurrency = mapper.getDataCurrency();
+var requestMessage = mapper.getRequestMessage();
 
 var businessSpecialRequest = mapper.getSpecialRequest();
 var businessNonSap = mapper.getNonSapVendor();
@@ -26,6 +27,12 @@ var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 
 var pathName = "CART_REQUEST";
+var noteTypeMap = {
+		"VENDOR_TEXT": 1,
+		"INTERNAL_NOTE": 2,
+		"APPROVER_NOTE": 3,
+		"MESSAGE_TO_BUSINESS": 5
+		};
 
 //Delete Attachment from New Cart Request section
 function deleteAttachment(reqBody, userId){
@@ -138,6 +145,7 @@ function insertManualNonSapVendor(objVendor, user_id){
 }
 
 function insertRequest(reqBody, user_id){
+	var requestMessageObj = {};
 	try{
 		//Infrastructure & Location logic
 		if(reqBody.INFRASTRUCTURE_OF_WORK_ID == 0 || reqBody.LOCATION_OF_WORK_ID == 0){
@@ -187,8 +195,17 @@ function insertRequest(reqBody, user_id){
 			(reqBody.ATTACHMENTS).forEach(function(attachment){
 				insertAttachmentRequest(attachment, request, user_id);
 			});
+			
 			if(reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0){
-				(reqBody.NOTES).forEach(function(note_request){
+				reqBody.NOTES.forEach(function(note_request){
+					//TODO: review this, note types are dynamics and the note type with id 4 is deleted
+					if (Number(note_request.NOTE_TYPE_ID) === noteTypeMap.MESSAGE_TO_BUSINESS) {
+						requestMessageObj.REQUEST_ID = request;
+						requestMessageObj.PREVIOUS_STATUS_ID = 1;
+						requestMessageObj.MESSAGE_CONTENT = "<p>" + note_request.NOTE_TEXT + "</p>";
+						requestMessage.insertRequestMessage(requestMessageObj, user_id);
+					}
+					
 					insertNoteRequest(note_request, request, user_id);
 				});
 			}

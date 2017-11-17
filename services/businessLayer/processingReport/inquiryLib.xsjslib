@@ -11,6 +11,9 @@ var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
 
+//CRT Inquiry email sending
+var inquiryMailSend = mapper.getCrtInquiryMailSend();
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
 var pathName = "CRT_INQUIRY";
@@ -168,26 +171,19 @@ function validateType(key, value) {
 
 function sendMailByStatus(inquiryId, statusId, userId){
 	var inquiryMailObj = {};
-	var mailObj = {};
-	var userData = businessUser.getUserById(userId)[0];
-	var requester = userData.FIRST_NAME + ' ' + userData.LAST_NAME + ' (' + userData.USER_NAME + ')';
-	var additionalParam = {"PARAM": "MESSAGE"};
-	
 	inquiryMailObj.INQUIRY_ID = inquiryId;
+	
 	switch (statusId) {
 	case '2':
-		mailObj = inquiryMail.parseReturnToRequest(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
+		inquiryMailSend.sendReturnToRequestMail(inquiryMailObj.INQUIRY_ID, userId);
 		break;
 	case '3':
-		mailObj = inquiryMail.parseCompleted(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
+		inquiryMailSend.sendCompletedMail(inquiryMailObj, userId);
 		break;
 	case '4':
-		mailObj = inquiryMail.parseCancelled(inquiryMailObj, getBasicData(pathName, additionalParam), requester);
+		inquiryMailSend.sendCancelledMail(inquiryMailObj, userId);
 		break;
 	}
-	
-	var emailObj = mail.getJson(getEmailList({}), mailObj.subject, mailObj.body, null, null);        	
-	mail.sendMail(emailObj,true,null);
 }
 
 function getUrlBase(){

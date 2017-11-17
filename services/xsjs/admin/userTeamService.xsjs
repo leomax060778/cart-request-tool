@@ -12,25 +12,25 @@ var GET_ALL_SELECTED_TEAMS_BY_USER_ID = "GET_ALL_SELECTED_TEAMS_BY_USER_ID";
 var service_name = "userTeamService";
 
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+	httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
 }
 
 function handleGet(parameters,userId) {
     var res = {};
     if (parameters.length > 0) {
         if (parameters[0].name === GET_TEAM_BY_USER_ID_BUDGET_YEAR) {
-            var objRequest = paramsToObj(parameters,["BUDGET_YEAR_ID","USER_ID"]);
+        	var objRequest = paramsToObj(parameters,["BUDGET_YEAR_ID","USER_ID"]);
             res = userTeam.getSelectedTeamsByUserBudgetYear(objRequest,userId);
         } else if (parameters[0].name === GET_ALL_SELECTED_TEAMS_BY_USER_ID) {
-            if(!parameters[0].value || isNaN(parameters[0].value)){
+        	if(!parameters[0].value || isNaN(parameters[0].value)){
                 throw ErrorLib.getErrors().BadRequest(
-                    "",
-                    "userTeamService/handleGet",
-                    "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
-                );
-            } else {
-                res = userTeam.getAllSelectedTeamsByUserId(parameters[0].value);
-            }
+                        "",
+                        "userTeamService/handleGet",
+                        "invalid value \'" + parameters[0].value + "\' for parameter " + parameters[0].name + " (must be a valid id)"
+                    );
+                } else {
+                	res = userTeam.getAllSelectedTeamsByUserId(parameters[0].value);
+                }
         } else {
             throw ErrorLib.getErrors().BadRequest(
                 "",
@@ -55,23 +55,23 @@ function handlePut(reqBody, userId) {
 
 //Not Implemented Method
 function handleDelete() {
-    return httpUtil.notImplementedMethod();
+   return httpUtil.notImplementedMethod();
 }
 
 //Not Implemented Method
 function handlePost() {
-    return httpUtil.notImplementedMethod();
+   return httpUtil.notImplementedMethod();
 }
 
 function paramsToObj(params,paramsArray){
-    var elements = {};
-    Object.keys(params).forEach(function(key) {
-        var value = params[key];
-        if(paramsArray.indexOf(value.name) > -1){
-            elements[value.name] = value.value;
-        }
-    });
-    return elements;
+	var elements = {};
+	Object.keys(params).forEach(function(key) {
+		var value = params[key];
+		if(paramsArray.indexOf(value.name) > -1){
+			elements[value.name] = value.value;
+		}
+	});
+	return elements;
 }
 
 processRequest();

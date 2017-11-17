@@ -1179,6 +1179,8 @@ function updateRequest(reqBody, user_id) {
     var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
     var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
     var request;
+    var notes = [];
+    var originalNotes = [];
     var changedColumns = reqBody.CHANGED_FIELDS;
     try {
         //Insert changed columns
@@ -1219,10 +1221,27 @@ function updateRequest(reqBody, user_id) {
 
         //NOTES UPDATE
         if (reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0) {
-            updateNotes(original_request.NOTES, reqBody.NOTES, original_request.REQUEST_ID, user_id);
+        	if(original_request.NOTES && original_request.NOTES.length > 0) {
+	        	original_request.NOTES.forEach(function (elem) {
+	        		if (Number(elem.NOTE_TYPE_ID) !== 5){
+	        			originalNotes.push(elem);
+	        		}
+	        	});
+        	}
+        	reqBody.NOTES.forEach(function (elem) {
+        		if (Number(elem.NOTE_TYPE_ID) !== 5){
+        			notes.push(elem);
+        		}
+        	});
+            updateNotes(originalNotes, notes, original_request.REQUEST_ID, user_id);
 
         } else if (original_request.NOTES.length > 0) {
-            deleteNotes(reqBody.NOTES, user_id);
+        	reqBody.NOTES.forEach(function (elem) {
+        		if (Number(elem.NOTE_TYPE_ID) !== 5){
+        			notes.push(elem);
+        		}
+        	});
+            deleteNotes(notes, user_id);
         }
 
         //COST OBJECT UPDATE

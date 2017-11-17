@@ -8,7 +8,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_I
   						topic_id bigint, 
   						topic_description nvarchar(255),
   						inquiry_text nvarchar (1000),
-  						iso nvarchar(2)
+  						iso nvarchar(2),
+  						status_id bigint
   						)
 )
 LANGUAGE SQLSCRIPT
@@ -24,7 +25,8 @@ BEGIN
   						INQ.topic_id, 
   						TP.description as topic_description,
   						INQ.inquiry_text,
-  						CRTT.ISO as iso
+  						CRTT.ISO as iso,
+  						INQ.STATUS_ID
               FROM "INQUIRY" INQ
               INNER JOIN "USER" US ON INQ.user_id = US.user_id
               INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id
