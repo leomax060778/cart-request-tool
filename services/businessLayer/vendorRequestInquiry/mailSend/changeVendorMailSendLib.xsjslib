@@ -5,7 +5,7 @@ var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 
 var userLib = mapper.getUser();
-var dataChangeVendor = mapper.getDataChangeVendorRequest();
+var businessChangeVendor = mapper.getChangeVendorRequest();
 
 var mail = mapper.getMail();
 var changeVendorMail = mapper.getChangeVendorMail();
@@ -34,8 +34,8 @@ function getUserInfoById(requesterId){
     return (userData.length > 0)? userData[0]: null;
 }
 
-function getRequesterByChangeVendorRequestId(changeVendorRequestId){
-    var changeVendor = dataChangeVendor.getChangeVendorRequestById(changeVendorRequestId);
+function getRequesterByChangeVendorRequestId(changeVendorRequestId, currentUserId){
+    var changeVendor = businessChangeVendor.getChangeVendorRequestById(changeVendorRequestId, currentUserId);
     if(changeVendor){
         return getUserInfoById(changeVendor.CREATED_USER_ID);
     }

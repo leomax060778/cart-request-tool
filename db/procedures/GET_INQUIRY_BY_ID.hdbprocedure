@@ -1,5 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_ID" (
   IN in_inquiry_id bigint,
+  IN in_permission_id bigint,
+  IN in_resource_id bigint,
+  IN in_user_id bigint,
   OUT out_result TABLE (inquiry_id bigint,
   						user_name nvarchar(255),
   						first_name nvarchar(255), 
@@ -9,7 +12,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_INQUIRY_BY_I
   						topic_description nvarchar(255),
   						inquiry_text nvarchar (1000),
   						iso nvarchar(2),
-  						status_id bigint
+  						status_id bigint,
+  						editable boolean
   						)
 )
 LANGUAGE SQLSCRIPT
@@ -17,6 +21,16 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
+
+  va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+							INNER JOIN "ROLE_PERMISSION" RP 
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
+						WHERE USR.USER_ID = in_user_id;
+
   out_result = SELECT INQ.inquiry_id,
   						US.user_name, 
   						US.first_name, 
@@ -26,12 +40,13 @@ BEGIN
   						TP.description as topic_description,
   						INQ.inquiry_text,
   						CRTT.ISO as iso,
-  						INQ.STATUS_ID
+  						INQ.STATUS_ID,
+  						(CASE WHEN (INQ.STATUS_ID = 3 OR INQ.STATUS_ID = 4) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
               FROM "INQUIRY" INQ
               INNER JOIN "USER" US ON INQ.user_id = US.user_id
               INNER JOIN "TOPIC" TP ON INQ.topic_id = TP.topic_id
               INNER JOIN "CRT_TYPE" CRTT ON CRTT.CRT_TYPE_ID = 1
-              						
+              INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
                WHERE INQ.INQUIRY_ID = in_inquiry_id 
                      AND INQ.ENABLED = 1 
                      AND INQ.DELETED = 0;

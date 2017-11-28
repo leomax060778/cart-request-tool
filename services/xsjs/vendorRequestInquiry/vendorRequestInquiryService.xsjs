@@ -33,6 +33,7 @@ function processRequest() {
 /**
  *
  * @param {object} parameters
+ * @param userId
  * @param {void} [parameters.GET_ALL_VENDOR_REQUEST_INQUIRY] - get all
  * @param {string} [parameters.GET_VENDOR_INQUIRY_BY_ID] - get by id
  * @param {string} [parameters.GET_VENDOR_REQUEST_BY_ID] - get by id
@@ -42,6 +43,8 @@ function processRequest() {
  */
 function handleGet(parameters, userId) {
     var res = {};
+    var resSelection;
+    var resChange;
     if (parameters.length > 0) {
         if (parameters[0].name === GET_ALL_VENDOR_REQUEST_INQUIRY) {
             res = requestInquiry.getAllVendorRequestInquiry(userId);
@@ -101,11 +104,11 @@ function handleGet(parameters, userId) {
                 );
             } else {
             	if (parameters[1] && parameters[1].name === EDITION_MODE) {
-            		var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                    var resChange = change.getChangeVendorRequestById(parameters[0].value, userId, parameters[1].value);
+            		resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
+                    resChange = change.getChangeVendorRequestById(parameters[0].value, userId, parameters[1].value);
             	}else{
-            		var resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
-                    var resChange = change.getChangeVendorRequestById(parameters[0].value, userId);           
+            		resSelection = selection.getChangeSelectionByIdManual(parameters[0].value);
+                    resChange = change.getChangeVendorRequestById(parameters[0].value, userId);
                 }
             	res = {'changeVendor': resChange, 'selection': resSelection};
             }

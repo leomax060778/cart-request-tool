@@ -19,25 +19,23 @@ var inquiryMailSend = mapper.getCrtInquiryMailSend();
 
 var pathName = "CRT_INQUIRY";
 
+var resourceMap = {'CRT_INQUIRY': 7};
+var permissionMap = {'CREATE_EDIT': 10};
+
+var permissionData = {
+		RESOURCE_ID: resourceMap.CRT_INQUIRY, 
+		PERMISSION_ID: permissionMap.CREATE_EDIT
+		};
+
 function validatePermissionByUserRole(roleData, resRequest) {
     return (roleData.ROLE_ID !== "2") ? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
 }
 
-function validateAccess(inquiry_id, user_id) {
-    var user_role = dataUserRole.getRoleNameByUserId(user_id);
-    var inquiry_status = dataInquiry.getInquiryStatusByInquiryId(inquiry_id);
-
-    if (user_role.ROLE_NAME !== 'SuperAdmin') {
-        return !(inquiry_status.STATUS_NAME === 'Completed' || inquiry_status.STATUS_NAME === 'Cancelled');
-    } else {
-        return true;
-    }
-}
-
 //Insert inquiry
 function insertInquiry(objInquiry, userId) {
+	var resInquiry;
     if (validateInsertInquiry(objInquiry, userId)) {
-        var resInquiry = dataInquiry.insertInquiryManual(objInquiry, userId);
+        resInquiry = dataInquiry.insertInquiryManual(objInquiry, userId);
         objInquiry.INQUIRY_ID = resInquiry;
         objInquiry.MESSAGE_CONTENT = "<p>" + objInquiry.INQUIRY_TEXT + "</p>";
         objInquiry.ATTACHMENTS.forEach(function (attachment) {
@@ -51,16 +49,14 @@ function insertInquiry(objInquiry, userId) {
 
 //Get inquiry by id
 function getInquiryById(inquiryId, userId, edition_mode) {
-
-    if (edition_mode && !validateAccess(inquiryId, userId)) {
+	var roleData = userRole.getUserRoleByUserId(userId);
+    var inquiry = dataInquiry.getInquiryById(inquiryId, permissionData, userId);
+    if (edition_mode && !inquiry.EDITABLE) {
         throw ErrorLib.getErrors().BadRequest(
             "Unauthorized request.",
             "inquiryService/handleGet/getInquiryById",
             '{"EDIT_PERMISSION_ERROR": "inquiry"}');
     }
-
-    var roleData = userRole.getUserRoleByUserId(userId);
-    var inquiry = dataInquiry.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
 
     if (validatePermissionByUserRole(roleData[0], inquiry)) {
@@ -84,8 +80,8 @@ function getInquiryLastId() {
 }
 
 //Get inquiry by id manually
-function getInquiryByIdManual(inquiryId) {
-    var inquiry = dataInquiry.getInquiryByIdManual(inquiryId);
+function getInquiryByIdManual(inquiryId, userId) {
+    var inquiry = dataInquiry.getInquiryByIdManual(inquiryId, permissionData, userId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
 
     inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiry.INQUIRY_ID);
@@ -99,7 +95,7 @@ function getAllInquiry(userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getAllInquiry", userId);
     }
     var inquiry = [];
-    inquiry = dataInquiry.getAllInquiry(userId);
+    inquiry = dataInquiry.getAllInquiry(permissionData, userId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
     inquiry.forEach(function (elem) {
         if (elem.MESSAGE_READ > 0) {
@@ -226,15 +222,15 @@ function deleteInquiry(objInquiry, userId) {
     if (!objInquiry.INQUIRY_ID) {
         throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/deleteInquiry", "The INQUIRY_ID is not found");
     }
-    if (!existInquiry(objInquiry.INQUIRY_ID)) {
+    if (!existInquiry(objInquiry.INQUIRY_ID, userId)) {
         throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/deleteInquiry", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
     }
     return dataInquiry.deleteInquiry(objInquiry, userId);
 }
 
 //Check if the inquiry exists
-function existInquiry(inquiryId) {
-    return Object.keys(getInquiryByIdManual(inquiryId)).length > 0;
+function existInquiry(inquiryId, userId) {
+    return Object.keys(getInquiryByIdManual(inquiryId, userId)).length > 0;
 }
 
 //Validate insert inquiry
@@ -354,7 +350,7 @@ function getUrlBase() {
     return config.getUrlBase();
 }
 
-function getEmailList(inquiryMailObj) {
+function getEmailList() {
     return config.getEmailList();
 }
 

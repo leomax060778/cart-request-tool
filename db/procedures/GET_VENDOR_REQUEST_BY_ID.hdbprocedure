@@ -1,5 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_BY_ID" (	
 	IN in_vendor_request_id bigint,
+	IN in_permission_id bigint,
+  	IN in_resource_id bigint,
+  	IN in_user_id bigint,
 	OUT out_result TABLE (vendor_request_id bigint,
 							iso nvarchar(2),
 							user_name nvarchar(255),
@@ -48,13 +51,26 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUE
 						    receiver_modified_date_tz timestamp,
 						    vendor_id bigint,
 						    BUDGET_YEAR integer,
-						    additional_information_flag tinyint)
+						    additional_information_flag tinyint,
+						    EDITABLE boolean
+						    )
+							
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
+
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+							INNER JOIN "ROLE_PERMISSION" RP
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
+						WHERE USR.USER_ID = in_user_id;
+
 	out_result = SELECT VR.VENDOR_REQUEST_ID,
 						VT.ISO,
 					    US.USER_NAME,
@@ -103,7 +119,8 @@ BEGIN
 					    VR.RECEIVER_MODIFIED_DATE_TZ AS RECEIVER_MODIFIED_DATE_TZ,
 					    VR.VENDOR_ID,
 					    BUDGET_YEAR.BUDGET_YEAR,
-					    VR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG
+					    VR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG,
+                        (CASE WHEN (VR.STATUS_ID = 5 OR VR.STATUS_ID = 6) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
 	FROM "VENDOR_REQUEST" VR
 		INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.VENDOR_ID
 		LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID
@@ -115,6 +132,7 @@ BEGIN
 		INNER JOIN "CURRENCY" PCUR ON VR.PURCHASE_CURRENCY_ID = PCUR.CURRENCY_ID
 		LEFT JOIN "CURRENCY" ECUR ON VR.EXPECTED_CURRENCY_ID = ECUR.CURRENCY_ID
 		INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR = PCUR.CURRENCY_YEAR
+        INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
 	WHERE in_vendor_request_id = VR.VENDOR_REQUEST_ID
 		AND VR.deleted = 0
 		AND VR.enabled = 1;

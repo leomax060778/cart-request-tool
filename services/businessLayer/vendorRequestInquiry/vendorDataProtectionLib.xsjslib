@@ -40,7 +40,7 @@ function getDataProtectionById(vendorRequestId) {
 
 //Update answer of vendor data protection manually
 function updateDataProtectionManual(objDataProtection, vendor_request_id, userId) {
-    if (!vendorRequest.existVendorRequest(vendor_request_id)) {
+    if (!vendorRequest.existVendorRequest(vendor_request_id, userId)) {
         throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateDataProtectionManual", "The object Vendor Request " + objDataProtection.VENDOR_REQUEST_ID + " does not exist");
     }
     validateParams(vendor_request_id, userId);

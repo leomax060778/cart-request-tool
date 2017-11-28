@@ -42,8 +42,11 @@ function getAllVendorInquiry() {
 }
 
 //Get by id
-function getVendorInquiryById(vendorInquiryId) {
+function getVendorInquiryById(vendorInquiryId, permissionData, userId) {
     var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedure(GET_VENDOR_INQUIRY_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
@@ -54,8 +57,11 @@ function getVendorInquiryById(vendorInquiryId) {
 }
 
 //Get Vendor Inquiry by id manually
-function getVendorInquiryByIdManual(vendorInquiryId) {
+function getVendorInquiryByIdManual(vendorInquiryId, permissionData, userId) {
     var parameters = {'in_vendor_inquiry_id': vendorInquiryId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedureManual(GET_VENDOR_INQUIRY_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
 

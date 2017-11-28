@@ -5,7 +5,7 @@ var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 
 var userLib = mapper.getUser();
-var dataVendorInquiry = mapper.getDataVendorInquiry();
+var businessVendorInquiry = mapper.getVendorInquiry();
 
 var mail = mapper.getMail();
 var vendorInquiryMail = mapper.getVendorInquiryMail();
@@ -33,8 +33,8 @@ function getUserInfoById(requesterId){
     return (userData.length > 0)? userData[0]: null;
 }
 
-function getRequesterByVendorInquiryId(vendorInquiryId){
-    var inquiry = dataVendorInquiry.getVendorInquiryById(vendorInquiryId);
+function getRequesterByVendorInquiryId(vendorInquiryId, currentUserId){
+    var inquiry = businessVendorInquiry.getVendorInquiryById(vendorInquiryId, currentUserId);
     if(inquiry){
         return getUserInfoById(inquiry.CREATED_USER_ID);
     }

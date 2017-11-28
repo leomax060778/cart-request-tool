@@ -66,8 +66,11 @@ function getAllExtendVendorRequest() {
 }
 
 //Get by ID
-function getExtendVendorRequestById(extendVendorRequestId) {
+function getExtendVendorRequestById(extendVendorRequestId, permissionData, userId) {
     var parameters = {'in_extend_vendor_request_id': extendVendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedure(GET_EXTEND_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
@@ -78,8 +81,11 @@ function getExtendVendorRequestById(extendVendorRequestId) {
 }
 
 //Get extend vendor request by ID manually
-function getExtendVendorRequestByIdManual(extendVendorRequestId) {
+function getExtendVendorRequestByIdManual(extendVendorRequestId, permissionData, userId) {
     var parameters = {'in_extend_vendor_request_id': extendVendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedureManual(GET_EXTEND_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){

@@ -75,8 +75,11 @@ function getAllVendorRequest() {
 }
 
 //Get by id
-function getVendorRequestById(vendorRequestId) {
+function getVendorRequestById(vendorRequestId, permissionData, userId) {
     var parameters = {'in_vendor_request_id': vendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedure(GET_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
@@ -87,8 +90,11 @@ function getVendorRequestById(vendorRequestId) {
 }
 
 //Get vendor request by id manually
-function getVendorRequestByIdManual(vendorRequestId) {
+function getVendorRequestByIdManual(vendorRequestId, permissionData, userId) {
     var parameters = {'in_vendor_request_id': vendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedureManual(GET_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
