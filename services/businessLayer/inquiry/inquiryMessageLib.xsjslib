@@ -25,7 +25,7 @@ function insertInquiryMessage(objInquiry, userId) {
         if (!existInquiry(objInquiry.INQUIRY_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
         }
-        if (Number(objInquiry.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+        if (objInquiry.PREVIOUS_STATUS_ID && (Number(objInquiry.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED)) {
             objInquiry.STATUS_ID = statusMap.TO_BE_CHECKED;
 	        inquiryStatus.updateInquiryStatus(objInquiry, userId);
             inquiry.sendResubmitMail(objInquiry.INQUIRY_ID, userId);
