@@ -56,8 +56,11 @@ function getAllChangeVendorRequest() {
 }
 
 //Get by id
-function getChangeVendorRequestById(changeVendorRequestId) {
+function getChangeVendorRequestById(changeVendorRequestId, permissionData, userId) {
     var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedure(GET_CHANGE_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){
@@ -68,8 +71,11 @@ function getChangeVendorRequestById(changeVendorRequestId) {
 }
 
 //Get change vendor request by id manually
-function getChangeVendorRequestByIdManual(changeVendorRequestId) {
+function getChangeVendorRequestByIdManual(changeVendorRequestId, permissionData, userId) {
     var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
+    parameters.in_user_id = userId;
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
     if(list.length){

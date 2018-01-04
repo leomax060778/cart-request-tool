@@ -1,9 +1,8 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var message = mapper.getDataInquiryMessage();
-var inquiry = mapper.getDataInquiry();
-var inquiryMail = mapper.getCrtInquiryMail();
-var status = mapper.getInquiryStatus();
+var inquiry = mapper.getInquiry();
+var inquiryStatus = mapper.getInquiryStatus();
 var mail = mapper.getMail();
 var businessUser = mapper.getUser();
 var ErrorLib = mapper.getErrors();
@@ -22,108 +21,113 @@ var pathName = "CRT_INQUIRY";
 
 //Insert message
 function insertInquiryMessage(objInquiry, userId) {
-	if (validateInsertInquiryMessage(objInquiry, userId)) {
-	    if (!existInquiry(objInquiry.INQUIRY_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "inquiryMessageService/handlePost/insertInquiryMessage", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
-	    } 
-	    return message.insertInquiryMessage(objInquiry, userId);
+    if (validateInsertInquiryMessage(objInquiry, userId)) {
+        if (!existInquiry(objInquiry.INQUIRY_ID, userId)) {
+            throw ErrorLib.getErrors().CustomError("", "", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
+        }
+        if (objInquiry.PREVIOUS_STATUS_ID && (Number(objInquiry.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED)) {
+            objInquiry.STATUS_ID = statusMap.TO_BE_CHECKED;
+	        inquiryStatus.updateInquiryStatus(objInquiry, userId);
+            inquiry.sendResubmitMail(objInquiry.INQUIRY_ID, userId);
+        }
+        return message.insertInquiryMessage(objInquiry, userId);
     }
 }
 
 //Get message
 function getInquiryMessage(inquiryId, userId) {
     if (!inquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getMessage", inquiryId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "", inquiryId);
     }
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var result = {};
     var inquiryText;
     var inquiryMessage;
     var messageContent;
-	var startPosition;
-	var inquiryMessageLength;
-	var i;
-	var splitNumber; 
+    var startPosition;
+    var inquiryMessageLength;
+    var i;
+    var splitNumber;
     try {
-    	inquiryText = inquiry.getInquiryByIdManual(inquiryId).INQUIRY_TEXT;
-    	inquiryMessage = message.getInquiryMessageManual(inquiryId);
-    	inquiryMessage = JSON.parse(JSON.stringify(inquiryMessage));
-    	inquiryMessage.forEach(function (elem) {
-    		messageContent = "";
-    		startPosition = 1;
-    		inquiryMessageLength = 5000;
-    		i = 0;
-    		splitNumber = 0;
-	    	//Join message content
-	    	splitNumber = elem.CONTENT_LENGTH / inquiryMessageLength;
-	    	for (i = 0; i < splitNumber; i++){
-	    		messageContent = messageContent.concat(message.getInquiryMessageContentManual(elem.INQUIRY_ID, elem.MESSAGE_ID, startPosition, inquiryMessageLength).MESSAGE_CONTENT);
-	    		startPosition = startPosition + inquiryMessageLength;	
-	    	}
-	    	elem.MESSAGE_CONTENT = messageContent;
-	    });
-    	result.INQUIRY_TEXT = inquiryText;
-    	result.INQUIRY_MESSAGES = inquiryMessage;
+        inquiryText = inquiry.getInquiryByIdManual(inquiryId, userId).INQUIRY_TEXT;
+        inquiryMessage = message.getInquiryMessageManual(inquiryId);
+        inquiryMessage = JSON.parse(JSON.stringify(inquiryMessage));
+        inquiryMessage.forEach(function (elem) {
+            messageContent = "";
+            startPosition = 1;
+            inquiryMessageLength = 5000;
+            i = 0;
+            splitNumber = 0;
+            //Join message content
+            splitNumber = elem.CONTENT_LENGTH / inquiryMessageLength;
+            for (i = 0; i < splitNumber; i++) {
+                messageContent = messageContent.concat(message.getInquiryMessageContentManual(elem.INQUIRY_ID, elem.MESSAGE_ID, startPosition, inquiryMessageLength).MESSAGE_CONTENT);
+                startPosition = startPosition + inquiryMessageLength;
+            }
+            elem.MESSAGE_CONTENT = messageContent;
+        });
+        result.INQUIRY_TEXT = inquiryText;
+        result.INQUIRY_MESSAGES = inquiryMessage;
     } catch (e) {
-    	dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleGet/getInquiryMessage", e.toString());
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
     }
-    finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
+    finally {
+        dbHelper.commit();
+        dbHelper.closeConnection();
+    }
     return result;
 }
 
 //Message read
-function updateMessageRead(objInquiryMessage, userId){
+function updateMessageRead(objInquiryMessage, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/updateInquiryMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var result = [];
 
     try {
-    	if(objInquiryMessage.METHOD && objInquiryMessage.METHOD === 'AllRead'){
-    		if (objInquiryMessage.MESSAGES && objInquiryMessage.MESSAGES.length > 0) {
-    			objInquiryMessage.MESSAGES.forEach(function(elem){
-    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
-    		    			elem.MESSAGE_READ = 1;
-    	    		    	result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));    
-    	        	}
-    		    });
-        	}
-    		        	
-    	}else{
-	    	if (objInquiryMessage.MESSAGES.length > 0) {
-		    	objInquiryMessage.MESSAGES.forEach(function(elem){
-		    		result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));
-		    	});
-	    	}
-    	}
+        if (objInquiryMessage.METHOD && objInquiryMessage.METHOD === 'AllRead') {
+            if (objInquiryMessage.MESSAGES && objInquiryMessage.MESSAGES.length > 0) {
+                objInquiryMessage.MESSAGES.forEach(function (elem) {
+                    if (Number(elem.CREATED_USER_ID) !== Number(userId)) {
+                        elem.MESSAGE_READ = 1;
+                        result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));
+                    }
+                });
+            }
+
+        } else {
+            if (objInquiryMessage.MESSAGES.length > 0) {
+                objInquiryMessage.MESSAGES.forEach(function (elem) {
+                    result.push(message.updateInquiryMessageReadByMessageIdManual(elem, userId));
+                });
+            }
+        }
     } catch (e) {
-    	dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiryMessage", e.toString());
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
     }
-    finally{
-    	if(result.length > 0){
-			dbHelper.commit();
-			dbHelper.closeConnection();
-    	}
-	}
+    finally {
+        if (result.length > 0) {
+            dbHelper.commit();
+            dbHelper.closeConnection();
+        }
+    }
     return result;
 }
 
 //Check if the inquiry exists
-function existInquiry(inquiryId) {
-    return inquiry.getInquiryByIdManual(inquiryId).length > 0;
+function existInquiry(inquiryId, userId) {
+    return Object.keys(inquiry.getInquiryByIdManual(inquiryId, userId)).length > 0;
 }
 
 //Validate insert inquiry message
 function validateInsertInquiryMessage(objInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/insertInquiryMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -132,7 +136,7 @@ function validateInsertInquiryMessage(objInquiry, userId) {
         'MESSAGE_CONTENT'];
 
     if (!objInquiry) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiryMessage", "The object  Inquiry Message is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object  Inquiry Message is not found");
     }
 
     try {
@@ -152,10 +156,10 @@ function validateInsertInquiryMessage(objInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiryMessage", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiryMessage", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -175,33 +179,33 @@ function validateType(key, value) {
     return valid;
 }
 
-function sendMessageMail(objInquiry, userId){
+function sendMessageMail(objInquiry, userId) {
     var messageType = Number(objInquiry.MESSAGE_TYPE_ID);
 
-    switch(messageType){
+    switch (messageType) {
         case messageTypeMap.FYI_ONLY:
             inquiryMailSend.sendFYIMail(objInquiry, userId);
             break;
         case messageTypeMap.BM_EYES_ONLY:
-        	break;
+            break;
         default:
             inquiryMailSend.sendNewMessageMail(objInquiry, userId);
             break;
     }
 }
 
-function getUrlBase(){
-	return config.getUrlBase();
+function getUrlBase() {
+    return config.getUrlBase();
 }
 
-function getEmailList(){
-	return config.getEmailList();
+function getEmailList() {
+    return config.getEmailList();
 }
 
-function getPath(stringName){
-	return config.getPath(stringName);
+function getPath(stringName) {
+    return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName, aditionalParam){
-	return config.getBasicData(stringPathName, aditionalParam);
+function getBasicData(stringPathName, aditionalParam) {
+    return config.getBasicData(stringPathName, aditionalParam);
 }

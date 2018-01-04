@@ -547,5 +547,5 @@ function validateType(key, value) {
 }
 
 function existVendor(vendorId){
-	return getManualVendorById(vendorId).length > 0;
+	return Object.keys(getManualVendorById(vendorId)).length > 0;
 }

@@ -1,6 +1,7 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataInquiry = mapper.getDataInquiry();
+var inquiryStatus = mapper.getInquiryStatus();
 var message = mapper.getInquiryMessage();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var businessAttachment = mapper.getAttachment();
@@ -19,25 +20,31 @@ var inquiryMailSend = mapper.getCrtInquiryMailSend();
 
 var pathName = "CRT_INQUIRY";
 
+var resourceMap = {'CRT_INQUIRY': 7};
+var permissionMap = {'CREATE_EDIT': 10};
+
+var permissionData = {
+    RESOURCE_ID: resourceMap.CRT_INQUIRY,
+    PERMISSION_ID: permissionMap.CREATE_EDIT
+};
+
+var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+var roleMap = {
+    "SUPER_ADMIN": 1,
+    "REQUESTER": 2,
+    "BUSINESS_MGT": 3,
+    "BUDGET_OWNER": 4
+};
+
 function validatePermissionByUserRole(roleData, resRequest) {
-    return (roleData.ROLE_ID !== "2") ? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
-}
-
-function validateAccess(inquiry_id, user_id) {
-    var user_role = dataUserRole.getRoleNameByUserId(user_id);
-    var inquiry_status = dataInquiry.getInquiryStatusByInquiryId(inquiry_id);
-
-    if (user_role.ROLE_NAME !== 'SuperAdmin') {
-        return !(inquiry_status.STATUS_NAME === 'Completed' || inquiry_status.STATUS_NAME === 'Cancelled');
-    } else {
-        return true;
-    }
+    return (Number(roleData.ROLE_ID) !== roleMap.REQUESTER) ? true : (Number(roleData.USER_ID) === Number(resRequest.CREATED_USER_ID));
 }
 
 //Insert inquiry
 function insertInquiry(objInquiry, userId) {
+	var resInquiry;
     if (validateInsertInquiry(objInquiry, userId)) {
-        var resInquiry = dataInquiry.insertInquiryManual(objInquiry, userId);
+        resInquiry = dataInquiry.insertInquiryManual(objInquiry, userId);
         objInquiry.INQUIRY_ID = resInquiry;
         objInquiry.MESSAGE_CONTENT = "<p>" + objInquiry.INQUIRY_TEXT + "</p>";
         objInquiry.ATTACHMENTS.forEach(function (attachment) {
@@ -51,23 +58,21 @@ function insertInquiry(objInquiry, userId) {
 
 //Get inquiry by id
 function getInquiryById(inquiryId, userId, edition_mode) {
-
-    if (edition_mode && !validateAccess(inquiryId, userId)) {
+	var roleData = userRole.getUserRoleByUserId(userId);
+    var inquiry = dataInquiry.getInquiryById(inquiryId, permissionData, userId);
+    if (edition_mode && !inquiry.EDITABLE) {
         throw ErrorLib.getErrors().BadRequest(
             "Unauthorized request.",
-            "inquiryService/handleGet/getInquiryById",
+            "",
             '{"EDIT_PERMISSION_ERROR": "inquiry"}');
     }
-
-    var roleData = userRole.getUserRoleByUserId(userId);
-    var inquiry = dataInquiry.getInquiryById(inquiryId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
 
     if (validatePermissionByUserRole(roleData[0], inquiry)) {
         inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
         return inquiry;
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user does not have permission to Read/View this CRT Inquiry.");
+        throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to Read/View this CRT Inquiry.");
     }
 }
 
@@ -84,8 +89,8 @@ function getInquiryLastId() {
 }
 
 //Get inquiry by id manually
-function getInquiryByIdManual(inquiryId) {
-    var inquiry = dataInquiry.getInquiryByIdManual(inquiryId);
+function getInquiryByIdManual(inquiryId, userId) {
+    var inquiry = dataInquiry.getInquiryByIdManual(inquiryId, permissionData, userId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
 
     inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiry.INQUIRY_ID);
@@ -96,10 +101,10 @@ function getInquiryByIdManual(inquiryId) {
 //Get all inquiries
 function getAllInquiry(userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getAllInquiry", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var inquiry = [];
-    inquiry = dataInquiry.getAllInquiry(userId);
+    inquiry = dataInquiry.getAllInquiry(permissionData, userId);
     inquiry = JSON.parse(JSON.stringify(inquiry));
     inquiry.forEach(function (elem) {
         if (elem.MESSAGE_READ > 0) {
@@ -191,26 +196,30 @@ function updateAttachments(original_attachments, newAttachments, inquiry_id, use
 //Update inquiry
 function updateInquiry(objInquiry, userId) {
     if (validateUpdateInquiry(objInquiry, userId)) {
-        if (!existInquiry(objInquiry.INQUIRY_ID)) {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/updateInquiry", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
+        if (!existInquiry(objInquiry.INQUIRY_ID, userId)) {
+            throw ErrorLib.getErrors().CustomError("", "", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
         } else {
             var result_id;
             try {
-
+                if (Number(objInquiry.STATUS_ID !== statusInquiryMap.TO_BE_CHECKED)) {
+                    objInquiry.PREVIOUS_STATUS_ID = objInquiry.STATUS_ID;
+                    objInquiry.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+                    inquiryStatus.updateInquiryStatus(objInquiry, userId);
+                }
                 result_id = dataInquiry.updateInquiryManual(objInquiry, userId);
                 if (result_id) {
-                    var atachmentList = businessAttachmentInquiry.getAttachmentInquiryByIdManual(objInquiry.INQUIRY_ID);
+                    var attachmentList = businessAttachmentInquiry.getAttachmentInquiryByIdManual(objInquiry.INQUIRY_ID);
 
                     //ATTACHMENTS UPDATE
-                    if (atachmentList) {
-                        updateAttachments(atachmentList, objInquiry.ATTACHMENTS, objInquiry.INQUIRY_ID, userId);
+                    if (attachmentList) {
+                        updateAttachments(attachmentList, objInquiry.ATTACHMENTS, objInquiry.INQUIRY_ID, userId);
                     }
                 }
                 dbHelper.commit();
             }
             catch (e) {
                 dbHelper.rollback();
-                throw ErrorLib.getErrors().CustomError("", e.toString(), "updateAttachmentRequest");
+                throw ErrorLib.getErrors().CustomError("", "", e.toString());
             }
             finally {
                 dbHelper.closeConnection();
@@ -224,23 +233,23 @@ function updateInquiry(objInquiry, userId) {
 //Delete inquiry
 function deleteInquiry(objInquiry, userId) {
     if (!objInquiry.INQUIRY_ID) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/deleteInquiry", "The INQUIRY_ID is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The INQUIRY_ID is not found");
     }
-    if (!existInquiry(objInquiry.INQUIRY_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/deleteInquiry", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
+    if (!existInquiry(objInquiry.INQUIRY_ID, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The inquiry with the id " + objInquiry.INQUIRY_ID + " does not exist");
     }
     return dataInquiry.deleteInquiry(objInquiry, userId);
 }
 
 //Check if the inquiry exists
-function existInquiry(inquiryId) {
-    return Object.keys(getInquiryByIdManual(inquiryId)).length > 0;
+function existInquiry(inquiryId, userId) {
+    return Object.keys(getInquiryByIdManual(inquiryId, userId)).length > 0;
 }
 
 //Validate insert inquiry
 function validateInsertInquiry(objInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/insertInquiry", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -249,7 +258,7 @@ function validateInsertInquiry(objInquiry, userId) {
         'INQUIRY_TEXT'];
 
     if (!objInquiry) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiry", "The object  Inquiry is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object  Inquiry is not found");
     }
 
     try {
@@ -269,10 +278,10 @@ function validateInsertInquiry(objInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiry", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePost/insertInquiry", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -280,7 +289,7 @@ function validateInsertInquiry(objInquiry, userId) {
 
 function validateUpdateInquiry(objInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/updateInquiry", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -290,7 +299,7 @@ function validateUpdateInquiry(objInquiry, userId) {
         'TOPIC_ID'];
 
     if (!objInquiry) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", "The object Inquiry is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Inquiry is not found");
     }
 
     try {
@@ -310,10 +319,10 @@ function validateUpdateInquiry(objInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -354,7 +363,7 @@ function getUrlBase() {
     return config.getUrlBase();
 }
 
-function getEmailList(inquiryMailObj) {
+function getEmailList() {
     return config.getEmailList();
 }
 

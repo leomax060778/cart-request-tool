@@ -5,7 +5,7 @@ var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 
 var userLib = mapper.getUser();
-var dataVendorRequest = mapper.getDataVendorRequest();
+var businessVendorRequest = mapper.getVendorRequest();
 
 var mail = mapper.getMail();
 var vendorRequestMail = mapper.getVendorMail();
@@ -34,8 +34,8 @@ function getUserInfoById(requesterId){
     return (userData.length > 0)? userData[0]: null;
 }
 
-function getRequesterByVendorRequestId(vendorRequestId){
-    var request = dataVendorRequest.getVendorRequestById(vendorRequestId);
+function getRequesterByVendorRequestId(vendorRequestId, currentUserId){
+    var request = businessVendorRequest.getVendorRequestById(vendorRequestId, currentUserId);
     if(request){
         return getUserInfoById(request.CREATED_USER_ID);
     }
@@ -73,7 +73,7 @@ function getPath(stringName) {
 
 function sendMailToRequester(vendorRequestMailObj, mailType){
     var mailObj;
-    var requester = getRequesterByVendorRequestId(vendorRequestMailObj.VENDOR_REQUEST_ID);
+    var requester = getRequesterByVendorRequestId(vendorRequestMailObj.VENDOR_REQUEST_ID, vendorRequestMailObj.CURRENT_USER_ID);
     var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
     var currentUser = getCurrentUserInformationByUserId(vendorRequestMailObj.CURRENT_USER_ID);

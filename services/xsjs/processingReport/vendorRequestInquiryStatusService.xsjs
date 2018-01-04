@@ -190,7 +190,7 @@ function handlePut(reqBody, userId) {
     	res = request.updateChangeVendorRequestStatus(reqBody, userId);
     	request.sendChangeVendorMailByStatus(reqBody, userId);
     } else if (reqBody.EXTEND_VENDOR_REQUEST_ID) {
-    	var extendsVendorData = request.getManualExtendVendorRequestById(reqBody.EXTEND_VENDOR_REQUEST_ID);
+    	var extendsVendorData = request.getManualExtendVendorRequestById(reqBody.EXTEND_VENDOR_REQUEST_ID, userId);
     	res = request.updateExtendVendorRequestStatus(reqBody, userId);
     	request.sendExtendVendorMailByStatus(reqBody,extendsVendorData, userId);
     } else if (reqBody.VENDOR_REQUEST_ID) {

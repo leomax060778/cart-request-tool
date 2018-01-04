@@ -9,6 +9,7 @@ var businessVendorInquiryMessage =  mapper.getVendorMessage();
 
 var mail = mapper.getMail();
 var vendorInquiryMailSend = mapper.getVendorInquiryMailSend();
+var businessStatus = mapper.getVendorRequestInquiryStatus();
 
 var config = mapper.getDataConfig();
 var utilLib = mapper.getUtil();
@@ -25,34 +26,40 @@ var message = mapper.getVendorMessage();
 var vendorType = {"VENDOR_INQUIRY": 4};
 var pathName = "VENDOR_INQUIRY";
 var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
+var resourceMap = {'VENDOR_REQUEST_INQUIRY': 3};
+var permissionMap = {'CREATE_EDIT': 10};
+var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED': 3, 'CANCELLED': 4};
+var roleMap = {
+    "SUPER_ADMIN": 1,
+    "REQUESTER": 2,
+    "BUSINESS_MGT": 3,
+    "BUDGET_OWNER": 4
+};
+
+var permissionData = {
+    RESOURCE_ID: resourceMap.VENDOR_REQUEST_INQUIRY,
+    PERMISSION_ID: permissionMap.CREATE_EDIT
+};
 
 function validatePermissionByUserRole(roleData, resRequest){
-	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
-}
-
-function validateAccess(vendor_inquiry_id, user_id){
-	var user_role = dataUserRole.getRoleNameByUserId(user_id);
-	var vendor_inquiry_status = inquiry.getVendorInquiryStatusByVendorInquiryId(vendor_inquiry_id);
-	
-	return !(vendor_inquiry_status.STATUS_NAME === 'Completed' || vendor_inquiry_status.STATUS_NAME === 'Cancelled');
+	return (Number(roleData.ROLE_ID) !== roleMap.REQUESTER)? true : (Number(roleData.USER_ID) === Number(resRequest.CREATED_USER_ID));
 }
 
 //Get vendor inquiry by ID
 function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	var objInquiry = {};
     if (!vendorInquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", vendorInquiryId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "", vendorInquiryId);
     }
-    
-	if(edition_mode && !validateAccess(vendorInquiryId, userId)){
-		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryService/handleGet/getVendorInquiryById", 
-				'{"EDIT_PERMISSION_ERROR": "vendorInquiry"}');
-	}
-    
+
     var roleData = userRole.getUserRoleByUserId(userId);
-    var resInquiry = inquiry.getVendorInquiryById(vendorInquiryId);
+    var resInquiry = inquiry.getVendorInquiryById(vendorInquiryId, permissionData, userId);
+    if(edition_mode && !resInquiry.EDITABLE){
+        throw ErrorLib.getErrors().BadRequest(
+            "Unauthorized request.",
+            "",
+            '{"EDIT_PERMISSION_ERROR": "vendorInquiry"}');
+    }
     var vendorInquiryText = businessVendorInquiryMessage.getVendorInquiryMessage(vendorInquiryId, userId);
     var lastVendorInquiryMessage = vendorInquiryText.length - 1;
     if(validatePermissionByUserRole(roleData[0], resInquiry)){
@@ -61,8 +68,7 @@ function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	    	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
 	    	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
 	    	if (objInquiry.VENDOR_ID) {
-	    		var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
-	    	 	resInquiry.ATTACHMENTS = attachments;
+                resInquiry.ATTACHMENTS = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
 	    	}
 	    }
 	    if (resInquiry.VENDOR_INQUIRY_ID) {
@@ -71,25 +77,24 @@ function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	    
 	    return resInquiry;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorInquiryById", "The user does not have permission to Read/View this Vendor Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to Read/View this Vendor Inquiry.");
 	}
 }
 
 //Get vendor inquiry by ID manually
-function getVendorInquiryByIdManual(vendorInquiryId) {
+function getVendorInquiryByIdManual(vendorInquiryId, userId) {
 	var objInquiry = {};
     if (!vendorInquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorRequestInquiryService/handleGet/getVendorInquiryById", vendorInquiryId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "", vendorInquiryId);
     }
-    var resInquiry = inquiry.getVendorInquiryByIdManual(vendorInquiryId);
+    var resInquiry = inquiry.getVendorInquiryByIdManual(vendorInquiryId, permissionData, userId);
     
     resInquiry = JSON.parse(JSON.stringify(resInquiry));
     if(resInquiry){
     	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
     	objInquiry.VENDOR_ID = resInquiry.VENDOR_INQUIRY_ID;
     	if (objInquiry.VENDOR_ID) {
-    		var attachments = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
-    		resInquiry.ATTACHMENTS = attachments;
+            resInquiry.ATTACHMENTS = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
     	}
     }
     return resInquiry;
@@ -125,28 +130,33 @@ function insertVendorInquiryManual(objVendorInquiry, userId) {
 		objVendorInquiry.VENDOR_INQUIRY_ID = result_id;
 	    var resMessage = message.insertVendorInquiryMessage(objVendorInquiry, userId);
 	    var mail = sendSubmitMail(result_id, userId);
-	    var resVendorInquiry = {'inquiry': result_id, 'message': resMessage, 'mail': mail};        	    
-        return resVendorInquiry;
+        return {'inquiry': result_id, 'message': resMessage, 'mail': mail};
     }
 }
 
 //Delete vendor inquiry
 function deleteVendorInquiry(objVendorInquiry, userId) {
     if (!objVendorInquiry.VENDOR_INQUIRY_ID) {
-        throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/deleteVendorInquiry", "The VENDOR_INQUIRY_ID is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The VENDOR_INQUIRY_ID is not found");
     }
-    if (!existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/insertVendorMessage", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
+    if (!existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
     }
     return inquiry.deleteVendorInquiry(objVendorInquiry, userId);
 }
 
 //Update vendor inquiry
 function updateVendorInquiry(objVendorInquiry, userId) {
-    if (!existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorInquiry", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
+    if (!existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
     }
     validateParams(objVendorInquiry.VENDOR_INQUIRY_ID, userId);
+
+    if (Number(objVendorInquiry.PREVIOUS_STATUS_ID) !== statusInquiryMap.TO_BE_CHECKED) {
+        objVendorInquiry.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+        businessStatus.updateVendorInquiryStatus(objVendorInquiry, userId);
+    }
+
     var keys = ['VENDOR_NAME', 'VENDOR_INQUIRY_ID'];
     var vendorInquiryUrl = "vendorRequestInquiryService/handlePut/updateVendorInquiry";
     utilLib.validateObjectAttributes(objVendorInquiry, userId, keys, vendorInquiryUrl, validateType);
@@ -236,13 +246,13 @@ function updateVendorInquiryAttachments(reqBody, user_id){
 }
 
 //Check if the inquiry exists
-function existVendorInquiry(vendorInquiryId) {
-    return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
+function existVendorInquiry(vendorInquiryId, userId) {
+    return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId, permissionData, userId)).length > 0;
 }
 
 function validateInsertVendorInquiry(objVendorInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorInquiryService/handlePut/insertVendorInquiry", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -250,7 +260,7 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
     var keys = ['VENDOR_NAME'];
 
     if (!objVendorInquiry){
-        throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/insertVendorInquiry", "The object Vendor Inquiry is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry is not found");
     }
     try {
         keys.forEach(function (key) {
@@ -265,10 +275,10 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/insertVendorInquiry", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorInquiryService/handlePost/insertVendorInquiry", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -276,11 +286,11 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
 
 function validateParams(vendorInquiryId, userId) {
 	if (!vendorInquiryId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
+		throw ErrorLib.getErrors().CustomError("", "",
 				"The vendorInquiryId is not found");
 	}
 	if (!userId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
+		throw ErrorLib.getErrors().CustomError("", "",
 				"The userId is not found");
 	}
 }

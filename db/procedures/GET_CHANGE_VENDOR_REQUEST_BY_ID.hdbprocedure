@@ -1,5 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_REQUEST_BY_ID" (	
 	IN in_change_vendor_request_id bigint,
+	IN in_permission_id bigint,
+  	IN in_resource_id bigint,
+  	IN in_user_id bigint,
 	OUT out_result TABLE (CHANGE_VENDOR_REQUEST_id integer, 
 							iso nvarchar(2),
 							user_name nvarchar(255),
@@ -23,7 +26,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 							receiver_date_submitted_tz timestamp, 
 							receiver_date_completed_tz timestamp, 
 							receiver_yvc_request nvarchar(255), 
-							receiver_modified_date_tz timestamp
+							receiver_modified_date_tz timestamp,
+							EDITABLE boolean
 						)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -31,6 +35,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDO
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
+
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+							INNER JOIN "ROLE_PERMISSION" RP 
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
+						WHERE USR.USER_ID = in_user_id;
+
 	out_result = SELECT CVR.CHANGE_VENDOR_REQUEST_ID, 
 						VT.ISO,
 						US.USER_NAME,
@@ -54,12 +68,14 @@ BEGIN
 						CVR.CREATED_DATE_TZ AS RECEIVER_DATE_SUBMITTED_TZ, 
 						CVR.RECEIVER_DATE_COMPLETED_TZ AS RECEIVER_DATE_COMPLETED_TZ, 
 						CVR.RECEIVER_YVC_REQUEST, 
-						CVR.RECEIVER_MODIFIED_DATE_TZ AS RECEIVER_MODIFIED_DATE_TZ
+						CVR.RECEIVER_MODIFIED_DATE_TZ AS RECEIVER_MODIFIED_DATE_TZ,
+  						(CASE WHEN (CVR.STATUS_ID = 5 OR CVR.STATUS_ID = 6) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
 	FROM "CHANGE_VENDOR_REQUEST" CVR
 		INNER JOIN "VENDOR_TYPE" VT ON CVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 		INNER JOIN "COMMODITY" COMMODITY ON CVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
 		INNER JOIN "ENTITY" ET ON CVR.ENTITY_ID = ET.ENTITY_ID
 		INNER JOIN "USER" US ON US.user_id = CVR.user_id
+        INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
 	WHERE in_change_vendor_request_id = CVR.CHANGE_VENDOR_REQUEST_ID
 		AND CVR.deleted = 0
 		AND CVR.enabled = 1;

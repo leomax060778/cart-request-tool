@@ -1,5 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDOR_REQUEST_BY_ID" (	
 	IN in_extend_vendor_request_id bigint,
+	IN in_permission_id bigint,
+  	IN in_resource_id bigint,
+  	IN in_user_id bigint,
 	OUT out_result TABLE (extend_vendor_request_id bigint, 
 							user_name nvarchar(255),
 							first_name nvarchar(255),
@@ -21,7 +24,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							status_id bigint, 
 							previous_status_id bigint, 
 							user_id_status bigint, 
-							update_status_tz timestamp, 
+							update_status_tz nvarchar(15), 
 							service_supplier nvarchar(1000), 
 							purchase_amount decimal(19,2), 
 							expected_amount decimal(19,2),
@@ -30,12 +33,13 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 							PURCHASE_CURRENCY_ABBREVIATION nvarchar(255), 
 							EXPECTED_CURRENCY_ABBREVIATION nvarchar(255),  
 							receiver_user_id bigint,
-							receiver_date_submitted_tz timestamp, 
-							receiver_date_completed_tz timestamp, 
+							receiver_date_submitted_tz nvarchar(15), 
+							receiver_date_completed_tz nvarchar(15), 
 							receiver_yvc_request nvarchar(255), 
-							receiver_modified_date_tz timestamp,
+							receiver_modified_date_tz nvarchar(15),
 							BUDGET_YEAR integer,
-							ADDITIONAL_INFORMATION_FLAG tinyint
+							ADDITIONAL_INFORMATION_FLAG tinyint,
+							EDITABLE boolean
 						)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -43,6 +47,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_VENDO
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
+
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+							INNER JOIN "ROLE_PERMISSION" RP 
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
+						WHERE USR.USER_ID = in_user_id;
+
 	out_result = SELECT EVR.EXTEND_VENDOR_REQUEST_ID,
 						US.USER_NAME,
 						US.FIRST_NAME,
@@ -64,7 +78,7 @@ BEGIN
 						EVR.STATUS_ID, 
 					    EVR.PREVIOUS_STATUS_ID, 
 					    EVR.USER_ID_STATUS, 
-					    EVR.UPDATE_STATUS_TZ, 
+					    TO_NVARCHAR(EVR.UPDATE_STATUS_TZ,'YYYY-MM-DD') AS UPDATE_STATUS_TZ, 
 					    EVR.SERVICE_SUPPLIER, 
 					    EVR.PURCHASE_AMOUNT, 
 					    EVR.EXPECTED_AMOUNT,
@@ -73,12 +87,13 @@ BEGIN
 						CURRENCY_PURCHASE.ABBREVIATION as PURCHASE_CURRENCY_ABBREVIATION, 
 						CURRENCY_EXPECTED.ABBREVIATION as EXPECTED_CURRENCY_ABBREVIATION,
 						EVR.RECEIVER_USER_ID,
-						EVR.CREATED_DATE_TZ AS RECEIVER_DATE_SUBMITTED_TZ, 
-						EVR.RECEIVER_DATE_COMPLETED_TZ, 
+						TO_NVARCHAR(EVR.CREATED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_SUBMITTED_TZ, 
+						TO_NVARCHAR(EVR.RECEIVER_DATE_COMPLETED_TZ,'YYYY-MM-DD') AS RECEIVER_DATE_COMPLETED_TZ, 
 						EVR.RECEIVER_YVC_REQUEST, 
-						EVR.RECEIVER_MODIFIED_DATE_TZ,
+						TO_NVARCHAR(EVR.RECEIVER_MODIFIED_DATE_TZ,'YYYY-MM-DD') AS RECEIVER_MODIFIED_DATE_TZ,
 						BUDGET_YEAR.BUDGET_YEAR,
-						EVR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG
+						EVR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG,
+  						(CASE WHEN (EVR.STATUS_ID = 5 OR EVR.STATUS_ID = 6) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
 	FROM "EXTEND_VENDOR_REQUEST" EVR
 		INNER JOIN "VENDOR_TYPE" VT ON EVR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 		INNER JOIN "COMMODITY" COMMODITY ON EVR.COMMODITY_ID = COMMODITY.COMMODITY_ID
@@ -87,6 +102,7 @@ BEGIN
 		LEFT JOIN "CURRENCY" CURRENCY_EXPECTED ON EVR.EXPECTED_CURRENCY_ID = CURRENCY_EXPECTED.CURRENCY_ID
 		INNER JOIN "USER" US ON US.user_id = EVR.user_id
 		INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR = CURRENCY_PURCHASE.CURRENCY_YEAR
+        INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
 	WHERE EVR.EXTEND_VENDOR_REQUEST_ID = in_extend_vendor_request_id
 		AND EVR.deleted = 0
 		AND EVR.enabled = 1;

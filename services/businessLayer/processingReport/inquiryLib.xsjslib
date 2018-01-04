@@ -3,7 +3,6 @@ var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var inquiryStatus = mapper.getDataInquiryStatus();
 var inquiry = mapper.getInquiry();
 var dataInquiry = mapper.getDataInquiry();
-var inquiryMail = mapper.getCrtInquiryMail();
 var businessAttachmentInquiry = mapper.getAttachmentInquiry();
 var mail = mapper.getMail();
 var businessUser = mapper.getUser();
@@ -32,7 +31,7 @@ function validateAccess(inquiry_id){
 //Get inquiry by status
 function getInquiryByStatus(statusId) {
 	if (!statusId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "inquiryService/handleGet/getInquiryByStatus", statusId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "", statusId);
     }
 	return inquiryStatus.getInquiryByStatus(statusId);
 }
@@ -40,12 +39,12 @@ function getInquiryByStatus(statusId) {
 //Get inquiry by status administrable
 function getInquiryByStatusAdministrable(isAdministrable, userId) {
 	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handleGet/getInquiryByStatusAdministrable", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 	if (!isAdministrable) {
-      throw ErrorLib.getErrors().BadRequest("The Parameter isAdministrable is not found", "inquiryService/handleGet/getInquiryByStatusAdministrable", isAdministrable);
+      throw ErrorLib.getErrors().BadRequest("The Parameter isAdministrable is not found", "", isAdministrable);
   }
-	var inquiry = [];
+	var inquiry;
 	inquiry = inquiryStatus.getInquiryByStatusAdministrable(isAdministrable, userId);
 	inquiry = JSON.parse(JSON.stringify(inquiry));
 	inquiry.forEach(function(elem){
@@ -65,13 +64,13 @@ function validatePermissionByUserRole(roleData, inquiry){
 //Get inquiry by id
 function getInquiryById(inquiryId, userId) {
 	if (!inquiryId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "inquiryService/handleGet/getInquiryById", inquiryId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter inquiryId is not found", "", inquiryId);
     }
 	
 	if(!validateAccess(inquiryId)){
 		throw ErrorLib.getErrors().BadRequest(
 				"",
-				"inquiryService/handleGet/getInquiryById", '{"NOT_AVAILABLE_IN_PROCESSING": "CRT Inquiry"}');
+				"", '{"NOT_AVAILABLE_IN_PROCESSING": "CRT Inquiry"}');
 	}
 	
 	var inquiry = inquiryStatus.getInquiryById(inquiryId);
@@ -82,7 +81,7 @@ function getInquiryById(inquiryId, userId) {
         inquiry.ATTACHMENTS = businessAttachmentInquiry.getAttachmentInquiryById(inquiryId);
         return inquiry;
     }else{
-		throw ErrorLib.getErrors().Forbidden("", "inquiryService/handleGet/getInquiryById", "The user does not have permission for this CRT Inquiry.");
+		throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission for this CRT Inquiry.");
 	}
     
 }
@@ -90,8 +89,8 @@ function getInquiryById(inquiryId, userId) {
 //Update inquiry status
 function updateInquiryStatus(objInquiry, userId) {
     if (validateUpdateInquiryStatus(objInquiry, userId)) {
-    	if(!inquiry.existInquiry(objInquiry.INQUIRY_ID)){
-    		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/updateInquiry", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
+    	if(!inquiry.existInquiry(objInquiry.INQUIRY_ID, userId)){
+    		throw ErrorLib.getErrors().CustomError("", "", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
     	} else {
     		return inquiryStatus.updateInquiryStatus(objInquiry, userId);
     	}
@@ -101,8 +100,8 @@ function updateInquiryStatus(objInquiry, userId) {
 //Update inquiry status manual
 function updateInquiryStatusManual(objInquiry, userId) {
     if (validateUpdateInquiryStatus(objInquiry, userId)) {
-    	if(!inquiry.existInquiry(objInquiry.INQUIRY_ID)){
-    		throw ErrorLib.getErrors().CustomError("", "inquiryService/handleDelete/updateInquiryManual", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
+    	if(!inquiry.existInquiry(objInquiry.INQUIRY_ID, userId)){
+    		throw ErrorLib.getErrors().CustomError("", "", "The object INQUIRY_ID " + objInquiry.INQUIRY_ID + " does not exist");
     	} else {
     		return inquiryStatus.updateInquiryStatusManual(objInquiry, userId);
     	}
@@ -112,7 +111,7 @@ function updateInquiryStatusManual(objInquiry, userId) {
 //Validate update inquiry status
 function validateUpdateInquiryStatus(objInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "inquiryService/handlePut/updateInquiryStatus", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -123,7 +122,7 @@ function validateUpdateInquiryStatus(objInquiry, userId) {
         'PREVIOUS_STATUS_ID'];
 
     if (!objInquiry) {
-        throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", "The object Vendor Inquiry is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry is not found");
     }
 
     try {
@@ -143,10 +142,10 @@ function validateUpdateInquiryStatus(objInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "inquiryService/handlePut/updateInquiry", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -172,15 +171,15 @@ function validateType(key, value) {
 function sendMailByStatus(inquiryId, statusId, userId){
 	var inquiryMailObj = {};
 	inquiryMailObj.INQUIRY_ID = inquiryId;
-	
-	switch (statusId) {
-	case '2':
+
+	switch (Number(statusId)) {
+	case 2:
 		inquiryMailSend.sendReturnToRequestMail(inquiryMailObj.INQUIRY_ID, userId);
 		break;
-	case '3':
+	case 3:
 		inquiryMailSend.sendCompletedMail(inquiryMailObj, userId);
 		break;
-	case '4':
+	case 4:
 		inquiryMailSend.sendCancelledMail(inquiryMailObj, userId);
 		break;
 	}
@@ -190,7 +189,7 @@ function getUrlBase(){
 	return config.getUrlBase();
 }
 
-function getEmailList(inquiryMailObj){
+function getEmailList(){
 	return config.getEmailList();
 }
 

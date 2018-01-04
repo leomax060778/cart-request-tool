@@ -5,13 +5,20 @@ var utilLib = mapper.getUtil();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var resourceMap = {'VENDOR_REQUEST_INQUIRY': 3};
+var permissionMap = {'CREATE_EDIT': 10};
+
 //Get all vendor request inquiry
 function getAllVendorRequestInquiry(userId) {
 	if (!userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestInquiryService/handleGet/getAllVendorRequestInquiry", userId);
     }
     var vendorRequestInquiry = [];
-    vendorRequestInquiry = dataVendorRequestInquiry.getAllVendorRequestInquiry(userId);
+    var permissionData = {
+	    RESOURCE_ID: resourceMap.VENDOR_REQUEST_INQUIRY,
+	    PERMISSION_ID: permissionMap.CREATE_EDIT
+    };
+    vendorRequestInquiry = dataVendorRequestInquiry.getAllVendorRequestInquiry(permissionData, userId);
     vendorRequestInquiry = JSON.parse(JSON.stringify(vendorRequestInquiry));
     vendorRequestInquiry.forEach(function(elem){
     	if(elem.MESSAGE_READ > 0){

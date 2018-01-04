@@ -5,6 +5,7 @@ var vendorMessage = mapper.getVendorMessage();
 var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessVendorDP = mapper.getVendorDataProtection();
+var businessStatus = mapper.getVendorRequestInquiryStatus();
 var vendorMail = mapper.getVendorMail();
 var dataVRDataProtection = mapper.getDataVendorDataProtection();
 var businessUser = mapper.getUser();
@@ -25,13 +26,19 @@ var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_R
 var vendorType = {"VENDOR_REQUEST": 3};
 var pathName = "VENDOR_REQUEST";
 var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
+var resourceMap = {'VENDOR_REQUEST_INQUIRY': 3};
+var permissionMap = {'CREATE_EDIT': 10};
+var roleMap = {
+    "SUPER_ADMIN": 1,
+    "REQUESTER": 2,
+    "BUSINESS_MGT": 3,
+    "BUDGET_OWNER": 4
+};
 
-function validateAccess(vendor_request_id, user_id){
-	var user_role = dataUserRole.getRoleNameByUserId(user_id);
-	var vendor_request_status = request.getVendorRequestStatusByVendorRequestId(vendor_request_id);
-	
-	return !(vendor_request_status.STATUS_NAME === 'Approved' || vendor_request_status.STATUS_NAME === 'Cancelled');
-}
+var permissionData = {
+    RESOURCE_ID: resourceMap.VENDOR_REQUEST_INQUIRY,
+    PERMISSION_ID: permissionMap.CREATE_EDIT
+};
 
 //Insert Vendor Request Data Protection
 function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
@@ -43,8 +50,8 @@ function insertDataProtectionAnswer(reqBody, in_vendor_request_id, user_id){
 	}	
 }
 
-function validatePermissionByUserRole(roleData, resRequest){
-	return (roleData.ROLE_ID !== "2")? true : (roleData.USER_ID === resRequest.CREATED_USER_ID);
+function validatePermissionByUserRole(roleData, resRequest) {
+    return (Number(roleData.ROLE_ID) !== roleMap.REQUESTER) ? true : (Number(roleData.USER_ID) === Number(resRequest.CREATED_USER_ID));
 }
 
 //Insert vendor request
@@ -96,10 +103,10 @@ function insertVendorRequestManual(objVendorRequest, userId) {
 //Delete vendor request
 function deleteVendorRequest(objVendorRequest, userId) {
     if (!objVendorRequest.VENDOR_REQUEST_ID) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handleDelete/deleteVendorRequest", "The VENDOR_REQUEST_ID is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The VENDOR_REQUEST_ID is not found");
     }
-    if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handleDelete/insertVendorMessage", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
+    if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     }
     return request.deleteVendorRequest(objVendorRequest, userId);
 }
@@ -108,52 +115,49 @@ function deleteVendorRequest(objVendorRequest, userId) {
 function getVendorRequestById(vendorRequestId, userId, edition_mode) {
     var objRequest = {};
     if (!vendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "", vendorRequestId);
     }
-    
-	if(edition_mode && !validateAccess(vendorRequestId, userId)){
-		throw ErrorLib.getErrors().BadRequest(
-				"Unauthorized request.",
-				"vendorRequestInquiryService/handleGet/getVendorRequestById", 
-				'{"EDIT_PERMISSION_ERROR": "vendorRequest"}');
-	}
-	
     var roleData = userRole.getUserRoleByUserId(userId);
-    var resRequest = request.getVendorRequestById(vendorRequestId);
-    
-    if(validatePermissionByUserRole(roleData[0], resRequest)){
-	    resRequest = JSON.parse(JSON.stringify(resRequest));
-	    
-	    if(resRequest && resRequest.VENDOR_REQUEST_ID){
-	    	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
-	    	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
-	    	 var attachments = businessAttachmentVendor.getAttachmentVendorById(objRequest);
-	    	 resRequest.ATTACHMENTS = attachments;
-	    	 
-	    	 var data_protection = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
-	    	 resRequest.DATA_PROTECTION = data_protection;
-	    	 
-	    	 if(resRequest.ADDITIONAL_INFORMATION_FLAG !== 0){
-	    		 var message = vendorMessage.getVendorRequestMessage(resRequest.VENDOR_REQUEST_ID, userId);
-		    	 resRequest.ADDITIONAL_INFORMATION = (message.length > 0)? message[message.length - 1].MESSAGE_CONTENT : "";
-		    
-	    	 }else{
-	    		 resRequest.ADDITIONAL_INFORMATION = ""; //Avoid 'undefined' in richTextEditor.
-	    	 }
-	    }
-	    return resRequest;
-    }else{
-		throw ErrorLib.getErrors().Forbidden("", "vendorRequestInquiryService/handleGet/getVendorRequestById", "The user does not have permission to Read/View this Vendor Request.");
-	}
+    var resRequest = request.getVendorRequestById(vendorRequestId, permissionData, userId);
+
+    if(edition_mode && !resRequest.EDITABLE){
+        throw ErrorLib.getErrors().BadRequest(
+            "Unauthorized request.",
+            "",
+            '{"EDIT_PERMISSION_ERROR": "vendorRequest"}');
+    }
+
+    if (validatePermissionByUserRole(roleData[0], resRequest)) {
+        resRequest = JSON.parse(JSON.stringify(resRequest));
+
+        if (resRequest && resRequest.VENDOR_REQUEST_ID) {
+            objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
+            objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
+            resRequest.ATTACHMENTS = businessAttachmentVendor.getAttachmentVendorById(objRequest);
+
+            resRequest.DATA_PROTECTION = businessVendorDP.getDataProtectionById(resRequest.VENDOR_REQUEST_ID);
+
+            if (resRequest.ADDITIONAL_INFORMATION_FLAG !== 0) {
+                var message = vendorMessage.getVendorRequestMessage(resRequest.VENDOR_REQUEST_ID, userId);
+                resRequest.ADDITIONAL_INFORMATION = (message.length > 0) ? message[message.length - 1].MESSAGE_CONTENT : "";
+
+            } else {
+                resRequest.ADDITIONAL_INFORMATION = ""; //Avoid 'undefined' in richTextEditor.
+            }
+        }
+        return resRequest;
+    } else {
+        throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to Read/View this Vendor Request.");
+    }
 }
 
 //Get vendor request by ID manually
-function getVendorRequestByIdManual(vendorRequestId) {
+function getVendorRequestByIdManual(vendorRequestId, userId) {
     var objRequest = {};
     if (!vendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorRequestInquiryService/handleGet/getVendorRequestById", vendorRequestId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "", vendorRequestId);
     }
-    var resRequest = request.getVendorRequestById(vendorRequestId);
+    var resRequest = request.getVendorRequestById(vendorRequestId, permissionData, userId);
     
     resRequest = JSON.parse(JSON.stringify(resRequest));
     
@@ -161,8 +165,7 @@ function getVendorRequestByIdManual(vendorRequestId) {
     	objRequest.VENDOR_TYPE_ID = vendorType.VENDOR_REQUEST;
     	objRequest.VENDOR_ID = resRequest.VENDOR_REQUEST_ID;
     	if (objRequest.VENDOR_ID) {
-    		var attachments = businessAttachmentVendor.getAttachmentVendorByIdManual(objRequest);
-    	 	resRequest.ATTACHMENTS = attachments;
+            resRequest.ATTACHMENTS = businessAttachmentVendor.getAttachmentVendorByIdManual(objRequest);
     	}
     }
     return resRequest;
@@ -262,10 +265,16 @@ function updateDataProtectionAnswer(item, user_id){
 
 //Update vendor request
 function updateVendorRequest(objVendorRequest, userId) {
-    if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateVendorRequest", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
+    if (!existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
     }
     validateParams(objVendorRequest.VENDOR_REQUEST_ID, userId);
+
+    if (Number(objVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
+        objVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
+        businessStatus.updateVendorRequestStatus(objVendorRequest, userId);
+    }
+
     var keys = ['VENDOR_REQUEST_ID', 'COUNTRY_ID', 'ENTITY_ID', 'COMMODITY_ID', 'SERVICE_SUPPLIER', 'PURCHASE_AMOUNT', 'PURCHASE_CURRENCY_ID', 'ACCEPT_AMERICAN_EXPRESS', 'COST_CENTER_OWNER'];
     var optionalKeys = ['NOT_USED_SAP_SUPPLIER', 'EXPECTED_AMOUNT', 'EXPECTED_CURRENCY_ID', 'ADDITIONAL_INFORMATION'];
     var vendorRequestUrl = "vendorRequestInquiryService/handlePut/updateVendorRequest";
@@ -288,8 +297,8 @@ function updateVendorRequest(objVendorRequest, userId) {
 }
 
 //Check if the request exists
-function existVendorRequest(vendorRequestId) {
-    return Object.keys(getVendorRequestByIdManual(vendorRequestId)).length > 0;
+function existVendorRequest(vendorRequestId, userId) {
+    return Object.keys(getVendorRequestByIdManual(vendorRequestId, userId)).length > 0;
 }
 
 function validateOptionalVendorRequestKeys(optionalKeys, objVendorRequest) {
@@ -308,17 +317,17 @@ function validateOptionalVendorRequestKeys(optionalKeys, objVendorRequest) {
         return isValid;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePut/updateVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePut/updateVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
 }
 
 function validateInsertVendorRequest(objVendorRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorRequestService/handlePut/insertVendorRequest", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -344,7 +353,7 @@ function validateInsertVendorRequest(objVendorRequest, userId) {
     ];
 
     if (!objVendorRequest) {
-    	throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePost/insertVendorRequest", "The object Vendor Request is not found");
+    	throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request is not found");
     }
 
     try {
@@ -364,10 +373,10 @@ function validateInsertVendorRequest(objVendorRequest, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePost/insertVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePost/insertVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
 
@@ -383,28 +392,28 @@ function validateInsertVendorRequest(objVendorRequest, userId) {
         return isValid;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePost/insertVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorRequestService/handlePost/insertVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
 }
 
 function validateParams(vendorRequestId, userId) {
 	if (!vendorRequestId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
+		throw ErrorLib.getErrors().CustomError("", "",
 				"The vendorRequestId is not found");
 	}
 	if (!userId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
+		throw ErrorLib.getErrors().CustomError("", "",
 				"The userId is not found");
 	}
 }
 
 function validateInsertDataProtectionAnswer(reqBody, user_id) {
 	if(!user_id) {
-		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","dataProtectionService/handlePost/insertDataProtection",request_id);	
+		throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found","",request_id);
 	}
 	
 	var isValid = false;
@@ -415,7 +424,7 @@ function validateInsertDataProtectionAnswer(reqBody, user_id) {
 	            'OPTION_ID'];
 	
 	if(!reqBody)
-		throw ErrorLib.getErrors().CustomError("","dataProtectionService/handlePost/insertDataProtection","The object DataProtection is not found");
+		throw ErrorLib.getErrors().CustomError("","","The object DataProtection is not found");
 	
 	try {
 		keys.forEach(function(key) {
@@ -424,7 +433,7 @@ function validateInsertDataProtectionAnswer(reqBody, user_id) {
 				throw BreakException;
 			} else {
 				// validate attribute type
-				isValid = validateType(key, reqBody[key])
+				isValid = validateType(key, reqBody[key]);
 				if (!isValid) {
 					errors[key] = reqBody[key];
 					throw BreakException;
@@ -434,9 +443,9 @@ function validateInsertDataProtectionAnswer(reqBody, user_id) {
 		isValid = true;
 	} catch (e) {
 		if (e !== BreakException)
-			throw ErrorLib.getErrors().CustomError("", "dataProtectionService/handlePost/insertDataProtection", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		else
-			throw ErrorLib.getErrors().CustomError("", "dataProtectionService/handlePost/insertDataProtection"
+			throw ErrorLib.getErrors().CustomError("", ""
 					,JSON.stringify(errors));
 	}
 	return isValid;

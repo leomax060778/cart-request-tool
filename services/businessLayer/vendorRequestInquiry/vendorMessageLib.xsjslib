@@ -1,10 +1,10 @@
 $.import("xscartrequesttool.services.commonLib", "mapper");
 var mapper = $.xscartrequesttool.services.commonLib.mapper;
 var dataMessage = mapper.getDataVendorMessage();
-var request = mapper.getDataVendorRequest();
-var change = mapper.getDataChangeVendorRequest();
-var extend = mapper.getDataExtendVendorRequest();
-var inquiry = mapper.getDataVendorInquiry();
+var request = mapper.getVendorRequest();
+var change = mapper.getChangeVendorRequest();
+var extend = mapper.getExtendVendorRequest();
+var inquiry = mapper.getVendorInquiry();
 var status = mapper.getVendorRequestInquiryStatus();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
@@ -17,23 +17,33 @@ var statusInquiryMap = {'TO_BE_CHECKED': 1, 'RETURN_TO_REQUESTER': 2, 'COMPLETED
 //Insert new change vendor request message
 function insertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
     if (validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId)) {
-    	if (existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID)) {
+    	if (existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId)) {
+            if (Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
+                objChangeVendorRequest.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+                status.updateChangeVendorRequestStatus(objChangeVendorRequest, userId);
+                change.sendResubmitMail(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId);
+            }
     		return dataMessage.insertChangeVendorRequestMessage(objChangeVendorRequest, userId);
     	} else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequesMessage", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
         }
     } else {
-        throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequesMessage", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
+        throw ErrorLib.getErrors().CustomError("", "", "The Change Vendor Request with the id: " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     }
 }
 
 //Insert new extend vendor request message
 function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
     if (validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId)) {
-    	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
+    	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId)) {
+            if (Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
+                objExtendVendorRequest.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+                status.updateExtendVendorRequestStatus(objExtendVendorRequest, userId);
+                extend.sendResubmitMail(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId);
+            }
     		return dataMessage.insertExtendVendorRequestMessage(objExtendVendorRequest, userId);
     	} else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequesMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
         }
     }
 }
@@ -41,10 +51,15 @@ function insertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 //Insert new extend vendor request message manual
 function insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId) {
     if (validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId)) {
-    	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID)) {
+    	if (existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId)) {
+            if (Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
+                objExtendVendorRequest.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+                status.updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId);
+                extend.sendResubmitMail(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId);
+            }
     		return dataMessage.insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId);
     	} else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequesMessage", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The Extend Vendor Request with the id: " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
         }
     }
 }
@@ -53,10 +68,15 @@ function insertExtendVendorRequestMessageManual(objExtendVendorRequest, userId) 
 //Insert new vendor request message
 function insertVendorRequestMessage(objVendorRequest, userId) {
     if (validateInsertVendorRequestMessage(objVendorRequest, userId)) {
-        if (existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID)) {
+        if (existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID, userId)) {
+            if (Number(objVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
+                objVendorRequest.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+                status.updateVendorRequestStatus(objVendorRequest, userId);
+                request.sendResubmitMail(objVendorRequest.VENDOR_REQUEST_ID, userId);
+            }
             return dataMessage.insertVendorRequestMessage(objVendorRequest, userId);
         } else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor Request with the id: " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The Vendor Request with the id: " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
         }
     }
 }
@@ -64,10 +84,15 @@ function insertVendorRequestMessage(objVendorRequest, userId) {
 //Insert new vendor inquiry message
 function insertVendorInquiryMessage(objVendorInquiry, userId) {
     if (validateInsertVendorInquiryMessage(objVendorInquiry, userId)) {
-    	if (existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID)) {
+    	if (existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID, userId)) {
+    		if (Number(objVendorInquiry.PREVIOUS_STATUS_ID) !== statusInquiryMap.TO_BE_CHECKED) {
+    			objVendorInquiry.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
+    			status.updateVendorInquiryStatus(objVendorInquiry, userId);
+                inquiry.sendResubmitMail(objVendorInquiry.VENDOR_INQUIRY_ID, userId);
+			}
     		return dataMessage.insertVendorInquiryMessage(objVendorInquiry, userId);
     	} else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The Vendor inquiry with the id: " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The Vendor inquiry with the id: " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
         }
     }
 }
@@ -77,10 +102,10 @@ function insertVendorInquiryMessage(objVendorInquiry, userId) {
 //Get messages for vendor request
 function getVendorRequestMessage(vendorRequestId, userId) {
 	if (!vendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorMessageService/handleGet/getVendorRequestMessage", vendorRequestId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "", vendorRequestId);
 	}
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	var messageContent;
@@ -108,7 +133,7 @@ function getVendorRequestMessage(vendorRequestId, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handleGet/getVendorRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			dbHelper.commit();
@@ -120,10 +145,10 @@ function getVendorRequestMessage(vendorRequestId, userId) {
 //Get messages of vendor inquiry
 function getVendorInquiryMessage(vendorInquiryId, userId) {
 	if (!vendorInquiryId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "vendorMessageService/handleGet/getVendorInquiryMessage", vendorInquiryId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "", vendorInquiryId);
 	}
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getVendorInquiryMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	var messageContent = "";
@@ -151,7 +176,7 @@ function getVendorInquiryMessage(vendorInquiryId, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handleGet/getVendorInquiryMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			dbHelper.commit();
@@ -163,10 +188,10 @@ function getVendorInquiryMessage(vendorInquiryId, userId) {
 //Get messages for change vendor request
 function getChangeVendorRequestMessage(changeVendorRequestId, userId) {
 	if (!changeVendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "vendorMessageService/handleGet/getChangeVendorRequestMessage", changeVendorRequestId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter changeVendorRequestId is not found", "", changeVendorRequestId);
 	}
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getChangeVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	var messageContent;
@@ -194,7 +219,7 @@ function getChangeVendorRequestMessage(changeVendorRequestId, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handleGet/getChangeVendorRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			dbHelper.commit();
@@ -206,10 +231,10 @@ function getChangeVendorRequestMessage(changeVendorRequestId, userId) {
 //Get messages for extend vendor request
 function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
 	if (!extendVendorRequestId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "vendorMessageService/handleGet/getExtendVendorRequestMessage", extendVendorRequestId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter extendVendorRequestId is not found", "", extendVendorRequestId);
 	}
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handleGet/getExtendVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	var messageContent;
@@ -237,7 +262,7 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handleGet/getExtendVendorRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			dbHelper.commit();
@@ -251,7 +276,7 @@ function getExtendVendorRequestMessage(extendVendorRequestId, userId) {
 //Update vendor request messages read
 function updateVendorRequestMessage(objVendorRequest, userId) {
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	try{
@@ -275,7 +300,7 @@ function updateVendorRequestMessage(objVendorRequest, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			if(result.length > 0){
@@ -289,7 +314,7 @@ function updateVendorRequestMessage(objVendorRequest, userId) {
 //Update vendor inquiry messages read
 function updateVendorInquiryMessage(objVendorInquiry, userId) {
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateVendorInquiryMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	try{
@@ -313,7 +338,7 @@ function updateVendorInquiryMessage(objVendorInquiry, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateVendorInquiryMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			if(result.length > 0){
@@ -327,7 +352,7 @@ function updateVendorInquiryMessage(objVendorInquiry, userId) {
 //Update change vendor request messages read
 function updateChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateChangeVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 	var result = [];
 	try{
@@ -351,7 +376,7 @@ function updateChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateChangeVendorRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			if(result.length > 0){
@@ -365,7 +390,7 @@ function updateChangeVendorRequestMessage(objChangeVendorRequest, userId) {
 //Update extend vendor request messages read
 function updateExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	if (!userId) {
-	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/updateExtendVendorRequestMessage", userId);
+	    throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
 	}
 
 	var result = [];
@@ -390,7 +415,7 @@ function updateExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 	}
 		catch(e){
 			dbHelper.rollback();
-			throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateExtendVendorRequestMessage", e.toString());
+			throw ErrorLib.getErrors().CustomError("", "", e.toString());
 		}
 		finally{
 			if(result.length > 0){
@@ -404,30 +429,30 @@ function updateExtendVendorRequestMessage(objExtendVendorRequest, userId) {
 
 /** ***********CHECK IF EXIST*************** */
 //Check if the request exists
-function existVendorRequest(vendorRequestId) {
-  return request.getVendorRequestByIdManual(vendorRequestId).length > 0;
+function existVendorRequest(vendorRequestId, userId) {
+  return Object.keys(request.getVendorRequestByIdManual(vendorRequestId, userId)).length > 0;
 }
 
 //Check if the inquiry exists
-function existVendorInquiry(vendorInquiryId) {
-	 return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId)).length > 0;
+function existVendorInquiry(vendorInquiryId, userId) {
+	 return Object.keys(inquiry.getVendorInquiryByIdManual(vendorInquiryId, userId)).length > 0;
 }
 
 //Check if the extend vendor request exists
-function existExtendVendorRequest(extendVendorRequestId) {
-  return extend.getExtendVendorRequestByIdManual(extendVendorRequestId).length > 0;
+function existExtendVendorRequest(extendVendorRequestId, userId) {
+  return Object.keys(extend.getExtendVendorRequestByIdManual(extendVendorRequestId, userId)).length > 0;
 }
 
 //Check if the change vendor request exists
-function existChangeVendorRequest(changeVendorRequestId) {
-  return change.getChangeVendorRequestByIdManual(changeVendorRequestId).length > 0;
+function existChangeVendorRequest(changeVendorRequestId, userId) {
+  return Object.keys(change.getChangeVendorRequestByIdManual(changeVendorRequestId, userId)).length > 0;
 }
 /** ***********END CHECK IF EXIST*************** */
 
 /** ***********VALIDATE INSERT*************** */
 function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/insertExtendVendorRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -439,7 +464,7 @@ function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId
     ];
 
     if (!objExtendVendorRequest) {
-        throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequestMessage", "The object Extend Vendor Request is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Extend Vendor Request is not found");
     }
 
     try {
@@ -459,10 +484,10 @@ function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertExtendVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -470,7 +495,7 @@ function validateInsertExtendVendorRequestMessage(objExtendVendorRequest, userId
 
 function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/insertChangeVendorRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -482,7 +507,7 @@ function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId
     ];
 
     if (!objChangeVendorRequest) {
-        throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequest", "The object Change Vendor Request is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Change Vendor Request is not found");
     }
     
     try {
@@ -502,10 +527,10 @@ function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertChangeVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -513,7 +538,7 @@ function validateInsertChangeVendorRequestMessage(objChangeVendorRequest, userId
 
 function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/insertVendorInquiryMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -523,7 +548,7 @@ function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
         'PREVIOUS_STATUS_ID'];
 
     if (!objVendorInquiry) {
-        throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorInquiryMessage", "The object Vendor Inquiry Message is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry Message is not found");
     }
 
     try {
@@ -543,10 +568,10 @@ function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorInquiryMessage", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorInquiryMessage", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -554,7 +579,7 @@ function validateInsertVendorInquiryMessage(objVendorInquiry, userId) {
 
 function validateInsertVendorRequestMessage(objVendorRequest, userId) {
     if (!userId){
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "vendorMessageService/handlePut/insertVendorRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -566,7 +591,7 @@ function validateInsertVendorRequestMessage(objVendorRequest, userId) {
     ];
 
     if (!objVendorRequest) {
-        throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequest", "The object Vendor Request is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request is not found");
     }
 
     try {
@@ -586,10 +611,10 @@ function validateInsertVendorRequestMessage(objVendorRequest, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequest", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "vendorMessageService/handlePost/insertVendorRequest", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;

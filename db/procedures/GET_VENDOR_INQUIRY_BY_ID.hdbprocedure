@@ -1,5 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUIRY_BY_ID" (
 	IN in_vendor_inquiry_id bigint,
+	IN in_permission_id bigint,
+  	IN in_resource_id bigint,
+  	IN in_user_id bigint,
 	OUT out_result TABLE (vendor_inquiry_id bigint,
 								iso nvarchar(2),
 								created_date_tz timestamp,
@@ -10,7 +13,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 								vendor_type_id bigint,
 								USER_NAME nvarchar(255),
 								FIRST_NAME nvarchar(255),
-								LAST_NAME nvarchar(255)
+								LAST_NAME nvarchar(255),
+                                EDITABLE boolean
 							)
  ) 
 	LANGUAGE SQLSCRIPT
@@ -18,6 +22,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_INQUI
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
+
+	va_user_role = SELECT USR.ROLE_ID, USR.USER_ID, HL3.HL3_ID, USR.ENABLED, USR.DELETED, RP.PERMISSION_LEVEL
+						FROM "USER_ROLE" USR
+							LEFT JOIN "HL3_USER" HL3 ON HL3.USER_ID = USR.USER_ID AND HL3.ENABLED = 1 AND HL3.DELETED = 0
+							INNER JOIN "ROLE_PERMISSION" RP
+								ON RP.ROLE_ID = USR.ROLE_ID
+								AND RP.PERMISSION_ID = in_permission_id
+								AND RP.RESOURCE_ID = in_resource_id
+						WHERE USR.USER_ID = in_user_id;
+
 	out_result = SELECT TOP 1
 						VI.VENDOR_INQUIRY_ID,
 						VT.ISO,
@@ -29,12 +43,14 @@ BEGIN
 						VI.VENDOR_TYPE_ID,
 						US.USER_NAME,
 						US.FIRST_NAME,
-						US.LAST_NAME
+						US.LAST_NAME,
+                        (CASE WHEN (VI.STATUS_ID = 3 OR VI.STATUS_ID = 4) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
 	FROM "VENDOR_INQUIRY" VI
 	 INNER JOIN "USER" US ON US.user_id = VI.user_id
 	 INNER JOIN "VENDOR_TYPE" VT ON VI.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
 	 INNER JOIN "VENDOR_INQUIRY_STATUS" ST ON ST.status_id = VI.status_id AND ST.ENABLED = 1 AND ST.DELETED = 0
-	 LEFT JOIN "VENDOR_INQUIRY_MESSAGE" VIM ON VIM.VENDOR_INQUIRY_ID = in_vendor_inquiry_id 
+	 LEFT JOIN "VENDOR_INQUIRY_MESSAGE" VIM ON VIM.VENDOR_INQUIRY_ID = in_vendor_inquiry_id
+     INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
 	  WHERE in_vendor_inquiry_id = VI.VENDOR_INQUIRY_ID
 	   AND VI.ENABLED = 1	
 	   AND VI.DELETED = 0

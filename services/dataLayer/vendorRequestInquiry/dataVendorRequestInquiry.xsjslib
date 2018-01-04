@@ -12,8 +12,10 @@ var GET_VENDOR_REQUEST_LAST_ID = "GET_VENDOR_REQUEST_LAST_ID";
 var GET_VENDOR_INQUIRY_LAST_ID = "GET_VENDOR_INQUIRY_LAST_ID";
 
 //Get all vendor request and vendor request inquiry
-function getAllVendorRequestInquiry(userId) {
+function getAllVendorRequestInquiry(permissionData, userId) {
     var parameters = {'in_user_id': userId};
+    parameters.in_permission_id = permissionData.PERMISSION_ID;
+    parameters.in_resource_id = permissionData.RESOURCE_ID;
     var result = db.executeProcedure(GET_ALL_VENDOR_REQUEST_INQUIRY, parameters);
     return db.extractArray(result.out_result);
 }
