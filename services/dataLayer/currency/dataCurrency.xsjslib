@@ -15,6 +15,7 @@ var GET_CURRENCY_BY_YEAR = "GET_CURRENCY_BY_YEAR";
 var GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR = "GET_ALL_CURRENCY_BY_DEFAULT_BUDGET_YEAR";
 var INS_CURRENCY = 'INS_CURRENCY';
 var UPD_CURRENCY = 'UPD_CURRENCY';
+var UPD_REQUEST_BUDGET_BY_BUDGET_YEAR_ID = "UPD_REQUEST_BUDGET_BY_BUDGET_YEAR_ID";
 var DEL_CURRENCY = 'DEL_CURRENCY';
 
 //Get all currency
@@ -115,6 +116,13 @@ function updateCurrency(objCurrency, user_id){
 	param.in_modified_user_id = user_id;
 	param.out_result = '?';
 	return db.executeScalarManual(UPD_CURRENCY, param, 'out_result');
+}
+
+function updateRequestBudget(budgetYearId) {
+    var param = {};
+    param.in_budget_year_id = budgetYearId;
+    param.out_result = '?';
+    return db.executeScalarManual(UPD_REQUEST_BUDGET_BY_BUDGET_YEAR_ID, param, 'out_result');
 }
 
 function deleteCurrency(currency_id, user_id){

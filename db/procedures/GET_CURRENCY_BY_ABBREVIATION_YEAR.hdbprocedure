@@ -21,7 +21,7 @@ BEGIN
 						CUR.conversion_rate, 
 						CUR.currency_year
 					FROM "CURRENCY" CUR
-						WHERE CUR.abbreviation = in_abbreviation
+						WHERE UPPER(TRIM(CUR.abbreviation)) = UPPER(TRIM(in_abbreviation))
 								AND CUR.currency_year = in_currency_year
 								AND CUR.enabled = 1
 								AND CUR.deleted = 0;
