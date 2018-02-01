@@ -29,7 +29,7 @@ function getTemplateSectionById(sectionId) {
 //Insert template section
 function insertTemplateSection(objTemplateSection, userId) {
     var parameters = getParams(objTemplateSection);
-    parameters.in_created_user_id = userId;//objTemplateSection.CREATED_USER_ID;
+    parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(INS_TEMPLATE_SECTION, parameters, 'out_result');
 }
@@ -38,7 +38,7 @@ function insertTemplateSection(objTemplateSection, userId) {
 function updateTemplateSection(objTemplateSection, userId) {
     var parameters = getParams(objTemplateSection);
     parameters.in_section_id = objTemplateSection.SECTION_ID;
-    parameters.in_modified_user_id = userId;//objTemplate.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_TEMPLATE_SECTION, parameters, 'out_result');
 }
@@ -47,7 +47,7 @@ function updateTemplateSection(objTemplateSection, userId) {
 function deleteTemplateSection(objTemplateSection, userId) {
     var parameters = {};
     parameters.in_section_id = objTemplateSection.SECTION_ID;
-    parameters.in_modified_user_id = userId;//objTemplateSection.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(DEL_TEMPLATE_SECTION, parameters, 'out_result');
 }
@@ -55,8 +55,9 @@ function deleteTemplateSection(objTemplateSection, userId) {
 function getParams(objSection){
 	var params = {};
 	params.in_name = objSection.NAME;
-	
-	return params;
+    params.in_section_order = objSection.SECTION_ORDER;
+
+    return params;
 }
 
 //MANUAL PROCEDURES

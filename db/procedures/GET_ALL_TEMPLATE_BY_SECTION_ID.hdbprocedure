@@ -1,0 +1,50 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TEMPLATE_BY_SECTION_ID" (
+    IN in_section_id BIGINT,
+    OUT out_result TABLE(
+            TEMPLATE_ID BIGINT,
+            TEMPLATE_PARENT_ID INTEGER,
+            TEMPLATE_TYPE_ID BIGINT,
+            CREATED_DATE_TZ TIMESTAMP,
+            MODIFIED_DATE_TZ TIMESTAMP,
+            USER_ID BIGINT,
+            NAME NVARCHAR(2048),
+            LINK NVARCHAR(2048),
+            TEMPLATE_ORDER INTEGER,
+            DELETED_TEMPLATE_NAME NVARCHAR(255),
+            DESCRIPTION NVARCHAR(1000),
+            SECTION_ID BIGINT,
+            ATTACHMENT_ID INTEGER,
+            ORIGINAL_NAME NVARCHAR(255),
+            SAVED_NAME NVARCHAR(255),
+            TEMPLATE_TYPE_NAME NVARCHAR(255)
+    )
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+    out_result = SELECT TMPL.TEMPLATE_ID,
+                        TMPL.TEMPLATE_PARENT_ID,
+                        TMPL.TEMPLATE_TYPE_ID,
+                        TMPL.CREATED_DATE_TZ,
+                        TMPL.MODIFIED_DATE_TZ,
+                        TMPL.USER_ID,
+                        TMPL.NAME,
+                        TMPL.LINK,
+                        TMPL.TEMPLATE_ORDER,
+                        TMPL.DELETED_TEMPLATE_NAME,
+                        TMPL.DESCRIPTION,
+                        TMPL.SECTION_ID,
+                        TMPL.ATTACHMENT_ID,
+                        ATT.ORIGINAL_NAME,
+                        ATT.SAVED_NAME,
+                        (CASE WHEN (TMPL.ATTACHMENT_ID IS NOT NULL) THEN ATT.ATTACHMENT_TYPE ELSE TPTY.name END) AS TEMPLATE_TYPE_NAME
+                 FROM "TEMPLATE" TMPL
+                    INNER JOIN "TEMPLATE_TYPE" TPTY ON TMPL.TEMPLATE_TYPE_ID = TPTY.TEMPLATE_TYPE_ID
+                    LEFT JOIN "ATTACHMENT" ATT ON TMPL.ATTACHMENT_ID = ATT.ATTACHMENT_ID
+                 WHERE TMPL.SECTION_ID = in_section_id
+                    AND TMPL.deleted = 0
+                    AND TMPL.enabled = 1
+                 ORDER BY TMPL.TEMPLATE_ORDER ASC;
+END;

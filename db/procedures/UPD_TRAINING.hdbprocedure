@@ -1,29 +1,31 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_TRAINING" (
- IN in_training_id bigint,
- IN in_modified_user_id bigint,
- IN in_training_type_id bigint,
- IN in_parent_id bigint,
- IN in_link nvarchar (2048),
- IN in_name nvarchar (2048),
- IN in_description nvarchar (2048),
- IN in_training_order integer,
- OUT out_result bigint
+ IN in_training_id BIGINT,
+ IN in_modified_user_id BIGINT,
+ IN in_training_type_id BIGINT,
+ IN in_parent_id BIGINT,
+ IN in_link NVARCHAR(2048),
+ IN in_name NVARCHAR(2048),
+ IN in_description NVARCHAR(2048),
+ IN in_training_order INTEGER,
+ IN in_attachment_id BIGINT,
+ OUT out_result BIGINT
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	UPDATE "TRAINING"
-	SET "TRAINING".training_type_id = in_training_type_id,
-  			"TRAINING".parent_id = in_parent_id,
-  			"TRAINING".link = in_link,
-  			"TRAINING".name = in_name,
-  			"TRAINING".description = in_description,
-  			"TRAINING".training_order = in_training_order,
-        	"TRAINING".modified_date_tz = CURRENT_TIMESTAMP,
-        	"TRAINING".modified_user_id = in_modified_user_id
-	WHERE "TRAINING".training_id = in_training_id;
+	UPDATE "TRAINING" TR
+	SET TR.TRAINING_TYPE_ID = in_training_type_id,
+        TR.PARENT_ID = in_parent_id,
+        TR.LINK = in_link,
+        TR.NAME = in_name,
+        TR.DESCRIPTION = in_description,
+        TR.TRAINING_ORDER = in_training_order,
+        TR.MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+        TR.MODIFIED_USER_ID = in_modified_user_id,
+        TR.ATTACHMENT_ID = (CASE WHEN (IFNULL(in_attachment_id, 0) = 0) THEN TR.ATTACHMENT_ID ELSE in_attachment_id END)
+	WHERE TR.TRAINING_ID = in_training_id;
 
 SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

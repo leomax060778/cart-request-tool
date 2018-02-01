@@ -1,18 +1,19 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING" (
  OUT out_result TABLE (
-	 training_type_id bigint, 
-	 parent_id bigint, 
-	 link nvarchar (2048), 
-	 name nvarchar (2048),
-	 description nvarchar (2048),  
-	 training_order integer,
-	 training_type_name nvarchar (255),
-	 training_id bigint,
-	 attachment_id bigint,
-	 original_name nvarchar(255),
-	 saved_name nvarchar(255),
-	 data_protection_folder tinyint,
-	 CREATED_DATE nvarchar(32)
+	 TRAINING_ID BIGINT,
+	 PARENT_ID BIGINT,
+	 TRAINING_TYPE_ID BIGINT,
+	 TRAINING_TYPE_NAME NVARCHAR (255),
+	 LINK NVARCHAR (2048),
+	 NAME NVARCHAR (2048),
+	 DESCRIPTION NVARCHAR (2048),
+	 TRAINING_ORDER INTEGER,
+	 ATTACHMENT_ID BIGINT,
+	 ORIGINAL_NAME NVARCHAR(255),
+	 SAVED_NAME NVARCHAR(255),
+	 DATA_PROTECTION_FOLDER TINYINT,
+	 CREATED_DATE_TZ TIMESTAMP,
+	 MODIFIED_DATE_TZ TIMESTAMP
 	 ) 
  ) 
 	LANGUAGE SQLSCRIPT
@@ -20,23 +21,24 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_TRAINING
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
- out_result = SELECT TR.training_type_id, 
-					 TR.parent_id, 
-					 TR.link, 
-					 TR.name, 
-					 TR.description,
-					 TR.training_order,
-					 TTY.name as training_type_name,
-					 TR.TRAINING_ID,
+ out_result = SELECT TR.TRAINING_ID,
+					 TR.PARENT_ID,
+					 TR.TRAINING_TYPE_ID,
+					 (CASE WHEN (TR.ATTACHMENT_ID IS NOT NULL) THEN ATT.ATTACHMENT_TYPE ELSE TTY.name END) AS TRAINING_TYPE_NAME,
+					 TR.LINK,
+					 TR.NAME,
+					 TR.DESCRIPTION,
+					 TR.TRAINING_ORDER,
 					 TR.ATTACHMENT_ID,
 					 ATT.ORIGINAL_NAME,
 					 ATT.SAVED_NAME,
-					 TR.data_protection_folder,
-					 TO_NVARCHAR(ATT.CREATED_DATE_TZ, 'YYYY-MM-DD') AS CREATED_DATE
+					 TR.DATA_PROTECTION_FOLDER,
+					 TR.CREATED_DATE_TZ,
+					 TR.MODIFIED_DATE_TZ
  			FROM "TRAINING" TR
- 			INNER JOIN "TRAINING_TYPE" TTY ON TR.training_type_id = TTY.training_type_id
- 			LEFT JOIN "ATTACHMENT" ATT ON TR.ATTACHMENT_ID = ATT.ATTACHMENT_ID
+                INNER JOIN "TRAINING_TYPE" TTY ON TR.TRAINING_TYPE_ID = TTY.TRAINING_TYPE_ID
+                LEFT JOIN "ATTACHMENT" ATT ON TR.ATTACHMENT_ID = ATT.ATTACHMENT_ID
  			WHERE TR.ENABLED = 1
  			AND TR.DELETED = 0
- 			AND TR.PARENT_ID = 0;
+ 			ORDER BY TRAINING_ORDER ASC;
 END;

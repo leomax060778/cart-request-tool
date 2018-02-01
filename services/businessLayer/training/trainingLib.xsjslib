@@ -7,9 +7,15 @@ var dbHelper = mapper.getdbHelper();
 var ErrorLib = mapper.getErrors();
 /** ***********END INCLUDE LIBRARIES*************** */
 
+var trainingTypeMap = {
+    "DIRECTORY": 1,
+    "FILE": 2,
+    "LINK": 3
+};
+
 function getAllTrainingByParent(parentId, userId){
 	if (!parentId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter parentId is not found", "trainingService/handleGet/getAllTrainingByParent", parentId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter parentId is not found", "", parentId);
     }
 	return dataTraining.getAllTrainingByParent(parentId);
 }
@@ -18,7 +24,7 @@ function getAllTrainingByParent(parentId, userId){
 function insertTraining(objTraining, userId) {
     if (validateInsertTraining(objTraining, userId)) {
         if (!existTrainingType(objTraining.TRAINING_TYPE_ID)) {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", "The object Training Type doesn't exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The object Training Type doesn't exist");
         } else {
             return dataTraining.insertTraining(objTraining, userId);
         }
@@ -32,14 +38,69 @@ function existTrainingType(trainingTypeId){
 //Get training by ID
 function getTrainingById(trainingId) {
     if (!trainingId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter trainingId is not found", "trainingService/handleGet/getTrainingById", trainingId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter trainingId is not found", "", trainingId);
     }
-    return dataTraining.getTraining(trainingId);
+    var result = dataTraining.getTraining(trainingId)[0];
+    result = JSON.parse(JSON.stringify(result));
+    result.DISPLAY_DATE = (new Date(result.CREATED_DATE_TZ) > new Date(result.MODIFIED_DATE_TZ)) ? result.CREATED_DATE_TZ : result.MODIFIED_DATE_TZ;
+    return result;
 }
 
 //Get all training
 function getAllTraining() {
-    return dataTraining.getTraining();
+    var result = dataTraining.getTraining();
+    result = JSON.parse(JSON.stringify(result));
+    var tree = {};
+    var plainResult = {};
+    var masterRootId = 0;
+    for (var i = 0; i < result.length; i++) {
+        var row = result[i];
+        tree[row.PARENT_ID] = tree[row.PARENT_ID] || {NODES: {}};
+        tree[row.TRAINING_ID] = tree[row.TRAINING_ID] || {};
+        var currentNode = tree[row.TRAINING_ID];
+        currentNode.TRAINING_ID = row.TRAINING_ID;
+        currentNode.PARENT_ID = row.PARENT_ID;
+        currentNode.TRAINING_TYPE_ID = row.TRAINING_TYPE_ID;
+        currentNode.TRAINING_TYPE_NAME = row.TRAINING_TYPE_NAME;
+        currentNode.LINK = row.LINK;
+        currentNode.NAME = row.NAME;
+        currentNode.DESCRIPTION = row.DESCRIPTION;
+        currentNode.TRAINING_ORDER = row.TRAINING_ORDER;
+        currentNode.ATTACHMENT_ID = row.ATTACHMENT_ID;
+        currentNode.ORIGINAL_NAME = row.ORIGINAL_NAME;
+        currentNode.SAVED_NAME = row.SAVED_NAME;
+        currentNode.DATA_PROTECTION_FOLDER = row.DATA_PROTECTION_FOLDER === 1;
+        currentNode.CREATED_DATE_TZ = row.CREATED_DATE_TZ;
+        currentNode.MODIFIED_DATE_TZ = row.MODIFIED_DATE_TZ;
+        currentNode.NODES = currentNode.NODES || {};
+        var parentNode = tree[row.PARENT_ID];
+        parentNode.NODES[currentNode.TRAINING_ID] = currentNode;
+
+    }
+    result.forEach(function (elem) {
+    	plainResult[elem.TRAINING_ID] = elem;
+    });
+    calculateDateRecursive({TRAINING_TYPE_ID: trainingTypeMap.DIRECTORY, NODES: tree[masterRootId].NODES, CREATED_DATE_TZ: 0, MODIFIED_DATE_TZ: 0}, [{0: "Desktop"}]);
+    return {TREE: tree[masterRootId].NODES, RESULT: plainResult};
+}
+
+function calculateDateRecursive(training, path) {
+    var createdDate = new Date(training.CREATED_DATE_TZ);
+    var modifiedDate = new Date(training.MODIFIED_DATE_TZ);
+    var date = createdDate > modifiedDate ? createdDate : modifiedDate;
+    if (Number(training.TRAINING_TYPE_ID) === trainingTypeMap.DIRECTORY) {
+        Object.keys(training.NODES).forEach(function (key) {
+            var node = training.NODES[key];
+            var pathObject = {};
+            var trainingId = node.TRAINING_ID;
+            pathObject[trainingId] = node.NAME;
+            var childrenDate = calculateDateRecursive(node, path.concat(pathObject));
+            date = childrenDate > date ? childrenDate : date;
+        });
+    }
+    training.DISPLAY_DATE = date.toISOString();
+    training.PATH = path;
+    return date;
 }
 
 //Update training
@@ -60,17 +121,26 @@ function updateTrainingFolderId(objTraining, userId) {
 	return dataTraining.updateDataProtectionFolder(objTraining, userId);
 }
 
+//Update training order
+function updateTrainingOrder(objTraining, userId) {
+    var arrOrder = [];
+    for (var i = 0; i < objTraining.TRAINING_ORDER.length; i++) {
+        arrOrder.push({TRAINING_ID: objTraining.TRAINING_ORDER[i], TRAINING_ORDER: i});
+    }
+    return dataTraining.updateTrainingOrder(arrOrder, userId);
+}
+
 //Delete training
 function deleteTraining(objTraining, userId) {
     if (!objTraining.TRAINING_ID) {
-        throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/deleteTraining", "The TRAINING_ID is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The TRAINING_ID is not found");
     }
     return dataTraining.deleteTraining(objTraining, userId);
 }
 
 function deleteManualTraining(objTraining, userId) {
     if (!objTraining.TRAINING_ID) {
-        throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/deleteTraining", "The TRAINING_ID is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The TRAINING_ID is not found");
     }
     return dataTraining.deleteManualTraining(objTraining, userId);
 }
@@ -85,7 +155,7 @@ function deleteSelectedTraining(objTraining, userId){
 		dbHelper.commit();
 	} catch(e){
 		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", e.toString(),"deleteTraining");
+		throw ErrorLib.getErrors().CustomError("", "", e.toString());
 	}
 	finally{
 		dbHelper.closeConnection();
@@ -100,7 +170,7 @@ function existTraining(trainingId) {
 
 function validateInsertTraining(objTraining, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "trainingService/handlePut/insertTraining", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -114,7 +184,7 @@ function validateInsertTraining(objTraining, userId) {
     ];
 
     if (!objTraining) {
-        throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", "The object Training is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Training is not found");
     }
 
     try {
@@ -134,10 +204,10 @@ function validateInsertTraining(objTraining, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePost/insertTraining", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -145,7 +215,7 @@ function validateInsertTraining(objTraining, userId) {
 
 function validateUpdateTraining(objTraining, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "trainingService/handlePut/updateTraining", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -162,7 +232,7 @@ function validateUpdateTraining(objTraining, userId) {
                         ];
     
     if (!objTraining) {
-        throw ErrorLib.getErrors().CustomError("", "trainingService/handlePut/updateTraining", "The object Training is not found");    
+        throw ErrorLib.getErrors().CustomError("", "", "The object Training is not found");
     }
 
     try {
@@ -192,10 +262,10 @@ function validateUpdateTraining(objTraining, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePut/updateTraining", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "trainingService/handlePut/updateTraining", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -221,7 +291,7 @@ function validateType(key, value) {
             valid = (!value) || (value.length >= 0 && value.length <= 1000);
             break;
         case 'TRAINING_ORDER':
-            valid = !isNaN(value) && value > 0;
+            valid = !isNaN(value) && value >= 0;
             break;
         case 'TRAINING_ID':
             valid = !isNaN(value) && value > 0;
