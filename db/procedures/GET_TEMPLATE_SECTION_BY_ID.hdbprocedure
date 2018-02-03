@@ -1,13 +1,18 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_TEMPLATE_SECTION_BY_ID" (
-	IN in_section_id bigint,
-	OUT out_result TABLE (section_id bigint, name nvarchar(255))
+	IN in_section_id BIGINT,
+	OUT out_result TABLE (SECTION_ID BIGINT,
+                          NAME NVARCHAR(255),
+                          SECTION_ORDER INTEGER
+                          )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT section_id, name
+	out_result = SELECT SECTION_ID, NAME, SECTION_ORDER
 		FROM "TEMPLATE_SECTION"
-			WHERE section_id = in_section_id AND enabled = 1 AND deleted = 0; 
+			WHERE SECTION_ID = in_section_id
+			    AND ENABLED = 1
+			    AND DELETED = 0;
 END;

@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_TEMPLATE_SECTION" (
-	IN in_name nvarchar(255),
-	IN in_created_user_id bigint,
+	IN in_name NVARCHAR(255),
+	IN in_section_order INTEGER,
+	IN in_created_user_id BIGINT,
 	OUT out_result bigint
  ) 
 	LANGUAGE SQLSCRIPT
@@ -8,8 +9,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_TEMPLATE_SEC
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-INSERT INTO "CART_REQUEST_TOOL"."TEMPLATE_SECTION"(name, created_user_id) 
-  VALUES(in_name, in_created_user_id);
+INSERT INTO "CART_REQUEST_TOOL"."TEMPLATE_SECTION"(NAME, SECTION_ORDER, CREATED_USER_ID)
+  VALUES(in_name, in_section_order, in_created_user_id);
  
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."TEMPLATE_SECTION";
 END;

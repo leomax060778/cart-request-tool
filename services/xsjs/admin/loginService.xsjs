@@ -26,20 +26,25 @@ function handlePost(reqBody, userId) {
 	var typeMethod = reqBody.method;
 	var username = reqBody.username;
 	var password = reqBody.password;
-	var currentPassword = reqBody.currentPassword
+	var currentPassword = reqBody.currentPassword;
 	var token = reqBody.token;
 	if(typeMethod && typeMethod === confirmToken){
 		return httpUtil.handleResponse(loginLib.confirmToken(token,userId),httpUtil.OK,httpUtil.AppJson);
 	}else{
-		if(typeMethod && typeMethod === recovery){	
-			//if(loginLib.validateCurrentPassword(username,currentPassword)){
-			var data = loginLib.recoveryPassword(username,password, userId);
-			return httpUtil.handleResponse(data,httpUtil.OK,httpUtil.AppJson);
-			//}
-		}else{		
-			var login = loginLib.login(username,password);			
-			return	httpUtil.handleResponse(login,httpUtil.OK,httpUtil.AppJson); 
-		}
+        var accessToken = reqBody.ACCESS_TOKEN;
+        if (accessToken) {
+            return httpUtil.handleResponse(loginLib.validateUser(accessToken), httpUtil.OK, httpUtil.AppJson);
+        } else {
+            if (typeMethod && typeMethod === recovery) {
+                //if(loginLib.validateCurrentPassword(username,currentPassword)){
+                var data = loginLib.recoveryPassword(username, password, userId);
+                return httpUtil.handleResponse(data, httpUtil.OK, httpUtil.AppJson);
+                //}
+            } else {
+                var login = loginLib.login(username, password);
+                return httpUtil.handleResponse(login, httpUtil.OK, httpUtil.AppJson);
+            }
+        }
 	}
 
 }

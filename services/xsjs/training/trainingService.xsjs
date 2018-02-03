@@ -18,41 +18,50 @@ function processRequest() {
 function handleGet(parameters) {
     var res = {};
     if (parameters.length > 0) {
-    	if (parameters[0].name === GET_ALL_TRAINING_BY_PARENT) {
-            res = training.getAllTrainingByParent(parameters[0].value);
-        } else if (parameters[0].name === GET_ALL_TRAINING) {
-            res = training.getAllTraining();
-        } else if (parameters[0].name === GET_TRAINING_BY_ID) {
-            res = training.getTrainingById(parameters[0].value);
-        } else {
-            throw ErrorLib.getErrors().BadRequest(
-                "",
-                "trainingServices/handleGet",
-                "invalid parameter name (can be: GET_ALL_TRAINING or GET_BY_TRAINING_BY_ID)"
-                + parameters[0].name);
+        switch (parameters[0].name) {
+            case GET_ALL_TRAINING_BY_PARENT:
+                res = training.getAllTrainingByParent(parameters[0].value);
+                break;
+            case GET_ALL_TRAINING:
+                res = training.getAllTraining();
+                break;
+            case GET_TRAINING_BY_ID:
+                res = training.getTrainingById(parameters[0].value);
+                break;
+            default:
+                throw ErrorLib.getErrors().BadRequest("", "", "invalid parameter name (it should be: GET_ALL_TRAINING_BY_PARENT, GET_ALL_TRAINING or GET_BY_TRAINING_BY_ID)" + parameters[0].name);
         }
+    } else {
+        throw ErrorLib.getErrors().BadRequest("", "", "invalid parameter (it should be: GET_ALL_TRAINING_BY_PARENT, GET_ALL_TRAINING or GET_BY_TRAINING_BY_ID)");
     }
+
     return httpUtil.handleResponse(res, httpUtil.OK, httpUtil.AppJson);
 }
 
 function handlePut(reqBody, userId) {
-	var req;
-	if (reqBody.METHOD) {
-		req = training.updateTrainingFolderId(reqBody, userId);
-	} else {
-		req = training.updateTraining(reqBody, userId);
-	}
-	
+    var req;
+    switch (reqBody.METHOD) {
+        case 'FULL_EDIT':
+            req = training.updateTraining(reqBody, userId);
+            break;
+        case 'ORDER':
+            req = training.updateTrainingOrder(reqBody, userId);
+            break;
+        case 'UPDATE_FOLDER_ID':
+            req = training.updateTrainingFolderId(reqBody, userId);
+            break;
+    }
+
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 
 function handleDelete(reqBody, userId) {
-	var req = {};
-	if(reqBody.DELETE && reqBody.DELETE == 'SELECTED_TRAINING'){
-		req = training.deleteSelectedTraining(reqBody, userId);
-	} else {
-		req = training.deleteTraining(reqBody, userId);
-	}    
+    var req = {};
+    if (reqBody.DELETE && reqBody.DELETE === 'SELECTED_TRAINING') {
+        req = training.deleteSelectedTraining(reqBody, userId);
+    } else {
+        req = training.deleteTraining(reqBody, userId);
+    }
     return httpUtil.handleResponse(req, httpUtil.OK, httpUtil.AppJson);
 }
 

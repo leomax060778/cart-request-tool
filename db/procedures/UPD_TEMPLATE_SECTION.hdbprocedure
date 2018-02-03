@@ -1,20 +1,21 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_TEMPLATE_SECTION" (
-	IN in_section_id bigint,
-	IN in_name nvarchar(255),
-	IN in_modified_user_id bigint,
-  	OUT out_result bigint
+	IN in_section_id BIGINT,
+	IN in_name NVARCHAR(255),
+	IN in_section_order INTEGER,
+    IN in_modified_user_id BIGINT,
+  	OUT out_result BIGINT
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	UPDATE tsection
-	SET tsection.name = in_name,
-		tsection.modified_date_tz = CURRENT_TIMESTAMP,
-		tsection.modified_user_id = in_modified_user_id
-		FROM "TEMPLATE_SECTION" tsection
-			WHERE tsection.section_id = in_section_id;
+	UPDATE "TEMPLATE_SECTION"
+	SET NAME = in_name,
+	    SECTION_ORDER = in_section_order,
+		MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+		MODIFIED_USER_ID = in_modified_user_id
+    WHERE SECTION_ID = in_section_id;
 
 	SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

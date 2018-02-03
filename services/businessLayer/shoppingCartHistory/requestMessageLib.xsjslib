@@ -7,43 +7,51 @@ var user = mapper.getUser();
 var status = mapper.getCartRequest();
 var ErrorLib = mapper.getErrors();
 var dbHelper = mapper.getdbHelper();
-var requestMail = mapper.getCartRequestMail();
 var mail = mapper.getMail();
 var mailSend = mapper.getCartRequestMailSend();
 
 var config = mapper.getDataConfig();
- 
+
 /** ***********END INCLUDE LIBRARIES*************** */
 
-var statusMap = {'TO_BE_CHECKED': 1, 'CHECKED': 2, 'IN_PROCESS': 3, 'RETURN_TO_REQUESTER': 4, 'APPROVED': 5, 'CANCELLED': 6};
+var statusMap = {
+    'TO_BE_CHECKED': 1,
+    'CHECKED': 2,
+    'IN_PROCESS': 3,
+    'RETURN_TO_REQUESTER': 4,
+    'APPROVED': 5,
+    'CANCELLED': 6
+};
 var messageTypeMap = {'FYI_ONLY': 1, 'BM_EYES_ONLY': 2, 'REQUEST_RESPONSE': 3};
 
 var pathName = "CART_REQUEST";
 
 //Insert new request message
-function insertRequestMessage(objRequest, userId) {
-	if (validateInsertRequestMessage(objRequest, userId)) {
-		if (!existRequest(objRequest.REQUEST_ID, userId)) {
-	        throw ErrorLib.getErrors().CustomError("", "requestMessageService/handlePost/insertRequestMessage", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
-	    }
-		if (Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.APPROVED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED) {
-	        objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
-	        status.updateRequestStatusManual(objRequest, userId, true);
-		}
-		var result = message.insertRequestMessage(objRequest, userId);
-
-        var messageType = Number(objRequest.MESSAGE_TYPE_ID);
-        switch(messageType){
-            case messageTypeMap.FYI_ONLY:
-                mailSend.sendFYIMail(objRequest.REQUEST_ID, userId);
-                break;
-            case messageTypeMap.BM_EYES_ONLY:
-            	break;
-            default:
-                mailSend.sendNewMessageMail(objRequest.REQUEST_ID, userId);
-                break;
+function insertRequestMessage(objRequest, userId, alreadyNotified) {
+    if (validateInsertRequestMessage(objRequest, userId)) {
+        if (!existRequest(objRequest.REQUEST_ID, userId)) {
+            throw ErrorLib.getErrors().CustomError("", "", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
         }
+        if (Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.APPROVED || Number(objRequest.PREVIOUS_STATUS_ID) === statusMap.CANCELLED) {
+            objRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
+            status.updateRequestStatusManual(objRequest, userId, true);
+        }
+        var result = message.insertRequestMessage(objRequest, userId);
 
+        //Only send an email if the user was not notified by another previous action
+        if (!alreadyNotified) {
+            var messageType = Number(objRequest.MESSAGE_TYPE_ID);
+            switch (messageType) {
+                case messageTypeMap.FYI_ONLY:
+                    mailSend.sendFYIMail(objRequest.REQUEST_ID, userId);
+                    break;
+                case messageTypeMap.BM_EYES_ONLY:
+                    break;
+                default:
+                    mailSend.sendNewMessageMail(objRequest.REQUEST_ID, userId);
+                    break;
+            }
+        }
         return result;
     }
 }
@@ -51,85 +59,85 @@ function insertRequestMessage(objRequest, userId) {
 //Get messages of request
 function getRequestMessage(requestId, userId) {
     if (!requestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "requestMessageService/handleGet/getRequestMessage", requestId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter requestId is not found", "", requestId);
     }
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var result = [];
     var messageContent;
-	var startPosition;
-	var requestMessageLength;
-	var i;
-	var splitNumber; 
-    try{
-	    result = message.getRequestMessageManual(requestId);
-	    result = JSON.parse(JSON.stringify(result));
-	    result.forEach(function (elem) {
-	    	messageContent = "";
-    		startPosition = 1;
-    		requestMessageLength = 5000;
-    		i = 0;
-    		splitNumber = 0;
+    var startPosition;
+    var requestMessageLength;
+    var i;
+    var splitNumber;
+    try {
+        result = message.getRequestMessageManual(requestId);
+        result = JSON.parse(JSON.stringify(result));
+        result.forEach(function (elem) {
+            messageContent = "";
+            startPosition = 1;
+            requestMessageLength = 5000;
+            i = 0;
+            splitNumber = 0;
 
-	    	//Join message content
-	    	splitNumber = elem.CONTENT_LENGTH / requestMessageLength;
-	    	for (i = 0; i < splitNumber; i++){
-	    		messageContent = messageContent.concat(message.getRequestMessageContentManual(elem.REQUEST_ID, elem.MESSAGE_ID, startPosition, requestMessageLength).MESSAGE_CONTENT);
-	    		startPosition = startPosition + requestMessageLength;	
-	    	}
-	    	elem.MESSAGE_CONTENT = messageContent;
-	    });
-    } catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
-	}
-	finally{
-		dbHelper.commit();
-		dbHelper.closeConnection();
-	}
+            //Join message content
+            splitNumber = elem.CONTENT_LENGTH / requestMessageLength;
+            for (i = 0; i < splitNumber; i++) {
+                messageContent = messageContent.concat(message.getRequestMessageContentManual(elem.REQUEST_ID, elem.MESSAGE_ID, startPosition, requestMessageLength).MESSAGE_CONTENT);
+                startPosition = startPosition + requestMessageLength;
+            }
+            elem.MESSAGE_CONTENT = messageContent;
+        });
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
+    }
+    finally {
+        dbHelper.commit();
+        dbHelper.closeConnection();
+    }
     return result;
 }
 
 //Update message read
 function updateRequestMessage(objRequestMessage, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/updateRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var result = [];
 
-    try{
-    	if(objRequestMessage.METHOD && objRequestMessage.METHOD === 'AllRead'){
-    		if (objRequestMessage.MESSAGES && objRequestMessage.MESSAGES.length > 0) {
-    		    objRequestMessage.MESSAGES.forEach(function(elem){
-    		    	if(Number(elem.CREATED_USER_ID) !== Number(userId)){
-    		    			elem.MESSAGE_READ = 1;
-    	    		    	result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));    
-    	        	}
-    		    });
-        	}
-    		        	
-    	}else{
-    		//Mark message as read
-    		if (objRequestMessage.length > 0) {
-    		    objRequestMessage.forEach(function(elem){
-    		    	result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));
-    		    });
-        	}
-    	}    	
-    	
-    } catch(e){
-		dbHelper.rollback();
-		throw ErrorLib.getErrors().CustomError("", "requestService/handlePut/updateRequestMessage", e.toString());
-	}
-	finally{
-		if(result.length > 0){
-			dbHelper.commit();
-			dbHelper.closeConnection();
-		}
-	}
+    try {
+        if (objRequestMessage.METHOD && objRequestMessage.METHOD === 'AllRead') {
+            if (objRequestMessage.MESSAGES && objRequestMessage.MESSAGES.length > 0) {
+                objRequestMessage.MESSAGES.forEach(function (elem) {
+                    if (Number(elem.CREATED_USER_ID) !== Number(userId)) {
+                        elem.MESSAGE_READ = 1;
+                        result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));
+                    }
+                });
+            }
+
+        } else {
+            //Mark message as read
+            if (objRequestMessage.length > 0) {
+                objRequestMessage.forEach(function (elem) {
+                    result.push(message.updateRequestMessageReadByMessageIdManual(elem, userId));
+                });
+            }
+        }
+
+    } catch (e) {
+        dbHelper.rollback();
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
+    }
+    finally {
+        if (result.length > 0) {
+            dbHelper.commit();
+            dbHelper.closeConnection();
+        }
+    }
     return result;
-	
+
 }
 
 //Check if the request exists
@@ -140,7 +148,7 @@ function existRequest(requestId, userId) {
 //Validate insert request message
 function validateInsertRequestMessage(objRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handlePut/insertRequestMessage", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -150,7 +158,7 @@ function validateInsertRequestMessage(objRequest, userId) {
         'PREVIOUS_STATUS_ID'
     ];
     if (!objRequest) {
-        throw ErrorLib.getErrors().CustomError("", "requestService/handlePost/insertRequestMessage", "The object Request Message is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Request Message is not found");
     }
 
     try {
@@ -170,10 +178,10 @@ function validateInsertRequestMessage(objRequest, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "requestService/handlePost/insertRequestMessage", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "requestService/handlePost/insertRequestMessage", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -196,18 +204,18 @@ function validateType(key, value) {
     return valid;
 }
 
-function getUrlBase(){
-	return config.getUrlBase();
+function getUrlBase() {
+    return config.getUrlBase();
 }
 
-function getEmailList(){
-	return config.getEmailList();
+function getEmailList() {
+    return config.getEmailList();
 }
 
-function getPath(stringName){
-	return config.getPath(stringName);
+function getPath(stringName) {
+    return config.getPath(stringName);
 }
 
-function getBasicData(stringPathName, additionalParam){
-	return config.getBasicData(stringPathName, additionalParam);
+function getBasicData(stringPathName, additionalParam) {
+    return config.getBasicData(stringPathName, additionalParam);
 }
