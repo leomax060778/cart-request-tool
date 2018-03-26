@@ -153,7 +153,7 @@ function getEnvironment() {
 }
 
 function getEmailList(){
-	 return emailAccounts;
+	return emailAccounts;
 }
 
 function getUrlBase(){

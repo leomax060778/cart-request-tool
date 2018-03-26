@@ -37,7 +37,8 @@ BEGIN
 								 	FROM "EXTEND_VENDOR_REQUEST_MESSAGE" EVRM
 								 		WHERE EVRM.CREATED_USER_ID != in_user_id AND EVRM.ENABLED = 1 AND EVRM.DELETED = 0
 								 		GROUP BY EVRM.EXTEND_VENDOR_REQUEST_ID;
-				 		
+
+--Vendor Inquiry
 out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VENDOR_REQUEST_INQUIRY_ID,
 					VI.VENDOR_INQUIRY_ID AS V_ID, 
 					VAM.MESSAGE_READ, 
@@ -66,10 +67,11 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
 			       			AND VI.DELETED = 0
 			      		   )
              UNION
+             --Vendor Request
              	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(VR.VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, 
              	 				VR.VENDOR_REQUEST_ID AS V_ID, 
              	 				VAM.MESSAGE_READ, 
-             	 				V.LEGAL_NAME AS VENDOR_NAME, 
+             	 				VAI.VENDOR_NAME,
              	 				ST.NAME AS STATUS_NAME, 
              	 				ST.STATUS_ID,
              	 				(US.user_name || ' / ' || US.first_name || ' ' || US.last_name) AS REQUESTER, 
@@ -77,6 +79,7 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
              	 				VR.CREATED_DATE_TZ AS ORDER_DATE, 
              	 				VR.CREATED_USER_ID
              			FROM "VENDOR_REQUEST" VR
+             			INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VAI.VENDOR_ADDITIONAL_INFORMATION_ID = VR.VENDOR_ADDITIONAL_INFORMATION_ID
              			INNER JOIN "VENDOR" V ON VR.VENDOR_ID = V.VENDOR_ID
              			INNER JOIN "VENDOR_REQUEST_STATUS" ST ON ST.STATUS_ID = VR.STATUS_ID AND ST.ADMINISTRABLE = in_administrable AND ST.ENABLED = 1 AND ST.DELETED = 0
              			INNER JOIN "VENDOR_TYPE" VT ON VT.VENDOR_TYPE_ID = VR.VENDOR_TYPE_ID AND VT.ENABLED = 1 AND VT.DELETED = 0
@@ -96,6 +99,7 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
 			              		   )
 			  	 )
              	UNION
+             	--Change Vendor Request
              	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(CVR.CHANGE_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID,
              	 				CVR.CHANGE_VENDOR_REQUEST_ID AS V_ID,
              	 				VAM.MESSAGE_READ, 
@@ -125,6 +129,7 @@ out_result = SELECT DISTINCT VT.ISO || TO_NVARCHAR(VI.VENDOR_INQUIRY_ID) AS VEND
 			              		   )
 			     )
              	UNION
+             	--Extend Vendor Request
              	 (SELECT DISTINCT VT.ISO || TO_NVARCHAR(EVR.EXTEND_VENDOR_REQUEST_ID) AS VENDOR_REQUEST_INQUIRY_ID, 
              	 				EVR.EXTEND_VENDOR_REQUEST_ID AS V_ID,
              	 				VAM.MESSAGE_READ,

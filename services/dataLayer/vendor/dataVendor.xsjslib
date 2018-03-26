@@ -11,13 +11,15 @@ var GET_VENDOR_BY_ADDITIONAL_INFORMATION_ID = "GET_VENDOR_BY_ADDITIONAL_INFORMAT
 var GET_VENDOR_BY_ACCOUNT = "GET_VENDOR_BY_ACCOUNT";
 var INS_VENDOR = 'INS_VENDOR';
 var UPD_VENDOR = 'UPD_VENDOR';
+var UPD_VENDOR_STATUS = 'UPD_VENDOR_STATUS';
 var UPD_VENDOR_ACCOUNT = 'UPD_VENDOR_ACCOUNT';
 var DEL_VENDOR = 'DEL_VENDOR';
 var GET_ALL_VENDOR_FOR_FILTERS = "GET_ALL_VENDOR_FOR_FILTERS";
 var GET_ALL_VENDOR_STATUS = "GET_ALL_VENDOR_STATUS";
 
-var INS_VENDOR_ADDITIONAL_INFORMATION = 'INS_VENDOR_ADDITIONAL_INFORMATION';
-var DEL_VENDOR_ADDITIONAL_INFORMATION = 'DEL_VENDOR_ADDITIONAL_INFORMATION';
+var INS_VENDOR_ADDITIONAL_INFORMATION = "INS_VENDOR_ADDITIONAL_INFORMATION";
+var DEL_VENDOR_ADDITIONAL_INFORMATION = "DEL_VENDOR_ADDITIONAL_INFORMATION";
+var UPD_VENDOR_ADDITIONAL_INFORMATION = "UPD_VENDOR_ADDITIONAL_INFORMATION";
 
 function getAllVendor() {
 	var param = {};
@@ -26,18 +28,18 @@ function getAllVendor() {
 	return db.extractArray(result.out_result);
 }
 
-function getAllVendorForFilters(user_id) {
+function getAllVendorForFilters(userId) {
 	var param = {};
 	param.out_result = '?';
-	param.in_user_id = user_id;
+	param.in_user_id = userId;
 	var result = db.executeProcedure(GET_ALL_VENDOR_FOR_FILTERS, param);
 	return db.extractArray(result.out_result);
 }
 
-function getVendorById(vendor_id) {
+function getVendorById(vendorId) {
 
 	var param = {};
-	param.in_vendor_id = vendor_id;
+	param.in_vendor_id = vendorId;
 	param.out_result = '?';
 
 	var result = db.executeProcedure(GET_VENDOR_BY_ID, param);
@@ -82,40 +84,42 @@ function getVendorByAccount(account) {
 	    }
 }
 
-function insertVendor(objVendor, user_id) {
+function insertVendor(objVendor, userId) {
 	var param = getParams(objVendor);
 	param.in_account = objVendor.ACCOUNT || null;
 	param.in_status_id = objVendor.STATUS_ID || 1;
-	param.in_created_user_id = user_id;
+	param.in_data_protection_enabled = objVendor.DATA_PROTECTION_ENABLED || 0;
+	param.in_created_user_id = userId;
 	param.out_result = '?';
 
 	return db.executeScalar(INS_VENDOR, param, 'out_result');
 }
 
-function updateVendor(objVendor, user_id) {
+function updateVendor(objVendor, userId) {
 	var param = getParams(objVendor);
 	param.in_vendor_id = objVendor.VENDOR_ID;
 	param.in_account = objVendor.ACCOUNT || null;
-	param.in_modified_user_id = user_id;
+	param.in_data_protection_enabled = objVendor.DATA_PROTECTION_ENABLED || 0;
+	param.in_modified_user_id = userId;
 	param.out_result = '?';
 
 	return db.executeScalar(UPD_VENDOR, param, 'out_result');
 }
 
-function deleteVendor(vendor_id, user_id) {
+function deleteVendor(vendorId, userId) {
 	var param = {};
-	param.in_vendor_id = vendor_id;
-	param.in_modified_user_id = user_id;
+	param.in_vendor_id = vendorId;
+	param.in_modified_user_id = userId;
 	param.out_result = '?';
 
 	return db.executeScalar(DEL_VENDOR, param, 'out_result');
 }
 
 //MANUAL PROCEDURES
-function getManualVendorById(vendor_id) {
+function getManualVendorById(vendorId) {
 	
 	var param = {};
-	param.in_vendor_id = vendor_id;
+	param.in_vendor_id = vendorId;
 	param.out_result = '?';
 
 	var result = db.executeProcedureManual(GET_VENDOR_BY_ID, param);
@@ -127,24 +131,37 @@ function getManualVendorById(vendor_id) {
     }
 }
 
-function insertManualVendor(objVendor, user_id) {
+function insertManualVendor(objVendor, userId) {
 	var param = getParams(objVendor);
 	param.in_account = objVendor.ACCOUNT || null;
 	param.in_status_id = objVendor.STATUS_ID || 1;
-	param.in_created_user_id = user_id;
+	param.in_data_protection_enabled = objVendor.DATA_PROTECTION_ENABLED || 0;
+	param.in_created_user_id = userId;
 	param.out_result = '?';
 
 	return db.executeScalarManual(INS_VENDOR, param, 'out_result');
 }
 
-function updateManualVendor(objVendor, user_id) {
+function updateManualVendor(objVendor, userId) {
 	var param = getParams(objVendor);
 	param.in_vendor_id = objVendor.VENDOR_ID;
 	param.in_account = objVendor.ACCOUNT || null;
-	param.in_modified_user_id = user_id;
+	param.in_data_protection_enabled = objVendor.DATA_PROTECTION_ENABLED || 0;
+	param.in_modified_user_id = userId;
+	param.out_result = '?';
+	return db.executeScalarManual(UPD_VENDOR, param, 'out_result');
+}
+
+function updateManualVendorStatus(objVendor, userId) {
+	var param = {};
+	param.in_vendor_id = objVendor.VENDOR_ID;
+	param.in_status_id = objVendor.STATUS_ID;
+	param.in_previous_status_id = objVendor.PREVIOUS_STATUS_ID;
+	param.in_user_id_status = userId;
+	param.in_modified_user_id = userId;
 	param.out_result = '?';
 
-	return db.executeScalarManual(UPD_VENDOR, param, 'out_result');
+	return db.executeScalarManual(UPD_VENDOR_STATUS, param, 'out_result');
 }
 
 function updateVendorAccountManual(objVendor, userId){
@@ -159,10 +176,10 @@ function updateVendorAccountManual(objVendor, userId){
 	return db.executeScalarManual(UPD_VENDOR_ACCOUNT, parameters, 'out_result');
 }
 
-function deleteManualVendor(vendor_id, user_id) {
+function deleteManualVendor(vendorId, userId) {
 	var param = {};
-	param.in_vendor_id = vendor_id;
-	param.in_modified_user_id = user_id;
+	param.in_vendor_id = vendorId;
+	param.in_modified_user_id = userId;
 	param.out_result = '?';
 
 	return db.executeScalarManual(DEL_VENDOR, param, 'out_result');
@@ -188,6 +205,16 @@ function deleteManualVendorAdditionalInformation(objVendor, userId){
 	params.in_modified_user_id = userId;
 	params.out_result = '?';
 	return db.executeScalarManual(DEL_VENDOR_ADDITIONAL_INFORMATION, params,'out_result');
+}
+
+function updateManualVendorAdditionalInformation(objVendor, userId){
+	var params = {};
+	params.in_vendor_id = objVendor.VENDOR_ID;
+	params.in_vendor_additional_information_id = objVendor.VENDOR_ADDITIONAL_INFORMATION_ID;
+	params.in_vendor_name = objVendor.VENDOR_NAME;
+	params.in_modified_user_id = userId;
+	params.out_result = '?';
+	return db.executeScalarManual(UPD_VENDOR_ADDITIONAL_INFORMATION, params,'out_result');
 }
 
 function getVendorAdditionalInformationParams(objVendor) {

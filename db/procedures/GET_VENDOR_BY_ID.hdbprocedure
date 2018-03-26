@@ -1,22 +1,25 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_ID" (
-  IN in_vendor_id bigint,
-  OUT out_result TABLE (vendor_id bigint,
-						account nvarchar (255),
-						name nvarchar (255),
-						contact_name nvarchar (255),
-						contact_email nvarchar (255),
-						contact_phone nvarchar (255),
-						address_1 nvarchar(255),
-						address_2 nvarchar(255),
-						city nvarchar(255),
-						state nvarchar(255),
-						zip nvarchar (255),
-						phone nvarchar(255),
-						fax nvarchar(255),
-						legal_name nvarchar(511),
-						informal_name nvarchar(511),
-						status_id bigint,
-						used integer
+  IN in_vendor_id BIGINT,
+  OUT out_result TABLE (VENDOR_ID BIGINT,
+						ACCOUNT NVARCHAR(255),
+						NAME NVARCHAR(255),
+						CONTACT_NAME NVARCHAR(255),
+						CONTACT_EMAIL NVARCHAR(255),
+						CONTACT_PHONE NVARCHAR(255),
+						ADDRESS_1 NVARCHAR(255),
+						ADDRESS_2 NVARCHAR(255),
+						CITY NVARCHAR(255),
+						STATE NVARCHAR(255),
+						ZIP NVARCHAR(255),
+						PHONE NVARCHAR(255),
+						FAX NVARCHAR(255),
+						LEGAL_NAME NVARCHAR(511),
+						INFORMAL_NAME NVARCHAR(511),
+						STATUS_ID BIGINT,
+						USED INTEGER,
+						VENDOR_REQUEST_RELATED TINYINT,
+						VENDOR_REQUEST_ID BIGINT,
+						DATA_PROTECTION_ENABLED TINYINT
 						)
 )
 LANGUAGE SQLSCRIPT
@@ -24,45 +27,60 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-  out_result = SELECT 
-  				V.vendor_id,
-				V.account, 
-				VAI.VENDOR_NAME as name, 
-				VCI.name as contact_name, 
-				VCI.email as contact_email, 
-				VCI.phone as contact_phone, 
-				V.address_1, 
-				V.address_2, 
-				V.city, 
-				V.state, 
-				V.zip, 
-				V.phone, 
-				V.fax, 
-				V.legal_name, 
-				V.informal_name,
-				V.status_id,
-				count(DISTINCT RQ.REQUEST_ID) as used
-            FROM "VENDOR" V
-            LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON V.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
-            LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
-            LEFT JOIN "REQUEST" RQ ON RQ.VENDOR_ID = V.VENDOR_ID
-            WHERE V.vendor_id = in_vendor_id
-            AND V.ENABLED = 1 
-            AND V.DELETED = 0
-            GROUP BY 	V.vendor_id,
-						V.account, 
-						VAI.VENDOR_NAME, 
-						VCI.name, 
-						VCI.email, 
-						VCI.phone, 
-						V.address_1, 
-						V.address_2, 
-						V.city, 
-						V.state, 
-						V.zip, 
-						V.phone, 
-						V.fax, 
-						V.legal_name, 
-						V.informal_name,
-						V.status_id;
+  out_result = SELECT V.VENDOR_ID,
+                      V.ACCOUNT,
+                      VAI.VENDOR_NAME AS NAME,
+                      VCI.NAME AS CONTACT_NAME,
+                      VCI.EMAIL AS CONTACT_EMAIL,
+                      VCI.PHONE AS CONTACT_PHONE,
+                      V.ADDRESS_1,
+                      V.ADDRESS_2,
+                      V.CITY,
+                      V.STATE,
+                      V.ZIP,
+                      V.PHONE,
+                      V.FAX,
+                      VAI.VENDOR_NAME AS LEGAL_NAME,
+                      V.INFORMAL_NAME,
+                      V.STATUS_ID,
+                      COUNT(DISTINCT RQ.REQUEST_ID) AS USED,
+                      (CASE WHEN VR.VENDOR_ID IS NOT NULL THEN 1 ELSE 0 END) AS VENDOR_REQUEST_RELATED,
+                      VR.VENDOR_REQUEST_ID,
+                      V.DATA_PROTECTION_ENABLED
+               FROM "VENDOR" V
+                INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
+			         	ON V.VENDOR_ID = VAI.VENDOR_ID 
+			         		AND VAI.ENABLED = 1 
+			         		AND VAI.DELETED = 0 
+			         		AND (
+			         		--Get the vendor additional information with the most recent modified date
+			         			(VAI.MODIFIED_DATE_TZ = (SELECT MAX(MODIFIED_DATE_TZ) FROM "VENDOR_ADDITIONAL_INFORMATION" where vendor_id = VAI.VENDOR_ID))
+			         		--In case the vendor additional information does not have modified date, then get the value with the most recent created date
+			         				OR (VAI.CREATED_DATE_TZ = (SELECT MAX(CREATED_DATE_TZ) FROM "VENDOR_ADDITIONAL_INFORMATION" where vendor_id = VAI.VENDOR_ID))
+		         				)
+                LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
+                LEFT JOIN "REQUEST" RQ ON RQ.VENDOR_ID = V.VENDOR_ID
+                LEFT JOIN "VENDOR_REQUEST" VR ON V.VENDOR_ID = VR.VENDOR_ID
+               WHERE V.VENDOR_ID = in_vendor_id
+                 AND V.ENABLED = 1
+                 AND V.DELETED = 0
+               GROUP BY V.VENDOR_ID,
+                        V.ACCOUNT,
+                        VAI.VENDOR_NAME,
+                        VCI.NAME,
+                        VCI.EMAIL,
+                        VCI.PHONE,
+                        V.ADDRESS_1,
+                        V.ADDRESS_2,
+                        V.CITY,
+                        V.STATE,
+                        V.ZIP,
+                        V.PHONE,
+                        V.FAX,
+                        V.LEGAL_NAME,
+                        V.INFORMAL_NAME,
+                        V.STATUS_ID,
+                        VR.VENDOR_ID,
+                        VR.VENDOR_REQUEST_ID,
+                        V.DATA_PROTECTION_ENABLED;
 END;

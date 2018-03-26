@@ -33,34 +33,40 @@ function getAllDataProtection() {
 //Get answer to data protection by vendor request id
 function getDataProtectionById(vendorRequestId) {
     if (!vendorRequestId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "vendorDataProtectionService/handleGet/getDataProtectionById", vendorRequestId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter vendorRequestId is not found", "", vendorRequestId);
     }
     return data.getDataProtectionById(vendorRequestId);
 }
 
 //Update answer of vendor data protection manually
-function updateDataProtectionManual(objDataProtection, vendor_request_id, userId) {
-    if (!vendorRequest.existVendorRequest(vendor_request_id, userId)) {
-        throw ErrorLib.getErrors().CustomError("", "vendorRequestInquiryService/handlePut/updateDataProtectionManual", "The object Vendor Request " + objDataProtection.VENDOR_REQUEST_ID + " does not exist");
+function updateDataProtectionManual(objDataProtection, vendorRequestId, userId) {
+    if (!vendorRequest.existVendorRequest(vendorRequestId, userId)) {
+        throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objDataProtection.VENDOR_REQUEST_ID + " does not exist");
     }
-    validateParams(vendor_request_id, userId);
+    validateParams(vendorRequestId, userId);
     var keys = ['VENDOR_REQUEST_ID', 'QUESTION_ID', 'OPTION_ID'];
     var vendorDataProtectionUrl = "vendorRequestInquiryService/handlePut/updateDataProtectionManual";
-    (objDataProtection).forEach(function(datap) {
-    	utilLib.validateObjectAttributes(datap, userId, keys, vendorDataProtectionUrl, validateType);
-    	data.updateDataProtectionManual(datap, userId);
+    var dataProtectionCollection = data.getDataProtectionById(vendorRequestId);
+    var arrDPId = [];
+    dataProtectionCollection.forEach(function (elem) {
+        arrDPId.push(Number(elem.QUESTION_ID));
     });
-
+    objDataProtection.forEach(function(elem) {
+    	utilLib.validateObjectAttributes(elem, userId, keys, vendorDataProtectionUrl, validateType);
+    	if (arrDPId.indexOf(Number(elem.QUESTION_ID)) > -1) {
+            data.updateDataProtectionManual(elem, userId);
+        } else {
+            data.insertAnswerManual(elem, userId);
+        }
+    });
 }
 
 function validateParams(vendorRequestId, userId) {
 	if (!vendorRequestId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
-				"The vendorRequestId is not found");
+		throw ErrorLib.getErrors().CustomError("", "", "The vendorRequestId is not found");
 	}
 	if (!userId) {
-		throw ErrorLib.getErrors().CustomError("", "vendorDataProtectionService",
-				"The userId is not found");
+		throw ErrorLib.getErrors().CustomError("", "", "The userId is not found");
 	}
 }
 

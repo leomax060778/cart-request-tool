@@ -49,9 +49,10 @@ function insertVendorRequestManual(objVendorRequest, userId) {
     parameters.in_expected_amount = objVendorRequest.EXPECTED_AMOUNT || null;
     parameters.in_purchase_currency_id = objVendorRequest.PURCHASE_CURRENCY_ID;
     parameters.in_expected_currency_id = objVendorRequest.EXPECTED_CURRENCY_ID || null;
-    parameters.in_accept_american_express = objVendorRequest.ACCEPT_AMERICAN_EXPRESS;
+    parameters.in_accept_american_express = objVendorRequest.ACCEPT_AMERICAN_EXPRESS || 0;
     parameters.in_cost_center_owner = objVendorRequest.COST_CENTER_OWNER;
     parameters.in_additional_information = objVendorRequest.ADDITIONAL_INFORMATION_FLAG || 0;
+    parameters.in_vendor_additional_information_id = objVendorRequest.VENDOR_ADDITIONAL_INFORMATION_ID;
     parameters.in_created_user_id = userId;
     parameters.in_vendor_id = objVendorRequest.VENDOR_ID;
     parameters.out_result = '?';
