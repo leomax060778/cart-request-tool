@@ -649,10 +649,10 @@ function updateManualNonSapVendor(non_sap_vendor, user_id) {
     }
 }
 
-function deleteManualNonSapVendor(non_sap_vendor_id, user_id) {
-    non_sap_vendor_id = Number(non_sap_vendor_id);
+function deleteManualNonSapVendor(nonSapVendorId, userId) {
+    nonSapVendorId = Number(nonSapVendorId);
 
-    return businessNonSap.deleteManualNonSapVendor(non_sap_vendor_id, user_id);
+    return businessNonSap.deleteManualNonSapVendor(nonSapVendorId, userId);
 }
 
 //NOTES
@@ -1175,9 +1175,9 @@ function insertChangedColumn(changedColumns, requestId, userId) {
 }
 
 //REQUEST
-function updateRequest(reqBody, user_id) {
-    var original_request = getRequestById(reqBody.REQUEST_ID, user_id);
-    var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, user_id);
+function updateRequest(reqBody, userId) {
+    var originalRequest = getRequestById(reqBody.REQUEST_ID, userId);
+    var attachmentList = dataRequest.getAttachmentByRequestId(reqBody.REQUEST_ID, userId);
     var request;
     var notes = [];
     var originalNotes = [];
@@ -1185,7 +1185,7 @@ function updateRequest(reqBody, user_id) {
     try {
         //Insert changed columns
         if (changedColumns && Object.keys(changedColumns).length > 0) {
-            insertChangedColumn(changedColumns, reqBody.REQUEST_ID, user_id);
+            insertChangedColumn(changedColumns, reqBody.REQUEST_ID, userId);
         }
         //Infrastructure & location of work logic
         if (!Number(reqBody.INFRASTRUCTURE_OF_WORK_ID) || !Number(reqBody.LOCATION_OF_WORK_ID)) {
@@ -1196,22 +1196,22 @@ function updateRequest(reqBody, user_id) {
         reqBody.PREVIOUS_STATUS_ID = reqBody.STATUS_ID;
         if (Number(reqBody.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED) {
             reqBody.STATUS_ID = statusMap.TO_BE_CHECKED;
-            status.updateRequestStatusManual(reqBody, user_id, true);
+            status.updateRequestStatusManual(reqBody, userId, true);
         }
 
         //NON-SAP VENDOR UPDATE
-        var non_sap_id;
-        if (!original_request.NON_SAP_VENDOR_ID && reqBody.NON_SAP_VENDOR !== null) {
-            reqBody.NON_SAP_VENDOR_ID = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
+        var nonSapId;
+        if (!originalRequest.NON_SAP_VENDOR_ID && reqBody.NON_SAP_VENDOR !== null) {
+            reqBody.NON_SAP_VENDOR_ID = insertManualNonSapVendor(reqBody.NON_SAP_VENDOR, userId);
 
-        } else if (original_request.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
-            non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
-            updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, user_id);
+        } else if (originalRequest.NON_SAP_VENDOR_ID !== null && reqBody.NON_SAP_VENDOR !== null) {
+            nonSapId = Number(originalRequest.NON_SAP_VENDOR_ID);
+            updateManualNonSapVendor(reqBody.NON_SAP_VENDOR, userId);
             reqBody.NON_SAP_VENDOR_ID = reqBody.NON_SAP_VENDOR.NON_SAP_VENDOR_ID;
 
-        } else if (!!original_request.NON_SAP_VENDOR_ID && !reqBody.NON_SAP_VENDOR) {
-            non_sap_id = Number(original_request.NON_SAP_VENDOR_ID);
-            deleteManualNonSapVendor(non_sap_id, user_id);
+        } else if (!!originalRequest.NON_SAP_VENDOR_ID && !reqBody.NON_SAP_VENDOR) {
+            nonSapId = Number(originalRequest.NON_SAP_VENDOR_ID);
+            deleteManualNonSapVendor(nonSapId, userId);
             reqBody.NON_SAP_VENDOR_ID = null;
         } else {
             reqBody.NON_SAP_VENDOR_ID = null;
@@ -1221,8 +1221,8 @@ function updateRequest(reqBody, user_id) {
 
         //NOTES UPDATE
         if (reqBody.NOTES !== null && reqBody.NOTES !== undefined && Object.keys(reqBody.NOTES).length > 0) {
-        	if(original_request.NOTES && original_request.NOTES.length > 0) {
-	        	original_request.NOTES.forEach(function (elem) {
+        	if(originalRequest.NOTES && originalRequest.NOTES.length > 0) {
+	        	originalRequest.NOTES.forEach(function (elem) {
 	        		if (Number(elem.NOTE_TYPE_ID) !== 5){
 	        			originalNotes.push(elem);
 	        		}
@@ -1233,44 +1233,44 @@ function updateRequest(reqBody, user_id) {
         			notes.push(elem);
         		}
         	});
-            updateNotes(originalNotes, notes, original_request.REQUEST_ID, user_id);
+            updateNotes(originalNotes, notes, originalRequest.REQUEST_ID, userId);
 
-        } else if (original_request.NOTES.length > 0) {
+        } else if (originalRequest.NOTES.length > 0) {
         	reqBody.NOTES.forEach(function (elem) {
         		if (Number(elem.NOTE_TYPE_ID) !== 5){
         			notes.push(elem);
         		}
         	});
-            deleteNotes(notes, user_id);
+            deleteNotes(notes, userId);
         }
 
         //COST OBJECT UPDATE
         if (reqBody.COST_OBJECT !== null) {
-            updateCostObject(reqBody.COST_OBJECT, user_id);
+            updateCostObject(reqBody.COST_OBJECT, userId);
         }
 
         //RISK_FUNDED UPDATE
         var risk_conversion_rate_table;
         var risk_conversion_rate;
-        if (Object.keys(original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
+        if (Object.keys(originalRequest.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
             risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
             risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
             reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
             reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
-            updateRiskFunded(reqBody.RISK_FUNDED, user_id);
+            updateRiskFunded(reqBody.RISK_FUNDED, userId);
 
-        } else if (original_request.RISK_FUNDED.length === 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
+        } else if (originalRequest.RISK_FUNDED.length === 0 && Object.keys(reqBody.RISK_FUNDED).length > 0) {
             risk_conversion_rate_table = dataCurrency.getManualCurrencyConversionRate(reqBody.RISK_FUNDED.CURRENCY_ID);
             risk_conversion_rate = parseFloat(risk_conversion_rate_table[0].CONVERSION_RATE);
 
-            reqBody.RISK_FUNDED.REQUEST_ID = original_request.REQUEST_ID;
+            reqBody.RISK_FUNDED.REQUEST_ID = originalRequest.REQUEST_ID;
             reqBody.RISK_FUNDED.AMOUNT = Number(reqBody.RISK_FUNDED.AMOUNT);
             reqBody.RISK_FUNDED.AMOUNT_KEUR = (Number(reqBody.RISK_FUNDED.AMOUNT) / risk_conversion_rate) / 1000;
 
-            insertRiskFunded(reqBody.RISK_FUNDED, user_id);
+            insertRiskFunded(reqBody.RISK_FUNDED, userId);
 
-        } else if ((original_request.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length === 0) {
-            deleteRiskFunded(original_request.RISK_FUNDED[0], user_id);
+        } else if ((originalRequest.RISK_FUNDED).length > 0 && Object.keys(reqBody.RISK_FUNDED).length === 0) {
+            deleteRiskFunded(originalRequest.RISK_FUNDED[0], userId);
 
         }
 
@@ -1288,20 +1288,20 @@ function updateRequest(reqBody, user_id) {
             var conversion_rate = parseFloat(conversion_rate_table[0].CONVERSION_RATE);
             var cart_amount;
             if (reqBody.SERVICES && reqBody.SERVICES.length > 0) {
-                cart_amount = updateServices(original_request.SERVICES, reqBody.SERVICES, reqBody.REQUEST_ID, conversion_rate, user_id);
-                dataSpecialRequest.deleteSpecialRequestByRequestId(reqBody.REQUEST_ID, user_id);
+                cart_amount = updateServices(originalRequest.SERVICES, reqBody.SERVICES, reqBody.REQUEST_ID, conversion_rate, userId);
+                dataSpecialRequest.deleteSpecialRequestByRequestId(reqBody.REQUEST_ID, userId);
             } else if (reqBody.SPECIAL_REQUEST && reqBody.SPECIAL_REQUEST.length > 0) {
-                cart_amount = updateSpecialRequests(original_request.SPECIAL_REQUEST, reqBody.SPECIAL_REQUEST, reqBody.REQUEST_ID, user_id);
-                dataService.deleteServiceByRequestId(reqBody.REQUEST_ID, user_id);
+                cart_amount = updateSpecialRequests(originalRequest.SPECIAL_REQUEST, reqBody.SPECIAL_REQUEST, reqBody.REQUEST_ID, userId);
+                dataService.deleteServiceByRequestId(reqBody.REQUEST_ID, userId);
                 reqBody.MATERIAL_ID = 0;
             }
             reqBody.CART_AMOUNT = cart_amount;
             reqBody.TOTAL_BUDGET = (cart_amount / conversion_rate) / 1000;
 
-            updateRequestService(reqBody.REQUEST_SERVICE, user_id);
+            updateRequestService(reqBody.REQUEST_SERVICE, userId);
         }
         //REQUEST UPDATE
-        request = dataRequest.updateRequestManual(reqBody, user_id);
+        request = dataRequest.updateRequestManual(reqBody, userId);
         
         //DATA PROTECTION ANSWERS UPDATE
         var dataProtectionAnswer = dataRDataProtection.getDataProtectionByRequestId(reqBody.REQUEST_ID);
@@ -1317,15 +1317,15 @@ function updateRequest(reqBody, user_id) {
                 }
             }
             if (newQuestion) {
-                dataRDataProtection.insertDataProtectionAnswer(item, user_id);
+                dataRDataProtection.insertDataProtectionAnswer(item, userId);
             } else {
-                updateDataProtectionAnswer(item, user_id);
+                updateDataProtectionAnswer(item, userId);
             }
         });
 
         //ATTACHMENTS UPDATE
         if (attachmentList) {
-            updateAttachments(attachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, user_id);
+            updateAttachments(attachmentList, reqBody.ATTACHMENTS, reqBody.REQUEST_ID, userId);
         }
 
         dbHelper.commit();
@@ -1340,7 +1340,7 @@ function updateRequest(reqBody, user_id) {
     
     if(request){
         //Send MAIL
-    	mailSend.sendResubmitMail(reqBody.REQUEST_ID, user_id);
+    	mailSend.sendResubmitMail(reqBody.REQUEST_ID, userId);
     }
 
     return request;

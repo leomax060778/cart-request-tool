@@ -390,6 +390,11 @@ function getRequestChangedColumn(){
     return $.xscartrequesttool.services.businessLayer.util.requestChangedColumnLib;
 }
 
+function getUserDataProtection(){
+	$.import("xscartrequesttool.services.businessLayer.admin","dataProtectionLib");
+    return $.xscartrequesttool.services.businessLayer.admin.dataProtectionLib;
+}
+
 function getApplication(){
 	$.import("xscartrequesttool.services.businessLayer.admin","applicationLib");
     return $.xscartrequesttool.services.businessLayer.admin.applicationLib;
@@ -858,6 +863,11 @@ function getDataReport(){
 function getDataRequestChangedColumn(){
 	$.import("xscartrequesttool.services.dataLayer.util","dataRequestChangedColumn");
     return $.xscartrequesttool.services.dataLayer.util.dataRequestChangedColumn;
+}
+
+function getDataUserDataProtection(){
+	$.import("xscartrequesttool.services.dataLayer.admin","dataDataProtection");
+    return $.xscartrequesttool.services.dataLayer.admin.dataDataProtection;
 }
 
 function getDataApplication(){

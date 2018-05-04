@@ -262,10 +262,10 @@ function validateInsertAttachmentRequest(objReq, userId) {
     return isValid;
 }
 
-function validateInsertRequest(objRequest, user_id) {
+function validateInsertRequest(objRequest, userId) {
 
-    if (!user_id) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter user_id is not found", "", user_id);
+    if (!userId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 
     var isValid = false;

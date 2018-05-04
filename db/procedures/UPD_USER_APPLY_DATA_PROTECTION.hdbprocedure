@@ -1,0 +1,34 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_USER_APPLY_DATA_PROTECTION" (
+	IN in_user_id BIGINT,
+    IN in_mask NVARCHAR(32),
+    IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	va_username = SELECT USER_NAME
+                        FROM "USER"
+                        WHERE USER_ID = in_user_id;
+
+    UPDATE "REQUEST"
+    SET GOODS_RECIPIENT_USERNAME = in_mask
+    WHERE REQUEST_ID IN (SELECT RQ.REQUEST_ID
+                            FROM "REQUEST" RQ
+                                INNER JOIN :va_username US ON UPPER(TRIM(GOODS_RECIPIENT_USERNAME)) LIKE ('%' || UPPER(TRIM(US.USER_NAME)) || '%')
+                         );
+
+    UPDATE "USER"
+    SET USER_NAME = in_mask,
+        FIRST_NAME = in_mask,
+        LAST_NAME = in_mask,
+        EMAIL = in_mask,
+        PHONE = in_mask,
+        MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+        MODIFIED_USER_ID = in_modified_user_id
+        WHERE USER_ID = in_user_id;
+
+    SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+END;

@@ -6,7 +6,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_CONTA
 						   phone nvarchar(255), 
 						   email nvarchar(255), 
 						   default_contact_information tinyint,
-						   used integer
+						   used integer,
+						   masked_vendor tinyint
 						   )
 )
 LANGUAGE SQLSCRIPT
@@ -20,7 +21,8 @@ BEGIN
   						VCI.phone, 
   						VCI.email, 
   						VCI.default_contact_information,
-  						count(DISTINCT RQ.REQUEST_ID) as used
+  						count(DISTINCT RQ.REQUEST_ID) as used,
+  						VCI.MASKED_VENDOR
               FROM "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION" VCI
               LEFT JOIN "REQUEST" RQ ON RQ.VENDOR_CONTACT_INFORMATION_ID = VCI.VENDOR_CONTACT_INFORMATION_ID 
 				WHERE VCI.vendor_id = in_vendor_id
@@ -31,6 +33,7 @@ BEGIN
 		  						VCI.name, 
 		  						VCI.phone, 
 		  						VCI.email, 
-		  						VCI.default_contact_information	
+		  						VCI.default_contact_information,
+  								VCI.MASKED_VENDOR
 					ORDER BY VCI.name ASC;
 END;

@@ -1,6 +1,7 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPORT" (
 	OUT out_result TABLE (vendor_id bigint,
 							account nvarchar(255),
+							DATA_PROTECTION_ENABLED nvarchar(32),
 							name nvarchar(255),
 							legal_name nvarchar(511),
 							informal_name nvarchar(511),
@@ -25,6 +26,7 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REPOR
 BEGIN
 	out_result = SELECT DISTINCT V.VENDOR_ID,
 								 V.ACCOUNT,
+								 (CASE WHEN V.DATA_PROTECTION_ENABLED = 0 THEN 'N' ELSE 'Y' END) AS DATA_PROTECTION_ENABLED,
 								 VAI.VENDOR_NAME AS NAME,
 								 V.LEGAL_NAME,
 								 V.INFORMAL_NAME,

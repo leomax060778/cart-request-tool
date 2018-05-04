@@ -74,42 +74,45 @@ function getPath(stringName) {
 function sendMailToRequester(vendorRequestMailObj, mailType){
     var mailObj;
     var requester = getRequesterByVendorRequestId(vendorRequestMailObj.VENDOR_REQUEST_ID, vendorRequestMailObj.CURRENT_USER_ID);
-    var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
-    var currentUser = getCurrentUserInformationByUserId(vendorRequestMailObj.CURRENT_USER_ID);
-    vendorRequestMailObj.CURRENT_USER_ROLE = currentUser.CURRENT_USER_ROLE;
-    vendorRequestMailObj.CURRENT_USER_NAME = currentUser.CURRENT_USER_NAME;
+    if (!requester.USER_DATA_PROTECTION_STATUS_ID) {
+        var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
-    switch(mailType){
-        case mailTypeMap.SUBMIT:
-            mailObj = vendorRequestMail.parseSubmit(vendorRequestMailObj, getBasicData(pathName, {}, true), requesterFullName);
-            break;
-        case mailTypeMap.RESUBMIT:
-            mailObj = vendorRequestMail.parseResubmitted(vendorRequestMailObj, getBasicData(pathName,{}, true), requesterFullName);
-            break;
-        case mailTypeMap.NEW_MESSAGE:
-            mailObj = vendorRequestMail.parseMessage(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.FYI_MESSAGE:
-            mailObj = vendorRequestMail.parseFYI(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.RETURN_TO_REQUESTER_MESSAGE:
-            mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.STATUS_IN_PROCESS:
-            mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj, getBasicData(pathName,{}, true), requesterFullName);
-            break;
-        case mailTypeMap.STATUS_APPROVED:
-            mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj, getBasicData(pathName,{}, true), requesterFullName);
-            break;
-        case mailTypeMap.STATUS_CANCELLED:
-            mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
+        var currentUser = getCurrentUserInformationByUserId(vendorRequestMailObj.CURRENT_USER_ID);
+        vendorRequestMailObj.CURRENT_USER_ROLE = currentUser.CURRENT_USER_ROLE;
+        vendorRequestMailObj.CURRENT_USER_NAME = currentUser.CURRENT_USER_NAME;
+
+        switch (mailType) {
+            case mailTypeMap.SUBMIT:
+                mailObj = vendorRequestMail.parseSubmit(vendorRequestMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.RESUBMIT:
+                mailObj = vendorRequestMail.parseResubmitted(vendorRequestMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.NEW_MESSAGE:
+                mailObj = vendorRequestMail.parseMessage(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.FYI_MESSAGE:
+                mailObj = vendorRequestMail.parseFYI(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.RETURN_TO_REQUESTER_MESSAGE:
+                mailObj = vendorRequestMail.parseReturnToRequest(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.STATUS_IN_PROCESS:
+                mailObj = vendorRequestMail.parseInProcess(vendorRequestMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.STATUS_APPROVED:
+                mailObj = vendorRequestMail.parseApproved(vendorRequestMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.STATUS_CANCELLED:
+                mailObj = vendorRequestMail.parseCancelled(vendorRequestMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+        }
+
+        var emailObj = mail.getJson([{address: requester.EMAIL}], mailObj.subject, mailObj.body, null, null);
+
+        mail.sendMail(emailObj, true, null);
     }
-
-    var emailObj = mail.getJson([{address: requester.EMAIL}], mailObj.subject, mailObj.body, null, null);
-
-    mail.sendMail(emailObj, true, null);
 }
 
 function sendMailToAdmin(vendorRequestMailObj, mailType){

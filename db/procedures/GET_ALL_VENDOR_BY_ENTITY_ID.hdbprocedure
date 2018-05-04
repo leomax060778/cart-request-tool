@@ -1,21 +1,14 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_VENDOR_BY_ENTITY_ID" (
-IN in_entity_id bigint,
-OUT out_result TABLE (vendor_id bigint,
-						account nvarchar (255),
-						name nvarchar (255),
-						vendor_additional_information_id bigint,
-						contact_name nvarchar (255),
-						contact_email nvarchar (255),
-						contact_phone nvarchar (255),
-						address_1 nvarchar (255),
-						address_2 nvarchar (255),
-						city nvarchar (255),
-						state nvarchar (255),
-						zip nvarchar (255),
-						phone nvarchar (255),
-						fax nvarchar (255),
-						legal_name nvarchar (255),
-						informal_name nvarchar (255)
+IN in_entity_id BIGINT,
+OUT out_result TABLE (VENDOR_ID BIGINT,
+						ACCOUNT NVARCHAR (255),
+						NAME NVARCHAR (255),
+						VENDOR_ADDITIONAL_INFORMATION_ID BIGINT,
+						DATA_PROTECTION_ENABLED TINYINT,
+						CONTACT_NAME NVARCHAR(255),
+						CONTACT_EMAIL NVARCHAR(255),
+                        CONTACT_PHONE NVARCHAR(255),
+                        INFORMAL_NAME NVARCHAR(255)
 					)
 )
 LANGUAGE SQLSCRIPT
@@ -23,28 +16,30 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-out_result = SELECT DISTINCT VE.vendor_id,
-					V.account,
-					VAI.vendor_name as name,
-					VAI.vendor_additional_information_id,
-					VCI.name as contact_name,
-			        VCI.email as contact_email,
-			        VCI.phone as contact_phone,
-			        V.address_1,
-			        V.address_2,
-			        V.city,
-			        V.state,
-			        V.zip,
-			        V.phone,
-			        V.fax,
-			        V.legal_name,
-			        V.informal_name
+out_result = SELECT VE.VENDOR_ID,
+					V.ACCOUNT,
+					VAI.VENDOR_NAME AS NAME,
+					VAI.VENDOR_ADDITIONAL_INFORMATION_ID,
+					V.DATA_PROTECTION_ENABLED,
+					VCI.NAME AS CONTACT_NAME,
+                    VCI.EMAIL AS CONTACT_EMAIL,
+                    VCI.PHONE AS CONTACT_PHONE,
+                    V.INFORMAL_NAME
          FROM "VENDOR_ENTITY" VE
-	         INNER JOIN "VENDOR" V ON VE.vendor_id = V.vendor_id
+	         INNER JOIN "VENDOR" V ON VE.VENDOR_ID = V.VENDOR_ID AND V.ENABLED = 1 AND V.DELETED = 0
 	         LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VCI.VENDOR_ID = V.VENDOR_ID AND VCI.DEFAULT_CONTACT_INFORMATION = 1
-	         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VE.VENDOR_ID = VAI.VENDOR_ID and VAI.ENABLED = 1 AND VAI.DELETED = 0
+	         INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+                    ON V.VENDOR_ID = VAI.VENDOR_ID
+                        AND VAI.ENABLED = 1
+                        AND VAI.DELETED = 0
+                        AND (
+                        --Get the vendor additional information with the most recent modified date
+                            (VAI.MODIFIED_DATE_TZ = (SELECT MAX(MODIFIED_DATE_TZ) FROM "VENDOR_ADDITIONAL_INFORMATION" where vendor_id = VAI.VENDOR_ID))
+                        --In case the vendor additional information does not have modified date, then get the value with the most recent created date
+                                OR (VAI.CREATED_DATE_TZ = (SELECT MAX(CREATED_DATE_TZ) FROM "VENDOR_ADDITIONAL_INFORMATION" where vendor_id = VAI.VENDOR_ID))
+                            )
 	         INNER JOIN "VENDOR_STATUS" ST ON V.STATUS_ID = ST.STATUS_ID AND ST.NAME = 'Approved'
-         WHERE VE.entity_id = in_entity_id
+         WHERE VE.ENTITY_ID = in_entity_id
          	AND VE.ENABLED = 1 
          	AND VE.DELETED = 0 
          	ORDER BY UPPER(VAI.VENDOR_NAME);

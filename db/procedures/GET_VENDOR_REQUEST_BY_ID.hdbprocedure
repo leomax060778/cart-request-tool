@@ -1,59 +1,61 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_REQUEST_BY_ID" (	
-	IN in_vendor_request_id bigint,
-	IN in_permission_id bigint,
-  	IN in_resource_id bigint,
-  	IN in_user_id bigint,
-	OUT out_result TABLE (vendor_request_id bigint,
-							iso nvarchar(2),
-							user_name nvarchar(255),
-							first_name nvarchar(255),
-							last_name nvarchar(255), 
-							created_user_id bigint,
-						    country_id bigint,
-						    country_name_es nvarchar(255),
-						    country_name_en nvarchar(255),
-						    country_name_fr nvarchar(255),
-						    entity_id bigint,
-						    entity_name nvarchar(255),
-						    entity_deleted tinyint,
-						    vendor_legal_name nvarchar(511),
-						    vendor_informal_name nvarchar(511),
-						    vendor_contact_name nvarchar(255),
-						    vendor_contact_email nvarchar(255),
-						    vendor_contact_phone nvarchar(255),
-						    commodity_id bigint,
-						    commodity_description nvarchar(255),
-						    commodity_deleted tinyint,
-						    not_used_sap_supplier nvarchar(1000),
-						    service_supplier nvarchar(1000),
-						    vendor_type_id integer,
-						    purchase_amount decimal(19,2),
-						    expected_amount decimal(19,2),
-						    purchase_currency_id integer,
-						    purchase_currency_abbreviation nvarchar(255),
-						    expected_currency_id integer,
-						    expected_currency_abbreviation nvarchar(255),
-						    accept_american_express tinyint,
-						    cost_center_owner nvarchar(511),
-						    status_id bigint,
-						    address_1 nvarchar(255),
-						    address_2 nvarchar(255),
-						    vendor_request_city nvarchar(255),
-						    vendor_request_state nvarchar(255),
-						    zip nvarchar(255),
-						    phone nvarchar(255),
-						    fax nvarchar(255),
-						    receiver_user_id bigint,
-						    receiver_vendor_account nvarchar(15),
-						    receiver_date_submitted_tz timestamp,
-						    receiver_date_completed_tz timestamp,
-						    receiver_yvc_request nvarchar(255),
-						    receiver_modified_date_tz timestamp,
-						    vendor_id bigint,
-						    BUDGET_YEAR integer,
-						    additional_information_flag tinyint,
-						    EDITABLE boolean
-						    )
+	IN in_vendor_request_id BIGINT,
+	IN in_permission_id BIGINT,
+  	IN in_resource_id BIGINT,
+  	IN in_user_id BIGINT,
+	OUT out_result TABLE (VENDOR_REQUEST_ID BIGINT,
+                          ISO NVARCHAR(2),
+                          USER_NAME NVARCHAR(255),
+                          FIRST_NAME NVARCHAR(255),
+                          LAST_NAME NVARCHAR(255),
+                          CREATED_USER_ID BIGINT,
+                          COUNTRY_ID BIGINT,
+                          COUNTRY_NAME_ES NVARCHAR(255),
+                          COUNTRY_NAME_EN NVARCHAR(255),
+                          COUNTRY_NAME_FR NVARCHAR(255),
+                          ENTITY_ID BIGINT,
+                          ENTITY_NAME NVARCHAR(255),
+                          ENTITY_DELETED TINYINT,
+                          VENDOR_LEGAL_NAME NVARCHAR(511),
+                          VENDOR_ADDITIONAL_INFORMATION_ID TINYINT,
+                          VENDOR_INFORMAL_NAME NVARCHAR(511),
+                          VENDOR_CONTACT_NAME NVARCHAR(255),
+                          VENDOR_CONTACT_EMAIL NVARCHAR(255),
+                          VENDOR_CONTACT_PHONE NVARCHAR(255),
+                          COMMODITY_ID BIGINT,
+                          COMMODITY_DESCRIPTION NVARCHAR(255),
+                          COMMODITY_DELETED TINYINT,
+                          NOT_USED_SAP_SUPPLIER NVARCHAR(1000),
+                          SERVICE_SUPPLIER NVARCHAR(1000),
+                          VENDOR_TYPE_ID INTEGER,
+                          PURCHASE_AMOUNT DECIMAL(19,2),
+                          EXPECTED_AMOUNT DECIMAL(19,2),
+                          PURCHASE_CURRENCY_ID INTEGER,
+                          PURCHASE_CURRENCY_ABBREVIATION NVARCHAR(255),
+                          EXPECTED_CURRENCY_ID INTEGER,
+                          EXPECTED_CURRENCY_ABBREVIATION NVARCHAR(255),
+                          ACCEPT_AMERICAN_EXPRESS TINYINT,
+                          COST_CENTER_OWNER NVARCHAR(511),
+                          STATUS_ID BIGINT,
+                          ADDRESS_1 NVARCHAR(255),
+                          ADDRESS_2 NVARCHAR(255),
+                          VENDOR_REQUEST_CITY NVARCHAR(255),
+                          VENDOR_REQUEST_STATE NVARCHAR(255),
+                          ZIP NVARCHAR(255),
+                          PHONE NVARCHAR(255),
+                          FAX NVARCHAR(255),
+                          MASKED_VENDOR TINYINT,
+                          RECEIVER_USER_ID BIGINT,
+                          RECEIVER_VENDOR_ACCOUNT NVARCHAR(15),
+                          RECEIVER_DATE_SUBMITTED_TZ TIMESTAMP,
+                          RECEIVER_DATE_COMPLETED_TZ TIMESTAMP,
+                          RECEIVER_YVC_REQUEST NVARCHAR(255),
+                          RECEIVER_MODIFIED_DATE_TZ TIMESTAMP,
+                          VENDOR_ID BIGINT,
+                          BUDGET_YEAR INTEGER,
+                          ADDITIONAL_INFORMATION_FLAG TINYINT,
+                          EDITABLE BOOLEAN
+                         )
 							
  ) 
 	LANGUAGE SQLSCRIPT
@@ -84,14 +86,15 @@ BEGIN
 					    VR.ENTITY_ID,
 					    ET.ENTITY_NAME,
 					    ET.DELETED AS entity_deleted,
-					    V.LEGAL_NAME AS VENDOR_LEGAL_NAME,
+					    VAI.VENDOR_NAME AS VENDOR_LEGAL_NAME,
+					    VAI.VENDOR_ADDITIONAL_INFORMATION_ID,
 					    V.INFORMAL_NAME AS VENDOR_INFORMAL_NAME,
 					    VCI.NAME AS VENDOR_CONTACT_NAME,
 					    VCI.EMAIL AS VENDOR_CONTACT_EMAIL,
 					    VCI.PHONE AS VENDOR_CONTACT_PHONE,
 					    VR.COMMODITY_ID,
 					    COM.DESCRIPTION AS COMMODITY_DESCRIPTION,
-					    COM.DELETED AS commodity_deleted,
+					    COM.DELETED AS COMMODITY_DELETED,
 					    VR.NOT_USED_SAP_SUPPLIER,
 					    VR.SERVICE_SUPPLIER,
 					    VR.VENDOR_TYPE_ID,
@@ -111,6 +114,7 @@ BEGIN
 					    V.ZIP,
 					    V.PHONE,
 					    V.FAX,
+					    VCI.MASKED_VENDOR,
 					    VR.RECEIVER_USER_ID,
 					    V.ACCOUNT AS RECEIVER_VENDOR_ACCOUNT,
 					    VR.CREATED_DATE_TZ AS RECEIVER_DATE_SUBMITTED_TZ,
@@ -121,19 +125,20 @@ BEGIN
 					    BUDGET_YEAR.BUDGET_YEAR,
 					    VR.ADDITIONAL_INFORMATION AS ADDITIONAL_INFORMATION_FLAG,
                         (CASE WHEN (VR.STATUS_ID = 5 OR VR.STATUS_ID = 6) AND USROLE.PERMISSION_LEVEL != 2 THEN FALSE ELSE TRUE END) AS EDITABLE
-	FROM "VENDOR_REQUEST" VR
-		INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.VENDOR_ID
-		LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID
-		INNER JOIN "ENTITY" ET ON VR.ENTITY_ID = ET.ENTITY_ID
-		INNER JOIN "USER" US ON VR.USER_ID = US.USER_ID
-		INNER JOIN "VENDOR_TYPE" VT ON VR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
-		INNER JOIN "COUNTRY" CO ON VR.COUNTRY_ID = CO.COUNTRY_ID
-		INNER JOIN "COMMODITY" COM ON VR.COMMODITY_ID = COM.COMMODITY_ID
-		INNER JOIN "CURRENCY" PCUR ON VR.PURCHASE_CURRENCY_ID = PCUR.CURRENCY_ID
-		LEFT JOIN "CURRENCY" ECUR ON VR.EXPECTED_CURRENCY_ID = ECUR.CURRENCY_ID
-		INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR = PCUR.CURRENCY_YEAR
-        INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
-	WHERE in_vendor_request_id = VR.VENDOR_REQUEST_ID
-		AND VR.deleted = 0
-		AND VR.enabled = 1;
+                FROM "VENDOR_REQUEST" VR
+                    INNER JOIN "VENDOR" V ON V.VENDOR_ID = VR.VENDOR_ID
+                    LEFT JOIN "VENDOR_CONTACT_INFORMATION" VCI ON VR.VENDOR_ID = VCI.VENDOR_ID
+                    INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VR.VENDOR_ADDITIONAL_INFORMATION_ID = VAI.VENDOR_ADDITIONAL_INFORMATION_ID
+                    INNER JOIN "ENTITY" ET ON VR.ENTITY_ID = ET.ENTITY_ID
+                    INNER JOIN "USER" US ON VR.USER_ID = US.USER_ID
+                    INNER JOIN "VENDOR_TYPE" VT ON VR.VENDOR_TYPE_ID = VT.VENDOR_TYPE_ID
+                    INNER JOIN "COUNTRY" CO ON VR.COUNTRY_ID = CO.COUNTRY_ID
+                    INNER JOIN "COMMODITY" COM ON VR.COMMODITY_ID = COM.COMMODITY_ID
+                    INNER JOIN "CURRENCY" PCUR ON VR.PURCHASE_CURRENCY_ID = PCUR.CURRENCY_ID
+                    LEFT JOIN "CURRENCY" ECUR ON VR.EXPECTED_CURRENCY_ID = ECUR.CURRENCY_ID
+                    INNER JOIN "BUDGET_YEAR" BUDGET_YEAR ON BUDGET_YEAR.BUDGET_YEAR = PCUR.CURRENCY_YEAR
+                    INNER JOIN :va_user_role USROLE ON USROLE.ENABLED = 1
+                WHERE in_vendor_request_id = VR.VENDOR_REQUEST_ID
+                    AND VR.DELETED = 0
+                    AND VR.ENABLED = 1;
 END;

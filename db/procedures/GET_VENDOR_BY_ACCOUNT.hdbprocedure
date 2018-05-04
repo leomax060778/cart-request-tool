@@ -13,6 +13,8 @@ BEGIN
 	out_result = SELECT VENDOR_ID, ACCOUNT, LEGAL_NAME 
 					FROM "CART_REQUEST_TOOL"."VENDOR"
 					WHERE ACCOUNT = in_account
+					--STATUS_ID = 5 is Approved
+					    AND STATUS_ID = 5
 						AND ENABLED = 1
 						AND DELETED = 0;
 END;

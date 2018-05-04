@@ -1,24 +1,53 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_VENDOR" (
-  IN in_address_1 nvarchar (255),
-  IN in_address_2 nvarchar (255),
-  IN in_city nvarchar (255),
-  IN in_state nvarchar (255),
-  IN in_zip nvarchar (255),
-  IN in_phone nvarchar (255),
-  IN in_fax nvarchar (255),
-  IN in_legal_name nvarchar (255),
-  IN in_informal_name nvarchar (255),
-  IN in_account nvarchar(255),
-  IN in_status_id bigint,
-  IN in_created_user_id bigint,
-  OUT out_result bigint
+  IN in_address_1 NVARCHAR(255),
+  IN in_address_2 NVARCHAR(255),
+  IN in_city NVARCHAR(255),
+  IN in_state NVARCHAR(255),
+  IN in_zip NVARCHAR(255),
+  IN in_phone NVARCHAR(255),
+  IN in_fax NVARCHAR(255),
+  IN in_legal_name NVARCHAR(255),
+  IN in_informal_name NVARCHAR(255),
+  IN in_account NVARCHAR(255),
+  IN in_status_id BIGINT,
+  IN in_data_protection_enabled TINYINT,
+  IN in_created_user_id BIGINT,
+  OUT out_result BIGINT
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-    INSERT INTO "CART_REQUEST_TOOL"."VENDOR"(address_1, address_2, city, state, zip, phone, fax, legal_name, informal_name, account, status_id, created_user_id)
-    VALUES(in_address_1, in_address_2, in_city, in_state, in_zip, in_phone, in_fax, in_legal_name, in_informal_name, in_account, in_status_id, in_created_user_id);
+    INSERT INTO "CART_REQUEST_TOOL"."VENDOR"(
+    				address_1,
+    				address_2,
+    				city,
+    				state,
+    				zip,
+    				phone,
+    				fax,
+    				legal_name,
+    				informal_name,
+    				account,
+    				status_id,
+    				data_protection_enabled,
+    				created_user_id
+			    ) VALUES (
+			    	in_address_1,
+			    	in_address_2,
+			    	in_city,
+			    	in_state,
+			    	in_zip,
+			    	in_phone,
+			    	in_fax,
+			    	in_legal_name,
+			    	in_informal_name,
+			    	in_account,
+			    	in_status_id,
+			    	in_data_protection_enabled,
+			    	in_created_user_id
+			    	);
+    
     SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."VENDOR";
 END;

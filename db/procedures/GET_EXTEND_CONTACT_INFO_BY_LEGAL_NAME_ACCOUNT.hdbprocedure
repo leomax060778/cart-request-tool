@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_EXTEND_CONTACT_INFO_BY_LEGAL_NAME_ACCOUNT" (
+    IN in_vendor_account NVARCHAR(255),
+    IN in_vendor_legal_name NVARCHAR(511),
+    OUT out_result TABLE (
+                            CONTACT_NAME NVARCHAR(255),
+                            CONTACT_EMAIL NVARCHAR(255),
+                            CONTACT_PHONE NVARCHAR(255),
+                            MASKED_VENDOR TINYINT
+                         )
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+    out_result = SELECT DISTINCT CONTACT_NAME,
+		                         CONTACT_EMAIL,
+		                         CONTACT_PHONE,
+		                         MASKED_VENDOR
+                 FROM "EXTEND_VENDOR_REQUEST"
+                 WHERE UPPER(TRIM(VENDOR_LEGAL_NAME)) = UPPER(TRIM(in_vendor_legal_name))
+                    AND ((UPPER(TRIM(VENDOR_ACCOUNT)) = UPPER(TRIM(in_vendor_account))) OR (VENDOR_ACCOUNT IS NULL))
+                    AND ENABLED = 1
+                    AND DELETED = 0
+                 ORDER BY CONTACT_NAME;
+END;

@@ -12,8 +12,9 @@ IN in_user_id bigint,
 	AS
 BEGIN
 	out_result = SELECT DISTINCT US.USER_ID, US.USER_NAME, US.FIRST_NAME, US.LAST_NAME
-  						 FROM "USER" US
-   							INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
-   							WHERE (USR.ROLE_ID = 1 OR USR.ROLE_ID = 3 OR USR.ROLE_ID = 4 AND US.USER_ID = in_user_id)
-		       				OR (USR.ROLE_ID = 2 AND US.USER_ID = in_user_id );
+                    FROM "USER" US
+                        INNER JOIN "USER_ROLE" USR ON USR.USER_ID = in_user_id
+                    WHERE ((USR.ROLE_ID = 1 OR USR.ROLE_ID = 3 OR USR.ROLE_ID = 4 AND US.USER_ID = in_user_id)
+                        OR (USR.ROLE_ID = 2 AND US.USER_ID = in_user_id ))
+                        AND US.USER_ID NOT IN (SELECT USER_ID FROM "USER_DATA_PROTECTION" WHERE USER_DATA_PROTECTION_STATUS_ID = 2);
 END;

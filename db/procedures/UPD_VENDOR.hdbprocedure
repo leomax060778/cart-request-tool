@@ -1,41 +1,43 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR" (
-  IN in_vendor_id bigint,
-  IN in_address_1 nvarchar (255),
-  IN in_address_2 nvarchar (255),
-  IN in_city nvarchar (255),
-  IN in_state nvarchar (255),
-  IN in_zip nvarchar (255),
-  IN in_phone nvarchar (255),
-  IN in_fax nvarchar (255),
-  IN in_legal_name nvarchar (255),
-  IN in_informal_name nvarchar (255),
-  IN in_account nvarchar(255),
-  IN in_modified_user_id bigint,
-  IN in_status_id bigint,
-  OUT out_result bigint
+  IN in_vendor_id BIGINT,
+  IN in_address_1 NVARCHAR(255),
+  IN in_address_2 NVARCHAR(255),
+  IN in_city NVARCHAR(255),
+  IN in_state NVARCHAR(255),
+  IN in_zip NVARCHAR(255),
+  IN in_phone NVARCHAR(255),
+  IN in_fax NVARCHAR(255),
+  IN in_legal_name NVARCHAR(255),
+  IN in_informal_name NVARCHAR(255),
+  IN in_account NVARCHAR(255),
+  IN in_data_protection_enabled TINYINT,
+  IN in_modified_user_id BIGINT,
+  IN in_status_id BIGINT,
+  OUT out_result BIGINT
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-	UPDATE vendor
-	SET 
-	vendor.address_1 = in_address_1,
-  	vendor.address_2 = in_address_2,
-    vendor.city = in_city,
-    vendor.state = in_state,
-  	vendor.zip = in_zip,
-	vendor.phone = in_phone,
-	vendor.fax = in_fax,
-	vendor.legal_name = in_legal_name,
- 	vendor.informal_name = in_informal_name,
- 	vendor.account = in_account,
-	vendor.modified_date_tz = CURRENT_TIMESTAMP,
-	vendor.modified_user_id = in_modified_user_id,
-	vendor.status_id = in_status_id
-	FROM "VENDOR" vendor
-	WHERE vendor.vendor_id = in_vendor_id;
+	UPDATE "CART_REQUEST_TOOL"."VENDOR"
+	SET ADDRESS_1 = in_address_1,
+  	ADDRESS_2 = in_address_2,
+    CITY = in_city,
+    STATE = in_state,
+  	ZIP = in_zip,
+	PHONE = in_phone,
+	FAX = in_fax,
+	LEGAL_NAME = in_legal_name,
+ 	INFORMAL_NAME = in_informal_name,
+ 	ACCOUNT = (CASE WHEN (in_status_id = 5) THEN in_account ELSE ACCOUNT END),
+ 	DATA_PROTECTION_ENABLED = in_data_protection_enabled,
+	MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+	MODIFIED_USER_ID = in_modified_user_id,
+	STATUS_ID = in_status_id,
+	ENABLED = 1,
+	DELETED = 0
+	WHERE VENDOR_ID = in_vendor_id;
 
 SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

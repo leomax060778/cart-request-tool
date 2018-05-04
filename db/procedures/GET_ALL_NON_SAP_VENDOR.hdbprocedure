@@ -1,10 +1,8 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_NON_SAP_VENDOR" (
 OUT out_result TABLE (
-		non_sap_vendor_id bigint, 
-		entity_id bigint,
-		contact_name nvarchar (255), 
-		contact_email nvarchar (255), 
-		contact_phone nvarchar (255)
+		VENDOR_ID BIGINT,
+		VENDOR_NAME NVARCHAR(255),
+		ACCOUNT NVARCHAR(255)
 		)
 )
 LANGUAGE SQLSCRIPT
@@ -12,12 +10,16 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-out_result = SELECT 
-			NSV.non_sap_vendor_id, 
-			NSV.entity_id,
-			NSV.contact_name, 
-			NSV.contact_email, 
-			NSV.contact_phone
-         FROM "NON_SAP_VENDOR" NSV
-         WHERE NSV.ENABLED = 1 AND NSV.DELETED = 0;
-END; 
+
+va_cart_request_vendor = SELECT RQ.VENDOR_ID, RQ.VENDOR_ADDITIONAL_INFORMATION_ID
+                            FROM "REQUEST" RQ
+                            INNER JOIN "NON_SAP_VENDOR" NSV ON NSV.NON_SAP_VENDOR_ID = RQ.NON_SAP_VENDOR_ID AND NSV.ENABLED = 1 AND NSV.DELETED = 0
+                            WHERE RQ.NON_SAP_VENDOR_ID > 0;
+
+out_result = SELECT DISTINCT V.VENDOR_ID, VAI.VENDOR_NAME, V.ACCOUNT
+             FROM "VENDOR" V
+                INNER JOIN :va_cart_request_vendor CRV ON V.VENDOR_ID = CRV.VENDOR_ID
+                INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VAI.VENDOR_ADDITIONAL_INFORMATION_ID = CRV.VENDOR_ADDITIONAL_INFORMATION_ID
+             ORDER BY VAI.VENDOR_NAME;
+
+END;

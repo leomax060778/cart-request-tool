@@ -153,7 +153,7 @@ function getEnvironment() {
 }
 
 function getEmailList(){
-	 return emailAccounts;
+	return emailAccounts;
 }
 
 function getUrlBase(){
@@ -210,4 +210,8 @@ function getRequesterBasicData(stringPathName, additionalParam){
 	}
 	
 	return parameters;
+}
+
+function getDataProtectionMask() {
+    return '****';
 }

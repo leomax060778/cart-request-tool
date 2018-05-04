@@ -1,0 +1,36 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER_BY_USER_NAME" (
+IN in_user_name NVARCHAR(255),
+OUT out_result TABLE(USER_ID bigint,
+                     USER_NAME nvarchar(255),
+                     FIRST_NAME nvarchar(255),
+                     LAST_NAME nvarchar(255),
+                     EMAIL nvarchar(255),
+                     PHONE nvarchar(255),
+                     ROLE_ID BIGINT,
+                     ROLE_NAME nvarchar(255),
+                     DATA_PROTECTION_ENABLED TINYINT,
+                     STATUS NVARCHAR(255)
+                    )
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+ out_result = SELECT US.USER_ID,
+                     US.USER_NAME,
+                     US.FIRST_NAME,
+                     US.LAST_NAME,
+                     US.EMAIL,
+                     US.PHONE,
+                     USR.ROLE_ID,
+                     ROLE.NAME AS ROLE_NAME,
+                     US.DATA_PROTECTION_ENABLED,
+                     (CASE WHEN US.ENABLED = 1 THEN 'Active' ELSE 'Deleted' END) AS STATUS
+              FROM "USER" US
+                  INNER JOIN "USER_ROLE" USR ON USR.USER_ID = US.USER_ID
+                  INNER JOIN "ROLE" ROLE ON ROLE.ROLE_ID = USR.ROLE_ID
+              WHERE TRIM(UPPER(US.USER_NAME)) = TRIM(UPPER(in_user_name))
+                  AND US.DATA_PROTECTION_ENABLED = 0
+              ORDER BY US.FIRST_NAME, US.LAST_NAME;
+END;

@@ -354,20 +354,18 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
         if (!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
         }
-        if (Number(objVendorRequest.STATUS_ID) === statusMap.APPROVED) {
-            if (!vendor.existVendor(objVendorRequest.VENDOR_ID)) {
-                throw ErrorLib.getErrors().CustomError("",
-                    "vendorService/handlePut/updateVendorAccount",
-                    "The vendor with the id \'" + objVendorRequest.VENDOR_ID + "\' does not exist");
-            }
-            vendor.updateVendorAccountManual(objVendorRequest, userId);
-            vendor.insertVendorAdditionalInformation(objVendorRequest, userId);
-            return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
-        } else if (Number(objVendorRequest.STATUS_ID) === statusMap.CANCELLED) {
-            vendor.deleteManualVendor(objVendorRequest, userId);
-            return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
-        } else {
-            return dataStatus.updateVendorRequestStatus(objVendorRequest, userId);
+        vendor.updateManualVendorStatus(objVendorRequest, userId);
+        switch (Number(objVendorRequest.STATUS_ID)) {
+            case statusMap.APPROVED:
+                if (!vendor.existVendor(objVendorRequest.VENDOR_ID)) {
+                    throw ErrorLib.getErrors().CustomError("", "", "The vendor with the id \'" + objVendorRequest.VENDOR_ID + "\' does not exist");
+                }
+                vendor.updateVendorAccountManual(objVendorRequest, userId);
+                return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
+            case statusMap.CANCELLED:
+                return dataStatus.updateVendorRequestStatusCompleted(objVendorRequest, userId);
+            default:
+                return dataStatus.updateVendorRequestStatus(objVendorRequest, userId);
         }
     }
 }
