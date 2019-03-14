@@ -1,0 +1,22 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_CONTACT_INFORMATION_MASK" (
+	IN in_vendor_contact_information_id BIGINT,
+	IN in_modified_user_id BIGINT,
+	IN in_mask NVARCHAR(60),
+	OUT out_result BIGINT
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+	UPDATE "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION"
+	SET MASKED_VENDOR = 1,
+		NAME = in_mask,
+		PHONE = in_mask,
+		EMAIL = in_mask,
+		MODIFIED_USER_ID = in_modified_user_id,
+		MODIFIED_DATE_TZ = CURRENT_TIMESTAMP
+	WHERE VENDOR_CONTACT_INFORMATION_ID = in_vendor_contact_information_id;
+
+	SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

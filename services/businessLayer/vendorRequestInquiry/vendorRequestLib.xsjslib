@@ -19,6 +19,7 @@ var ErrorLib = mapper.getErrors();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
 var dataUserRole = mapper.getDataUserRole();
+var bsChangedColumn = mapper.getVendorRequestInquiryChangedColumn();
 
 //CRT Vendor Request email sending
 var vendorRequestMailSend = mapper.getVendorRequestMailSend();
@@ -289,6 +290,9 @@ function updateDataProtectionAnswer(item, userId) {
 function updateVendorRequest(objVendorRequest, userId) {
     //Update data protection
     businessVendorDP.updateDataProtectionManual(objVendorRequest.DATA_PROTECTION_ANSWERS, objVendorRequest.VENDOR_REQUEST_ID, userId);
+    if (Object.keys(objVendorRequest.CHANGED_FIELDS).length) {
+        bsChangedColumn.insertVendorRequestChangedColumn(objVendorRequest, userId);
+    }
 
     //Update vendor
     vendor.updateManualVendorStatus(objVendorRequest, userId);
@@ -302,6 +306,7 @@ function updateVendorRequest(objVendorRequest, userId) {
     vendorBody.VENDOR_CONTACT_INFORMATION_ID = objVendorRequest.VENDOR_CONTACT_INFORMATION_ID;
     vendorBody.VENDOR_ADDITIONAL_INFORMATION_ID = objVendorRequest.VENDOR_ADDITIONAL_INFORMATION_ID;
     vendorBody.VENDOR_NAME = objVendorRequest.LEGAL_NAME;
+    vendorBody.MASKED_VENDOR = objVendorRequest.MASKED_VENDOR;
     vendorBody.DEFAULT_CONTACT_INFORMATION = 1;
     vendorContact.updateVendorContactInformationManual(vendorBody, userId);
 

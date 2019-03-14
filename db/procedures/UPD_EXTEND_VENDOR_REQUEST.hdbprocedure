@@ -1,6 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_EXTEND_VENDOR_REQUEST" (
 	IN in_extend_vendor_request_id bigint,
-	IN in_user_id bigint,
 	IN in_entity_id bigint,
 	IN in_commodity_id bigint,
 	IN in_service_supplier nvarchar(1000),
@@ -15,15 +14,14 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_EXTEND_VENDO
 	IN in_contact_phone nvarchar(255),
 	IN in_modified_user_id bigint,
  OUT out_result bigint
- ) 
+ )
 	LANGUAGE SQLSCRIPT
-	SQL SECURITY INVOKER 
+	SQL SECURITY INVOKER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
 	UPDATE EVR
-	SET EVR.user_id = in_user_id,
-		EVR.entity_id = in_entity_id,
+	SET EVR.entity_id = in_entity_id,
 		EVR.commodity_id = in_commodity_id,
 		EVR.service_supplier = in_service_supplier,
 		EVR.purchase_amount = in_purchase_amount,

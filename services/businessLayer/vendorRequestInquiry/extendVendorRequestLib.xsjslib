@@ -8,6 +8,7 @@ var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var businessStatus = mapper.getVendorRequestInquiryStatus();
+var businessChangeColumn = mapper.getVendorRequestInquiryChangedColumn();
 
 var mail = mapper.getMail();
 var extendVendorMailSend = mapper.getExtendVendorMailSend();
@@ -162,7 +163,9 @@ function updateExtendVendorRequest(objExtendVendorRequest, userId) {
         throw ErrorLib.getErrors().CustomError("", "", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
     }
     validateParams(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId);
-
+    if (Object.keys(objExtendVendorRequest.CHANGED_FIELDS).length) {
+        businessChangeColumn.insertExtendVendorRequestChangedColumn(objExtendVendorRequest, userId);
+    }
     if (Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objExtendVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
         objExtendVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
         businessStatus.updateExtendVendorRequestStatus(objExtendVendorRequest, userId);

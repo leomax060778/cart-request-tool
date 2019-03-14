@@ -1,26 +1,27 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST_STATUS" (
-	IN in_request_id bigint,
-	IN in_status_id bigint,
-	IN in_previous_status_id bigint,
-	IN in_stage_id bigint,
-	IN in_modified_user_id bigint,
- OUT out_result bigint
+	IN in_request_id BIGINT,
+	IN in_status_id BIGINT,
+	IN in_previous_status_id BIGINT,
+	IN in_stage_id BIGINT,
+	IN in_modified_user_id BIGINT,
+	IN in_processor_id BIGINT,
+    OUT out_result BIGINT
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	UPDATE REQUEST
-	SET 	REQUEST.status_id = in_status_id,
-			REQUEST.previous_status_id = in_previous_status_id,	
-			REQUEST.user_id_status = in_modified_user_id,
-			REQUEST.stage_id = in_stage_id,
-			REQUEST.update_status_tz = CURRENT_TIMESTAMP,
-			REQUEST.pass = REQUEST.pass + 1,
-			REQUEST.modified_user_id = in_modified_user_id
-	FROM "REQUEST" REQUEST
-	WHERE REQUEST.request_id = in_request_id;
+	UPDATE "REQUEST"
+	SET STATUS_ID = in_status_id,
+		PREVIOUS_STATUS_ID = in_previous_status_id,
+		USER_ID_STATUS = in_modified_user_id,
+		STAGE_ID = in_stage_id,
+		UPDATE_STATUS_TZ = CURRENT_TIMESTAMP,
+		PASS = PASS + 1,
+		MODIFIED_USER_ID = in_modified_user_id,
+		PROCESSOR_USER_ID = CASE WHEN (in_processor_id IS NOT NULL) THEN in_processor_id ELSE PROCESSOR_USER_ID END
+	WHERE REQUEST_ID = in_request_id;
 
 SELECT ::ROWCOUNT into out_result FROM DUMMY; 
 END;

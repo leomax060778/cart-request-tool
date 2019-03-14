@@ -13,6 +13,7 @@ var UPD_NEWS_PUBLISHED_STATUS = "UPD_NEWS_PUBLISHED_STATUS";
 
 var DEL_NEWS = "DEL_NEWS";
 var INS_READ_NEWS = "INS_READ_NEWS";
+var DEL_READ_NEWS = "DEL_READ_NEWS";
 
 var GET_NEWS_BY_ID = "GET_NEWS_BY_ID";
 var GET_NEWS_CONTENT = "GET_NEWS_CONTENT";
@@ -125,6 +126,12 @@ function insertNewsRead(objNews, userId){
     parameters.OUT_RESULT = '?';
     return db.executeScalar(INS_READ_NEWS, parameters, 'out_result');
 
+}
+
+function deleteReadNews(objNews) {
+    var parameters = {};
+    parameters.in_news_id = objNews.NEWS_ID;
+    return db.executeScalarManual(DEL_READ_NEWS, parameters, 'out_result');
 }
 
 function insertNews(objNews, userId){

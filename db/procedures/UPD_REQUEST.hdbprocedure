@@ -1,53 +1,54 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_REQUEST" (
-	IN in_request_id bigint,
-	IN in_team_id bigint,
-	IN in_entity_id bigint,
-	IN in_budget_year_id bigint,
+	IN in_request_id BIGINT,
+	IN in_team_id BIGINT,
+	IN in_entity_id BIGINT,
+	IN in_budget_year_id BIGINT,
 	
-	IN in_material_id bigint,
-	IN in_vendor_id bigint,
-	IN in_vendor_contact_information_id bigint,
-	IN in_vendor_additional_information_id bigint,
-	IN in_non_sap_vendor_id bigint,
+	IN in_material_id BIGINT,
+	IN in_vendor_id BIGINT,
+	IN in_vendor_contact_information_id BIGINT,
+	IN in_vendor_additional_information_id BIGINT,
+	IN in_non_sap_vendor_id BIGINT,
 	
-	IN in_goods_recipient_username nvarchar(127),
+	IN in_goods_recipient_username NVARCHAR(127),
 	IN in_data_protection_enabled tinyint,
-	IN in_infrastructure_of_work_id bigint,
-	IN in_location_of_work_id bigint,
-	IN in_alternative_vendor_name nvarchar(255),
- 	IN in_alternative_vendor_phone nvarchar(255),
- 	IN in_alternative_vendor_email nvarchar(255),
+	IN in_infrastructure_of_work_id BIGINT,
+	IN in_location_of_work_id BIGINT,
+	IN in_alternative_vendor_name NVARCHAR(255),
+ 	IN in_alternative_vendor_phone NVARCHAR(255),
+ 	IN in_alternative_vendor_email NVARCHAR(255),
+ 	IN in_masked_alternative_vendor TINYINT,
 
-	IN in_modified_user_id bigint,
- OUT out_result bigint
+	IN in_modified_user_id BIGINT,
+    OUT out_result BIGINT
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	UPDATE REQUEST
-	SET 	REQUEST.hl3_id = in_team_id,
-			REQUEST.entity_id = in_entity_id,
-			REQUEST.budget_year_id = in_budget_year_id,
-			
-			REQUEST.material_id = in_material_id,
-			REQUEST.vendor_id = in_vendor_id,
-			REQUEST.vendor_contact_information_id = in_vendor_contact_information_id,
-			REQUEST.vendor_additional_information_id = in_vendor_additional_information_id,
-			REQUEST.non_sap_vendor_id = in_non_sap_vendor_id,
-			REQUEST.goods_recipient_username = in_goods_recipient_username,	
-			REQUEST.data_protection_enabled = in_data_protection_enabled,
-			REQUEST.infrastructure_of_work_id = in_infrastructure_of_work_id,
-			REQUEST.location_of_work_id = in_location_of_work_id,
-			REQUEST.alternative_vendor_name = in_alternative_vendor_name,
-			REQUEST.alternative_vendor_phone = in_alternative_vendor_phone,
-			REQUEST.alternative_vendor_email = in_alternative_vendor_email,
+	UPDATE "REQUEST"
+	SET HL3_ID = in_team_id,
+		ENTITY_ID = in_entity_id,
+		BUDGET_YEAR_ID = in_budget_year_id,
 
-			REQUEST.modified_date_tz = CURRENT_TIMESTAMP,
-			REQUEST.modified_user_id = in_modified_user_id
-	FROM "REQUEST" REQUEST
-	WHERE REQUEST.request_id = in_request_id;
+        MATERIAL_ID = in_material_id,
+        VENDOR_ID = in_vendor_id,
+        VENDOR_CONTACT_INFORMATION_ID = in_vendor_contact_information_id,
+        VENDOR_ADDITIONAL_INFORMATION_ID = in_vendor_additional_information_id,
+        NON_SAP_VENDOR_ID = in_non_sap_vendor_id,
+        GOODS_RECIPIENT_USERNAME = in_goods_recipient_username,
+        DATA_PROTECTION_ENABLED = in_data_protection_enabled,
+        INFRASTRUCTURE_OF_WORK_ID = in_infrastructure_of_work_id,
+        LOCATION_OF_WORK_ID = in_location_of_work_id,
+        ALTERNATIVE_VENDOR_NAME = in_alternative_vendor_name,
+        ALTERNATIVE_VENDOR_PHONE = in_alternative_vendor_phone,
+        ALTERNATIVE_VENDOR_EMAIL = in_alternative_vendor_email,
+        MASKED_ALTERNATIVE_VENDOR = in_masked_alternative_vendor,
+
+        MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+        MODIFIED_USER_ID = in_modified_user_id
+	WHERE REQUEST_ID = in_request_id;
 
 SELECT ::ROWCOUNT into out_result FROM DUMMY; 
 END;

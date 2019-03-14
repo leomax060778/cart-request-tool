@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_VENDOR_CONTACT_GDPR_SEARCH" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_VENDOR_CONTACT_GDPR_SEARCH"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="VENDOR_ID" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR" columnName="VENDOR_ID"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_INFORMATION_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_INFORMATION_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="VENDOR_CONTACT_INFORMATION_ID"/>
+    </attribute>
+    <attribute id="VENDOR_ID_1" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ID_1"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="VENDOR_ID"/>
+    </attribute>
+    <attribute id="NAME" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="NAME"/>
+    </attribute>
+    <attribute id="PHONE" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="PHONE"/>
+    </attribute>
+    <attribute id="EMAIL" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="EMAIL"/>
+    </attribute>
+    <attribute id="MASKED_VENDOR" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_VENDOR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="MASKED_VENDOR"/>
+    </attribute>
+    <attribute id="ENABLED" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ENABLED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="ENABLED"/>
+    </attribute>
+    <attribute id="DELETED" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DELETED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="DELETED"/>
+    </attribute>
+    <attribute id="VENDOR_ID_2" order="10" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_ID_2"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR" columnName="VENDOR_ID"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR"/>
+      </tableProxy>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION"/>
+        <columnFilter columnName="MASKED_VENDOR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+    </tableProxies>
+    <joins>
+      <join>
+        <leftTable schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR"/>
+        <rightTable schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION"/>
+        <leftColumns>
+          <columnName>VENDOR_ID</columnName>
+        </leftColumns>
+        <rightColumns>
+          <columnName>VENDOR_ID</columnName>
+        </rightColumns>
+        <properties cardinality="C1_N" joinOperator="Equal" joinType="referential"/>
+      </join>
+    </joins>
+    <layout>
+      <shapes>
+        <shape modelObjectName="VENDOR" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="VENDOR_CONTACT_INFORMATION" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="389" y="29"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

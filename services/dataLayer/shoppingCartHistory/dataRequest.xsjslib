@@ -112,22 +112,6 @@ function getRequestStatusByRequestId(request_id){
     }
 }
 
-/*
-	IN in_request_id bigint,
-	IN in_user_id bigint,
-	IN in_team_id bigint,
-	IN in_entity_id bigint,
-	
-	IN in_vendor_id bigint,
-	IN in_stage_id bigint,
-	IN in_status_id bigint,
-	
-	IN in_goods_recipient_username nvarchar(127),
-	IN in_data_protection_enabled tinyint,
-	IN in_infrastructure_of_work_id bigint,
-	IN in_location_of_work_id bigint, 
- */
-
 function updateRequestManual(objRequest, userId){
     var parameters = {};
     parameters.in_request_id = objRequest.REQUEST_ID;
@@ -146,7 +130,8 @@ function updateRequestManual(objRequest, userId){
     parameters.in_alternative_vendor_name = objRequest.ALTERNATIVE_VENDOR_NAME;
     parameters.in_alternative_vendor_phone = objRequest.ALTERNATIVE_VENDOR_PHONE;
     parameters.in_alternative_vendor_email = objRequest.ALTERNATIVE_VENDOR_EMAIL;
-    
+    parameters.in_masked_alternative_vendor = objRequest.MASKED_ALTERNATIVE_VENDOR || 0;
+
     parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_REQUEST, parameters, 'out_result');

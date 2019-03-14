@@ -1,24 +1,31 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_VENDOR_SELECTION" (
-	IN in_change_vendor_request_id bigint,
-	OUT out_result TABLE (name nvarchar(255), description nvarchar(1000),supporting_documentation_id bigint, selection tinyint)
+	IN in_change_vendor_request_id BIGINT,
+	OUT out_result TABLE (
+                          NAME NVARCHAR(255),
+                          DESCRIPTION NVARCHAR(1000),
+                          SUPPORTING_DOCUMENTATION_ID BIGINT,
+                          SELECTION TINYINT,
+                          OPTION_POSITION INTEGER
+                         )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT 
-				CVSD.name,
-				CVSD.description, 
-				CVS.supporting_documentation_id, 
-				CVS.selection
-					FROM "CHANGE_VENDOR_SELECTION" CVS
-					INNER JOIN "CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" CVSD 
-						ON CVS.supporting_documentation_id = CVSD.supporting_documentation_id
-							AND CVSD.enabled = 1
-							AND CVSD.deleted = 0
-					WHERE CVS.change_vendor_request_id = in_change_vendor_request_id
-						AND CVS.enabled = 1
-						AND CVS.deleted = 0;
+	out_result = SELECT CVSD.NAME,
+				        CVSD.DESCRIPTION,
+				        CVS.SUPPORTING_DOCUMENTATION_ID,
+				        CVS.SELECTION,
+                        CVSD.OPTION_POSITION
+				 FROM "CHANGE_VENDOR_SELECTION" CVS
+				    LEFT JOIN "CHANGE_VENDOR_SUPPORTING_DOCUMENTATION" CVSD
+					    ON CVS.SUPPORTING_DOCUMENTATION_ID = CVSD.SUPPORTING_DOCUMENTATION_ID
+						    AND CVSD.ENABLED = 1
+						    AND CVSD.DELETED = 0
+				 WHERE CVS.CHANGE_VENDOR_REQUEST_ID = in_change_vendor_request_id
+						AND CVS.ENABLED = 1
+						AND CVS.DELETED = 0
+	             ORDER BY CVSD.OPTION_POSITION ASC;
 						
 END;

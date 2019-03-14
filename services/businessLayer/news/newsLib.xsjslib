@@ -58,17 +58,17 @@ function validateAccess(userId){
 	var authorized = dataPermission.checkAuthorization(userId, permissionMap.CREATE_EDIT, serviceMap.NEWS_MANAGER);
 	 
     if(!userRole || userRole.length === 0){
-        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getAllNews", userId);
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "", userId);
     }
     if(!authorized && Number(userRole[0].ROLE_ID) === roleMap.REQUESTER){
-    	throw ErrorLib.getErrors().BadRequest("The required News is not longer available", "newsService/handleGet/getNewsById");
+    	throw ErrorLib.getErrors().BadRequest("The required News is not longer available", "");
     }
 }
 
 function getNewsById(newsId, userId) {
     try {
         if (!newsId) {
-            throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+            throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "", newsId);
         }
         
         var result = dataNews.getManualNewsById(newsId);
@@ -102,10 +102,10 @@ function getNewsById(newsId, userId) {
 
 function getManualNewsById(newsId) {
     if (!newsId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "", newsId);
     }
     if (!newsId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleGet/getNewsById", newsId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "", newsId);
     }
     
     var result = dataNews.getManualNewsById(newsId);
@@ -126,12 +126,12 @@ function getManualNewsById(newsId) {
 
 function getAllNews(userId) {
 	if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleGet/getAllNews", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     
     var userRole = userRoleLib.getUserRoleByUserId(userId);
     if(!userRole || userRole.length === 0){
-        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getAllNews", userId);
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "", userId);
     }
     var news;
     
@@ -171,7 +171,7 @@ function getNewsCarousel() {
 
 function getNewsByStatus(statusId, userId) {
     if (!statusId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "newsService/handleGet/getNewsByStatus", statusId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "", statusId);
     }
     if(Number(statusId) !== statusMap.Published){
     	//Validate if the user can see the news
@@ -183,17 +183,17 @@ function getNewsByStatus(statusId, userId) {
 
 function getNewsByYear(budgetYearId, userId) {
     if (!budgetYearId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByYear", budgetYearId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "", budgetYearId);
     }
     
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleGet/getNewsByYear", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     
     var userRole = userRoleLib.getUserRoleByUserId(userId);
     
     if(!userRole || userRole.length === 0){
-        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "newsService/handleGet/getNewsByYear", userId);
+        throw ErrorLib.getErrors().BadRequest("Cannot find the current user Role", "", userId);
     }
     
     var news;
@@ -225,10 +225,10 @@ function getNewsByYear(budgetYearId, userId) {
 
 function getNewsByStatusYear(statusId, year) {
     if (!year) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "newsService/handleGet/getNewsByStatusYear", year);
+        throw ErrorLib.getErrors().BadRequest("The Parameter in_year is not found", "", year);
     }
     if (!statusId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "newsService/handleGet/getNewsByStatusYear", statusId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter statusId is not found", "", statusId);
     }
     if(Number(statusId) !== statusMap.Published){
     	//Validate if the user can see the news
@@ -262,7 +262,7 @@ function getNewsByStatusYear(statusId, year) {
 
 function newsRead(objNews, userId) {
     if (!objNews.NEWS_ID) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter NEWS_ID is not found", "newsService/handlePost/newsRead", "");
+        throw ErrorLib.getErrors().BadRequest("The Parameter NEWS_ID is not found", "", "");
     }
     return dataNews.insertNewsRead(objNews, userId);
 }
@@ -282,10 +282,13 @@ function updateNews(objNews, userId) {
     	var oldNews = getManualNewsById(objNews.NEWS_ID);
     	
         if (!Object.keys(oldNews).length > 0) {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", "The News with the id " + objNews.NEWS_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The News with the id " + objNews.NEWS_ID + " does not exist");
         }
-        if(Number(objNews.STATUS_ID) === statusMap.Published && Number(oldNews.STATUS_ID) !== statusMap.Published){
-        	dataNews.updateNewsPublishedStatus(objNews, userId);
+        if(Number(objNews.STATUS_ID) === statusMap.Published) {
+            dataNews.deleteReadNews(objNews);
+            if (Number(oldNews.STATUS_ID) !== statusMap.Published) {
+                dataNews.updateNewsPublishedStatus(objNews, userId);
+            }
         }
         return dataNews.updateNews(objNews, userId);
     }
@@ -293,7 +296,7 @@ function updateNews(objNews, userId) {
 
 function updateNewsStatus(objNews, userId) {
     if (!(Array.isArray(objNews.NEWS_STATUS) && objNews.NEWS_STATUS.length > 0)) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter news elements is not found", "newsService/handlePut/updateNewsStatus", objNews);
+        throw ErrorLib.getErrors().BadRequest("The Parameter news elements is not found", "", objNews);
     }
     try {
         (objNews.NEWS_STATUS).forEach(function (news) {
@@ -312,10 +315,10 @@ function updateNewsStatus(objNews, userId) {
 
 function updateSingleNewsStatus(objNews, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handlePut/updateNewsStatus", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     if (!objNews.STATUS_ID) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter STATUS_ID is not found", "newsService/handlePut/updateNewsStatus", objNews.STATUS_ID);
+        throw ErrorLib.getErrors().BadRequest("The Parameter STATUS_ID is not found", "", objNews.STATUS_ID);
     }
     if (validateUpdateNewsStatus(objNews, userId)) {
     	var oldNews = getManualNewsById(objNews.NEWS_ID);
@@ -337,13 +340,13 @@ function updateSingleNewsStatus(objNews, userId) {
 
 function deleteNews(newsId, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handleDelete/deleteNews", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     if (!newsId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "newsService/handleDelete/deleteNews", newsId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter newsId is not found", "", newsId);
     }
     if (!existNews(newsId, userId)) {
-        throw ErrorLib.getErrors().CustomError("", "newsService/handleDelete/deleteNews", "The News with the id " + newsId + " does not exist");
+        throw ErrorLib.getErrors().CustomError("", "", "The News with the id " + newsId + " does not exist");
     } else {
         return dataNews.deleteNews(newsId, userId);
     }
@@ -351,7 +354,7 @@ function deleteNews(newsId, userId) {
 
 function validateInsertNews(objNews, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handlePost/insertNews", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -365,7 +368,7 @@ function validateInsertNews(objNews, userId) {
     var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
 
     if (!objNews) {
-        throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", "The object News is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object News is not found");
     }
 
     try {
@@ -385,10 +388,10 @@ function validateInsertNews(objNews, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePost/insertNews", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     if (objNews.ATTACHMENT_ID || objNews.URGENT) {
@@ -407,7 +410,7 @@ function validateInsertNews(objNews, userId) {
 
 function validateUpdateNews(objNews, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handlePut/updateNews", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 
     var isValid = false;
@@ -423,7 +426,7 @@ function validateUpdateNews(objNews, userId) {
     var optionalKeys = ['ATTACHMENT_ID', 'URGENT'];
 
     if (!objNews) {
-        throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", "The object News is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object News is not found");
     }
 
     try {
@@ -443,10 +446,10 @@ function validateUpdateNews(objNews, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNews", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     if (objNews.ATTACHMENT_ID || objNews.URGENT) {
@@ -465,7 +468,7 @@ function validateUpdateNews(objNews, userId) {
 
 function validateUpdateNewsStatus(objNews, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "newsService/handlePut/updateNewsStatus", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 
     var isValid = false;
@@ -476,7 +479,7 @@ function validateUpdateNewsStatus(objNews, userId) {
     ];
 
     if (!objNews) {
-        throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNewsStatus", "The object News is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object News is not found");
     }
 
     try {
@@ -496,10 +499,10 @@ function validateUpdateNewsStatus(objNews, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNewsStatus", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "newsService/handlePut/updateNewsStatus", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;

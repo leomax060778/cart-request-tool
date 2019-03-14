@@ -1,0 +1,27 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NON_SAP_VENDOR_BY_VENDOR_ID" (
+    IN in_vendor_id BIGINT,
+    OUT out_result TABLE (
+    		NON_SAP_VENDOR_ID BIGINT,
+    		CONTACT_NAME NVARCHAR(255),
+    		CONTACT_EMAIL NVARCHAR(255),
+    		CONTACT_PHONE NVARCHAR(255),
+    		MASKED_NON_SAP_VENDOR TINYINT
+    		)
+ )
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+va_cart_request_vendor = SELECT VENDOR_ID, NON_SAP_VENDOR_ID FROM "REQUEST" WHERE VENDOR_ID = in_vendor_id;
+
+out_result = SELECT DISTINCT NSV.NON_SAP_VENDOR_ID,
+                             NSV.CONTACT_NAME,
+                             NSV.CONTACT_EMAIL,
+                             NSV.CONTACT_PHONE,
+                             NSV.MASKED_NON_SAP_VENDOR
+	         FROM "NON_SAP_VENDOR" NSV
+	            INNER JOIN :va_cart_request_vendor CRV ON NSV.NON_SAP_VENDOR_ID = CRV.NON_SAP_VENDOR_ID
+	         WHERE NSV.ENABLED = 1
+	           AND NSV.DELETED = 0;
+END;

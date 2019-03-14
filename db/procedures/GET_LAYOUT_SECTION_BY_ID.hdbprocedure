@@ -1,13 +1,20 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_LAYOUT_SECTION_BY_ID" (
-	IN in_layout_section_id bigint,
-	OUT out_result TABLE (layout_section_id bigint, block_type nvarchar(255), block_content nvarchar(1000))
+	IN in_layout_section_id BIGINT,
+	OUT out_result TABLE (LAYOUT_SECTION_ID BIGINT,
+	                      NAME NVARCHAR(255),
+	                      CONTENT NVARCHAR(1000)
+	                      )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT layout_section_id, block_type, block_content
-				FROM "LAYOUT_SECTION"
-					WHERE layout_section_id = in_layout_section_id AND enabled = 1 AND deleted = 0;	
+	out_result = SELECT LAYOUT_SECTION_ID,
+	                    NAME,
+	                    CONTENT
+				 FROM "LAYOUT_SECTION"
+                 WHERE LAYOUT_SECTION_ID = in_layout_section_id
+                   AND ENABLED = 1
+                   AND DELETED = 0;
 END;

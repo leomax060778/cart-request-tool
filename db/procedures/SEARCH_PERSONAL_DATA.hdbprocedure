@@ -1,0 +1,34 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::SEARCH_PERSONAL_DATA" (
+    IN in_search_criteria NVARCHAR(255),
+    OUT out_result TABLE(
+                         DATA_SUBJECT_ID BIGINT,
+                         USERNAME NVARCHAR(255),
+				 		 FIRST_NAME NVARCHAR(255),
+						 LAST_NAME NVARCHAR(255),
+                         CONTACT_NAME NVARCHAR(511),
+                         ENABLED TINYINT,
+                         DELETED TINYINT,
+                         SUBJECT_TYPE NVARCHAR(63),
+                         KEY_ID NVARCHAR(63)
+                        )
+ )
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+
+    out_result = SELECT GDPR.DATA_SUBJECT_ID,
+                        GDPR.USERNAME,
+                        GDPR.FIRST_NAME,
+                        GDPR.LAST_NAME,
+                        GDPR.CONTACT_NAME,
+                        GDPR.ENABLED,
+                        GDPR.DELETED,
+                        GDPR.SUBJECT_TYPE,
+                        GDPR.KEY_ID
+                 FROM "_SYS_BIC"."xscartrequesttool.db.data.views/CV_GDPR_SEARCH"(
+		                 placeholder."$$in_search_criteria$$" => :in_search_criteria
+                 ) GDPR;
+
+END;

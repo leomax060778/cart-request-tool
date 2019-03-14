@@ -1,35 +1,35 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER" (
 OUT out_result TABLE(
-		USER_ID bigint,
-		USER_NAME nvarchar(255),
-		FIRST_NAME nvarchar(255),
-		LAST_NAME nvarchar(255),
-		EMAIL nvarchar(255),
-		PHONE nvarchar(255),
+		USER_ID BIGINT,
+		USER_NAME NVARCHAR(255),
+		FIRST_NAME NVARCHAR(255),
+		LAST_NAME NVARCHAR(255),
+		EMAIL NVARCHAR(255),
+		PHONE NVARCHAR(255),
 		ROLE_ID BIGINT,
-		ROLE_NAME nvarchar(255))) 
+		ROLE_NAME NVARCHAR(255)
+		)
+)
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
 
- 	out_result = 
- 		SELECT 
- 			"USER".USER_ID, 
- 			"USER".USER_NAME, 
- 			"USER".FIRST_NAME, 
- 			"USER".LAST_NAME, 
- 			"USER".EMAIL, 
- 			"USER".PHONE, 
- 			"USER_ROLE".ROLE_ID, 
- 			"ROLE".NAME as ROLE_NAME
-  		FROM "USER" 
-  		LEFT JOIN USER_ROLE userRole ON userRole.user_id = USER.USER_ID
-		LEFT JOIN ROLE role ON role.role_id = userRole.role_id
- 		LEFT JOIN USER_ROLE ON "USER".USER_ID = USER_ROLE.USER_ID 
- 		WHERE "USER".ENABLED = 1 AND 
- 		"USER".DELETED = 0 
- 		ORDER BY "USER".USER_NAME;
+ 	out_result = SELECT US.USER_ID,
+                    US.USER_NAME,
+                    US.FIRST_NAME,
+                    US.LAST_NAME,
+                    US.EMAIL,
+                    US.PHONE,
+                    USR.ROLE_ID,
+                    ROLE.NAME as ROLE_NAME
+                 FROM "USER" US
+                    LEFT JOIN "USER_ROLE" USR ON USR.USER_ID = US.USER_ID
+                    LEFT JOIN "ROLE" ROLE ON ROLE.ROLE_ID = USR.ROLE_ID
+                 WHERE US.ENABLED = 1
+                   AND US.DELETED = 0
+                   AND US.DATA_PROTECTION_ENABLED = 0
+                 ORDER BY US.USER_NAME;
 END;
 

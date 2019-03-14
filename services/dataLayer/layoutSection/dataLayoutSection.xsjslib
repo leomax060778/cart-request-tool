@@ -9,7 +9,6 @@ var GET_ALL_LAYOUT_SECTION = "GET_ALL_LAYOUT_SECTION";
 var GET_LAYOUT_SECTION_BY_ID = "GET_LAYOUT_SECTION_BY_ID";
 var INS_LAYOUT_SECTION = "INS_LAYOUT_SECTION";
 var UPD_LAYOUT_SECTION = "UPD_LAYOUT_SECTION";
-var DEL_LAYOUT_SECTION = "DEL_LAYOUT_SECTION";
 
 //Get all layout section
 function getAllLayoutSection() {
@@ -35,9 +34,9 @@ function getLayoutSectionByIdManual(sectionId) {
 //Insert layout section
 function insertLayoutSection(objLayoutSection, userId) {
     var parameters = {};
-    parameters.in_block_type = objLayoutSection.BLOCK_TYPE;
-    parameters.in_block_content = objLayoutSection.BLOCK_CONTENT;
-    parameters.in_created_user_id = userId;//objLayoutSection.CREATED_USER_ID;
+    parameters.in_name = objLayoutSection.NAME;
+    parameters.in_content = objLayoutSection.CONTENT;
+    parameters.in_created_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(INS_LAYOUT_SECTION, parameters, 'out_result');
 }
@@ -46,18 +45,8 @@ function insertLayoutSection(objLayoutSection, userId) {
 function updateLayoutSection(objLayoutSection, userId) {
     var parameters = {};
     parameters.in_layout_section_id = objLayoutSection.LAYOUT_SECTION_ID;
-    parameters.in_block_type = objLayoutSection.BLOCK_TYPE;
-    parameters.in_block_content = objLayoutSection.BLOCK_CONTENT;
-    parameters.in_modified_user_id = userId;//objLayoutSection.MODIFIED_USER_ID;
+    parameters.in_content = objLayoutSection.CONTENT;
+    parameters.in_modified_user_id = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_LAYOUT_SECTION, parameters, 'out_result');
-}
-
-//Delete layout section
-function deleteLayoutSection(objLayoutSection, userId) {
-    var parameters = {};
-    parameters.in_layout_section_id = objLayoutSection.LAYOUT_SECTION_ID;
-    parameters.in_modified_user_id = userId;//objLayoutSection.MODIFIED_USER_ID;
-    parameters.out_result = '?';
-    return db.executeScalar(DEL_LAYOUT_SECTION, parameters, 'out_result');
 }

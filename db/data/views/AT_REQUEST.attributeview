@@ -67,6 +67,10 @@
       <descriptions defaultDescription="VENDOR_ADDITIONAL_INFORMATION_ID"/>
       <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="VENDOR_ADDITIONAL_INFORMATION_ID"/>
     </attribute>
+    <attribute id="DATA_PROTECTION_ENABLED" order="17" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DATA_PROTECTION_ENABLED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="DATA_PROTECTION_ENABLED"/>
+    </attribute>
   </attributes>
   <calculatedAttributes/>
   <privateDataFoundation>

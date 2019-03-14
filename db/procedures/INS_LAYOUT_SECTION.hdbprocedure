@@ -1,6 +1,6 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_LAYOUT_SECTION" (
-	IN in_block_type nvarchar(255),
- 	IN in_block_content nvarchar(1000),
+	IN in_name nvarchar(255),
+ 	IN in_content nvarchar(1000),
  	IN in_created_user_id bigint,
  	
  	OUT out_result bigint
@@ -10,8 +10,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::INS_LAYOUT_SECTI
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
-	INSERT INTO "CART_REQUEST_TOOL"."LAYOUT_SECTION"(block_type, block_content, created_user_id) 
-  VALUES(in_block_type, in_block_content, in_created_user_id);
+	INSERT INTO "CART_REQUEST_TOOL"."LAYOUT_SECTION"(name, content, created_user_id)
+  VALUES(in_name, in_content, in_created_user_id);
  
   SELECT TOP 1 CURRENT_IDENTITY_VALUE() INTO out_result FROM "CART_REQUEST_TOOL"."LAYOUT_SECTION";
 END;

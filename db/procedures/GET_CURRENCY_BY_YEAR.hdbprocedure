@@ -1,11 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CURRENCY_BY_YEAR" (
-	IN in_currency_year bigint,
-	OUT out_result TABLE (currency_id bigint, 
-							country nvarchar(255), 
-							name nvarchar(255), 
-							abbreviation nvarchar(255), 
-							conversion_rate decimal(19,2), 
-							currency_year integer
+	IN in_currency_year BIGINT,
+	OUT out_result TABLE (CURRENCY_ID BIGINT,
+						  COUNTRY NVARCHAR(255),
+						  NAME NVARCHAR(255),
+						  ABBREVIATION NVARCHAR(255),
+						  CONVERSION_RATE DECIMAL(19,2),
+						  CURRENCY_YEAR INTEGER
 						  )
  ) 
 	LANGUAGE SQLSCRIPT
@@ -13,15 +13,16 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CURRENCY_BY_
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT CUR.currency_id, 
-						CUR.country, 
-						CUR.name, 
-						CUR.abbreviation, 
-						CUR.conversion_rate, 
-						CUR.currency_year
+	out_result = SELECT CUR.CURRENCY_ID,
+						CUR.COUNTRY,
+						CUR.NAME,
+						CUR.ABBREVIATION,
+						CUR.CONVERSION_RATE,
+						CUR.CURRENCY_YEAR
 					FROM "CURRENCY" CUR
-						WHERE CUR.currency_year = in_currency_year
-						AND CUR.enabled = 1 
-						AND CUR.deleted = 0;
+						WHERE CUR.CURRENCY_YEAR = in_currency_year
+						AND CUR.ENABLED = 1
+						AND CUR.DELETED = 0
+					ORDER BY CUR.ABBREVIATION ASC;
 END;
 

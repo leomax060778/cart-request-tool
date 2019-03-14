@@ -15,41 +15,33 @@ var GET_CATALOG_REPORT = "GET_CATALOG_REPORT";
 var GET_COMMODITY_REPORT = "GET_COMMODITY_REPORT";
 
 function getReport(userId) {
-    var result = db.extractArray(db.executeProcedure(GET_REPORT, {'in_user_id': userId}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_REPORT, {'in_user_id': userId}).out_result);
 }
 
 function getReportByUserId(userId) {
-    var result = db.extractArray(db.executeProcedure(GET_REPORT_BY_USER_ID, {'in_user_id': userId}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_REPORT_BY_USER_ID, {'in_user_id': userId}).out_result);
 }
 
 function getReportByTeam(userId) {
-    var result = db.extractArray(db.executeProcedure(GET_REPORT_BY_TEAM, {'in_user_id': userId}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_REPORT_BY_TEAM, {'in_user_id': userId}).out_result);
 }
 
 function getUserReport() {
-    var result = db.extractArray(db.executeProcedure(GET_USER_REPORT, {}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_USER_REPORT, {}).out_result);
 }
 
 function getVendorReport() {
-    var result = db.extractArray(db.executeProcedure(GET_VENDOR_REPORT, {}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_VENDOR_REPORT, {}).out_result);
 }
 
 function getCatalogReport() {
-    var result = db.extractArray(db.executeProcedure(GET_CATALOG_REPORT, {}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_CATALOG_REPORT, {}).out_result);
 }
 
 function getCommodityReport() {
-    var result = db.extractArray(db.executeProcedure(GET_COMMODITY_REPORT, {}).out_result);
-    return result;
+    return db.extractArray(db.executeProcedure(GET_COMMODITY_REPORT, {}).out_result);
 }
 
 function getReportType(userId){
-	var result = db.extractArray(db.executeProcedure(GET_REPORT_TYPE, {'in_user_id': userId}).out_result);
-	return result;
+    return db.extractArray(db.executeProcedure(GET_REPORT_TYPE, {'in_user_id': userId}).out_result);
 }

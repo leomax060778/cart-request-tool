@@ -1,6 +1,13 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_USERNAME" (
-	in_user_name NVARCHAR(255),
-	OUT out_result TABLE(USER_ID bigint, PASSWORD nvarchar(255), USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255), EMAIL nvarchar(255), PHONE nvarchar(255))
+	IN in_user_name NVARCHAR(255),
+	OUT out_result TABLE(USER_ID BIGINT,
+	                     PASSWORD NVARCHAR(255),
+	                     USER_NAME NVARCHAR(255),
+	                     FIRST_NAME NVARCHAR(255),
+	                     LAST_NAME NVARCHAR(255),
+	                     EMAIL NVARCHAR(255),
+	                     PHONE NVARCHAR(255)
+	                    )
 )
  
 	LANGUAGE SQLSCRIPT
@@ -8,11 +15,18 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_USER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-/***************************** 
-	Write your procedure logic 
- *****************************/
-  out_result = SELECT USER_ID, PASSWORD, USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, PHONE
- 		FROM "USER" 
- 		WHERE upper(USER_NAME) = upper(in_user_name) AND
- 		ENABLED = 1 AND DELETED = 0;
+
+	out_result = SELECT US.USER_ID,
+	                    US.PASSWORD,
+	                    US.USER_NAME,
+	                    US.FIRST_NAME,
+	                    US.LAST_NAME,
+	                    US.EMAIL,
+	                    US.PHONE
+	              FROM "USER" US
+	              WHERE TRIM(UPPER(US.USER_NAME)) = TRIM(UPPER(in_user_name))
+	                  AND US.ENABLED = 1
+	                  AND US.DELETED = 0
+	                  AND US.USER_ID NOT IN (SELECT USER_ID FROM "USER_DATA_PROTECTION" WHERE USER_DATA_PROTECTION_STATUS_ID = 2); --2: Approved
+	
 END;

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_GDPR_SEARCH_REQUEST_CONTACT" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_REQUEST_CONTACT_GDPR_SEARCH"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="REQUEST_ID" key="true" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="REQUEST_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="REQUEST_ID"/>
+    </attribute>
+    <attribute id="ALTERNATIVE_VENDOR_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ALTERNATIVE_VENDOR_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="ALTERNATIVE_VENDOR_NAME"/>
+    </attribute>
+    <attribute id="ALTERNATIVE_VENDOR_PHONE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ALTERNATIVE_VENDOR_PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="ALTERNATIVE_VENDOR_PHONE"/>
+    </attribute>
+    <attribute id="ALTERNATIVE_VENDOR_EMAIL" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ALTERNATIVE_VENDOR_EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="ALTERNATIVE_VENDOR_EMAIL"/>
+    </attribute>
+    <attribute id="MASKED_ALTERNATIVE_VENDOR" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_ALTERNATIVE_VENDOR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="MASKED_ALTERNATIVE_VENDOR"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_INFORMATION_ID" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_INFORMATION_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="VENDOR_CONTACT_INFORMATION_ID"/>
+    </attribute>
+    <attribute id="NON_SAP_VENDOR_ID" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NON_SAP_VENDOR_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST" columnName="NON_SAP_VENDOR_ID"/>
+    </attribute>
+    <attribute id="NON_SAP_VENDOR_ID_1" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NON_SAP_VENDOR_ID_1"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR" columnName="NON_SAP_VENDOR_ID"/>
+    </attribute>
+    <attribute id="CONTACT_NAME" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CONTACT_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR" columnName="CONTACT_NAME"/>
+    </attribute>
+    <attribute id="CONTACT_EMAIL" order="10" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CONTACT_EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR" columnName="CONTACT_EMAIL"/>
+    </attribute>
+    <attribute id="CONTACT_PHONE" order="11" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CONTACT_PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR" columnName="CONTACT_PHONE"/>
+    </attribute>
+    <attribute id="MASKED_NON_SAP_VENDOR" order="12" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_NON_SAP_VENDOR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR" columnName="MASKED_NON_SAP_VENDOR"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_INFORMATION_ID_1" order="13" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_INFORMATION_ID_1"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="VENDOR_CONTACT_INFORMATION_ID"/>
+    </attribute>
+    <attribute id="NAME" order="14" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="NAME"/>
+    </attribute>
+    <attribute id="PHONE" order="15" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="PHONE"/>
+    </attribute>
+    <attribute id="EMAIL" order="16" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="EMAIL"/>
+    </attribute>
+    <attribute id="MASKED_VENDOR" order="17" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_VENDOR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="MASKED_VENDOR"/>
+    </attribute>
+    <attribute id="ENABLED" order="18" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ENABLED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="ENABLED"/>
+    </attribute>
+    <attribute id="DELETED" order="19" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DELETED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="DELETED"/>
+    </attribute>
+    <attribute id="MASKED_VENDOR_1" order="20" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_VENDOR_1"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION" columnName="MASKED_VENDOR"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST"/>
+        <columnFilter columnName="MASKED_ALTERNATIVE_VENDOR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR"/>
+      </tableProxy>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION"/>
+      </tableProxy>
+    </tableProxies>
+    <joins>
+      <join>
+        <leftTable schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST"/>
+        <rightTable schemaName="CART_REQUEST_TOOL" columnObjectName="NON_SAP_VENDOR"/>
+        <leftColumns>
+          <columnName>NON_SAP_VENDOR_ID</columnName>
+        </leftColumns>
+        <rightColumns>
+          <columnName>NON_SAP_VENDOR_ID</columnName>
+        </rightColumns>
+        <properties cardinality="C1_1" joinOperator="Equal" joinType="leftOuter"/>
+      </join>
+      <join>
+        <leftTable schemaName="CART_REQUEST_TOOL" columnObjectName="REQUEST"/>
+        <rightTable schemaName="CART_REQUEST_TOOL" columnObjectName="VENDOR_CONTACT_INFORMATION"/>
+        <leftColumns>
+          <columnName>VENDOR_CONTACT_INFORMATION_ID</columnName>
+        </leftColumns>
+        <rightColumns>
+          <columnName>VENDOR_CONTACT_INFORMATION_ID</columnName>
+        </rightColumns>
+        <properties cardinality="C1_1" joinOperator="Equal" joinType="leftOuter"/>
+      </join>
+    </joins>
+    <layout>
+      <shapes>
+        <shape modelObjectName="REQUEST" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="NON_SAP_VENDOR" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="436" y="19"/>
+        </shape>
+        <shape modelObjectName="VENDOR_CONTACT_INFORMATION" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="445" y="377"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

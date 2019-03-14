@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_USER_RESTORE" (
+	IN in_user_id BIGINT,
+	IN in_modified_user_id BIGINT,
+	OUT out_result BIGINT
+) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+    UPDATE "USER"
+    SET ENABLED = 1,
+	    DELETED = 0,
+	    MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+	    MODIFIED_USER_ID = in_modified_user_id
+	WHERE USER_ID = in_user_id;
+
+    SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+
+END;

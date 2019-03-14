@@ -1,41 +1,45 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_REQUEST_PROCESSING_REPORT" (
-	IN in_user_id bigint,
+	IN in_user_id BIGINT,
 	OUT out_result TABLE (
-						request_id integer, 
-						requester nvarchar(255), 
-						team_id bigint, 
-						team_name nvarchar(255), 
-						entity_id bigint, 
-						entity_name nvarchar(255), 
-						vendor_id bigint, 
-						vendor_name nvarchar(255),	
-						vendor_account nvarchar(255), 
-						non_sap_vendor_id bigint,
-						non_sap_contact_name nvarchar(255), 
-						non_sap_contact_email nvarchar(255), 
-						non_sap_contact_phone nvarchar(255),
-						stage_id bigint, 
-						stage nvarchar(127), 
-						status_id bigint, 
-						status_name nvarchar(255), 
-						material_id bigint,
-						material_description nvarchar(255), 
-						material_parent_id bigint, 
-						material_code nvarchar(255), 
-						goods_recipient_username nvarchar(127),
-						data_protection_enabled tinyint, 
-						infrastructure_of_work_id bigint, 
-						infrastructure_name nvarchar(255), 
-						location_of_work_id bigint, 
-						location_name nvarchar(255), 
-						iso nvarchar(2), 
-						request_date timestamp,
-						message_read integer,
-						created_user_id bigint,
-						stage_passes nvarchar(32),												
-						cart_request_id nvarchar(32),
-						cost_object_value nvarchar (100),
-						DAYS_OUTSTANDING integer) 
+						REQUEST_ID INTEGER,
+						REQUESTER NVARCHAR(255),
+						TEAM_ID BIGINT,
+						TEAM_NAME NVARCHAR(255),
+						ENTITY_ID BIGINT,
+						ENTITY_NAME NVARCHAR(255),
+						VENDOR_ID BIGINT,
+						VENDOR_NAME NVARCHAR(255),
+						VENDOR_ACCOUNT NVARCHAR(255),
+						NON_SAP_VENDOR_ID BIGINT,
+						NON_SAP_CONTACT_NAME NVARCHAR(255),
+						NON_SAP_CONTACT_EMAIL NVARCHAR(255),
+						NON_SAP_CONTACT_PHONE NVARCHAR(255),
+						STAGE_ID BIGINT,
+						STAGE NVARCHAR(127),
+						STATUS_ID BIGINT,
+						STATUS_NAME NVARCHAR(255),
+						MATERIAL_ID BIGINT,
+						MATERIAL_DESCRIPTION NVARCHAR(255),
+						MATERIAL_PARENT_ID BIGINT,
+						MATERIAL_CODE NVARCHAR(255),
+						GOODS_RECIPIENT_USERNAME NVARCHAR(127),
+						DATA_PROTECTION_ENABLED TINYINT,
+						INFRASTRUCTURE_OF_WORK_ID BIGINT,
+						INFRASTRUCTURE_NAME NVARCHAR(255),
+						LOCATION_OF_WORK_ID BIGINT,
+						LOCATION_NAME NVARCHAR(255),
+						ISO NVARCHAR(2),
+						REQUEST_DATE TIMESTAMP,
+						MESSAGE_READ INTEGER,
+						CREATED_USER_ID BIGINT,
+						STAGE_PASSES NVARCHAR(32),
+						CART_REQUEST_ID NVARCHAR(32),
+						COST_OBJECT_VALUE NVARCHAR (100),
+						DAYS_OUTSTANDING INTEGER,
+                        PROCESSOR_USER_ID BIGINT,
+                        PROCESSOR NVARCHAR(255),
+                        SHOPPING_CART NVARCHAR(255)
+                        )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
@@ -53,70 +57,74 @@ BEGIN
 						WHERE USR.USER_ID = in_user_id;
 							
 	out_result = SELECT DISTINCT
-		RQ.REQUEST_ID,
-		US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS requester, 
-		RQ.HL3_ID as team_id, 
-		HL3.HL3_DESCRIPTION AS team_name, 
-		RQ.ENTITY_ID,
-		ET.ENTITY_NAME AS entity_name, 
-		RQ.VENDOR_ID, 
-		VAI.VENDOR_NAME AS VENDOR_NAME,
-		V.ACCOUNT AS vendor_account,
-		NSV.NON_SAP_VENDOR_ID AS non_sap_vendor_id,
-		NSV.CONTACT_NAME AS non_sap_contact_name,
-		NSV.CONTACT_EMAIL AS non_sap_contact_email,
-		NSV.CONTACT_PHONE AS non_sap_contact_phone,
-		RQ.STAGE_ID, 
-		STG.NAME AS stage, 
-		RQ.STATUS_ID, 
-		ST.NAME AS status_name, 
-		RQ.MATERIAL_ID, 
-		MT.DESCRIPTION AS material_description, 
-		MT.CATALOG_ID AS material_parent_id,
-		MT.CODE AS material_code, 
-		RQ.GOODS_RECIPIENT_USERNAME, 
-		RQ.DATA_PROTECTION_ENABLED, 
-		RQ.INFRASTRUCTURE_OF_WORK_ID, 
-		IOW.INFRASTRUCTURE_NAME AS infrastructure_name, 
-		RQ.LOCATION_OF_WORK_ID, 
-		LOW.LOCATION_NAME AS location_name, 
-		CTY.ISO AS iso, 
-		RQ.CREATED_DATE_TZ AS request_date,	
-		VAM.MESSAGE_READ,
-		RQ.CREATED_USER_ID,
-		(STG.NAME || ' / #' || RQ.PASS) AS stage_passes,
-		CTY.ISO || TO_NVARCHAR(RQ.REQUEST_ID) AS CART_REQUEST_ID,
-		RCO.COST_VALUE as COST_OBJECT_VALUE,
-		DAYS_BETWEEN(RQ.CREATED_DATE_TZ, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING
-		 FROM "REQUEST" RQ
-		 	LEFT JOIN "PURCHASE_ORDER_SERVICE" POS ON RQ.REQUEST_ID = POS.REQUEST_ID
-		 	INNER JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
-		 	INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID
-		 	INNER JOIN "ENTITY" ET ON RQ.ENTITY_ID = ET.ENTITY_ID
-		 	LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VAI.VENDOR_ADDITIONAL_INFORMATION_ID = RQ.VENDOR_ADDITIONAL_INFORMATION_ID 
-		 	LEFT JOIN "VENDOR" V ON RQ.VENDOR_ID = V.VENDOR_ID
-		 	LEFT JOIN "NON_SAP_VENDOR" NSV ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
-		 	INNER JOIN "STAGE" STG ON RQ.STAGE_ID = STG.STAGE_ID AND STG.ENABLED = 1 AND STG.DELETED = 0
-		 	INNER JOIN "REQUEST_STATUS" AS ST ON RQ.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
-		 	LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
-		 	LEFT JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
-		 	LEFT JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
-		 	INNER JOIN "CRT_TYPE" CTY ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID AND CTY.ENABLED = 1 AND CTY.DELETED = 0
-		 	INNER JOIN "REQUEST_COST_OBJECT" RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID AND RCO.ENABLED = 1 AND RCO.DELETED = 0
-			LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
-			INNER JOIN :va_user_role USR ON USR.ENABLED = 1
-		WHERE ((USR.ROLE_ID != 2 
-					AND RQ.ENABLED = 1 
-					AND RQ.DELETED = 0
-				)
-				OR (USR.ROLE_ID = 2
-						AND ((USR.HL3_ID = RQ.HL3_ID 
-									AND RQ.CREATED_USER_ID = in_user_id
-							 ) OR (USR.HL3_ID is null AND RQ.CREATED_USER_ID = in_user_id)
-						) 
-						AND RQ.ENABLED = 1 
-						AND RQ.DELETED = 0
-					))
-				and RQ.STATUS_ID != 5 AND RQ.STATUS_ID != 6
-		ORDER BY RQ.REQUEST_ID DESC;
+                    RQ.REQUEST_ID,
+                    US.FIRST_NAME || ' ' || US.LAST_NAME || ', ' || US.USER_NAME AS REQUESTER,
+                    RQ.HL3_ID AS TEAM_ID,
+                    HL3.HL3_DESCRIPTION AS TEAM_NAME,
+                    RQ.ENTITY_ID,
+                    ET.ENTITY_NAME AS ENTITY_NAME,
+                    RQ.VENDOR_ID,
+                    VAI.VENDOR_NAME AS VENDOR_NAME,
+                    V.ACCOUNT AS VENDOR_ACCOUNT,
+                    NSV.NON_SAP_VENDOR_ID AS NON_SAP_VENDOR_ID,
+                    NSV.CONTACT_NAME AS NON_SAP_CONTACT_NAME,
+                    NSV.CONTACT_EMAIL AS NON_SAP_CONTACT_EMAIL,
+                    NSV.CONTACT_PHONE AS NON_SAP_CONTACT_PHONE,
+                    RQ.STAGE_ID,
+                    STG.NAME AS STAGE,
+                    RQ.STATUS_ID,
+                    ST.NAME AS STATUS_NAME,
+                    RQ.MATERIAL_ID,
+                    MT.DESCRIPTION AS MATERIAL_DESCRIPTION,
+                    MT.CATALOG_ID AS MATERIAL_PARENT_ID,
+                    MT.CODE AS MATERIAL_CODE,
+                    RQ.GOODS_RECIPIENT_USERNAME,
+                    RQ.DATA_PROTECTION_ENABLED,
+                    RQ.INFRASTRUCTURE_OF_WORK_ID,
+                    IOW.INFRASTRUCTURE_NAME AS INFRASTRUCTURE_NAME,
+                    RQ.LOCATION_OF_WORK_ID,
+                    LOW.LOCATION_NAME AS LOCATION_NAME,
+                    CTY.ISO AS ISO,
+                    RQ.CREATED_DATE_TZ AS REQUEST_DATE,
+                    VAM.MESSAGE_READ,
+                    RQ.CREATED_USER_ID,
+                    (STG.NAME || ' / #' || RQ.PASS) AS STAGE_PASSES,
+                    CTY.ISO || TO_NVARCHAR(RQ.REQUEST_ID) AS CART_REQUEST_ID,
+                    RCO.COST_VALUE AS COST_OBJECT_VALUE,
+                    DAYS_BETWEEN(RQ.CREATED_DATE_TZ, CURRENT_TIMESTAMP) AS DAYS_OUTSTANDING,
+                    RQ.PROCESSOR_USER_ID,
+                    USPR.FIRST_NAME || ' ' || USPR.LAST_NAME || ', ' || USPR.USER_NAME AS PROCESSOR,
+                    POS.SHOPPING_CART
+		         FROM "REQUEST" RQ
+                     LEFT JOIN "PURCHASE_ORDER_SERVICE" POS ON RQ.REQUEST_ID = POS.REQUEST_ID
+                     INNER JOIN "USER" US ON RQ.CREATED_USER_ID = US.USER_ID
+                     INNER JOIN "HL3" HL3 ON RQ.HL3_ID = HL3.HL3_ID
+                     INNER JOIN "ENTITY" ET ON RQ.ENTITY_ID = ET.ENTITY_ID
+                     LEFT JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI ON VAI.VENDOR_ADDITIONAL_INFORMATION_ID = RQ.VENDOR_ADDITIONAL_INFORMATION_ID
+                     LEFT JOIN "VENDOR" V ON RQ.VENDOR_ID = V.VENDOR_ID
+                     LEFT JOIN "NON_SAP_VENDOR" NSV ON RQ.NON_SAP_VENDOR_ID = NSV.NON_SAP_VENDOR_ID
+                     INNER JOIN "STAGE" STG ON RQ.STAGE_ID = STG.STAGE_ID AND STG.ENABLED = 1 AND STG.DELETED = 0
+                     INNER JOIN "REQUEST_STATUS" ST ON RQ.STATUS_ID = ST.STATUS_ID AND ST.ENABLED = 1 AND ST.DELETED = 0
+                     LEFT JOIN "MATERIAL" MT ON RQ.MATERIAL_ID = MT.MATERIAL_ID
+                     LEFT JOIN "INFRASTRUCTURE_OF_WORK" IOW ON RQ.INFRASTRUCTURE_OF_WORK_ID = IOW.INFRASTRUCTURE_OF_WORK_ID
+                     LEFT JOIN "LOCATION_OF_WORK" LOW ON RQ.LOCATION_OF_WORK_ID = LOW.LOCATION_OF_WORK_ID
+                     INNER JOIN "CRT_TYPE" CTY ON RQ.CRT_TYPE_ID = CTY.CRT_TYPE_ID AND CTY.ENABLED = 1 AND CTY.DELETED = 0
+                     INNER JOIN "REQUEST_COST_OBJECT" RCO ON RQ.REQUEST_ID = RCO.REQUEST_ID AND RCO.ENABLED = 1 AND RCO.DELETED = 0
+                     LEFT JOIN :va_message VAM ON RQ.REQUEST_ID = VAM.REQUEST_ID
+                     INNER JOIN :va_user_role USR ON USR.ENABLED = 1
+                     LEFT JOIN "USER" USPR ON USPR.USER_ID = RQ.PROCESSOR_USER_ID
+                 WHERE ((USR.ROLE_ID != 2
+                             AND RQ.ENABLED = 1
+                             AND RQ.DELETED = 0
+                         )
+                         OR (USR.ROLE_ID = 2
+                                 AND ((USR.HL3_ID = RQ.HL3_ID
+                                             AND RQ.CREATED_USER_ID = in_user_id
+                                     ) OR (USR.HL3_ID IS NULL AND RQ.CREATED_USER_ID = in_user_id)
+                                 )
+                                 AND RQ.ENABLED = 1
+                                 AND RQ.DELETED = 0
+                             ))
+                         AND RQ.STATUS_ID != 5 AND RQ.STATUS_ID != 6
+                 ORDER BY RQ.REQUEST_ID DESC;
 	END;

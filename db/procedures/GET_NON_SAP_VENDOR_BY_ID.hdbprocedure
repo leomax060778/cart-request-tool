@@ -1,11 +1,11 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_NON_SAP_VENDOR_BY_ID" (
-IN in_non_sap_vendor_id bigint,
+IN in_non_sap_vendor_id BIGINT,
 OUT out_result TABLE (
-		non_sap_vendor_id bigint, 
-		entity_id bigint,
-		contact_name nvarchar (255), 
-		contact_email nvarchar (255), 
-		contact_phone nvarchar (255)
+		NON_SAP_VENDOR_ID BIGINT,
+		ENTITY_ID BIGINT,
+		CONTACT_NAME NVARCHAR(255),
+		CONTACT_EMAIL NVARCHAR(255),
+		CONTACT_PHONE NVARCHAR(255)
 		)
 )
 LANGUAGE SQLSCRIPT
@@ -13,14 +13,11 @@ SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 READS SQL DATA AS
 BEGIN
-out_result = SELECT 
-			NSV.non_sap_vendor_id, 
-			NSV.entity_id,
-			NSV.contact_name, 
-			NSV.contact_email, 
-			NSV.contact_phone
+out_result = SELECT NSV.NON_SAP_VENDOR_ID,
+                    NSV.ENTITY_ID,
+                    NSV.CONTACT_NAME,
+                    NSV.CONTACT_EMAIL,
+                    NSV.CONTACT_PHONE
          FROM "NON_SAP_VENDOR" NSV
-         WHERE NSV.NON_SAP_VENDOR_ID = in_non_sap_vendor_id 
-         	AND NSV.ENABLED = 1 
-         	AND NSV.DELETED = 0;
+         WHERE NSV.NON_SAP_VENDOR_ID = in_non_sap_vendor_id;
 END; 

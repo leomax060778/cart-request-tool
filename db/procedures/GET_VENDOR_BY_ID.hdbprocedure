@@ -19,7 +19,8 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_VENDOR_BY_ID
 						USED INTEGER,
 						VENDOR_REQUEST_RELATED TINYINT,
 						VENDOR_REQUEST_ID BIGINT,
-						DATA_PROTECTION_ENABLED TINYINT
+						DATA_PROTECTION_ENABLED TINYINT,
+                        MASKED_VENDOR TINYINT
 						)
 )
 LANGUAGE SQLSCRIPT
@@ -46,12 +47,13 @@ BEGIN
                       COUNT(DISTINCT RQ.REQUEST_ID) AS USED,
                       (CASE WHEN VR.VENDOR_ID IS NOT NULL THEN 1 ELSE 0 END) AS VENDOR_REQUEST_RELATED,
                       VR.VENDOR_REQUEST_ID,
-                      V.DATA_PROTECTION_ENABLED
+                      V.DATA_PROTECTION_ENABLED,
+                      VCI.MASKED_VENDOR
                FROM "VENDOR" V
-                INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI 
-			         	ON V.VENDOR_ID = VAI.VENDOR_ID 
-			         		AND VAI.ENABLED = 1 
-			         		AND VAI.DELETED = 0 
+                INNER JOIN "VENDOR_ADDITIONAL_INFORMATION" VAI
+			         	ON V.VENDOR_ID = VAI.VENDOR_ID
+			         		AND VAI.ENABLED = 1
+			         		AND VAI.DELETED = 0
 			         		AND (
 			         		--Get the vendor additional information with the most recent modified date
 			         			(VAI.MODIFIED_DATE_TZ = (SELECT MAX(MODIFIED_DATE_TZ) FROM "VENDOR_ADDITIONAL_INFORMATION" where vendor_id = VAI.VENDOR_ID))
@@ -82,5 +84,6 @@ BEGIN
                         V.STATUS_ID,
                         VR.VENDOR_ID,
                         VR.VENDOR_REQUEST_ID,
-                        V.DATA_PROTECTION_ENABLED;
+                        V.DATA_PROTECTION_ENABLED,
+                        VCI.MASKED_VENDOR;
 END;

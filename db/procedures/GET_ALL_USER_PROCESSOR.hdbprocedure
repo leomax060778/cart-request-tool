@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_USER_PROCESSOR" (
+    OUT out_result TABLE ( USER_ID BIGINT,
+                           USER_NAME NVARCHAR(255),
+                           FIRST_NAME NVARCHAR(255),
+                           LAST_NAME NVARCHAR(255),
+                           ROLE_ID BIGINT,
+                           ROLE_NAME NVARCHAR(255)
+    )
+ )
+   LANGUAGE SQLSCRIPT
+   SQL SECURITY INVOKER
+   DEFAULT SCHEMA "CART_REQUEST_TOOL"
+   READS SQL DATA AS
+BEGIN
+    out_result = SELECT US.USER_ID,
+                        US.USER_NAME,
+                        US.FIRST_NAME,
+                        US.LAST_NAME,
+                        RL.ROLE_ID,
+                        RL.NAME AS ROLE_NAME
+                 FROM "USER" US
+                     INNER JOIN "USER_ROLE" USR ON US.USER_ID = USR.USER_ID AND USR.ROLE_ID != 2 AND USR.ROLE_ID != 4
+                     INNER JOIN "ROLE" RL ON USR.ROLE_ID = RL.ROLE_ID
+                 WHERE US.ENABLED = 1 AND US.DATA_PROTECTION_ENABLED = 0
+                 ORDER BY US.USER_NAME;
+END

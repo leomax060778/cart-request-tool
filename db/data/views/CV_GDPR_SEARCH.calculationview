@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="CV_GDPR_SEARCH" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="reportingEnabled" calculationScenarioType="SCRIPT_BASED" dataCategory="CUBE" enforceSqlExecution="false" executionSemantic="UNDEFINED" scriptParametersCaseSensitive="true">
+  <descriptions defaultDescription="CV_GDPR_SEARCH"/>
+  <localVariables>
+    <variable id="in_search_criteria" parameter="true">
+      <descriptions defaultDescription="in_search_criteria"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="''" length="255" mandatory="true">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <dataSources/>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:SqlScriptView" id="Script_View">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute datatype="BIGINT" id="DATA_SUBJECT_ID"/>
+        <viewAttribute datatype="NVARCHAR" id="USERNAME" length="255"/>
+        <viewAttribute datatype="NVARCHAR" id="FIRST_NAME" length="255"/>
+        <viewAttribute datatype="NVARCHAR" id="LAST_NAME" length="255"/>
+        <viewAttribute datatype="NVARCHAR" id="CONTACT_NAME" length="511"/>
+        <viewAttribute datatype="TINYINT" id="ENABLED"/>
+        <viewAttribute datatype="TINYINT" id="DELETED"/>
+        <viewAttribute datatype="NVARCHAR" id="SUBJECT_TYPE" length="63"/>
+        <viewAttribute datatype="NVARCHAR" id="KEY_ID" length="63"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <localVariable>#in_search_criteria</localVariable>
+      <definition> 
+ /********* Begin Procedure Script ************/ 
+ BEGIN 
+	var_user_data = SELECT US.USER_ID, US.USER_NAME, US.FIRST_NAME, US.LAST_NAME, US.ENABLED, US.DELETED
+ 					FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_GDPR_SEARCH_USER&quot; US
+					WHERE (
+							(LENGTH(:in_search_criteria) > 0)
+									AND (
+										CONTAINS(US.USER_NAME, :in_search_criteria)
+				                 		OR CONTAINS(US.FIRST_NAME, :in_search_criteria, FUZZY(0.8))
+				                 		OR CONTAINS(US.LAST_NAME, :in_search_criteria, FUZZY(0.8))
+		                 			)
+	                 	  ) OR (
+	                 	    (LENGTH(:in_search_criteria) = 0)
+	                 				AND US.USER_ID IS NOT NULL
+	                 	  )
+ 					ORDER BY US.USER_ID;
+ 					
+	var_vendor_contact = SELECT VC.VENDOR_ID, VC.VENDOR_CONTACT_INFORMATION_ID, VC.NAME, VC.ENABLED, VC.DELETED
+						FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_GDPR_SEARCH_VENDOR_CONTACT&quot; VC
+						WHERE (
+								(LENGTH(:in_search_criteria) > 0)
+										AND (
+											CONTAINS(VC.NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+	                    	   				OR CONTAINS(VC.NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+	                    	   			)
+                    	   	  ) OR (
+							  	(LENGTH(:in_search_criteria) = 0)
+							  			AND VC.VENDOR_CONTACT_INFORMATION_ID IS NOT NULL
+							  )
+						ORDER BY VC.VENDOR_CONTACT_INFORMATION_ID;
+
+	var_change_vendor_contact = SELECT CVC.CHANGE_VENDOR_REQUEST_ID, CVC.VENDOR_CONTACT_NAME
+								FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_GDPR_SEARCH_CHANGE_CONTACT&quot; CVC
+								WHERE (
+										(LENGTH(:in_search_criteria) > 0)
+												AND (
+													CONTAINS(CVC.VENDOR_CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+	                    	   						OR CONTAINS(CVC.VENDOR_CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+	                    	   					)
+                    	   	  		   ) OR (
+                    	   	  		   	(LENGTH(:in_search_criteria) = 0)
+												AND CVC.CHANGE_VENDOR_REQUEST_ID IS NOT NULL
+                    	   	  		   )
+								ORDER BY CVC.CHANGE_VENDOR_REQUEST_ID;
+ 					
+	var_extend_vendor_contact = SELECT EVC.EXTEND_VENDOR_REQUEST_ID, EVC.CONTACT_NAME
+								FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_GDPR_SEARCH_EXTEND_CONTACT&quot; EVC
+								WHERE (
+										(LENGTH(:in_search_criteria) > 0)
+												AND (
+													CONTAINS(EVC.CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+	                    	   						OR CONTAINS(EVC.CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                    	   						)
+                    	   	  		   ) OR (
+                    	   	  		   	(LENGTH(:in_search_criteria) = 0)
+												AND EVC.EXTEND_VENDOR_REQUEST_ID IS NOT NULL
+                    	   	  		   )
+								ORDER BY EVC.EXTEND_VENDOR_REQUEST_ID;
+								
+	var_request_contact = SELECT RQ.REQUEST_ID, RQ.VENDOR_CONTACT_INFORMATION_ID, RQ.NON_SAP_VENDOR_ID, RQ.ALTERNATIVE_VENDOR_NAME, RQ.CONTACT_NAME, RQ.NAME, RQ.ENABLED, RQ.DELETED
+								FROM &quot;_SYS_BIC&quot;.&quot;xscartrequesttool.db.data.views/AT_GDPR_SEARCH_REQUEST_CONTACT&quot; RQ
+								WHERE (
+                                        RQ.VENDOR_CONTACT_INFORMATION_ID IS NULL AND RQ.NON_SAP_VENDOR_ID IS NULL
+                                            AND (
+                                                (LENGTH(:in_search_criteria) > 0)
+                                                        AND (
+                                                            CONTAINS(RQ.ALTERNATIVE_VENDOR_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                            OR CONTAINS(RQ.ALTERNATIVE_VENDOR_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                        )
+                                                )
+                                      ) OR (
+                                        RQ.VENDOR_CONTACT_INFORMATION_ID IS NOT NULL AND RQ.NON_SAP_VENDOR_ID IS NULL
+                                            AND (
+                                                (LENGTH(:in_search_criteria) > 0)
+                                                        AND (
+                                                            CONTAINS(RQ.NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                            OR CONTAINS(RQ.NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                        )
+                                                )
+                                      ) OR (
+                                        RQ.VENDOR_CONTACT_INFORMATION_ID IS NULL AND RQ.NON_SAP_VENDOR_ID IS NOT NULL
+                                            AND (
+                                                (LENGTH(:in_search_criteria) > 0)
+                                                        AND (
+                                                            CONTAINS(RQ.CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                            OR CONTAINS(RQ.CONTACT_NAME, :in_search_criteria, FUZZY(0.8, 'similarCalculationMode=substringsearch'))
+                                                        )
+                                                )
+                                      ) OR (
+                                        (LENGTH(:in_search_criteria) = 0)
+                                            AND RQ.REQUEST_ID = 0
+                                      )
+								ORDER BY RQ.REQUEST_ID;
+								
+	var_sub_out = SELECT VUS.USER_ID AS DATA_SUBJECT_ID,
+						VUS.USER_NAME AS USERNAME,
+						VUS.FIRST_NAME,
+						VUS.LAST_NAME,
+						'' AS CONTACT_NAME,
+						VUS.ENABLED,
+						VUS.DELETED,
+						'User' AS SUBJECT_TYPE,
+						'USER_ID' AS KEY_ID
+				 FROM :var_user_data VUS
+				 UNION
+				 SELECT VVC.VENDOR_CONTACT_INFORMATION_ID AS DATA_SUBJECT_ID,
+				 		'' AS USERNAME,
+				 		'' AS FIRST_NAME,
+						'' AS LAST_NAME,
+						VVC.NAME AS CONTACT_NAME,
+				 		VVC.ENABLED,
+				 		VVC.DELETED,
+				 		'Vendor Contact' AS SUBJECT_TYPE,
+						'VENDOR_CONTACT_INFORMATION_ID' AS KEY_ID
+				 FROM :var_vendor_contact VVC
+				 UNION
+				 SELECT VCVC.CHANGE_VENDOR_REQUEST_ID AS DATA_SUBJECT_ID,
+				 		'' AS USERNAME,
+				 		'' AS FIRST_NAME,
+						'' AS LAST_NAME,
+				 		VCVC.VENDOR_CONTACT_NAME AS CONTACT_NAME,
+				 		1 AS ENABLED,
+				 		0 AS DELETED,
+				 		'Change Vendor Contact' AS SUBJECT_TYPE,
+						'CHANGE_VENDOR_REQUEST_ID' AS KEY_ID
+				 FROM :var_change_vendor_contact VCVC
+				 UNION
+				 SELECT VEVC.EXTEND_VENDOR_REQUEST_ID AS DATA_SUBJECT_ID,
+				 		'' AS USERNAME,
+				 		'' AS FIRST_NAME,
+						'' AS LAST_NAME,
+				 		VEVC.CONTACT_NAME AS CONTACT_NAME,
+				 		1 AS ENABLED,
+				 		0 AS DELETED,
+				 		'Extend Vendor Contact' AS SUBJECT_TYPE,
+						'EXTEND_VENDOR_REQUEST_ID' AS KEY_ID
+				 FROM :var_extend_vendor_contact VEVC
+				 UNION
+				 SELECT VRQ.REQUEST_ID AS DATA_SUBJECT_ID,
+				 		'' AS USERNAME,
+				 		'' AS FIRST_NAME,
+						'' AS LAST_NAME,
+				 		(CASE WHEN (VRQ.VENDOR_CONTACT_INFORMATION_ID IS NULL AND VRQ.NON_SAP_VENDOR_ID IS NULL)
+				 			  THEN VRQ.ALTERNATIVE_VENDOR_NAME
+				 			  ELSE (CASE WHEN (VRQ.NON_SAP_VENDOR_ID IS NOT NULL)
+				 			 		     THEN VRQ.CONTACT_NAME
+						 				 ELSE VRQ.NAME 
+						 		    END)
+				 			  END) AS CONTACT_NAME,
+				 		(CASE WHEN (VRQ.VENDOR_CONTACT_INFORMATION_ID IS NOT NULL) THEN VRQ.ENABLED ELSE 1 END) AS ENABLED,
+				 		(CASE WHEN (VRQ.VENDOR_CONTACT_INFORMATION_ID IS NOT NULL) THEN VRQ.DELETED ELSE 0 END) AS DELETED,
+				 		(CASE WHEN (VRQ.VENDOR_CONTACT_INFORMATION_ID IS NULL AND VRQ.NON_SAP_VENDOR_ID IS NULL)
+				 			  THEN 'Alternative Vendor Contact'
+				 			  ELSE (CASE WHEN (VRQ.NON_SAP_VENDOR_ID IS NOT NULL)
+				 			 		     THEN 'Non SAP Vendor Contact'
+						 				 ELSE 'Vendor Contact'
+						 		    END)
+				 			  END) AS SUBJECT_TYPE,
+						(CASE WHEN (VRQ.VENDOR_CONTACT_INFORMATION_ID IS NULL AND VRQ.NON_SAP_VENDOR_ID IS NULL)
+				 			  THEN 'ALTERNATIVE_CONTACT'
+				 			  ELSE (CASE WHEN (VRQ.NON_SAP_VENDOR_ID IS NOT NULL)
+				 			 		     THEN 'NON_SAP_VENDOR'
+						 				 ELSE 'VENDOR_CONTACT'
+						 		    END)
+				 			  END) AS KEY_ID
+				 FROM :var_request_contact VRQ;
+				 
+	var_out = SELECT DATA_SUBJECT_ID,
+					 USERNAME,
+				 	 FIRST_NAME,
+					 LAST_NAME,
+					 CONTACT_NAME,
+					 ENABLED,
+					 DELETED,
+					 SUBJECT_TYPE,
+					 KEY_ID
+				FROM :var_sub_out;
+
+END /********* End Procedure Script ************/</definition>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Script_View">
+    <descriptions/>
+    <attributes>
+      <attribute id="USERNAME" order="2">
+        <descriptions defaultDescription="USERNAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="USERNAME"/>
+      </attribute>
+      <attribute id="FIRST_NAME" order="3">
+        <descriptions defaultDescription="FIRST_NAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="FIRST_NAME"/>
+      </attribute>
+      <attribute id="LAST_NAME" order="4">
+        <descriptions defaultDescription="LAST_NAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="LAST_NAME"/>
+      </attribute>
+      <attribute id="CONTACT_NAME" order="5">
+        <descriptions defaultDescription="COMPLETE_NAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="CONTACT_NAME"/>
+      </attribute>
+      <attribute id="SUBJECT_TYPE" order="8">
+        <descriptions defaultDescription="SUBJECT_TYPE"/>
+        <keyMapping columnObjectName="Script_View" columnName="SUBJECT_TYPE"/>
+      </attribute>
+      <attribute id="KEY_ID" order="9">
+        <descriptions defaultDescription="KEY_ID"/>
+        <keyMapping columnObjectName="Script_View" columnName="KEY_ID"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures>
+      <measure id="DATA_SUBJECT_ID" order="1" aggregationType="sum" measureType="simple">
+        <descriptions defaultDescription="DATA_SUBJECT_ID"/>
+        <measureMapping columnObjectName="Script_View" columnName="DATA_SUBJECT_ID"/>
+      </measure>
+      <measure id="ENABLED" order="6" aggregationType="sum" measureType="simple">
+        <descriptions defaultDescription="ENABLED"/>
+        <measureMapping columnObjectName="Script_View" columnName="ENABLED"/>
+      </measure>
+      <measure id="DELETED" order="7" aggregationType="sum" measureType="simple">
+        <descriptions defaultDescription="DELETED"/>
+        <measureMapping columnObjectName="Script_View" columnName="DELETED"/>
+      </measure>
+    </baseMeasures>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="40" y="85"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

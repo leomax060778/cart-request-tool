@@ -7,6 +7,7 @@ var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessVendorDP = mapper.getVendorDataProtection();
 var businessVendorInquiryMessage = mapper.getVendorMessage();
+var businessVendorChangeColumn = mapper.getVendorRequestInquiryChangedColumn();
 var request = mapper.getVendorRequest();
 var inquiry = mapper.getVendorInquiry();
 var extend = mapper.getExtendVendorRequest();
@@ -124,13 +125,12 @@ function getVendorInquiryById(inquiryId, userId) {
     }
 
     if (!validateAccess(pathName.VENDOR_INQUIRY_MAIL, inquiryId)) {
-        throw ErrorLib.getErrors().BadRequest(
-            "",
-            "", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Inquiry"}');
+        throw ErrorLib.getErrors().BadRequest("", "", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Inquiry"}');
     }
 
     var roleData = userRole.getUserRoleByUserId(userId);
     var resInquiry = dataStatus.getVendorInquiryById(inquiryId);
+    var changedFields = businessVendorChangeColumn.getVendorInquiryChangedColumnsByVendorInquiryId(inquiryId);
 
     if (validatePermissionByUserRole(roleData[0], resInquiry)) {
         resInquiry = JSON.parse(JSON.stringify(resInquiry));
@@ -143,6 +143,7 @@ function getVendorInquiryById(inquiryId, userId) {
             resInquiry.ATTACHMENTS = businessAttachmentVendor.getAttachmentVendorById(objInquiry);
             resInquiry.INQUIRY_TEXT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
         }
+        resInquiry.CHANGED_FIELDS = changedFields;
         return resInquiry;
     } else {
         throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to see this Vendor Inquiry.");
@@ -196,7 +197,7 @@ function getChangeVendorRequestByIdManual(changeId, userId) {
     var roleData = userRole.getUserRoleByUserId(userId);
     var resChange = dataStatus.getChangeVendorRequestByIdManual(changeId);
     resChange = JSON.parse(JSON.stringify(resChange));
-
+    resChange.CHANGED_FIELDS = businessVendorChangeColumn.getChangeVendorRequestChangedColumnsByChangeVendorRequestId(changeId);
     if (validatePermissionByUserRole(roleData[0], resChange)) {
 
         if (resChange && resChange.CHANGE_VENDOR_REQUEST_ID) {
@@ -226,14 +227,13 @@ function getExtendVendorRequestById(extendId, userId) {
     }
 
     if (!validateAccess(pathName.EXTEND_VENDOR_MAIL, extendId)) {
-        throw ErrorLib.getErrors().BadRequest(
-            "",
-            "", '{"NOT_AVAILABLE_IN_PROCESSING": "Extend Vendor Request"}');
+        throw ErrorLib.getErrors().BadRequest("", "", '{"NOT_AVAILABLE_IN_PROCESSING": "Extend Vendor Request"}');
     }
 
     var roleData = userRole.getUserRoleByUserId(userId);
     var resExtend = dataStatus.getExtendVendorRequestById(extendId);
     resExtend = JSON.parse(JSON.stringify(resExtend));
+    resExtend.CHANGED_FIELDS = businessVendorChangeColumn.getExtendVendorRequestChangedColumnsByExtendVendorRequestId(extendId);
 
     if (validatePermissionByUserRole(roleData[0], resExtend)) {
         if (resExtend && resExtend.EXTEND_VENDOR_REQUEST_ID) {
@@ -270,10 +270,10 @@ function getVendorRequestById(requestId, userId) {
     }
 
     if (!validateAccess(pathName.VENDOR_REQUEST_MAIL, requestId)) {
-        throw ErrorLib.getErrors().BadRequest(
-            "",
-            "", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Request"}');
+        throw ErrorLib.getErrors().BadRequest("", "", '{"NOT_AVAILABLE_IN_PROCESSING": "Vendor Request"}');
     }
+
+    var changedFields = businessVendorChangeColumn.getVendorRequestChangedColumnsByVendorRequestId(requestId);
 
     var resRequest = dataStatus.getVendorRequestById(requestId);
     resRequest = JSON.parse(JSON.stringify(resRequest));
@@ -298,6 +298,8 @@ function getVendorRequestById(requestId, userId) {
             resRequest.DATA_PROTECTION = resDataProtection;
         }
 
+        resRequest.CHANGED_FIELDS = changedFields;
+
         return resRequest;
     } else {
         throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to see this Vendor Request.");
@@ -309,6 +311,10 @@ function updateVendorInquiryStatus(objVendorInquiry, userId) {
     if (validateUpdateVendorInquiryStatus(objVendorInquiry, userId)) {
         if (!inquiry.existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
+        }
+
+        if (Number(objVendorInquiry.STATUS_ID) !== viStatusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteVendorInquiryChangedColumn(objVendorInquiry.VENDOR_INQUIRY_ID);
         }
 
         if (Number(objVendorInquiry.STATUS_ID) === viStatusMap.COMPLETED) {
@@ -326,6 +332,9 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
         if (!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
         }
+        if (Number(objChangeVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteChangeVendorRequestChangedColumn(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID);
+        }
         if (Number(objChangeVendorRequest.STATUS_ID) === statusMap.APPROVED) {
             return dataStatus.updateChangeVendorRequestStatusCompleted(objChangeVendorRequest, userId);
         } else {
@@ -339,6 +348,9 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
     if (validateUpdateExtendVendorRequest(objExtendVendorRequest, userId)) {
         if (!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
+        }
+        if (Number(objExtendVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteExtendVendorRequestChangedColumn(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID);
         }
         if (Number(Number(objExtendVendorRequest.STATUS_ID)) === statusMap.APPROVED) {
             return dataStatus.updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId);
@@ -355,6 +367,9 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
         }
         vendor.updateManualVendorStatus(objVendorRequest, userId);
+        if (Number(objVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteVendorRequestChangedColumn(objVendorRequest.VENDOR_REQUEST_ID, userId);
+        }
         switch (Number(objVendorRequest.STATUS_ID)) {
             case statusMap.APPROVED:
                 if (!vendor.existVendor(objVendorRequest.VENDOR_ID)) {
@@ -376,6 +391,9 @@ function updateVendorInquiryStatusManual(objVendorInquiry, userId) {
         if (!inquiry.existVendorInquiry(objVendorInquiry.VENDOR_INQUIRY_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
         }
+        if (Number(objVendorInquiry.STATUS_ID) !== viStatusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteVendorInquiryChangedColumn(objVendorInquiry.VENDOR_INQUIRY_ID);
+        }
         return dataStatus.updateVendorInquiryStatusManual(objVendorInquiry, userId);
     }
 }
@@ -385,6 +403,9 @@ function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
     if (validateUpdateChangeVendorRequest(objChangeVendorRequest, userId)) {
         if (!change.existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
+        }
+        if (Number(objChangeVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteChangeVendorRequestChangedColumn(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID);
         }
         if (Number(objChangeVendorRequest.STATUS_ID) === statusMap.APPROVED) {
             return dataStatus.updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, userId);
@@ -400,6 +421,9 @@ function updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId) {
         if (!extend.existExtendVendorRequest(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Extend Vendor Request " + objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID + " does not exist");
         }
+        if (Number(objExtendVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteExtendVendorRequestChangedColumn(objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID);
+        }
         if (Number(objExtendVendorRequest.STATUS_ID) === statusMap.APPROVED) {
             return dataStatus.updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, userId);
         } else {
@@ -413,6 +437,9 @@ function updateVendorRequestStatusManual(objVendorRequest, userId) {
     if (validateUpdateVendorRequestStatus(objVendorRequest, userId)) {
         if (!request.existVendorRequest(objVendorRequest.VENDOR_REQUEST_ID, userId)) {
             throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Request " + objVendorRequest.VENDOR_REQUEST_ID + " does not exist");
+        }
+        if (Number(objVendorRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            businessVendorChangeColumn.deleteVendorRequestChangedColumn(objVendorRequest.VENDOR_REQUEST_ID, userId);
         }
         if (Number(objVendorRequest.STATUS_ID) === statusMap.APPROVED) {
             return dataStatus.updateVendorRequestStatusCompletedManual(objVendorRequest, userId);
@@ -657,8 +684,13 @@ function validateUpdateVendorRequestStatus(objVendorRequest, userId) {
         'STATUS_ID',
         'PREVIOUS_STATUS_ID'];
 
-    if (objVendorRequest.STATUS_ID === statusMap.IN_PROCESS || objVendorRequest.STATUS_ID === statusMap.APPROVED) {
+    if (objVendorRequest.STATUS_ID === statusMap.APPROVED) {
         keys.push('RECEIVER_YVC_REQUEST');
+        keys.push('RECEIVER_DATE_SUBMITTED');
+    }
+
+    if (objVendorRequest.STATUS_ID === statusMap.IN_PROCESS) {
+        keys.push('RECEIVER_DATE_COMPLETED');
     }
 
     if (!objVendorRequest) {
@@ -712,6 +744,12 @@ function validateType(key, value) {
             valid = (!value) || (!isNaN(value) && value > 0);
             break;
         case 'RECEIVER_YVC_REQUEST':
+            valid = (!value) || (value.length > 0 && value.length <= 255);
+            break;
+        case 'RECEIVER_DATE_SUBMITTED':
+            valid = (!value) || (value.length > 0 && value.length <= 255);
+            break;
+        case 'RECEIVER_DATE_COMPLETED':
             valid = (!value) || (value.length > 0 && value.length <= 255);
             break;
         case 'PREVIOUS_STATUS_ID':

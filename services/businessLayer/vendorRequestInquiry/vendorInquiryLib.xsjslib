@@ -6,6 +6,7 @@ var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var businessVendorInquiryMessage =  mapper.getVendorMessage();
+var businessVendorChangeColumn = mapper.getVendorRequestInquiryChangedColumn();
 
 var mail = mapper.getMail();
 var vendorInquiryMailSend = mapper.getVendorInquiryMailSend();
@@ -74,7 +75,7 @@ function getVendorInquiryById(vendorInquiryId, userId, edition_mode) {
 	    if (resInquiry.VENDOR_INQUIRY_ID) {
 	    	resInquiry.MESSAGE_CONTENT = encodeURIComponent(vendorInquiryText[lastVendorInquiryMessage].MESSAGE_CONTENT);
 	    }
-	    
+
 	    return resInquiry;
     }else{
 		throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission to Read/View this Vendor Inquiry.");
@@ -88,7 +89,7 @@ function getVendorInquiryByIdManual(vendorInquiryId, userId) {
         throw ErrorLib.getErrors().BadRequest("The Parameter vendorInquiryId is not found", "", vendorInquiryId);
     }
     var resInquiry = inquiry.getVendorInquiryByIdManual(vendorInquiryId, permissionData, userId);
-    
+
     resInquiry = JSON.parse(JSON.stringify(resInquiry));
     if(resInquiry){
     	objInquiry.VENDOR_TYPE_ID = vendorType.VENDOR_INQUIRY;
@@ -125,8 +126,8 @@ function insertVendorInquiryManual(objVendorInquiry, userId) {
 				attachment.VENDOR_TYPE_ID = objVendorInquiry.VENDOR_TYPE_ID;
 				attachment.VENDOR_ID = result_id;
 				businessAttachmentVendor.insertManualAttachmentVendor(attachment, userId);
-	   		});    		
-		}		
+	   		});
+		}
 		objVendorInquiry.VENDOR_INQUIRY_ID = result_id;
 	    var resMessage = message.insertVendorInquiryMessage(objVendorInquiry, userId);
 	    var mail = sendSubmitMail(result_id, userId);
@@ -151,6 +152,10 @@ function updateVendorInquiry(objVendorInquiry, userId) {
         throw ErrorLib.getErrors().CustomError("", "", "The object Vendor Inquiry " + objVendorInquiry.VENDOR_INQUIRY_ID + " does not exist");
     }
     validateParams(objVendorInquiry.VENDOR_INQUIRY_ID, userId);
+
+    if (Object.keys(objVendorInquiry.CHANGED_FIELDS).length) {
+        businessVendorChangeColumn.insertVendorInquiryChangedColumn(objVendorInquiry, userId);
+    }
 
     if (Number(objVendorInquiry.PREVIOUS_STATUS_ID) !== statusInquiryMap.TO_BE_CHECKED) {
         objVendorInquiry.STATUS_ID = statusInquiryMap.TO_BE_CHECKED;
@@ -184,12 +189,12 @@ function updateVendorInquiryAttachments(reqBody, user_id){
     		params.ATTACHMENT_ID = attachment.ATTACHMENT_ID;
     		businessAttachmentVendor.insertManualAttachmentVendor(params, user_id);
     	});
-		
+
 	} else if(original_attachments.length > 0 && originalAttachmentsToUpdate.length > 0){
-		
+
 	    var insertOriginalAttachments = [];
 	    var deleteOriginalAttachments = [];
-	    
+
 	    //DELETE
 	    original_attachments.forEach(function (o_attachment) {
 	        var result = true;
@@ -207,7 +212,7 @@ function updateVendorInquiryAttachments(reqBody, user_id){
 	        	deleteOriginalAttachments.push(o_attachment);
 	        }
 	    });
-	    
+
 	    //INSERT
 	    originalAttachmentsToUpdate.forEach(function (newAttach) {
 	        var result = true;
@@ -242,7 +247,7 @@ function updateVendorInquiryAttachments(reqBody, user_id){
 	    	});
 	    }
 	}
-	
+
 }
 
 //Check if the inquiry exists
@@ -270,7 +275,7 @@ function validateInsertVendorInquiry(objVendorInquiry, userId) {
                     errors[key] = objVendorInquiry[key];
                     throw BreakException;
                 }
-            
+
         });
         isValid = true;
     } catch (e) {

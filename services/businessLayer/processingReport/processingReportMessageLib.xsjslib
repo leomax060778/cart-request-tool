@@ -178,12 +178,13 @@ function insertRequestMessage(objRequest, userId) {
 	        throw ErrorLib.getErrors().CustomError("", "", "The request with the id " + objRequest.REQUEST_ID + " does not exist");
 	    }
 	    if (objRequest.MESSAGE_TYPE_ID && !messageType.existMessageType(objRequest.MESSAGE_TYPE_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "", "The return type with the id " + objRequest.MESSAGE_TYPE_ID + " does not exist");
+	        throw ErrorLib.getErrors().CustomError("", "", "The message type with the id " + objRequest.MESSAGE_TYPE_ID + " does not exist");
 	    }
 	    if (objRequest.SUBJECT_ID && !existSubject(objRequest.SUBJECT_ID)) {
-	        throw ErrorLib.getErrors().CustomError("", "", "The issue type with the id " + objRequest.SUBJECT_ID + " does not exist");
+	        throw ErrorLib.getErrors().CustomError("", "", "The subject with the id " + objRequest.SUBJECT_ID + " does not exist");
 	    }
 	    if (Number(objRequest.STATUS_ID) > 0 && !objRequest.CANCEL_MESSAGE){
+	    	objRequest.PROCESSOR_ID = userId;
 			statusRequest.updateRequestStatusManual(objRequest, userId);
 		}
 	    

@@ -13,7 +13,6 @@ var material = mapper.getMaterial();
 var businessUser = mapper.getUser();
 var catalog = mapper.getCatalog();
 var special = mapper.getDataSpecialRequest();
-var budgetYear = mapper.getBudgetYear();
 var config = mapper.getDataConfig();
 var userRole = mapper.getUserRole();
 var dataRequest = mapper.getDataRequest();
@@ -48,10 +47,9 @@ function validateAccess(request_id) {
 //Get request by status
 function getAllCartRequest(userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "requestService/handleGet/getAllRequest", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
-    var request = [];
-    request = data.getAllRequest(userId);
+    var request = data.getAllRequest(userId);
     request = JSON.parse(JSON.stringify(request));
     request.forEach(function (elem) {
         if (elem.MESSAGE_READ > 0) {
@@ -79,9 +77,7 @@ function getRequestById(requestId, userId) {
     var roleData = userRole.getUserRoleByUserId(userId);
 
     if (!validateAccess(requestId)) {
-        throw ErrorLib.getErrors().BadRequest(
-            "",
-            "cartRequestService/handleGet/getRequestById", '{"NOT_AVAILABLE_IN_PROCESSING": "Cart Request"}');
+        throw ErrorLib.getErrors().BadRequest("", "", '{"NOT_AVAILABLE_IN_PROCESSING": "Cart Request"}');
     }
 
     if (validatePermissionByUserRole(roleData[0], resRequest)) {
@@ -152,7 +148,7 @@ function getRequestById(requestId, userId) {
 
         return res;
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "cartRequestService/handleGet/getRequestById", "The user does not have permission for this Cart Request.");
+        throw ErrorLib.getErrors().Forbidden("", "", "The user does not have permission for this Cart Request.");
     }
 
 }
@@ -162,33 +158,47 @@ function getRequestDataProtection(requestId) {
     return data.getRequestDataProtection(requestId);
 }
 
+function getStage(statusId, previousStatusId) {
+    switch (Number(statusId)) {
+        case statusMap.TO_BE_CHECKED:
+            return getStageByPreviousStatusId(previousStatusId);
+        case statusMap.CHECKED:
+            return stageMap.STAGE_C;
+        case statusMap.IN_PROCESS:
+            return stageMap.STAGE_D;
+        case statusMap.RETURN_TO_REQUESTER:
+            return stageMap.STAGE_B;
+        case statusMap.APPROVED:
+            return stageMap.STAGE_E;
+        case statusMap.CANCELLED:
+            return stageMap.STAGE_F;
+        default:
+            throw ErrorLib.getErrors().CustomError("", "", "Invalid status id");
+    }
+}
+
+function getStageByPreviousStatusId(previousStatusId) {
+    switch (Number(previousStatusId)) {
+        case statusMap.APPROVED:
+            return stageMap.STAGE_E;
+        case statusMap.CANCELLED:
+            return stageMap.STAGE_F;
+        default:
+            return stageMap.STAGE_C;
+    }
+}
+
 //Update cart request status
 function updateRequestStatus(objRequest, userId) {
     if (validateUpdateRequestStatus(objRequest, userId)) {
-        if (Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED) {
-            switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
-                case statusMap.APPROVED:
-                    objRequest.STAGE_ID = stageMap.STAGE_E;
-                    break;
-                case statusMap.CANCELLED:
-                    objRequest.STAGE_ID = stageMap.STAGE_F;
-                    break;
-                default:
-                    objRequest.STAGE_ID = stageMap.STAGE_C;
-            }
-        } else if (Number(objRequest.STATUS_ID) === statusMap.CHECKED) {
-            objRequest.STAGE_ID = stageMap.STAGE_C;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS) {
-            objRequest.STAGE_ID = stageMap.STAGE_D;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER) {
-            objRequest.STAGE_ID = stageMap.STAGE_B;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.APPROVED) {
-            objRequest.STAGE_ID = stageMap.STAGE_E;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.CANCELLED) {
-            objRequest.STAGE_ID = stageMap.STAGE_F;
+        objRequest.STAGE_ID = getStage(objRequest.STATUS_ID, objRequest.PREVIOUS_STATUS_ID);
+
+        if (Number(objRequest.STATUS_ID) !== statusMap.TO_BE_CHECKED) {
+            objRequest.PROCESSOR_ID = objRequest.PROCESSOR_ID ? objRequest.PROCESSOR_ID : userId;
         } else {
-            throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
+            objRequest.PROCESSOR_ID = null;
         }
+
         businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
         businessChangedColumn.deleteServiceChangedColumn(objRequest.REQUEST_ID, userId);
         businessChangedColumn.deleteSpecialRequestChangedColumn(objRequest.REQUEST_ID, userId);
@@ -198,40 +208,20 @@ function updateRequestStatus(objRequest, userId) {
 
 //Update cart request status manual
 function updateRequestStatusManual(objRequest, userId, shoppingCart) {
-    var statusChange = false;
+    var statusChange = true;
     if (validateUpdateRequestStatus(objRequest, userId)) {
-        if (Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED) {
-            if (!shoppingCart) {
-                statusChange = true;
-            }
-            switch (Number(objRequest.PREVIOUS_STATUS_ID)) {
-                case statusMap.APPROVED:
-                    objRequest.STAGE_ID = stageMap.STAGE_E;
-                    break;
-                case statusMap.CANCELLED:
-                    objRequest.STAGE_ID = stageMap.STAGE_F;
-                    break;
-                default:
-                    objRequest.STAGE_ID = stageMap.STAGE_C;
-            }
-        } else if (Number(objRequest.STATUS_ID) === statusMap.CHECKED) {
-            statusChange = true;
-            objRequest.STAGE_ID = stageMap.STAGE_C;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.IN_PROCESS) {
-            statusChange = true;
-            objRequest.STAGE_ID = stageMap.STAGE_D;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.RETURN_TO_REQUESTER) {
-            objRequest.STAGE_ID = stageMap.STAGE_B;
-            statusChange = true;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.APPROVED) {
-            objRequest.STAGE_ID = stageMap.STAGE_E;
-            statusChange = true;
-        } else if (Number(objRequest.STATUS_ID) === statusMap.CANCELLED) {
-            objRequest.STAGE_ID = stageMap.STAGE_F;
-            statusChange = true;
+        objRequest.STAGE_ID = getStage(objRequest.STATUS_ID, objRequest.PREVIOUS_STATUS_ID);
+
+        if (shoppingCart) {
+            objRequest.PROCESSOR_ID = null;
         } else {
-            throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "Invalid status id");
+            objRequest.PROCESSOR_ID = objRequest.PROCESSOR_ID ? objRequest.PROCESSOR_ID : userId;
         }
+
+        if (Number(objRequest.STATUS_ID) === statusMap.TO_BE_CHECKED && shoppingCart) {
+            statusChange = false;
+        }
+
         if (statusChange) {
             businessChangedColumn.deleteRequestChangedColumn(objRequest.REQUEST_ID, userId);
             businessChangedColumn.deleteServiceChangedColumn(objRequest.REQUEST_ID, userId);
@@ -244,7 +234,7 @@ function updateRequestStatusManual(objRequest, userId, shoppingCart) {
 //Validate update cart request status
 function validateUpdateRequestStatus(objRequest, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "cartRequestService/handlePut/updateRequestStatus", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
@@ -255,7 +245,7 @@ function validateUpdateRequestStatus(objRequest, userId) {
         'PREVIOUS_STATUS_ID'];
 
     if (!objRequest) {
-        throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", "The object Cart Request is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Cart Request is not found");
     }
 
     try {
@@ -275,10 +265,9 @@ function validateUpdateRequestStatus(objRequest, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", e.toString());
-        }
-        else {
-            throw ErrorLib.getErrors().CustomError("", "cartRequestService/handlePut/updateRequestStatus", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
+        } else {
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -319,11 +308,11 @@ function sendMailByStatus(objRequest, mailData, userId) {
                 break;
             case '5':
             case 5:
-            	if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
-            		cartRequestMailObj.SERVICES = mailData;
-            	} else {
-            		cartRequestMailObj.SPECIAL_REQUEST = mailData;
-            	}
+                if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
+                    cartRequestMailObj.SERVICES = mailData;
+                } else {
+                    cartRequestMailObj.SPECIAL_REQUEST = mailData;
+                }
                 cartRequestMailObj.VENDOR_NAME = objRequest.VENDOR_NAME;
                 requestMailSend.sendApprovedMail(cartRequestMailObj, userId);
                 break;
@@ -336,20 +325,20 @@ function sendMailByStatus(objRequest, mailData, userId) {
 }
 
 function getRequestMailDataByRequestId(objRequest, userId) {
-	var result = {};
-	if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
-		result = data.getRequestServiceMailDataByRequestId(objRequest, userId);
-	} else {
-		result = data.getSpecialRequestMailDataByRequestId(objRequest, userId);
-	}
-	return result;
+    var result = {};
+    if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
+        result = data.getRequestServiceMailDataByRequestId(objRequest, userId);
+    } else {
+        result = data.getSpecialRequestMailDataByRequestId(objRequest, userId);
+    }
+    return result;
 }
 
 function getUrlBase() {
     return config.getUrlBase();
 }
 
-function getEmailList(inquiryMailObj) {
+function getEmailList() {
     return config.getEmailList();
 }
 

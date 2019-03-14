@@ -1,12 +1,26 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_ALL_CURRENCY" (
-	OUT out_result TABLE (currency_id bigint, country nvarchar(255), name nvarchar(255), abbreviation nvarchar(255), conversion_rate decimal(19,2), currency_year integer)
+	OUT out_result TABLE (
+	                      CURRENCY_ID BIGINT,
+	                      COUNTRY NVARCHAR(255),
+	                      NAME NVARCHAR(255),
+	                      ABBREVIATION NVARCHAR(255),
+	                      CONVERSION_RATE DECIMAL(19,2),
+	                      CURRENCY_YEAR INTEGER
+	                     )
  ) 
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-	out_result = SELECT currency_id, country, name, abbreviation, conversion_rate, currency_year
+	out_result = SELECT CURRENCY_ID,
+	                    COUNTRY,
+	                    NAME,
+	                    ABBREVIATION,
+	                    CONVERSION_RATE,
+	                    CURRENCY_YEAR
 					FROM "CURRENCY"
-						WHERE enabled = 1 AND deleted = 0 ORDER BY country ASC;
+					WHERE ENABLED = 1
+					  AND DELETED = 0
+					ORDER BY ABBREVIATION ASC;
 END;

@@ -73,39 +73,42 @@ function getPath(stringName) {
 function sendMailToRequester(crtInquiryMailObj, mailType){
     var mailObj;
     var requester = getRequesterByCRTInquiryId(crtInquiryMailObj.INQUIRY_ID, crtInquiryMailObj.CURRENT_USER_ID);
-    var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
-    var currentUser = getCurrentUserInformationByUserId(crtInquiryMailObj.CURRENT_USER_ID);
-    crtInquiryMailObj.CURRENT_USER_ROLE = currentUser.CURRENT_USER_ROLE;
-    crtInquiryMailObj.CURRENT_USER_NAME = currentUser.CURRENT_USER_NAME;
-    
-    switch(mailType){
-        case mailTypeMap.SUBMIT:
-            mailObj = crtInquiryMail.parseSubmit(crtInquiryMailObj, getBasicData(pathName, {}, true), requesterFullName);
-            break;
-        case mailTypeMap.RESUBMIT:
-            mailObj = crtInquiryMail.parseResubmitted(crtInquiryMailObj, getBasicData(pathName,{}, true), requesterFullName);
-            break;
-        case mailTypeMap.NEW_MESSAGE:
-            mailObj = crtInquiryMail.parseMessage(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.FYI_MESSAGE:        	
-            mailObj = crtInquiryMail.parseFYI(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.RETURN_TO_REQUESTER_MESSAGE:
-            mailObj = crtInquiryMail.parseReturnToRequest(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
-        case mailTypeMap.STATUS_COMPLETED:
-            mailObj = crtInquiryMail.parseCompleted(crtInquiryMailObj, getBasicData(pathName,{}, true), requesterFullName);
-            break;
-        case mailTypeMap.STATUS_CANCELLED:
-            mailObj = crtInquiryMail.parseCancelled(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
-            break;
+    if (!requester.USER_DATA_PROTECTION_STATUS_ID) {
+        var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
+
+        var currentUser = getCurrentUserInformationByUserId(crtInquiryMailObj.CURRENT_USER_ID);
+        crtInquiryMailObj.CURRENT_USER_ROLE = currentUser.CURRENT_USER_ROLE;
+        crtInquiryMailObj.CURRENT_USER_NAME = currentUser.CURRENT_USER_NAME;
+
+        switch (mailType) {
+            case mailTypeMap.SUBMIT:
+                mailObj = crtInquiryMail.parseSubmit(crtInquiryMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.RESUBMIT:
+                mailObj = crtInquiryMail.parseResubmitted(crtInquiryMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.NEW_MESSAGE:
+                mailObj = crtInquiryMail.parseMessage(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.FYI_MESSAGE:
+                mailObj = crtInquiryMail.parseFYI(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.RETURN_TO_REQUESTER_MESSAGE:
+                mailObj = crtInquiryMail.parseReturnToRequest(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+            case mailTypeMap.STATUS_COMPLETED:
+                mailObj = crtInquiryMail.parseCompleted(crtInquiryMailObj, getBasicData(pathName, {}, true), requesterFullName);
+                break;
+            case mailTypeMap.STATUS_CANCELLED:
+                mailObj = crtInquiryMail.parseCancelled(crtInquiryMailObj, getBasicData(pathName, {"PARAM": "MESSAGE"}, true), requesterFullName);
+                break;
+        }
+
+        var emailObj = mail.getJson([{address: requester.EMAIL}], mailObj.subject, mailObj.body, null, null);
+
+        mail.sendMail(emailObj, true, null);
     }
-
-    var emailObj = mail.getJson([{address: requester.EMAIL}], mailObj.subject, mailObj.body, null, null);
-
-    mail.sendMail(emailObj, true, null);
 }
 
 function sendMailToAdmin(crtInquiryMailObj, mailType){

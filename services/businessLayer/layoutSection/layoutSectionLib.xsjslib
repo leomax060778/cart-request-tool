@@ -14,7 +14,7 @@ function insertLayoutSection(objLayoutSection, userId) {
 //Get layout section by ID
 function getLayoutSectionById(layoutSectionId) {
     if (!layoutSectionId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter layoutSectionId is not found", "layoutSectionService/handleGet/getLayoutSectionById", layoutSectionId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter layoutSectionId is not found", "", layoutSectionId);
     }
     return dataSection.getLayoutSectionById(layoutSectionId);
 }
@@ -22,7 +22,7 @@ function getLayoutSectionById(layoutSectionId) {
 //Get layout section by ID manually
 function getLayoutSectionByIdManual(layoutSectionId) {
   if (!layoutSectionId) {
-      throw ErrorLib.getErrors().BadRequest("The Parameter layoutSectionId is not found", "layoutSectionService/handleGet/getLayoutSectionById", layoutSectionId);
+      throw ErrorLib.getErrors().BadRequest("The Parameter layoutSectionId is not found", "", layoutSectionId);
   }
   return dataSection.getLayoutSectionByIdManual(layoutSectionId);
 }
@@ -36,22 +36,11 @@ function getAllLayoutSection() {
 function updateLayoutSection(objLayoutSection, userId) {
     if (validateUpdateLayoutSection(objLayoutSection, userId)) {
         if (!existLayoutSection(objLayoutSection.LAYOUT_SECTION_ID)) {
-            throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handleDelete/updateLayoutSection", "The object LAYOUT_SECTION_ID " + objLayoutSection.LAYOUT_SECTION_ID + " does not exist");
+            throw ErrorLib.getErrors().CustomError("", "", "The object LAYOUT_SECTION_ID " + objLayoutSection.LAYOUT_SECTION_ID + " does not exist");
         } else {
             return dataSection.updateLayoutSection(objLayoutSection, userId);
         }
     }
-}
-
-//Delete layout section
-function deleteLayoutSection(objLayoutSection, userId) {
-    if (!objLayoutSection.LAYOUT_SECTION_ID) {
-        throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handleDelete/deleteLayoutSection", "The LAYOUT_SECTION_ID is not found");
-    }
-    if (!existLayoutSection(objLayoutSection.LAYOUT_SECTION_ID)) {
-        throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handleDelete/updateLayoutSection", "The object LAYOUT_SECTION_ID " + objLayoutSection.LAYOUT_SECTION_ID + " does not exist");
-    }
-    return dataSection.deleteLayoutSection(objLayoutSection, userId);
 }
 
 //Check if the inquiry exists
@@ -61,18 +50,18 @@ function existLayoutSection(layoutSectionId) {
 
 function validateInsertLayoutSection(objLayoutSection, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "layoutSectionService/handlePut/insertLayoutSection", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
     var BreakException = {};
     var keys = [
-        'BLOCK_TYPE',
-        'BLOCK_CONTENT'
+        'NAME',
+        'CONTENT'
     ];
 
     if (!objLayoutSection) {
-        throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePost/insertLayoutSection", "The object LayoutSection is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object LayoutSection is not found");
     }
 
     try {
@@ -92,10 +81,10 @@ function validateInsertLayoutSection(objLayoutSection, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePost/insertLayoutSection", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePost/insertLayoutSection", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -103,19 +92,18 @@ function validateInsertLayoutSection(objLayoutSection, userId) {
 
 function validateUpdateLayoutSection(objLayoutSection, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "layoutSectionService/handlePut/updateLayoutSection", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
     var isValid = false;
     var errors = {};
     var BreakException = {};
     var keys = [
         'LAYOUT_SECTION_ID',
-        'BLOCK_TYPE',
-        'BLOCK_CONTENT'
+        'CONTENT'
     ];
 
     if (!objLayoutSection) {
-        throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePut/updateLayoutSection", "The object LayoutSection is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object LayoutSection is not found");
     }
 
     try {
@@ -135,10 +123,10 @@ function validateUpdateLayoutSection(objLayoutSection, userId) {
         isValid = true;
     } catch (e) {
         if (e !== BreakException) {
-            throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePut/updateLayoutSection", e.toString());
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         else {
-            throw ErrorLib.getErrors().CustomError("", "layoutSectionService/handlePut/updateLayoutSection", JSON.stringify(errors));
+            throw ErrorLib.getErrors().CustomError("", "", JSON.stringify(errors));
         }
     }
     return isValid;
@@ -148,10 +136,10 @@ function validateUpdateLayoutSection(objLayoutSection, userId) {
 function validateType(key, value) {
     var valid = true;
     switch (key) {
-        case 'BLOCK_TYPE':
+        case 'NAME':
             valid = value.length > 0 && value.length <= 255;
             break;
-        case 'BLOCK_CONTENT':
+        case 'CONTENT':
             valid = value.length > 0 && value.length <= 1000;
             break;
         case 'LAYOUT_SECTION_ID':

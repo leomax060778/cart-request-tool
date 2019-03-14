@@ -117,7 +117,6 @@ function deleteVendor(vendorId, userId) {
 
 //MANUAL PROCEDURES
 function getManualVendorById(vendorId) {
-	
 	var param = {};
 	param.in_vendor_id = vendorId;
 	param.out_result = '?';
@@ -220,7 +219,7 @@ function updateManualVendorAdditionalInformation(objVendor, userId){
 function getVendorAdditionalInformationParams(objVendor) {
 	var params = {};
 	params.in_vendor_id = objVendor.VENDOR_ID;
-	params.in_name = objVendor.NAME;	
+	params.in_name = objVendor.NAME;
 	return params;
 }
 

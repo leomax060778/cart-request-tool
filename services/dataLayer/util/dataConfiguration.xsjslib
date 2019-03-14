@@ -211,3 +211,7 @@ function getRequesterBasicData(stringPathName, additionalParam){
 	
 	return parameters;
 }
+
+function getDataProtectionMask() {
+    return '****';
+}

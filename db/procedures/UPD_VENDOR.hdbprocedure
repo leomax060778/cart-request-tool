@@ -21,8 +21,7 @@ DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
 	UPDATE "CART_REQUEST_TOOL"."VENDOR"
-	SET 
-	ADDRESS_1 = in_address_1,
+	SET ADDRESS_1 = in_address_1,
   	ADDRESS_2 = in_address_2,
     CITY = in_city,
     STATE = in_state,
@@ -31,7 +30,7 @@ BEGIN
 	FAX = in_fax,
 	LEGAL_NAME = in_legal_name,
  	INFORMAL_NAME = in_informal_name,
- 	ACCOUNT = in_account,
+ 	ACCOUNT = (CASE WHEN (in_status_id = 5) THEN in_account ELSE ACCOUNT END),
  	DATA_PROTECTION_ENABLED = in_data_protection_enabled,
 	MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
 	MODIFIED_USER_ID = in_modified_user_id,

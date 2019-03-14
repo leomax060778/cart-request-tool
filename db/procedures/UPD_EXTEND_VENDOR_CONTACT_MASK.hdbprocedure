@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_EXTEND_VENDOR_CONTACT_MASK" (
+    IN in_contact_name NVARCHAR(255),
+    IN in_contact_email NVARCHAR(255),
+    IN in_vendor_legal_name NVARCHAR(511),
+    IN in_mask NVARCHAR(60),
+    IN in_modified_user_id BIGINT,
+    OUT out_result BIGINT
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	AS
+BEGIN
+    UPDATE "EXTEND_VENDOR_REQUEST"
+    SET MASKED_VENDOR = 1,
+        CONTACT_NAME = in_mask,
+        CONTACT_PHONE = in_mask,
+        CONTACT_EMAIL = in_mask,
+        MODIFIED_USER_ID = in_modified_user_id,
+        MODIFIED_DATE_TZ = CURRENT_TIMESTAMP
+    WHERE UPPER(TRIM(VENDOR_LEGAL_NAME)) = UPPER(TRIM(in_vendor_legal_name))
+        AND UPPER(TRIM(CONTACT_NAME)) = UPPER(TRIM(in_contact_name))
+        AND UPPER(TRIM(CONTACT_EMAIL)) = UPPER(TRIM(in_contact_email));
+
+    SELECT ::ROWCOUNT into out_result FROM DUMMY;
+END;

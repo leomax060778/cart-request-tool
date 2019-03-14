@@ -53,6 +53,7 @@ function updateRequestStatus(objRequest, userId) {
      parameters.in_modified_user_id = userId;
      parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
      parameters.in_stage_id = objRequest.STAGE_ID;
+     parameters.in_processor_id = objRequest.PROCESSOR_ID;
      parameters.out_result = '?';
      return db.executeScalar(UPD_REQUEST_STATUS, parameters, 'out_result');
 }
@@ -64,6 +65,7 @@ function updateRequestStatusManual(objRequest, userId) {
     parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objRequest.PREVIOUS_STATUS_ID;
     parameters.in_stage_id = objRequest.STAGE_ID;
+    parameters.in_processor_id = objRequest.PROCESSOR_ID;
     parameters.out_result = '?';
     return db.executeScalarManual(UPD_REQUEST_STATUS, parameters, 'out_result');
 }

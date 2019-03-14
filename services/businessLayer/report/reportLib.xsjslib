@@ -15,8 +15,7 @@ var statusMap = {'TO_BE_CHECKED': 1,'CHECKED': 2,'IN_PROCESS': 3,'RETURN_TO_REQU
 /** ********** END MAPS *************** */
 
 //Validate permissions
-function validatePermissionByUserRole(reportType, userId) {
-    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+function validatePermissionByUserRole(reportType, userRole) {
     var result = false;
     switch (userRole) {
         case userRoleMap.SUPER_ADMIN:
@@ -25,7 +24,7 @@ function validatePermissionByUserRole(reportType, userId) {
             }
             break;
         case userRoleMap.REQUESTER:
-            if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER)) {
+            if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER) || Number(reportType) === Number(reportTypeMap.VENDOR)) {
                 result = true;
             }
             break;
@@ -35,7 +34,7 @@ function validatePermissionByUserRole(reportType, userId) {
             }
             break;
         case userRoleMap.BUDGET_OWNER:
-            if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER) || Number(reportType) === Number(reportTypeMap.CART_REPORT_TEAM)) {
+            if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER) || Number(reportType) === Number(reportTypeMap.CART_REPORT_TEAM) || Number(reportType) === Number(reportTypeMap.VENDOR)) {
                 result = true;
             }
             break;
@@ -46,7 +45,8 @@ function validatePermissionByUserRole(reportType, userId) {
 //Get report
 function getReport(reportType, userId) {
     var result = [];
-    if (validatePermissionByUserRole(reportType, userId)) {
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+    if (validatePermissionByUserRole(reportType, userRole)) {
         switch (Number(reportType)) {
             case reportTypeMap.CART_REPORT_ALL:
                 result = data.getReport(userId);
@@ -119,7 +119,8 @@ function getReport(reportType, userId) {
 function getUserReport(userId) {
     var result = [];
     var reportType = reportTypeMap.USER;
-    if (validatePermissionByUserRole(reportType, userId)) {
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+    if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getUserReport(userId);
     } else {
         throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
@@ -131,7 +132,8 @@ function getUserReport(userId) {
 function getVendorReport(userId) {
     var result = [];
     var reportType = reportTypeMap.VENDOR;
-    if (validatePermissionByUserRole(reportType, userId)) {
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+    if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getVendorReport(userId);
     } else {
         throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
@@ -143,7 +145,8 @@ function getVendorReport(userId) {
 function getCatalogReport(userId) {
     var result = [];
     var reportType = reportTypeMap.CATALOG;
-    if (validatePermissionByUserRole(reportType, userId)) {
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+    if (validatePermissionByUserRole(reportType, userRole)) {
         var catalogReport = data.getCatalogReport(userId);
         if (catalogReport && catalogReport.length > 0) {
             var catalogParentMap = {};
@@ -219,7 +222,8 @@ function getCatalogReport(userId) {
 function getCommodityReport(userId) {
     var result = [];
     var reportType = reportTypeMap.COMMODITY;
-    if (validatePermissionByUserRole(reportType, userId)) {
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
+    if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getCommodityReport(userId);
     } else {
         throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
@@ -229,12 +233,13 @@ function getCommodityReport(userId) {
 
 //Get report type
 function getReportType(userId) {
-    var reportTypeCollection = data.getReportType(userId);
     var result = [];
+    var reportTypeCollection = data.getReportType(userId);
+    var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
     reportTypeCollection.forEach(function (elem) {
-        if (validatePermissionByUserRole(Number(elem.REPORT_TYPE_ID), userId)) {
-            result.push(elem);
-        }
+    	if (validatePermissionByUserRole(Number(elem.REPORT_TYPE_ID), userRole)) {
+    		result.push(elem);
+    	}
     });
     return result;
 }

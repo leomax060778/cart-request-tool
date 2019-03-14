@@ -62,10 +62,10 @@ function getVendorInquiryById(inquiryId) {
     parameters.in_vendor_inquiry_id = inquiryId;
     var result = db.executeProcedure(GET_VENDOR_INQUIRY_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -74,10 +74,10 @@ function getVendorInquiryByIdManual(inquiryId) {
     parameters.in_vendor_inquiry_id = inquiryId;
     var result = db.executeProcedureManual(GET_VENDOR_INQUIRY_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -95,10 +95,10 @@ function getChangeVendorRequestById(changeId) {
     parameters.in_change_vendor_request_id = changeId;
     var result = db.executeProcedure(GET_CHANGE_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -108,10 +108,10 @@ function getChangeVendorRequestByIdManual(changeId) {
     parameters.in_change_vendor_request_id = changeId;
     var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -129,10 +129,10 @@ function getExtendVendorRequestById(extendId) {
     parameters.in_extend_vendor_request_id = extendId;
     var result = db.executeProcedure(GET_EXTEND_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -150,10 +150,10 @@ function getVendorRequestById(requestId) {
     parameters.in_vendor_request_id = requestId;
     var result = db.executeProcedure(GET_VENDOR_REQUEST_PROCESSING_REPORT_BY_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
- 	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
- 	   	return {};
+        return {};
     }
 }
 
@@ -162,10 +162,10 @@ function getVendorRequestStatusByVendorRequestId(vendorRequestId) {
     var parameters = {'in_vendor_request_id': vendorRequestId};
     var result = db.executeProcedure(GET_VENDOR_REQUEST_STATUS_BY_VENDOR_REQUEST_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
-    	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
-    	   return {};
+        return {};
     }
 }
 
@@ -175,10 +175,10 @@ function getVendorInquiryStatusByVendorInquiryId(vendorInquiryId) {
     var result = db.executeProcedure(GET_VENDOR_INQUIRY_STATUS_BY_VENDOR_INQUIRY_ID, parameters);
     var list = db.extractArray(result.out_result);
 
-    if(list.length){
-    	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
-    	   return {};
+        return {};
     }
 }
 
@@ -187,10 +187,10 @@ function getExtendVendorRequestStatusByEVRId(extendVendorRequestId) {
     var parameters = {'in_extend_vendor_request_id': extendVendorRequestId};
     var result = db.executeProcedure(GET_EXTEND_VENDOR_REQUEST_STATUS_BY_EVR_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
-    	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
-    	   return {};
+        return {};
     }
 }
 
@@ -199,10 +199,10 @@ function getChangeVendorRequestStatusByCVRId(changeVendorRequestId) {
     var parameters = {'in_change_vendor_request_id': changeVendorRequestId};
     var result = db.executeProcedureManual(GET_CHANGE_VENDOR_REQUEST_STATUS_BY_CVR_ID, parameters);
     var list = db.extractArray(result.out_result);
-    if(list.length){
-    	   return list[0];
+    if (list.length) {
+        return list[0];
     } else {
-    	   return {};
+        return {};
     }
 }
 
@@ -212,9 +212,9 @@ function updateVendorInquiryStatus(objVendorInquiry, userId) {
     var parameters = {};
     parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
     parameters.in_status_id = objVendorInquiry.STATUS_ID;
-    parameters.in_modified_user_id = userId;//objVendorInquiry.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objVendorInquiry.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objVendorInquiry.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_INQUIRY_STATUS, parameters, 'out_result');
 }
@@ -224,11 +224,12 @@ function updateChangeVendorRequestStatus(objChangeVendorRequest, userId) {
     var parameters = {};
     parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
     parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
-    parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
+    parameters.in_receiver_date_submitted_tz = objChangeVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CHANGE_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
@@ -238,11 +239,12 @@ function updateExtendVendorRequestStatus(objExtendVendorRequest, userId) {
     var parameters = {};
     parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
     parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
-    parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
+    parameters.in_receiver_date_submitted_tz = objExtendVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
@@ -252,23 +254,24 @@ function updateVendorRequestStatus(objVendorRequest, userId) {
     var parameters = {};
     parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
     parameters.in_status_id = objVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
-    parameters.in_modified_user_id = userId;//objVendorRequest.MODIFIED_USER_ID;
+    parameters.in_receiver_date_submitted_tz = objVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
 
 //Update vendor inquiry status completed
 function updateVendorInquiryStatusCompleted(objVendorInquiry, userId) {
-	var parameters = {};
+    var parameters = {};
     parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
     parameters.in_status_id = objVendorInquiry.STATUS_ID;
-    parameters.in_modified_user_id = userId;//objVendorInquiry.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objVendorInquiry.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objVendorInquiry.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_INQUIRY_STATUS_COMPLETED, parameters, 'out_result');
 }
@@ -278,12 +281,14 @@ function updateChangeVendorRequestStatusCompleted(objChangeVendorRequest, userId
     var parameters = {};
     parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
     parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objChangeVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objChangeVendorRequest.RECEIVER_DATE_COMPLETED || null;
     parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
-    parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_CHANGE_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }
@@ -293,12 +298,14 @@ function updateExtendVendorRequestStatusCompleted(objExtendVendorRequest, userId
     var parameters = {};
     parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
     parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objExtendVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objExtendVendorRequest.RECEIVER_DATE_COMPLETED || null;
     parameters.in_vendor_account = objExtendVendorRequest.VENDOR_ACCOUNT || null;
-    parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }
@@ -308,11 +315,13 @@ function updateVendorRequestStatusCompleted(objVendorRequest, userId) {
     var parameters = {};
     parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
     parameters.in_status_id = objVendorRequest.STATUS_ID;
-    parameters.in_receiver_user_id = userId;//objVendorRequest.RECEIVER_USER_ID;
+    parameters.in_receiver_user_id = userId;
     parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
-    parameters.in_modified_user_id = userId;//objVendorRequest.MODIFIED_USER_ID;
+    parameters.in_receiver_date_submitted_tz = objVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objVendorRequest.RECEIVER_DATE_COMPLETED || null;
+    parameters.in_modified_user_id = userId;
     parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
-    parameters.in_user_id_status = userId;//objVendorRequest.USER_ID_STATUS;
+    parameters.in_user_id_status = userId;
     parameters.out_result = '?';
     return db.executeScalar(UPD_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }
@@ -320,99 +329,108 @@ function updateVendorRequestStatusCompleted(objVendorRequest, userId) {
 /** ***********UPDATE MANUAL*************** */
 //Update vendor inquiry status manual
 function updateVendorInquiryStatusManual(objVendorInquiry, userId) {
-  var parameters = {};
-  parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
-  parameters.in_status_id = objVendorInquiry.STATUS_ID;
-  parameters.in_modified_user_id = userId;//objVendorInquiry.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objVendorInquiry.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objVendorInquiry.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_VENDOR_INQUIRY_STATUS, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_vendor_inquiry_id = objVendorInquiry.VENDOR_INQUIRY_ID;
+    parameters.in_status_id = objVendorInquiry.STATUS_ID;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objVendorInquiry.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_VENDOR_INQUIRY_STATUS, parameters, 'out_result');
 }
 
 //Update change vendor request status manual
 function updateChangeVendorRequestStatusManual(objChangeVendorRequest, userId) {
-  var parameters = {};
-  parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-  parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_CHANGE_VENDOR_REQUEST_STATUS, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
+    parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objChangeVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_CHANGE_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
 
 //Update extend vendor request status manual
 function updateExtendVendorRequestStatusManual(objExtendVendorRequest, userId) {
-  var parameters = {};
+    var parameters = {};
 
-  parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-  parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_EXTEND_VENDOR_REQUEST_STATUS, parameters, 'out_result');
+    parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
+    parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objExtendVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_EXTEND_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
 
 //Update vendor request status manual
 function updateVendorRequestStatusManual(objVendorRequest, userId) {
-  var parameters = {};
-  parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
-  parameters.in_status_id = objVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_modified_user_id = userId;//objVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_VENDOR_REQUEST_STATUS, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
+    parameters.in_status_id = objVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_VENDOR_REQUEST_STATUS, parameters, 'out_result');
 }
 
 //Update change vendor request status completed
 function updateChangeVendorRequestStatusCompletedManual(objChangeVendorRequest, userId) {
-  var parameters = {};
-  parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
-  parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objChangeVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
-  parameters.in_modified_user_id = userId;//objChangeVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objChangeVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_CHANGE_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_change_vendor_request_id = objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID;
+    parameters.in_status_id = objChangeVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objChangeVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objChangeVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objChangeVendorRequest.RECEIVER_DATE_COMPLETED || null;
+    parameters.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objChangeVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_CHANGE_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }
 
 //Update extend vendor request status completed manual
 function updateExtendVendorRequestStatusCompletedManual(objExtendVendorRequest, userId) {
-  var parameters = {};
-  parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-  parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objExtendVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_vendor_account = objExtendVendorRequest.VENDOR_REQUEST || null;
-  parameters.in_modified_user_id = userId;//objExtendVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objExtendVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
+    parameters.in_status_id = objExtendVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objExtendVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objExtendVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objExtendVendorRequest.RECEIVER_DATE_COMPLETED || null;
+    parameters.in_vendor_account = objExtendVendorRequest.VENDOR_REQUEST || null;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objExtendVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalar(UPD_EXTEND_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }
 
 //Update vendor request status completed manual
 function updateVendorRequestStatusCompletedManual(objVendorRequest, userId) {
-  var parameters = {};
-  parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
-  parameters.in_status_id = objVendorRequest.STATUS_ID;
-  parameters.in_receiver_user_id = userId;//objVendorRequest.RECEIVER_USER_ID;
-  parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
-  parameters.in_modified_user_id = userId;//objVendorRequest.MODIFIED_USER_ID;
-  parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
-  parameters.in_user_id_status = userId;//objVendorRequest.USER_ID_STATUS;
-  parameters.out_result = '?';
-  return db.executeScalarManual(UPD_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
+    var parameters = {};
+    parameters.in_vendor_request_id = objVendorRequest.VENDOR_REQUEST_ID;
+    parameters.in_status_id = objVendorRequest.STATUS_ID;
+    parameters.in_receiver_user_id = userId;
+    parameters.in_receiver_yvc_request = objVendorRequest.RECEIVER_YVC_REQUEST || null;
+    parameters.in_receiver_date_submitted_tz = objVendorRequest.RECEIVER_DATE_SUBMITTED || null;
+    parameters.in_receiver_date_completed_tz = objVendorRequest.RECEIVER_DATE_COMPLETED || null;
+    parameters.in_modified_user_id = userId;
+    parameters.in_previous_status_id = objVendorRequest.PREVIOUS_STATUS_ID;
+    parameters.in_user_id_status = userId;
+    parameters.out_result = '?';
+    return db.executeScalarManual(UPD_VENDOR_REQUEST_STATUS_COMPLETED, parameters, 'out_result');
 }

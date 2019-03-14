@@ -1,242 +1,244 @@
 /************Business Layer Mapper*****************/
 
-function getMail(){
-    $.import("xscartrequesttool.services.businessLayer.util","mail");
+function getMail() {
+    $.import("xscartrequesttool.services.businessLayer.util", "mail");
     return $.xscartrequesttool.services.businessLayer.util.mail;
 }
 
-function getPopUpLib(){
-    $.import("xscartrequesttool.services.businessLayer.util","popUpLib");
+function getPopUpLib() {
+    $.import("xscartrequesttool.services.businessLayer.util", "popUpLib");
     return $.xscartrequesttool.services.businessLayer.util.popUpLib;
 }
 
-function getLogError(){
-    $.import("xscartrequesttool.services.businessLayer.util","logError");
+function getLogError() {
+    $.import("xscartrequesttool.services.businessLayer.util", "logError");
     return $.xscartrequesttool.services.businessLayer.util.logError;
 }
 
-function getErrors(){
-    $.import("xscartrequesttool.services.commonLib","errorLib");
+function getErrors() {
+    $.import("xscartrequesttool.services.commonLib", "errorLib");
     return $.xscartrequesttool.services.commonLib.errorLib;
 }
 
-function getHttp(){
-    $.import("xscartrequesttool.services.commonLib","httpLib");
+function getHttp() {
+    $.import("xscartrequesttool.services.commonLib", "httpLib");
     return $.xscartrequesttool.services.commonLib.httpLib;
 }
 
-function getLevel3(){
-    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy","level3Lib");
+function getLevel3() {
+    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy", "level3Lib");
     return $.xscartrequesttool.services.businessLayer.teamPlanHierarchy.level3Lib;
 }
 
-function getLevel4(){
-    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy","level4Lib");
+function getLevel4() {
+    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy", "level4Lib");
     return $.xscartrequesttool.services.businessLayer.teamPlanHierarchy.level4Lib;
 }
 
-function getUser(){
-    $.import("xscartrequesttool.services.businessLayer.admin","userLib");
+function getUser() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "userLib");
     return $.xscartrequesttool.services.businessLayer.admin.userLib;
 }
 
-function getPlan(){
-    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy","planLib");
+function getPlan() {
+    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy", "planLib");
     return $.xscartrequesttool.services.businessLayer.teamPlanHierarchy.planLib;
 }
 
-function getRegion(){
-    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy","regionLib");
+function getRegion() {
+    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy", "regionLib");
     return $.xscartrequesttool.services.businessLayer.teamPlanHierarchy.regionLib;
 }
 
-function getSubRegion(){
-    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy","subRegionLib");
+function getSubRegion() {
+    $.import("xscartrequesttool.services.businessLayer.teamPlanHierarchy", "subRegionLib");
     return $.xscartrequesttool.services.businessLayer.teamPlanHierarchy.subRegionLib;
 }
 
-function getRequest(){
-    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory","cartRequestLib");
+function getRequest() {
+    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory", "cartRequestLib");
     return $.xscartrequesttool.services.businessLayer.shoppingCartHistory.cartRequestLib;
 }
 
-function getVendorInquiry(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","vendorInquiryLib");
+function getVendorInquiry() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorInquiryLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorInquiryLib;
 }
 
-function getVendorRequest(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","vendorRequestLib");
+function getVendorRequest() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorRequestLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorRequestLib;
 }
 
-function getAttachmentVendor(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","attachmentVendorLib");
+function getAttachmentVendor() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "attachmentVendorLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.attachmentVendorLib;
 }
-function getAttachment(){
-    $.import("xscartrequesttool.services.businessLayer.attachment","attachmentLib");
+
+function getAttachment() {
+    $.import("xscartrequesttool.services.businessLayer.attachment", "attachmentLib");
     return $.xscartrequesttool.services.businessLayer.attachment.attachmentLib;
 }
 
-function getCurrency(){
-    $.import("xscartrequesttool.services.businessLayer.currency","currencyLib");
+function getCurrency() {
+    $.import("xscartrequesttool.services.businessLayer.currency", "currencyLib");
     return $.xscartrequesttool.services.businessLayer.currency.currencyLib;
 }
 
-function getRequestDataProtection(){
-    $.import("xscartrequesttool.services.businessLayer.newCartRequest","requestDataProtectionLib");
+function getRequestDataProtection() {
+    $.import("xscartrequesttool.services.businessLayer.newCartRequest", "requestDataProtectionLib");
     return $.xscartrequesttool.services.businessLayer.newCartRequest.requestDataProtectionLib;
 }
-function getDataProtection(){
-    $.import("xscartrequesttool.services.businessLayer.dataProtection","dataProtectionLib");
+
+function getDataProtection() {
+    $.import("xscartrequesttool.services.businessLayer.dataProtection", "dataProtectionLib");
     return $.xscartrequesttool.services.businessLayer.dataProtection.dataProtectionLib;
 }
 
 
-function getEntity(){
-    $.import("xscartrequesttool.services.businessLayer.entity","entityLib");
+function getEntity() {
+    $.import("xscartrequesttool.services.businessLayer.entity", "entityLib");
     return $.xscartrequesttool.services.businessLayer.entity.entityLib;
 }
 
-function getVendor(){
-    $.import("xscartrequesttool.services.businessLayer.vendor","vendorLib");
+function getVendor() {
+    $.import("xscartrequesttool.services.businessLayer.vendor", "vendorLib");
     return $.xscartrequesttool.services.businessLayer.vendor.vendorLib;
 }
 
-function getVendorContactInformation(){
-    $.import("xscartrequesttool.services.businessLayer.vendor","vendorContactInfoLib");
+function getVendorContactInformation() {
+    $.import("xscartrequesttool.services.businessLayer.vendor", "vendorContactInfoLib");
     return $.xscartrequesttool.services.businessLayer.vendor.vendorContactInfoLib;
 }
 
-function getNonSapVendor(){
-    $.import("xscartrequesttool.services.businessLayer.nonSAPVendor","nonSapVendorLib");
+function getNonSapVendor() {
+    $.import("xscartrequesttool.services.businessLayer.nonSAPVendor", "nonSapVendorLib");
     return $.xscartrequesttool.services.businessLayer.nonSAPVendor.nonSapVendorLib;
 }
 
 
-function getChangeVendorRequest(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","changeVendorRequestLib");
+function getChangeVendorRequest() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "changeVendorRequestLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.changeVendorRequestLib;
 }
 
-function getExtendVendorRequest(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","extendVendorRequestLib");
+function getExtendVendorRequest() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "extendVendorRequestLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.extendVendorRequestLib;
 }
 
-function getMaterial(){
-    $.import("xscartrequesttool.services.businessLayer.newCartRequest","materialLib");
+function getMaterial() {
+    $.import("xscartrequesttool.services.businessLayer.newCartRequest", "materialLib");
     return $.xscartrequesttool.services.businessLayer.newCartRequest.materialLib;
 }
 
 function getInquiry() {
-    $.import("xscartrequesttool.services.businessLayer.inquiry","inquiryLib");
+    $.import("xscartrequesttool.services.businessLayer.inquiry", "inquiryLib");
     return $.xscartrequesttool.services.businessLayer.inquiry.inquiryLib;
 }
 
 function getTrainingType() {
-    $.import("xscartrequesttool.services.businessLayer.training","trainingTypeLib");
+    $.import("xscartrequesttool.services.businessLayer.training", "trainingTypeLib");
     return $.xscartrequesttool.services.businessLayer.training.trainingTypeLib;
 }
 
 function getTraining() {
-    $.import("xscartrequesttool.services.businessLayer.training","trainingLib");
+    $.import("xscartrequesttool.services.businessLayer.training", "trainingLib");
     return $.xscartrequesttool.services.businessLayer.training.trainingLib;
 }
 
 function getVendorRequestInquiryStatus() {
-    $.import("xscartrequesttool.services.businessLayer.processingReport","vendorRequestInquiryStatusLib");
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "vendorRequestInquiryStatusLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.vendorRequestInquiryStatusLib;
 }
 
 function getPurchaseOrderService() {
-    $.import("xscartrequesttool.services.businessLayer.processingReport","purchaseOrderServiceLib");
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "purchaseOrderServiceLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.purchaseOrderServiceLib;
 }
 
 function getTemplateSection() {
-    $.import("xscartrequesttool.services.businessLayer.template","templateSectionLib");
+    $.import("xscartrequesttool.services.businessLayer.template", "templateSectionLib");
     return $.xscartrequesttool.services.businessLayer.template.templateSectionLib;
 }
 
 function getTemplate() {
-    $.import("xscartrequesttool.services.businessLayer.template","templateLib");
+    $.import("xscartrequesttool.services.businessLayer.template", "templateLib");
     return $.xscartrequesttool.services.businessLayer.template.templateLib;
 }
 
 function getLayoutSection() {
-    $.import("xscartrequesttool.services.businessLayer.layoutSection","layoutSectionLib");
+    $.import("xscartrequesttool.services.businessLayer.layoutSection", "layoutSectionLib");
     return $.xscartrequesttool.services.businessLayer.layoutSection.layoutSectionLib;
 }
 
-function getVendorRequestInquiry(){
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","vendorRequestInquiryLib");
+function getVendorRequestInquiry() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorRequestInquiryLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorRequestInquiryLib;
 }
 
-function getSubject(){
-    $.import("xscartrequesttool.services.businessLayer.subject","subjectLib");
+function getSubject() {
+    $.import("xscartrequesttool.services.businessLayer.subject", "subjectLib");
     return $.xscartrequesttool.services.businessLayer.subject.subjectLib;
 }
 
-function getMessageType(){
-    $.import("xscartrequesttool.services.businessLayer.messageType","messageTypeLib");
+function getMessageType() {
+    $.import("xscartrequesttool.services.businessLayer.messageType", "messageTypeLib");
     return $.xscartrequesttool.services.businessLayer.messageType.messageTypeLib;
 }
 
-function getNews(){
-    $.import("xscartrequesttool.services.businessLayer.news","newsLib");
+function getNews() {
+    $.import("xscartrequesttool.services.businessLayer.news", "newsLib");
     return $.xscartrequesttool.services.businessLayer.news.newsLib;
 }
 
-function getImage(){
-    $.import("xscartrequesttool.services.businessLayer.news","imageLib");
+function getImage() {
+    $.import("xscartrequesttool.services.businessLayer.news", "imageLib");
     return $.xscartrequesttool.services.businessLayer.news.imageLib;
 }
 
-function getCartRequest(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","cartRequestLib");
+function getCartRequest() {
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "cartRequestLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.cartRequestLib;
 }
 
-function getInquiryStatus(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","inquiryLib");
+function getInquiryStatus() {
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "inquiryLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.inquiryLib;
 }
 
-function getModal(){
-    $.import("xscartrequesttool.services.businessLayer.modal","modalLib");
+function getModal() {
+    $.import("xscartrequesttool.services.businessLayer.modal", "modalLib");
     return $.xscartrequesttool.services.businessLayer.modal.modalLib;
 }
 
-function getCrtType(){
-    $.import("xscartrequesttool.services.businessLayer.crtType","crtTypeLib");
+function getCrtType() {
+    $.import("xscartrequesttool.services.businessLayer.crtType", "crtTypeLib");
     return $.xscartrequesttool.services.businessLayer.crtType.crtTypeLib;
 }
 
 function getInquiryMessage() {
-    $.import("xscartrequesttool.services.businessLayer.inquiry","inquiryMessageLib");
+    $.import("xscartrequesttool.services.businessLayer.inquiry", "inquiryMessageLib");
     return $.xscartrequesttool.services.businessLayer.inquiry.inquiryMessageLib;
 }
 
 function getAttachmentInquiry() {
-    $.import("xscartrequesttool.services.businessLayer.inquiry","attachmentInquiryLib");
+    $.import("xscartrequesttool.services.businessLayer.inquiry", "attachmentInquiryLib");
     return $.xscartrequesttool.services.businessLayer.inquiry.attachmentInquiryLib;
 }
 
 function getTemplateType() {
-    $.import("xscartrequesttool.services.businessLayer.template","templateTypeLib");
+    $.import("xscartrequesttool.services.businessLayer.template", "templateTypeLib");
     return $.xscartrequesttool.services.businessLayer.template.templateTypeLib;
 }
 
 function getTeam() {
-    $.import("xscartrequesttool.services.businessLayer.team","teamLib");
+    $.import("xscartrequesttool.services.businessLayer.team", "teamLib");
     return $.xscartrequesttool.services.businessLayer.team.teamLib;
 }
 
 function getCatalogType() {
-    $.import("xscartrequesttool.services.businessLayer.catalog","catalogTypeLib");
+    $.import("xscartrequesttool.services.businessLayer.catalog", "catalogTypeLib");
     return $.xscartrequesttool.services.businessLayer.catalog.catalogTypeLib;
 }
 
@@ -265,442 +267,455 @@ function getNewCartRequest() {
     return $.xscartrequesttool.services.businessLayer.newCartRequest.newCartRequestLib;
 }
 
-function getLogin(){
-    $.import("xscartrequesttool.services.businessLayer.admin","loginLib");
+function getLogin() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "loginLib");
     return $.xscartrequesttool.services.businessLayer.admin.loginLib;
 }
 
-function getUserRole(){
-    $.import("xscartrequesttool.services.businessLayer.admin","userRoleLib");
+function getUserRole() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "userRoleLib");
     return $.xscartrequesttool.services.businessLayer.admin.userRoleLib;
 }
 
-function getRolePermission(){
-    $.import("xscartrequesttool.services.businessLayer.admin","rolePermissionLib");
+function getRolePermission() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "rolePermissionLib");
     return $.xscartrequesttool.services.businessLayer.admin.rolePermissionLib;
 }
 
-function getPermission(){
-    $.import("xscartrequesttool.services.businessLayer.admin","permissionLib");
+function getPermission() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "permissionLib");
     return $.xscartrequesttool.services.businessLayer.admin.permissionLib;
 }
 
-function getResource(){
-    $.import("xscartrequesttool.services.businessLayer.admin","resourceLib");
+function getResource() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "resourceLib");
     return $.xscartrequesttool.services.businessLayer.admin.resourceLib;
 }
 
-function getRole(){
-    $.import("xscartrequesttool.services.businessLayer.admin","roleLib");
+function getRole() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "roleLib");
     return $.xscartrequesttool.services.businessLayer.admin.roleLib;
 }
 
 function getUtil() {
-    $.import("xscartrequesttool.services.businessLayer.util","utilLib");
+    $.import("xscartrequesttool.services.businessLayer.util", "utilLib");
     return $.xscartrequesttool.services.businessLayer.util.utilLib;
 }
 
 function getNoteTypeLib() {
-    $.import("xscartrequesttool.services.businessLayer.newCartRequest","noteTypeLib");
+    $.import("xscartrequesttool.services.businessLayer.newCartRequest", "noteTypeLib");
     return $.xscartrequesttool.services.businessLayer.newCartRequest.noteTypeLib;
 }
 
 function getVendorMessage() {
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","vendorMessageLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorMessageLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorMessageLib;
 }
 
 function getTopic() {
-    $.import("xscartrequesttool.services.businessLayer.topic","topicLib");
+    $.import("xscartrequesttool.services.businessLayer.topic", "topicLib");
     return $.xscartrequesttool.services.businessLayer.topic.topicLib;
 }
 
-function getProcessingReportMessage(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","processingReportMessageLib");
+function getProcessingReportMessage() {
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "processingReportMessageLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.processingReportMessageLib;
 }
 
-function getRequestMessage(){
-	$.import("xscartrequesttool.services.businessLayer.shoppingCartHistory","requestMessageLib");
-	return $.xscartrequesttool.services.businessLayer.shoppingCartHistory.requestMessageLib;
+function getRequestMessage() {
+    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory", "requestMessageLib");
+    return $.xscartrequesttool.services.businessLayer.shoppingCartHistory.requestMessageLib;
 }
 
-function getStatus(){
-	$.import("xscartrequesttool.services.businessLayer.status","statusLib");
-	return $.xscartrequesttool.services.businessLayer.status.statusLib;
+function getStatus() {
+    $.import("xscartrequesttool.services.businessLayer.status", "statusLib");
+    return $.xscartrequesttool.services.businessLayer.status.statusLib;
 }
 
-function getCommodity(){
-    $.import("xscartrequesttool.services.businessLayer.commodity","commodityLib");
+function getCommodity() {
+    $.import("xscartrequesttool.services.businessLayer.commodity", "commodityLib");
     return $.xscartrequesttool.services.businessLayer.commodity.commodityLib;
 }
 
-function getCountry(){
-    $.import("xscartrequesttool.services.businessLayer.country","countryLib");
+function getCountry() {
+    $.import("xscartrequesttool.services.businessLayer.country", "countryLib");
     return $.xscartrequesttool.services.businessLayer.country.countryLib;
 }
 
-function getAttachmentStore(){
-    $.import("xscartrequesttool.services.businessLayer.attachment","attachmentStoreLib");
+function getAttachmentStore() {
+    $.import("xscartrequesttool.services.businessLayer.attachment", "attachmentStoreLib");
     return $.xscartrequesttool.services.businessLayer.attachment.attachmentStoreLib;
 }
 
 function getVendorDataProtection() {
-	$.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","vendorDataProtectionLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorDataProtectionLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorDataProtectionLib;
 }
 
 function getChangeVendorSupportingDocumentation() {
-	$.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","changeVendorSupportingDocumentationLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "changeVendorSupportingDocumentationLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.changeVendorSupportingDocumentationLib;
 }
 
 function getChangeVendorSelection() {
-	$.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry","changeVendorSelectionLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "changeVendorSelectionLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.changeVendorSelectionLib;
 }
 
 function getBudgetYear() {
-	$.import("xscartrequesttool.services.businessLayer.admin","budgetYearLib");
+    $.import("xscartrequesttool.services.businessLayer.admin", "budgetYearLib");
     return $.xscartrequesttool.services.businessLayer.admin.budgetYearLib;
 }
 
-function getService(){
-    $.import("xscartrequesttool.services.businessLayer.processingReport","serviceLib");
+function getService() {
+    $.import("xscartrequesttool.services.businessLayer.processingReport", "serviceLib");
     return $.xscartrequesttool.services.businessLayer.processingReport.serviceLib;
 }
 
-function getUserTeam(){
-    $.import("xscartrequesttool.services.businessLayer.admin","userTeamLib");
+function getUserTeam() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "userTeamLib");
     return $.xscartrequesttool.services.businessLayer.admin.userTeamLib;
 }
 
-function getReport(){
-    $.import("xscartrequesttool.services.businessLayer.report","reportLib");
+function getReport() {
+    $.import("xscartrequesttool.services.businessLayer.report", "reportLib");
     return $.xscartrequesttool.services.businessLayer.report.reportLib;
 }
 
-function getApi(){
-	$.import("xscartrequesttool.services.businessLayer.api","apiLib");
+function getApi() {
+    $.import("xscartrequesttool.services.businessLayer.api", "apiLib");
     return $.xscartrequesttool.services.businessLayer.api.apiLib;
 }
 
-function getRequestChangedColumn(){
-	$.import("xscartrequesttool.services.businessLayer.util","requestChangedColumnLib");
+function getRequestChangedColumn() {
+    $.import("xscartrequesttool.services.businessLayer.util", "requestChangedColumnLib");
     return $.xscartrequesttool.services.businessLayer.util.requestChangedColumnLib;
 }
 
-function getApplication(){
-	$.import("xscartrequesttool.services.businessLayer.admin","applicationLib");
+function getUserDataProtection() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "dataProtectionLib");
+    return $.xscartrequesttool.services.businessLayer.admin.dataProtectionLib;
+}
+
+function getApplication() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "applicationLib");
     return $.xscartrequesttool.services.businessLayer.admin.applicationLib;
+}
+
+function getVendorRequestInquiryChangedColumn() {
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry", "vendorRequestInquiryChangedColumnLib");
+    return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.vendorRequestInquiryChangedColumnLib;
+}
+
+function getGDPRSearch() {
+    $.import("xscartrequesttool.services.businessLayer.admin", "gdprSearchLib");
+    return $.xscartrequesttool.services.businessLayer.admin.gdprSearchLib;
 }
 
 /************Data Layer Mapper*****************/
 
-function getdbHelper(){
-    $.import("xscartrequesttool.services.dataLayer.util","dbHelper");
+function getdbHelper() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dbHelper");
     return $.xscartrequesttool.services.dataLayer.util.dbHelper;
 }
 
-function getDataApi(){
-	$.import("xscartrequesttool.services.dataLayer.api","dataApi");
+function getDataApi() {
+    $.import("xscartrequesttool.services.dataLayer.api", "dataApi");
     return $.xscartrequesttool.services.dataLayer.api.dataApi;
 }
 
-function getDataMailTemplate(){
-    $.import("xscartrequesttool.services.dataLayer.util","dataMailTemplate");
+function getDataMailTemplate() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dataMailTemplate");
     return $.xscartrequesttool.services.dataLayer.util.dataMailTemplate;
 }
 
-function getDataPopUp(){
-    $.import("xscartrequesttool.services.dataLayer.util","dataPopUp");
+function getDataPopUp() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dataPopUp");
     return $.xscartrequesttool.services.dataLayer.util.dataPopUp;
 }
 
-function getDataLogError(){
-    $.import("xscartrequesttool.services.dataLayer.util","dataLogError");
+function getDataLogError() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dataLogError");
     return $.xscartrequesttool.services.dataLayer.util.dataLogError;
 }
 
-function getDataLevel3(){
-    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy","dataLevel3");
+function getDataLevel3() {
+    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy", "dataLevel3");
     return $.xscartrequesttool.services.dataLayer.teamPlanHierarchy.dataLevel3;
 }
 
-function getDataLevel4(){
-    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy","dataLevel4");
+function getDataLevel4() {
+    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy", "dataLevel4");
     return $.xscartrequesttool.services.dataLayer.teamPlanHierarchy.dataLevel4;
 }
 
-function getDataUser(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataUser");
+function getDataUser() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataUser");
     return $.xscartrequesttool.services.dataLayer.admin.dataUser;
 }
 
-function getDataPlan(){
-    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy","dataPlan");
+function getDataPlan() {
+    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy", "dataPlan");
     return $.xscartrequesttool.services.dataLayer.teamPlanHierarchy.dataPlan;
 }
 
-function getDataRegion(){
-    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy","dataRegion");
+function getDataRegion() {
+    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy", "dataRegion");
     return $.xscartrequesttool.services.dataLayer.teamPlanHierarchy.dataRegion;
 }
 
-function getDataSubRegion(){
-    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy","dataSubRegion");
+function getDataSubRegion() {
+    $.import("xscartrequesttool.services.dataLayer.teamPlanHierarchy", "dataSubRegion");
     return $.xscartrequesttool.services.dataLayer.teamPlanHierarchy.dataSubRegion;
 }
 
-function getDataRequest(){
-    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory","dataRequest");
+function getDataRequest() {
+    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory", "dataRequest");
     return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataRequest;
 }
 
-function getDataRequestMessage(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataRequestMessage");
-    return $.xscartrequesttool.services.dataLayer.newCartRequest.dataRequestMessage;
-}
-
-function getDataService(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataService");
+function getDataService() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "dataService");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataService;
 }
 
-function getDataRequestService(){
-    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory","dataRequestService");
+function getDataRequestService() {
+    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory", "dataRequestService");
     return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataRequestService;
 }
 
-function getDataRequestCostObject(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataRequestCostObject");
+function getDataRequestCostObject() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "dataRequestCostObject");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataRequestCostObject;
 }
 
-function getDataAttachmentVendor(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataAttachmentVendor");
+function getDataAttachmentVendor() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataAttachmentVendor");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataAttachmentVendor;
 }
 
-function getDataAttachment(){
-    $.import("xscartrequesttool.services.dataLayer.attachment","dataAttachment");
+function getDataAttachment() {
+    $.import("xscartrequesttool.services.dataLayer.attachment", "dataAttachment");
     return $.xscartrequesttool.services.dataLayer.attachment.dataAttachment;
 }
 
-function getDataChangeVendorRequest(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataChangeVendorRequest");
+function getDataChangeVendorRequest() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataChangeVendorRequest");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataChangeVendorRequest;
 }
 
-function getDataExtendVendorRequest(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataExtendVendorRequest");
+function getDataExtendVendorRequest() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataExtendVendorRequest");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataExtendVendorRequest;
 }
 
-function getDataVendorInquiry(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataVendorInquiry");
+function getDataVendorInquiry() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorInquiry");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorInquiry;
 }
 
-function getDataVendorRequest(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataVendorRequest");
+function getDataVendorRequest() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorRequest");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorRequest;
 }
 
-function getDataRequestDataProtection(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","requestDataProtection");
+function getDataRequestDataProtection() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "requestDataProtection");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.requestDataProtection;
 }
 
-function getDataDataProtection(){
-    $.import("xscartrequesttool.services.dataLayer.dataProtection","dataDataProtectionLib");
+function getDataDataProtection() {
+    $.import("xscartrequesttool.services.dataLayer.dataProtection", "dataDataProtectionLib");
     return $.xscartrequesttool.services.dataLayer.dataProtection.dataDataProtectionLib;
 }
 
 function getDataVendorMessage() {
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataVendorMessage");
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorMessage");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorMessage;
 }
 
-function getDataEntity(){
-    $.import("xscartrequesttool.services.dataLayer.entity","dataEntity");
+function getDataEntity() {
+    $.import("xscartrequesttool.services.dataLayer.entity", "dataEntity");
     return $.xscartrequesttool.services.dataLayer.entity.dataEntity;
 }
-function getDataVendor(){
-    $.import("xscartrequesttool.services.dataLayer.vendor","dataVendor");
+
+function getDataVendor() {
+    $.import("xscartrequesttool.services.dataLayer.vendor", "dataVendor");
     return $.xscartrequesttool.services.dataLayer.vendor.dataVendor;
 }
-function getDataVendorContactInformation(){
-    $.import("xscartrequesttool.services.dataLayer.vendor","dataVendorContactInfo");
+
+function getDataVendorContactInformation() {
+    $.import("xscartrequesttool.services.dataLayer.vendor", "dataVendorContactInfo");
     return $.xscartrequesttool.services.dataLayer.vendor.dataVendorContactInfo;
 }
-function getDataNonSapVendor(){
-    $.import("xscartrequesttool.services.dataLayer.nonSAPVendor","dataNonSapVendor");
+
+function getDataNonSapVendor() {
+    $.import("xscartrequesttool.services.dataLayer.nonSAPVendor", "dataNonSapVendor");
     return $.xscartrequesttool.services.dataLayer.nonSAPVendor.dataNonSapVendor;
 }
-function getDataVendorEntity(){
-    $.import("xscartrequesttool.services.dataLayer.vendor","dataVendorEntity");
+
+function getDataVendorEntity() {
+    $.import("xscartrequesttool.services.dataLayer.vendor", "dataVendorEntity");
     return $.xscartrequesttool.services.dataLayer.vendor.dataVendorEntity;
 }
 
-
-function getDataMaterial(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataMaterial");
+function getDataMaterial() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "dataMaterial");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataMaterial;
 }
 
 function getDataInquiry() {
-    $.import("xscartrequesttool.services.dataLayer.inquiry","dataInquiry");
+    $.import("xscartrequesttool.services.dataLayer.inquiry", "dataInquiry");
     return $.xscartrequesttool.services.dataLayer.inquiry.dataInquiry;
 }
 
 function getDataInquiryMessage() {
-    $.import("xscartrequesttool.services.dataLayer.inquiry","dataInquiryMessage");
+    $.import("xscartrequesttool.services.dataLayer.inquiry", "dataInquiryMessage");
     return $.xscartrequesttool.services.dataLayer.inquiry.dataInquiryMessage;
 }
 
 function getDataTraining() {
-    $.import("xscartrequesttool.services.dataLayer.training","dataTraining");
+    $.import("xscartrequesttool.services.dataLayer.training", "dataTraining");
     return $.xscartrequesttool.services.dataLayer.training.dataTraining;
 }
 
 function getDataVendorRequestInquiryStatus() {
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataVendorRequestInquiryStatus");
+    $.import("xscartrequesttool.services.dataLayer.processingReport", "dataVendorRequestInquiryStatus");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataVendorRequestInquiryStatus;
 }
 
 function getDataTemplate() {
-    $.import("xscartrequesttool.services.dataLayer.template","dataTemplate");
+    $.import("xscartrequesttool.services.dataLayer.template", "dataTemplate");
     return $.xscartrequesttool.services.dataLayer.template.dataTemplate;
 }
 
 function getDataTemplateSection() {
-    $.import("xscartrequesttool.services.dataLayer.template","dataTemplateSection");
+    $.import("xscartrequesttool.services.dataLayer.template", "dataTemplateSection");
     return $.xscartrequesttool.services.dataLayer.template.dataTemplateSection;
 }
 
-function getDataSection(){
-    $.import("xscartrequesttool.services.dataLayer.template","dataSection");
+function getDataSection() {
+    $.import("xscartrequesttool.services.dataLayer.template", "dataSection");
     return $.xscartrequesttool.services.dataLayer.template.dataSection;
 }
 
-function getDataVendorRequestInquiry(){
-    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataVendorRequestInquiry");
+function getDataVendorRequestInquiry() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorRequestInquiry");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorRequestInquiry;
 }
 
-function getDataCountry(){
-    $.import("xscartrequesttool.services.dataLayer.country","dataCountry");
+function getDataCountry() {
+    $.import("xscartrequesttool.services.dataLayer.country", "dataCountry");
     return $.xscartrequesttool.services.dataLayer.country.dataCountry;
 }
 
-function getDataCurrency(){
-    $.import("xscartrequesttool.services.dataLayer.currency","dataCurrency");
+function getDataCurrency() {
+    $.import("xscartrequesttool.services.dataLayer.currency", "dataCurrency");
     return $.xscartrequesttool.services.dataLayer.currency.dataCurrency;
 }
 
-function getDataAttachmentRequest(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataAttachmentCRLib");
+function getDataAttachmentRequest() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "dataAttachmentCRLib");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataAttachmentCRLib;
 }
 
-function getDataNoteRequest(){
-    $.import("xscartrequesttool.services.dataLayer.newCartRequest","dataNoteRequest");
+function getDataNoteRequest() {
+    $.import("xscartrequesttool.services.dataLayer.newCartRequest", "dataNoteRequest");
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataNoteRequest;
 }
 
-function getDataShoppingNoteRequest(){
-    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory","dataNoteRequest");
+function getDataShoppingNoteRequest() {
+    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory", "dataNoteRequest");
     return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataNoteRequest;
 }
 
-function getDataSubject(){
-    $.import("xscartrequesttool.services.dataLayer.subject","dataSubject");
+function getDataSubject() {
+    $.import("xscartrequesttool.services.dataLayer.subject", "dataSubject");
     return $.xscartrequesttool.services.dataLayer.subject.dataSubject;
 }
 
-function getDataMessageType(){
-    $.import("xscartrequesttool.services.dataLayer.messageType","dataMessageType");
+function getDataMessageType() {
+    $.import("xscartrequesttool.services.dataLayer.messageType", "dataMessageType");
     return $.xscartrequesttool.services.dataLayer.messageType.dataMessageType;
 }
 
-function getDataCrtMessageType(){
-    $.import("xscartrequesttool.services.dataLayer.messageType","dataCrtMessageType");
+function getDataCrtMessageType() {
+    $.import("xscartrequesttool.services.dataLayer.messageType", "dataCrtMessageType");
     return $.xscartrequesttool.services.dataLayer.messageType.dataCrtMessageType;
 }
 
-function getDataNews(){
-    $.import("xscartrequesttool.services.dataLayer.news","dataNews");
+function getDataNews() {
+    $.import("xscartrequesttool.services.dataLayer.news", "dataNews");
     return $.xscartrequesttool.services.dataLayer.news.dataNews;
 }
 
-function getDataImage(){
-    $.import("xscartrequesttool.services.dataLayer.news","dataImage");
+function getDataImage() {
+    $.import("xscartrequesttool.services.dataLayer.news", "dataImage");
     return $.xscartrequesttool.services.dataLayer.news.dataImage;
 }
 
-function getDataCartRequest(){
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataCartRequest");
+function getDataCartRequest() {
+    $.import("xscartrequesttool.services.dataLayer.processingReport", "dataCartRequest");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataCartRequest;
 }
 
-function getDataCommodity(){
-    $.import("xscartrequesttool.services.dataLayer.commodity","dataCommodity");
+function getDataCommodity() {
+    $.import("xscartrequesttool.services.dataLayer.commodity", "dataCommodity");
     return $.xscartrequesttool.services.dataLayer.commodity.dataCommodity;
 }
 
-function getDataInfrastructureOfWork(){
-    $.import("xscartrequesttool.services.dataLayer.infrastructureOfWork","dataInfrastructureOfWork");
+function getDataInfrastructureOfWork() {
+    $.import("xscartrequesttool.services.dataLayer.infrastructureOfWork", "dataInfrastructureOfWork");
     return $.xscartrequesttool.services.dataLayer.infrastructureOfWork.dataInfrastructureOfWork;
 }
 
-function getDataLocationOfWork(){
-    $.import("xscartrequesttool.services.dataLayer.locationOfWork","dataLocationOfWork");
+function getDataLocationOfWork() {
+    $.import("xscartrequesttool.services.dataLayer.locationOfWork", "dataLocationOfWork");
     return $.xscartrequesttool.services.dataLayer.locationOfWork.dataLocationOfWork;
 }
 
-function getDataModal(){
-    $.import("xscartrequesttool.services.dataLayer.modal","dataModal");
+function getDataModal() {
+    $.import("xscartrequesttool.services.dataLayer.modal", "dataModal");
     return $.xscartrequesttool.services.dataLayer.modal.dataModal;
 }
 
 function getDataCrtSubject() {
-    $.import("xscartrequesttool.services.dataLayer.subject","dataCrtSubject");
+    $.import("xscartrequesttool.services.dataLayer.subject", "dataCrtSubject");
     return $.xscartrequesttool.services.dataLayer.subject.dataCrtSubject;
 }
 
 function getDataCrtType() {
-    $.import("xscartrequesttool.services.dataLayer.crtType","dataCrtType");
+    $.import("xscartrequesttool.services.dataLayer.crtType", "dataCrtType");
     return $.xscartrequesttool.services.dataLayer.crtType.dataCrtType;
 }
 
 function getDataLayoutSection() {
-    $.import("xscartrequesttool.services.dataLayer.layoutSection","dataLayoutSection");
+    $.import("xscartrequesttool.services.dataLayer.layoutSection", "dataLayoutSection");
     return $.xscartrequesttool.services.dataLayer.layoutSection.dataLayoutSection;
 }
 
 function getDataAttachmentInquiry() {
-    $.import("xscartrequesttool.services.dataLayer.inquiry","dataAttachmentInquiry");
+    $.import("xscartrequesttool.services.dataLayer.inquiry", "dataAttachmentInquiry");
     return $.xscartrequesttool.services.dataLayer.inquiry.dataAttachmentInquiry;
 }
 
 function getDataTemplateType() {
-    $.import("xscartrequesttool.services.dataLayer.template","dataTemplateType");
+    $.import("xscartrequesttool.services.dataLayer.template", "dataTemplateType");
     return $.xscartrequesttool.services.dataLayer.template.dataTemplateType;
 }
 
 function getDataTeam() {
-    $.import("xscartrequesttool.services.dataLayer.team","dataTeam");
+    $.import("xscartrequesttool.services.dataLayer.team", "dataTeam");
     return $.xscartrequesttool.services.dataLayer.team.dataTeam;
 }
 
 function getDataTrainingType() {
-    $.import("xscartrequesttool.services.dataLayer.training","dataTrainingType");
+    $.import("xscartrequesttool.services.dataLayer.training", "dataTrainingType");
     return $.xscartrequesttool.services.dataLayer.training.dataTrainingType;
 }
 
 function getDataCatalogType() {
-    $.import("xscartrequesttool.services.dataLayer.catalog","dataCatalogType");
+    $.import("xscartrequesttool.services.dataLayer.catalog", "dataCatalogType");
     return $.xscartrequesttool.services.dataLayer.catalog.dataCatalogType;
 }
 
@@ -730,33 +745,33 @@ function getDataNewCartRequestRiskFunded() {
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataRequestRiskFunded;
 }
 
-function getDataUserRole(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataUserRole");
+function getDataUserRole() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataUserRole");
     return $.xscartrequesttool.services.dataLayer.admin.dataUserRole;
 }
 
-function getDataRole(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataRole");
+function getDataRole() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataRole");
     return $.xscartrequesttool.services.dataLayer.admin.dataRole;
 }
 
-function getDataPermission(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataPermission");
+function getDataPermission() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataPermission");
     return $.xscartrequesttool.services.dataLayer.admin.dataPermission;
 }
 
-function getDataRolePermission(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataRolePermission");
+function getDataRolePermission() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataRolePermission");
     return $.xscartrequesttool.services.dataLayer.admin.dataRolePermission;
 }
 
-function getDataResource(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataResource");
+function getDataResource() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataResource");
     return $.xscartrequesttool.services.dataLayer.admin.dataResource;
 }
 
-function getDataConfig(){
-    $.import("xscartrequesttool.services.dataLayer.util","dataConfiguration");
+function getDataConfig() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dataConfiguration");
     return $.xscartrequesttool.services.dataLayer.util.dataConfiguration;
 }
 
@@ -775,156 +790,161 @@ function getDataNoteType() {
     return $.xscartrequesttool.services.dataLayer.newCartRequest.dataNoteType;
 }
 
-function getDataLogin(){
-    $.import("xscartrequesttool.services.dataLayer.admin","dataLogin");
+function getDataLogin() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataLogin");
     return $.xscartrequesttool.services.dataLayer.admin.dataLogin;
 }
 
-function getDataTopic(){
-    $.import("xscartrequesttool.services.dataLayer.topic","dataTopic");
+function getDataTopic() {
+    $.import("xscartrequesttool.services.dataLayer.topic", "dataTopic");
     return $.xscartrequesttool.services.dataLayer.topic.dataTopic;
 }
 
-function getDataProcessingReportMessage(){
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataProcessingReportMessage");
+function getDataProcessingReportMessage() {
+    $.import("xscartrequesttool.services.dataLayer.processingReport", "dataProcessingReportMessage");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataProcessingReportMessage;
 }
 
-function getDataRequestMessage(){
-	$.import("xscartrequesttool.services.dataLayer.shoppingCartHistory","dataRequestMessage");
-	return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataRequestMessage;
+function getDataRequestMessage() {
+    $.import("xscartrequesttool.services.dataLayer.shoppingCartHistory", "dataRequestMessage");
+    return $.xscartrequesttool.services.dataLayer.shoppingCartHistory.dataRequestMessage;
 }
 
-function getDataStatus(){
-	$.import("xscartrequesttool.services.dataLayer.status","dataStatus");
-	return $.xscartrequesttool.services.dataLayer.status.dataStatus;
+function getDataStatus() {
+    $.import("xscartrequesttool.services.dataLayer.status", "dataStatus");
+    return $.xscartrequesttool.services.dataLayer.status.dataStatus;
 }
 
-function getDataCommodity(){
-    $.import("xscartrequesttool.services.dataLayer.commodity","dataCommodity");
-    return $.xscartrequesttool.services.dataLayer.commodity.dataCommodity;
-}
-
-function getDataCountry(){
-    $.import("xscartrequesttool.services.dataLayer.country","dataCountry");
-    return $.xscartrequesttool.services.dataLayer.country.dataCountry;
-}
-
-function getDataAttachmentStore(){
-    $.import("xscartrequesttool.services.dataLayer.attachment","dataAttachmentStore");
+function getDataAttachmentStore() {
+    $.import("xscartrequesttool.services.dataLayer.attachment", "dataAttachmentStore");
     return $.xscartrequesttool.services.dataLayer.attachment.dataAttachmentStore;
 }
 
 function getDataVendorDataProtection() {
-	$.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataVendorDataProtection");
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorDataProtection");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorDataProtection;
 }
 
 function getDataChangeVendorSupportingDocumentation() {
-	$.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataChangeVendorSupportingDocumentation");
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataChangeVendorSupportingDocumentation");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataChangeVendorSupportingDocumentation;
 }
 
 function getDataChangeVendorSelection() {
-	$.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry","dataChangeVendorSelection");
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataChangeVendorSelection");
     return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataChangeVendorSelection;
 }
 
 function getDataBudgetYear() {
-	$.import("xscartrequesttool.services.dataLayer.admin","dataBudgetYear");
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataBudgetYear");
     return $.xscartrequesttool.services.dataLayer.admin.dataBudgetYear;
 }
 
 function getDataPurchaseOrderService() {
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataPurchaseOrderService");
+    $.import("xscartrequesttool.services.dataLayer.processingReport", "dataPurchaseOrderService");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataPurchaseOrderService;
 }
 
 function getDataInquiryStatus() {
-    $.import("xscartrequesttool.services.dataLayer.processingReport","dataInquiry");
+    $.import("xscartrequesttool.services.dataLayer.processingReport", "dataInquiry");
     return $.xscartrequesttool.services.dataLayer.processingReport.dataInquiry;
 }
 
 function getDataUserTeam() {
-    $.import("xscartrequesttool.services.dataLayer.admin","dataUserTeam");
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataUserTeam");
     return $.xscartrequesttool.services.dataLayer.admin.dataUserTeam;
 }
 
-function getDataReport(){
-    $.import("xscartrequesttool.services.dataLayer.report","dataReport");
+function getDataReport() {
+    $.import("xscartrequesttool.services.dataLayer.report", "dataReport");
     return $.xscartrequesttool.services.dataLayer.report.dataReport;
 }
 
-function getDataRequestChangedColumn(){
-	$.import("xscartrequesttool.services.dataLayer.util","dataRequestChangedColumn");
+function getDataRequestChangedColumn() {
+    $.import("xscartrequesttool.services.dataLayer.util", "dataRequestChangedColumn");
     return $.xscartrequesttool.services.dataLayer.util.dataRequestChangedColumn;
 }
 
-function getDataApplication(){
-	$.import("xscartrequesttool.services.dataLayer.admin","dataApplication");
+function getDataUserDataProtection() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataDataProtection");
+    return $.xscartrequesttool.services.dataLayer.admin.dataDataProtection;
+}
+
+function getDataApplication() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataApplication");
     return $.xscartrequesttool.services.dataLayer.admin.dataApplication;
 }
 
+function getDataVendorRequestInquiryChangedColumn() {
+    $.import("xscartrequesttool.services.dataLayer.vendorRequestInquiry", "dataVendorRequestInquiryChangedColumn");
+    return $.xscartrequesttool.services.dataLayer.vendorRequestInquiry.dataVendorRequestInquiryChangedColumn;
+}
+
+function getDataGDPRSearch() {
+    $.import("xscartrequesttool.services.dataLayer.admin", "dataGDPRSearch");
+    return $.xscartrequesttool.services.dataLayer.admin.dataGDPRSearch;
+}
+
 /********************
-* E-MAILS TEMPLATES *
-********************/
+ * E-MAILS TEMPLATES *
+ ********************/
 
 function getCartRequestMail() {
-    $.import("xscartrequesttool.services.mails","cartRequestMail");
+    $.import("xscartrequesttool.services.mails", "cartRequestMail");
     return $.xscartrequesttool.services.mails.cartRequestMail;
 }
 
 function getCartRequestMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory","cartRequestMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.shoppingCartHistory", "cartRequestMailSendLib");
     return $.xscartrequesttool.services.businessLayer.shoppingCartHistory.cartRequestMailSendLib;
 }
 
 function getChangeVendorMail() {
-    $.import("xscartrequesttool.services.mails","changeVendorMail");
+    $.import("xscartrequesttool.services.mails", "changeVendorMail");
     return $.xscartrequesttool.services.mails.changeVendorMail;
 }
 
 function getChangeVendorMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","changeVendorMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend", "changeVendorMailSendLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.changeVendorMailSendLib;
 }
 
 function getCrtInquiryMail() {
-    $.import("xscartrequesttool.services.mails","crtInquiryMail");
+    $.import("xscartrequesttool.services.mails", "crtInquiryMail");
     return $.xscartrequesttool.services.mails.crtInquiryMail;
 }
 
 function getCrtInquiryMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.inquiry","inquiryMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.inquiry", "inquiryMailSendLib");
     return $.xscartrequesttool.services.businessLayer.inquiry.inquiryMailSendLib;
 }
 
 function getExtendVendorMail() {
-    $.import("xscartrequesttool.services.mails","extendVendorMail");
+    $.import("xscartrequesttool.services.mails", "extendVendorMail");
     return $.xscartrequesttool.services.mails.extendVendorMail;
 }
 
 function getExtendVendorMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","extendVendorMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend", "extendVendorMailSendLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.extendVendorMailSendLib;
 }
 
 function getVendorInquiryMail() {
-    $.import("xscartrequesttool.services.mails","vendorInquiryMail");
+    $.import("xscartrequesttool.services.mails", "vendorInquiryMail");
     return $.xscartrequesttool.services.mails.vendorInquiryMail;
 }
 
 function getVendorInquiryMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","vendorInquiryMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend", "vendorInquiryMailSendLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.vendorInquiryMailSendLib;
 }
 
 function getVendorMail() {
-    $.import("xscartrequesttool.services.mails","vendorMail");
+    $.import("xscartrequesttool.services.mails", "vendorMail");
     return $.xscartrequesttool.services.mails.vendorMail;
 }
 
 function getVendorRequestMailSend() {
-    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend","vendorRequestMailSendLib");
+    $.import("xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend", "vendorRequestMailSendLib");
     return $.xscartrequesttool.services.businessLayer.vendorRequestInquiry.mailSend.vendorRequestMailSendLib;
 }

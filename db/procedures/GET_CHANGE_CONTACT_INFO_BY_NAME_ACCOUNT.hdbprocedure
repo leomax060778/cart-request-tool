@@ -1,0 +1,26 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_CHANGE_CONTACT_INFO_BY_NAME_ACCOUNT" (
+    IN in_vendor_name NVARCHAR(511),
+    IN in_vendor_account NVARCHAR(255),
+    OUT out_result TABLE(
+                         VENDOR_CONTACT_NAME NVARCHAR(255),
+                         VENDOR_CONTACT_EMAIL NVARCHAR(255),
+                         VENDOR_CONTACT_PHONE NVARCHAR(255),
+                         MASKED_VENDOR TINYINT
+                         )
+)
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER
+	DEFAULT SCHEMA "CART_REQUEST_TOOL"
+	READS SQL DATA AS
+BEGIN
+    out_result = SELECT  VENDOR_CONTACT_NAME,
+                         VENDOR_CONTACT_EMAIL,
+                         VENDOR_CONTACT_PHONE,
+                         MASKED_VENDOR
+                 FROM "CHANGE_VENDOR_REQUEST"
+                 WHERE UPPER(TRIM(VENDOR_NAME)) = UPPER(TRIM(in_vendor_name))
+                    AND UPPER(TRIM(VENDOR_ACCOUNT)) = in_vendor_account
+                    AND ENABLED = 1
+                    AND DELETED = 0
+                 ORDER BY UPPER(TRIM(VENDOR_CONTACT_NAME));
+END;

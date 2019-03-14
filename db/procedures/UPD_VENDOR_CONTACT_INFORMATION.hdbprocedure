@@ -1,28 +1,29 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_VENDOR_CONTACT_INFORMATION" (
-  IN in_vendor_contact_information_id bigint,
-  IN in_name nvarchar(255),
-  IN in_phone nvarchar(255),
-  IN in_email nvarchar(255),
-  IN in_vendor_id bigint,
-  IN in_default_contact_information tinyint,
-  IN in_modified_user_id bigint,
-  OUT out_result bigint
+  IN in_vendor_contact_information_id BIGINT,
+  IN in_name NVARCHAR(255),
+  IN in_phone NVARCHAR(255),
+  IN in_email NVARCHAR(255),
+  IN in_vendor_id BIGINT,
+  IN in_default_contact_information TINYINT,
+  IN in_masked_vendor TINYINT,
+  IN in_modified_user_id BIGINT,
+  OUT out_result BIGINT
 )
 LANGUAGE SQLSCRIPT
 SQL SECURITY INVOKER
 DEFAULT SCHEMA "CART_REQUEST_TOOL"
 AS
 BEGIN
-	UPDATE vendorCI
-	SET vendorCI.name = in_name,
-		vendorCI.phone = in_phone,
-		vendorCI.email = in_email,
-		vendorCI.vendor_id = in_vendor_id,
-		vendorCI.default_contact_information = in_default_contact_information,
-		vendorCI.modified_date_tz = CURRENT_TIMESTAMP,
-		vendorCI.modified_user_id = in_modified_user_id
-	FROM "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION" vendorCI
-	WHERE vendorCI.vendor_contact_information_id = in_vendor_contact_information_id;
+	UPDATE "CART_REQUEST_TOOL"."VENDOR_CONTACT_INFORMATION"
+	SET NAME = in_name,
+		PHONE = in_phone,
+		EMAIL = in_email,
+		VENDOR_ID = in_vendor_id,
+		DEFAULT_CONTACT_INFORMATION = in_default_contact_information,
+		MASKED_VENDOR = in_masked_vendor,
+		MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+		MODIFIED_USER_ID = in_modified_user_id
+		WHERE VENDOR_CONTACT_INFORMATION_ID = in_vendor_contact_information_id;
 			
 SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_USER_GDPR_SEARCH" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_GDPR_SEARCH"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="USER_NAME" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="USER_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="USER_NAME"/>
+    </attribute>
+    <attribute id="FIRST_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="FIRST_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="FIRST_NAME"/>
+    </attribute>
+    <attribute id="LAST_NAME" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="LAST_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="LAST_NAME"/>
+    </attribute>
+    <attribute id="USER_ID" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="USER_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="USER_ID"/>
+    </attribute>
+    <attribute id="ENABLED" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="ENABLED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="ENABLED"/>
+    </attribute>
+    <attribute id="DELETED" order="6" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DELETED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="DELETED"/>
+    </attribute>
+    <attribute id="DATA_PROTECTION_ENABLED" order="7" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="DATA_PROTECTION_ENABLED"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="DATA_PROTECTION_ENABLED"/>
+    </attribute>
+    <attribute id="EMAIL" order="8" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="EMAIL"/>
+    </attribute>
+    <attribute id="PHONE" order="9" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="USER" columnName="PHONE"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="USER"/>
+        <columnFilter columnName="DATA_PROTECTION_ENABLED">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="USER" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

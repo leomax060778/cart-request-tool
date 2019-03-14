@@ -77,13 +77,13 @@ function insertCurrency(curBody, userId) {
             }
         });
         if (updateCount) {
-            var budgetYearId = curBody.BUDGET_YEAR_ID ? curBody.BUDGET_YEAR_ID : budgetYear.getDefaultBudgetYear();
+            var budgetYearId = curBody.BUDGET_YEAR_ID ? curBody.BUDGET_YEAR_ID : budgetYear.getDefaultBudgetYear()[0].BUDGET_YEAR_ID;
             data.updateRequestBudget(budgetYearId);
         }
         dbHelper.commit();
     } catch (e) {
         dbHelper.rollback();
-        throw ErrorLib.getErrors().CustomError("", e.toString(), "insertCurrency");
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
     } finally {
         dbHelper.closeConnection();
     }
@@ -91,27 +91,21 @@ function insertCurrency(curBody, userId) {
     return result;
 }
 
-function getCurrencyById(currency_id, userId) {
+function getCurrencyById(currencyId, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter userId is not found",
-            "currencyService/handleGet/getCurrencyById", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
-    if (!currency_id) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter currency_id is not found",
-            "", currency_id);
+    if (!currencyId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter currencyId is not found", "", currencyId);
     }
-    return data.getCurrencyById(currency_id);
+    return data.getCurrencyById(currencyId);
 }
 
 function updateCurrency(objCurrency, userId) {
     if (validateUpdateCurrency(objCurrency, userId)) {
         try {
             if (!existCurrency(objCurrency.CURRENCY_ID, userId)) {
-                throw ErrorLib.getErrors().CustomError("",
-                    "",
-                    "The object Currency does not exist");
+                throw ErrorLib.getErrors().CustomError("", "", "The object Currency does not exist");
             } else {
                 var result = data.updateCurrency(objCurrency, userId);
             }
@@ -119,7 +113,7 @@ function updateCurrency(objCurrency, userId) {
         }
         catch (e) {
             dbHelper.rollback();
-            throw ErrorLib.getErrors().CustomError("", e.toString(), "updateCurrency");
+            throw ErrorLib.getErrors().CustomError("", "", e.toString());
         }
         finally {
             dbHelper.closeConnection();
@@ -129,30 +123,24 @@ function updateCurrency(objCurrency, userId) {
     }
 }
 
-function deleteCurrency(currency_id, userId) {
+function deleteCurrency(currencyId, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter userId is not found",
-            "", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
-    if (!currency_id) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter currency_id is not found",
-            "", currency_id);
+    if (!currencyId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter currencyId is not found", "", currencyId);
     }
     try {
-        if (!existCurrency(currency_id, userId)) {
-            throw ErrorLib.getErrors().CustomError("",
-                "",
-                "The object Currency does not exist");
+        if (!existCurrency(currencyId, userId)) {
+            throw ErrorLib.getErrors().CustomError("", "", "The object Currency does not exist");
         } else {
-            var result = data.deleteCurrency(currency_id, userId);
+            var result = data.deleteCurrency(currencyId, userId);
         }
         dbHelper.commit();
     }
     catch (e) {
         dbHelper.rollback();
-        throw ErrorLib.getErrors().CustomError("", e.toString(), "updateCurrency");
+        throw ErrorLib.getErrors().CustomError("", "", e.toString());
     }
     finally {
         dbHelper.closeConnection();
@@ -163,9 +151,7 @@ function deleteCurrency(currency_id, userId) {
 function validateInsertCurrency(objCurrency, userId) {
 
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter userId is not found",
-            "", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 
     var isValid = false;
@@ -181,9 +167,7 @@ function validateInsertCurrency(objCurrency, userId) {
     }
 
     if (!objCurrency) {
-        throw ErrorLib.getErrors().CustomError("",
-            "",
-            "The object Currency is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Currency is not found");
     }
 
     try {
@@ -216,9 +200,7 @@ function validateInsertCurrency(objCurrency, userId) {
 function validateUpdateCurrency(objCurrency, userId) {
 
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter userId is not found",
-            "", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
 
     var isValid = false;
@@ -233,9 +215,7 @@ function validateUpdateCurrency(objCurrency, userId) {
     }
 
     if (!objCurrency) {
-        throw ErrorLib.getErrors().CustomError("",
-            "",
-            "The object Currency is not found");
+        throw ErrorLib.getErrors().CustomError("", "", "The object Currency is not found");
     }
 
     try {
@@ -288,25 +268,21 @@ function validateType(key, value) {
     return valid;
 }
 
-function existCurrency(currency_id, userId) {
-    return getManualCurrencyById(currency_id, userId).length > 0;
+function existCurrency(currencyId, userId) {
+    return getManualCurrencyById(currencyId, userId).length > 0;
 }
 
 function existCurrencyBudgetYear(objCurrency) {
     return Object.keys(data.getCurrencyByAbbreviationYear(objCurrency)).length > 0;
 }
 
-function getManualCurrencyById(currency_id, userId) {
+function getManualCurrencyById(currencyId, userId) {
     if (!userId) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter userId is not found",
-            "", userId);
+        throw ErrorLib.getErrors().BadRequest("The Parameter userId is not found", "", userId);
     }
-    if (!currency_id) {
-        throw ErrorLib.getErrors().BadRequest(
-            "The Parameter currency_id is not found",
-            "", currency_id);
+    if (!currencyId) {
+        throw ErrorLib.getErrors().BadRequest("The Parameter currencyId is not found", "", currencyId);
     }
 
-    return data.getManualCurrencyById(currency_id);
+    return data.getManualCurrencyById(currencyId);
 }

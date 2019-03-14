@@ -8,6 +8,7 @@ var businessAttachmentVendor = mapper.getAttachmentVendor();
 var businessAttachment = mapper.getAttachment();
 var businessUser = mapper.getUser();
 var businessStatus = mapper.getVendorRequestInquiryStatus();
+var businessChangeColumn = mapper.getVendorRequestInquiryChangedColumn();
 
 var mail = mapper.getMail();
 var changeVendorMailSend = mapper.getChangeVendorMailSend();
@@ -153,13 +154,15 @@ function getAllChangeVendorRequest() {
     return change.getAllChangeVendorRequest();
 }
 
-//Update change vendor request 
+//Update change vendor request
 function updateChangeVendorRequest(objChangeVendorRequest, userId) {
     if (!existChangeVendorRequest(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId)) {
         throw ErrorLib.getErrors().CustomError("", "", "The object Change Vendor Request " + objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID + " does not exist");
     }
     validateParams(objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID, userId);
-
+    if (Object.keys(objChangeVendorRequest.CHANGED_FIELDS).length) {
+        businessChangeColumn.insertChangeVendorRequestChangedColumn(objChangeVendorRequest, userId);
+    }
     if (Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.TO_BE_CHECKED && Number(objChangeVendorRequest.PREVIOUS_STATUS_ID) !== statusMap.CHECKED) {
         objChangeVendorRequest.STATUS_ID = statusMap.TO_BE_CHECKED;
         businessStatus.updateChangeVendorRequestStatus(objChangeVendorRequest, userId);

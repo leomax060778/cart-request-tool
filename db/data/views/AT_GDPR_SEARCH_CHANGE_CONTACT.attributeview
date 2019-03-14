@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dimension:dimension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Dimension="http://www.sap.com/ndb/BiModelDimension.ecore" schemaVersion="1.2" id="AT_CHANGE_CONTACT_GDPR_SEARCH" applyPrivilegeType="ANALYTIC_PRIVILEGE" checkAnalyticPrivileges="true" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" dimensionType="Standard">
+  <descriptions defaultDescription="AT_CHANGE_CONTACT_GDPR_SEARCH"/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <attributes>
+    <attribute id="CHANGE_VENDOR_REQUEST_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="CHANGE_VENDOR_REQUEST_ID"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST" columnName="CHANGE_VENDOR_REQUEST_ID"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_NAME" order="2" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_NAME"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST" columnName="VENDOR_CONTACT_NAME"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_EMAIL" order="3" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_EMAIL"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST" columnName="VENDOR_CONTACT_EMAIL"/>
+    </attribute>
+    <attribute id="VENDOR_CONTACT_PHONE" order="4" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="VENDOR_CONTACT_PHONE"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST" columnName="VENDOR_CONTACT_PHONE"/>
+    </attribute>
+    <attribute id="MASKED_VENDOR" order="5" attributeHierarchyActive="false" displayAttribute="false">
+      <descriptions defaultDescription="MASKED_VENDOR"/>
+      <keyMapping schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST" columnName="MASKED_VENDOR"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <privateDataFoundation>
+    <tableProxies>
+      <tableProxy>
+        <table schemaName="CART_REQUEST_TOOL" columnObjectName="CHANGE_VENDOR_REQUEST"/>
+        <columnFilter columnName="MASKED_VENDOR">
+          <valueFilter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </columnFilter>
+      </tableProxy>
+    </tableProxies>
+    <joins/>
+    <layout>
+      <shapes>
+        <shape modelObjectName="CHANGE_VENDOR_REQUEST" modelObjectNameSpace="CART_REQUEST_TOOL" modelObjectType="catalog">
+          <upperLeftCorner x="70" y="30"/>
+        </shape>
+        <shape modelObjectName="DataFoundation" modelObjectNameSpace="DataFoundation" modelObjectType="repository">
+          <upperLeftCorner x="40" y="85"/>
+          <rectangleSize height="0" width="0"/>
+        </shape>
+      </shapes>
+    </layout>
+  </privateDataFoundation>
+  <hierarchies/>
+</Dimension:dimension>

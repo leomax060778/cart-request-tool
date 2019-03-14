@@ -1,6 +1,15 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_ID" ( 
-	in in_user_id bigint,
-	OUT USER TABLE(USER_ID bigint, PASSWORD nvarchar(255), USER_NAME nvarchar(255), FIRST_NAME nvarchar(255), LAST_NAME nvarchar(255), EMAIL nvarchar(255), PHONE nvarchar(255), ROLENAME nvarchar(255))
+	in in_user_id BIGINT,
+	OUT USER TABLE(USER_ID BIGINT,
+	               PASSWORD NVARCHAR(255),
+	               USER_NAME NVARCHAR(255),
+	               FIRST_NAME NVARCHAR(255),
+	               LAST_NAME NVARCHAR(255),
+	               EMAIL NVARCHAR(255),
+	               PHONE NVARCHAR(255),
+	               ROLENAME NVARCHAR(255),
+	               USER_DATA_PROTECTION_STATUS_ID BIGINT
+	              )
 )
  
 	LANGUAGE SQLSCRIPT
@@ -8,14 +17,20 @@ PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::GET_USER_BY_ID" 
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	READS SQL DATA AS
 BEGIN
-/***************************** 
-	Write your procedure logic 
- *****************************/
-  USER = SELECT "USER".USER_ID, PASSWORD, USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, PHONE, "ROLE"."NAME" as ROLENAME
- 		FROM "USER" 
- 		LEFT JOIN USER_ROLE ON "USER".USER_ID = USER_ROLE.USER_ID
- 		LEFT JOIN "ROLE" ON "ROLE".ROLE_ID = USER_ROLE.ROLE_ID
- 		WHERE "USER".USER_ID = in_user_id AND 
- 		"USER".enabled = 1 AND
- 		"USER".deleted = 0;
+  USER = SELECT US.USER_ID,
+                US.PASSWORD,
+                US.USER_NAME,
+                US.FIRST_NAME,
+                US.LAST_NAME,
+                US.EMAIL,
+                US.PHONE,
+                ROLE.NAME as ROLENAME,
+                COALESCE(UDP.USER_DATA_PROTECTION_STATUS_ID, 0) AS USER_DATA_PROTECTION_STATUS_ID
+ 		 FROM "USER" US
+ 		     LEFT JOIN "USER_DATA_PROTECTION" UDP ON UDP.USER_ID = US.USER_ID AND UDP.USER_DATA_PROTECTION_STATUS_ID = 2 --2: Approved
+             LEFT JOIN "USER_ROLE" USR ON US.USER_ID = USR.USER_ID
+             LEFT JOIN "ROLE" ROLE ON ROLE.ROLE_ID = USR.ROLE_ID
+ 		 WHERE US.USER_ID = in_user_id
+ 		   AND US.enabled = 1
+ 		   AND US.deleted = 0;
 END;

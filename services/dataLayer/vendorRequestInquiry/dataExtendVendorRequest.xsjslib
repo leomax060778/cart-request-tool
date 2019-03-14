@@ -119,7 +119,6 @@ function deleteExtendVendorRequest(objExtendVendorRequest, userId) {
 function updateExtendVendorRequest(objExtendVendorRequest, userId) {
     var parameters = {};
     parameters.in_extend_vendor_request_id = objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID;
-    parameters.in_user_id = userId;
     parameters.in_entity_id = objExtendVendorRequest.ENTITY_ID;
     parameters.in_commodity_id = objExtendVendorRequest.COMMODITY_ID;
     parameters.in_service_supplier = objExtendVendorRequest.SERVICE_SUPPLIER;

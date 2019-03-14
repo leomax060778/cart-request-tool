@@ -1,0 +1,20 @@
+PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_USER_DATA_PROTECTION_STATUS" (
+    IN in_status_id BIGINT,
+    IN in_user_data_protection_id BIGINT,
+    IN in_modified_user_id BIGINT,
+    OUT out_result BIGINT
+)
+    LANGUAGE SQLSCRIPT
+    SQL SECURITY INVOKER
+    DEFAULT SCHEMA "CART_REQUEST_TOOL"
+    AS
+BEGIN
+    UPDATE USDP
+    SET USDP.USER_DATA_PROTECTION_STATUS_ID = in_status_id,
+        USDP.MODIFIED_DATE_TZ = CURRENT_TIMESTAMP,
+        USDP.MODIFIED_USER_ID = in_modified_user_id
+    FROM "USER_DATA_PROTECTION" USDP
+    WHERE USDP.USER_DATA_PROTECTION_ID = in_user_data_protection_id;
+
+    SELECT ::ROWCOUNT INTO out_result FROM DUMMY;
+END;
