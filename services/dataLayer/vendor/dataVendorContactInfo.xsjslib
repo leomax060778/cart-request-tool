@@ -227,7 +227,7 @@ function updateDefaultVendorContactInformationManual(vendorContactInfoObj, userI
 //Update Vendor Contact Information mask flag to protect the selected contact data
 function updateVendorContactInformationMask(vendorContactInfoObj, userId) {
 	var param = {};
-	param.in_vendor_contact_information_id = vendorContactInfoObj.VENDOR_CONTACT_INFORMATION_ID;
+	param.in_vendor_contact_information = vendorContactInfoObj.CONTACT;
     param.in_mask = config.getDataProtectionMask();
 	param.in_modified_user_id = userId;
 	param.out_result = '?';
@@ -238,21 +238,17 @@ function updateVendorContactInformationMask(vendorContactInfoObj, userId) {
 //Update Alternative Vendor Contact Information mask flag to protect the selected contact data
 function updateAlternativeVendorMask(alternativeVendorObj, userId) {
 	var param = {};
-	param.in_vendor_id = alternativeVendorObj.VENDOR_ID;
-	param.in_contact_name = alternativeVendorObj.CONTACT_NAME;
+	param.in_contact = alternativeVendorObj.CONTACT;
     param.in_mask = config.getDataProtectionMask();
 	param.in_modified_user_id = userId;
 	param.out_result = '?';
-
 	return db.executeScalar(UPD_ALTERNATIVE_VENDOR_CONTACT_MASK, param, 'out_result');
 }
 
 //Update Extend Vendor Request Contact Information mask flag to protect the selected contact data
 function updateExtendVendorContactMask(objExtendVendorRequest, userId) {
 	var param = {};
-	param.in_vendor_legal_name = objExtendVendorRequest.VENDOR_LEGAL_NAME;
-	param.in_contact_email = objExtendVendorRequest.CONTACT_EMAIL;
-	param.in_contact_name = objExtendVendorRequest.CONTACT_NAME;
+	param.in_contact = objExtendVendorRequest.CONTACT;
     param.in_mask = config.getDataProtectionMask();
 	param.in_modified_user_id = userId;
 	param.out_result = '?';
@@ -263,10 +259,7 @@ function updateExtendVendorContactMask(objExtendVendorRequest, userId) {
 //Update Change Vendor Request Contact Information mask flag to protect the selected contact data
 function updateChangeVendorContactMask(objChangeVendorRequest, userId) {
 	var param = {};
-	param.in_vendor_name = objChangeVendorRequest.VENDOR_NAME;
-	param.in_vendor_account = objChangeVendorRequest.VENDOR_ACCOUNT;
-	param.in_vendor_contact_email = objChangeVendorRequest.VENDOR_CONTACT_EMAIL;
-	param.in_vendor_contact_name = objChangeVendorRequest.VENDOR_CONTACT_NAME;
+	param.in_contact = objChangeVendorRequest.CONTACT;
 	param.in_mask = config.getDataProtectionMask();
 	param.in_modified_user_id = userId;
 	param.out_result = '?';

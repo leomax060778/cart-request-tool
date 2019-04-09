@@ -19,9 +19,9 @@ function validatePermissionByUserRole(reportType, userRole) {
     var result = false;
     switch (userRole) {
         case userRoleMap.SUPER_ADMIN:
-            if (Number(reportType) !== Number(reportTypeMap.CART_REPORT_TEAM)) {
-                result = true;
-            }
+        	if (Number(reportType) !== Number(reportTypeMap.CART_REPORT_TEAM)) {
+        		result = true;
+        	}
             break;
         case userRoleMap.REQUESTER:
             if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER) || Number(reportType) === Number(reportTypeMap.VENDOR)) {
@@ -29,9 +29,9 @@ function validatePermissionByUserRole(reportType, userRole) {
             }
             break;
         case userRoleMap.BUSINESS_MGT:
-            if (Number(reportType) !== Number(reportTypeMap.CART_REPORT_TEAM)) {
-                result = true;
-            }
+        	if (Number(reportType) !== Number(reportTypeMap.CART_REPORT_TEAM)) {
+        		result = true;
+        	}
             break;
         case userRoleMap.BUDGET_OWNER:
             if (Number(reportType) === Number(reportTypeMap.CART_REPORT_REQUESTER) || Number(reportType) === Number(reportTypeMap.CART_REPORT_TEAM) || Number(reportType) === Number(reportTypeMap.VENDOR)) {
@@ -47,17 +47,17 @@ function getReport(reportType, userId) {
     var result = [];
     var userRole = Number(dataUserRole.getUserRoleByUserId(userId)[0].ROLE_ID);
     if (validatePermissionByUserRole(reportType, userRole)) {
-        switch (Number(reportType)) {
-            case reportTypeMap.CART_REPORT_ALL:
-                result = data.getReport(userId);
-                break;
-            case reportTypeMap.CART_REPORT_REQUESTER:
-                result = data.getReportByUserId(userId);
-                break;
-            case reportTypeMap.CART_REPORT_TEAM:
-                result = data.getReportByTeam(userId);
-                break;
-        }
+    	switch (Number(reportType)) {
+	    	case reportTypeMap.CART_REPORT_ALL:
+	    		result = data.getReport(userId);
+	    		break;
+	    	case reportTypeMap.CART_REPORT_REQUESTER:
+	    		result = data.getReportByUserId(userId);
+	    		break;
+	    	case reportTypeMap.CART_REPORT_TEAM:
+	    		result = data.getReportByTeam(userId);
+	    		break;
+    	}
         result = JSON.parse(JSON.stringify(result));
         result.forEach(function (elem) {
             if (Number(elem.STATUS_ID) === statusMap.APPROVED || Number(elem.STATUS_ID) === statusMap.CANCELLED) {
@@ -66,38 +66,35 @@ function getReport(reportType, userId) {
             if (Number(elem.DAYS_OUTSTANDING) < 0 || isNaN(elem.DAYS_OUTSTANDING)) {
                 elem.DAYS_OUTSTANDING = 'N/A';
             } else {
-                elem.DAYS_OUTSTANDING = Number(elem.DAYS_OUTSTANDING);
+            	elem.DAYS_OUTSTANDING = Number(elem.DAYS_OUTSTANDING);
             }
             if (Number(elem.STATUS_ID) !== statusMap.APPROVED) {
                 elem.PURCHASE_TURN_AROUND_TIME = 'N/A';
             } else {
-                elem.PURCHASE_TURN_AROUND_TIME = Number(elem.PURCHASE_TURN_AROUND_TIME);
+            	elem.PURCHASE_TURN_AROUND_TIME = Number(elem.PURCHASE_TURN_AROUND_TIME);
             }
             if(Number(elem.MATERIAL_CATALOG_TYPE_ID) === catalogTypeIdMap.CATEGORY){
-                elem.PRODUCT_CATALOG = elem.PRODUCT_CATEGORY;
-                elem.PRODUCT_CATEGORY = elem.PRODUCT_SUB_CATEGORY;
-                elem.PRODUCT_SUB_CATEGORY = "";
+            	elem.PRODUCT_CATALOG = elem.PRODUCT_CATEGORY;
+            	elem.PRODUCT_CATEGORY = elem.PRODUCT_SUB_CATEGORY;
+            	elem.PRODUCT_SUB_CATEGORY = "";
             }
             if(!elem.ITEM) {
-                elem.ITEM = elem.SPECIAL_REQUEST_ITEM;
+            	elem.ITEM = elem.SPECIAL_REQUEST_ITEM;
             }
             if(!elem.START_DATE) {
-                elem.START_DATE = elem.SPECIAL_REQUEST_START_DATE;
+            	elem.START_DATE = elem.SPECIAL_REQUEST_START_DATE;
             }
             if(!elem.END_DATE) {
-                elem.END_DATE = elem.SPECIAL_REQUEST_END_DATE;
+            	elem.END_DATE = elem.SPECIAL_REQUEST_END_DATE;
             }
             if(!elem.AMOUNT_LINE) {
-                elem.AMOUNT_LINE = elem.SPECIAL_REQUEST_AMOUNT_LINE;
+            	elem.AMOUNT_LINE = elem.SPECIAL_REQUEST_AMOUNT_LINE;
             }
             if(!elem.BUDGET) {
-                elem.BUDGET = elem.SPECIAL_REQUEST_BUDGET;
+            	elem.BUDGET = elem.SPECIAL_REQUEST_BUDGET;
             }
             if(!elem.DESCRIPTION_PURCHASE_ORDER) {
-                elem.DESCRIPTION_PURCHASE_ORDER = elem.SPECIAL_REQUEST_DESCRIPTION;
-            }
-            if (!elem.MATERIAL_CODE) {
-                elem.MATERIAL_CODE = elem.SPECIAL_REQUEST_CODE;
+            	elem.DESCRIPTION_PURCHASE_ORDER = elem.SPECIAL_REQUEST_DESCRIPTION;
             }
             if (!elem.MATERIAL_CODE) {
             	elem.MATERIAL_CODE = elem.SPECIAL_REQUEST_CODE;
@@ -106,11 +103,11 @@ function getReport(reportType, userId) {
             elem.AMOUNT_LINE = Number(elem.AMOUNT_LINE);
         });
     } else {
-        throw ErrorLib.getErrors().BadRequest(
-            "Unauthorized request.",
-            "reportService/handleGet/getReport",
-            '{"VIEW_PERMISSION_ERROR": "report"}'
-        );
+    	throw ErrorLib.getErrors().BadRequest(
+    			"Unauthorized request.",
+    			"reportService/handleGet/getReport",
+    			'{"VIEW_PERMISSION_ERROR": "report"}'
+				);
     }
     return result;
 }
@@ -123,7 +120,7 @@ function getUserReport(userId) {
     if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getUserReport(userId);
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
+    	throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
     }
     return result;
 }
@@ -136,7 +133,7 @@ function getVendorReport(userId) {
     if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getVendorReport(userId);
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
+    	throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
     }
     return result;
 }
@@ -214,7 +211,7 @@ function getCatalogReport(userId) {
             }
         }
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
+    	throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
     }
     return result;
 }
@@ -226,7 +223,7 @@ function getCommodityReport(userId) {
     if (validatePermissionByUserRole(reportType, userRole)) {
         result = data.getCommodityReport(userId);
     } else {
-        throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
+    	throw ErrorLib.getErrors().Forbidden("", "reportService/handleGet/getReport", "The user does not have permission to Read/View this Report.");
     }
     return result;
 }
@@ -241,5 +238,5 @@ function getReportType(userId) {
     		result.push(elem);
     	}
     });
-    return result;
+	return result;
 }

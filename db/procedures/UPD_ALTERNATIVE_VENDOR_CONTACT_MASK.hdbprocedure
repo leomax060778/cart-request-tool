@@ -1,6 +1,5 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_ALTERNATIVE_VENDOR_CONTACT_MASK" (
-	IN in_vendor_id BIGINT,
-    IN in_contact_name NVARCHAR(255),
+	IN in_contact TABLE(REQUEST_ID BIGINT),
     IN in_mask NVARCHAR(60),
     IN in_modified_user_id BIGINT,
     OUT out_result BIGINT
@@ -17,7 +16,7 @@ BEGIN
     		ALTERNATIVE_VENDOR_EMAIL = in_mask,
     		MODIFIED_USER_ID = in_modified_user_id,
     		MODIFIED_DATE_TZ = CURRENT_TIMESTAMP
-    	WHERE VENDOR_ID = in_vendor_id AND UPPER(TRIM(ALTERNATIVE_VENDOR_NAME)) = UPPER(TRIM(in_contact_name));
+    	WHERE REQUEST_ID IN (SELECT REQUEST_ID FROM :in_contact);
 
     	SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

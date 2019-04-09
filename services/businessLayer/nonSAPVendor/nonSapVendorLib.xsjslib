@@ -93,12 +93,10 @@ function updateManualNonSapVendor(objVendor, userId) {
 }
 
 function updateNonSapVendorMask(objNonSapVendor, userId) {
-	if (!objNonSapVendor.NON_SAP_VENDOR_ID) {
-		throw ErrorLib.getErrors().CustomError("objNonSapVendor.NON_SAP_VENDOR_ID not found", "", objNonSapVendor);
-	}
-    if (!existNonSapVendor(objNonSapVendor.NON_SAP_VENDOR_ID, userId)) {
-        throw ErrorLib.getErrors().CustomError("The Non SAP Vendor doesn't exist", "", objNonSapVendor);
-    }
+	objNonSapVendor.CONTACT = [];
+	objNonSapVendor.NON_SAP_VENDOR.forEach(function (elem) {
+		objNonSapVendor.CONTACT.push({REQUEST_ID: elem});
+	});
     return data.updateNonSapVendorMask(objNonSapVendor, userId);
 }
 

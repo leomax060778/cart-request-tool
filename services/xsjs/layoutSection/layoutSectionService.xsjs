@@ -11,7 +11,7 @@ var GET_LAYOUT_SECTION_BY_ID = "GET_LAYOUT_SECTION_BY_ID";
 var service_name = "layoutSectionService";
 
 function processRequest() {
-    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name);
+    httpUtil.processRequest(handleGet, handlePost, handlePut, handleDelete, false, service_name, true);
 }
 
 /**

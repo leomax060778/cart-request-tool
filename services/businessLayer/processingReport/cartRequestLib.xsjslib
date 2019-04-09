@@ -291,23 +291,20 @@ function validateType(key, value) {
 }
 
 function sendMailByStatus(objRequest, mailData, userId) {
-    if (objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > 2 && Number(objRequest.STATUS_ID) < 7)) {
+    if (objRequest.STATUS_ID && (Number(objRequest.STATUS_ID) > statusMap.CHECKED && Number(objRequest.STATUS_ID) <= statusMap.CANCELLED)) {
         var cartRequestMailObj = {};
 
         cartRequestMailObj.REQUEST_ID = objRequest.REQUEST_ID;
-        var statusId = objRequest.STATUS_ID;
+        var statusId = Number(objRequest.STATUS_ID);
         switch (statusId) {
-            case '3':
-            case 3:
+            case statusMap.IN_PROCESS:
                 cartRequestMailObj.SHOPPING_CART = objRequest.SHOPPING_CART;
                 requestMailSend.sendInProcessMail(cartRequestMailObj, userId);
                 break;
-            case '4':
-            case 4:
+            case statusMap.RETURN_TO_REQUESTER:
                 requestMailSend.sendReturnToRequestMail(cartRequestMailObj.REQUEST_ID, userId);
                 break;
-            case '5':
-            case 5:
+            case statusMap.APPROVED:
                 if (objRequest.SERVICE && objRequest.SERVICE.length > 0) {
                     cartRequestMailObj.SERVICES = mailData;
                 } else {
@@ -316,8 +313,7 @@ function sendMailByStatus(objRequest, mailData, userId) {
                 cartRequestMailObj.VENDOR_NAME = objRequest.VENDOR_NAME;
                 requestMailSend.sendApprovedMail(cartRequestMailObj, userId);
                 break;
-            case '6':
-            case 6:
+            case statusMap.CANCELLED:
                 requestMailSend.sendCancelledMail(cartRequestMailObj, userId);
                 break;
         }

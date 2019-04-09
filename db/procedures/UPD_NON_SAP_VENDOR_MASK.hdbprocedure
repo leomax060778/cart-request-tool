@@ -1,14 +1,19 @@
 PROCEDURE "CART_REQUEST_TOOL"."xscartrequesttool.db.procedures::UPD_NON_SAP_VENDOR_MASK" (
-    IN in_non_sap_vendor_id bigint,
-    IN in_modified_user_id bigint,
-    IN in_mask nvarchar(60),
-    OUT out_result bigint
+    IN in_request TABLE(REQUEST_ID BIGINT),
+    IN in_modified_user_id BIGINT,
+    IN in_mask NVARCHAR(60),
+    OUT out_result BIGINT
  )
 	LANGUAGE SQLSCRIPT
 	SQL SECURITY INVOKER
 	DEFAULT SCHEMA "CART_REQUEST_TOOL"
 	AS
 BEGIN
+
+    va_non_sap_vendor = SELECT NON_SAP_VENDOR_ID
+                        FROM "CART_REQUEST_TOOL"."REQUEST"
+                        WHERE REQUEST_ID IN (SELECT REQUEST_ID FROM :in_request);
+
     UPDATE "CART_REQUEST_TOOL"."NON_SAP_VENDOR"
 	SET MASKED_NON_SAP_VENDOR = 1,
 		CONTACT_NAME = in_mask,
@@ -16,7 +21,7 @@ BEGIN
 		CONTACT_EMAIL = in_mask,
 		MODIFIED_USER_ID = in_modified_user_id,
 		MODIFIED_DATE_TZ = CURRENT_TIMESTAMP
-	WHERE NON_SAP_VENDOR_ID = in_non_sap_vendor_id;
+	WHERE NON_SAP_VENDOR_ID IN (SELECT NON_SAP_VENDOR_ID FROM :va_non_sap_vendor);
 
 	SELECT ::ROWCOUNT into out_result FROM DUMMY;
 END;

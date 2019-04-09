@@ -212,36 +212,37 @@ function updateDefaultVendorContactInformationManual(vendorContactInfoObj, userI
 
 //Update Vendor Contact Information mask flag to protect the selected contact data
 function updateVendorContactInformationMask(vendorContactInfoObj, userId) {
-    if (!vendorContactInfoObj.VENDOR_CONTACT_INFORMATION_ID) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter VENDOR_CONTACT_INFORMATION_ID was not found", "", vendorContactInfoObj);
-    }
+    vendorContactInfoObj.CONTACT = [];
+    vendorContactInfoObj.VENDOR_CONTACT_INFORMATION_ID.forEach(function (elem) {
+        vendorContactInfoObj.CONTACT.push({VENDOR_CONTACT_INFORMATION_ID: elem});
+    });
     return data.updateVendorContactInformationMask(vendorContactInfoObj, userId);
 }
 
 //Update Extend Vendor Request Contact Information mask flag to protect the selected contact data
 function updateExtendVendorContactMask(objExtendVendorRequest, userId) {
-    if (!objExtendVendorRequest.VENDOR_LEGAL_NAME) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter VENDOR_LEGAL_NAME was not found", "", objExtendVendorRequest);
-    }
+    objExtendVendorRequest.CONTACT = [];
+    objExtendVendorRequest.EXTEND_VENDOR_REQUEST_ID.forEach(function (elem) {
+        objExtendVendorRequest.CONTACT.push({EXTEND_VENDOR_REQUEST_ID: elem});
+    });
     return data.updateExtendVendorContactMask(objExtendVendorRequest, userId);
 }
 
 //Update Change Vendor Request Contact Information mask flag to protect the selected contact data
 function updateChangeVendorContactMask(objChangeVendorRequest, userId) {
-    if (!objChangeVendorRequest.VENDOR_NAME) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter VENDOR_NAME was not found", "", objChangeVendorRequest);
-    }
+    objChangeVendorRequest.CONTACT = [];
+    objChangeVendorRequest.CHANGE_VENDOR_REQUEST_ID.forEach(function (elem) {
+        objChangeVendorRequest.CONTACT.push({CHANGE_VENDOR_REQUEST_ID: elem});
+    });
     return data.updateChangeVendorContactMask(objChangeVendorRequest, userId);
 }
 
 //Update Alternative Vendor Contact Information mask flag to protect the selected contact data
 function updateAlternativeVendorMask(alternativeVendorObj, userId) {
-    if (!alternativeVendorObj.VENDOR_ID) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter VENDOR_ID was not found", "", alternativeVendorObj);
-    }
-    if (!alternativeVendorObj.CONTACT_NAME) {
-        throw ErrorLib.getErrors().BadRequest("The Parameter CONTACT_NAME was not found", "", alternativeVendorObj);
-    }
+    alternativeVendorObj.CONTACT = [];
+    alternativeVendorObj.ALTERNATIVE_CONTACT.forEach(function (elem) {
+        alternativeVendorObj.CONTACT.push({REQUEST_ID: elem});
+    });
     return data.updateAlternativeVendorMask(alternativeVendorObj, userId);
 }
 /** ***********END UPDATE*************** */

@@ -62,11 +62,10 @@ function updateNonSapVendor(objVendor, userId) {
 
 function updateNonSapVendorMask(objNonSapVendor, userId) {
 	var param = {};
-	param.in_non_sap_vendor_id = objNonSapVendor.NON_SAP_VENDOR_ID;
+	param.in_request = objNonSapVendor.CONTACT;
 	param.in_mask = config.getDataProtectionMask();
 	param.in_modified_user_id = userId;
 	param.out_result = '?';
-
 	return db.executeScalar(UPD_NON_SAP_VENDOR_MASK, param, 'out_result');
 }
 

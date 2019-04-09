@@ -73,8 +73,7 @@ function getPath(stringName) {
 function sendMailToRequester(requestMailObj, mailType) {
     var mailObj;
     var requester = getRequesterByRequestId(requestMailObj.REQUEST_ID, requestMailObj.CURRENT_USER_ID);
-
-    if (!requester.USER_DATA_PROTECTION_STATUS_ID) {
+    if (requester.USER_DATA_PROTECTION_STATUS_ID !== null && !Number(requester.USER_DATA_PROTECTION_STATUS_ID)) {
         var requesterFullName = requester.FIRST_NAME + " " + requester.LAST_NAME + ", " + requester.USER_NAME;
 
         var currentUser = getCurrentUserInformationByUserId(requestMailObj.CURRENT_USER_ID);
@@ -225,7 +224,6 @@ function sendReturnToRequestMail(requestId, userId, fromProcessingReport) {
 
 function sendInProcessMail(requestObj, userId) {
     requestObj.CURRENT_USER_ID = userId;
-
     sendMailToRequester(requestObj, "statusInProcess");
 }
 

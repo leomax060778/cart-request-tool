@@ -24,6 +24,7 @@ function handlePut(reqBody, userId) {
     var protect = parameters.get('PROTECT');
     switch (protect) {
         case "USER_ID":
+            reqBody.USER_ID = reqBody.USER_ID[0];
             result = user.updateUser(reqBody, userId);
             break;
         case "VENDOR_CONTACT_INFORMATION_ID":
